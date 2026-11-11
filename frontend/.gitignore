@@ -1,0 +1,13 @@
+node_modules/
+.next/
+out/
+coverage/
+.env*
+!.env.example
+*.log
+.DS_Store
+/public/fonts/
+/public/favicon.svg
+/public/clinic-demo.png
+
+/public/pdfjs/

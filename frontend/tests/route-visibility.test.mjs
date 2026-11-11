@@ -1,0 +1,20 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {mountApp} from './dom-harness.mjs';
+test('Route controls and geometry open only from Directions; plain detail, closing and another selection hide them',()=>{
+ const ui=mountApp();
+ ui.run("state.source='live';state.view='explore';state.live.configured=true;state.live.routingConfigured=true;state.live.locationAttempted=true;state.live.position={lat:37,lng:127,accuracy:200};state.live.items=['a','b'].map((id,i)=>({id,source:'kakao',providerOrder:i,type:'hospital',status:'unknown',lat:37.01+i*.01,lng:127.01,name:{ko:'병원'+id,en:'Clinic'+id},area:{ko:'서울',en:'Seoul'},access:{ko:'',en:''},placeUrl:'https://place.map.kakao.com/1'}));state.search.criteria={...emptyCriteria(),sort:'distance'};state.search.initialized=true;state.live.queryKey=liveQueryKey(state.search.criteria);state.live.items.forEach((item,i)=>state.routing.cache[routeQuery('walk',state.live.position,item)]={phase:'ready',expires:Date.now()+120000,data:{distanceMeters:i?700:1800,durationSeconds:600,steps:[],paths:[[[127,37],[127.01,37.01]]]}});mountKakaoMap=(...args)=>{window.mapOptions=args[4]};render()");
+ const noRoutes=()=>{assert.equal(ui.document.getElementById('route-heading'),null);assert.equal(ui.document.querySelectorAll('[data-travel-mode]').length,0);assert.equal(ui.run('window.mapOptions.routePaths.length'),0);};
+ noRoutes();
+ assert.deepEqual(ui.document.querySelectorAll('[data-card]').map(n=>n.dataset.card),['a','b']);
+ for(const cls of ['.live-map-caption','.location-accuracy','.map-count-note','.list-travel'])assert.equal(ui.document.querySelector(cls),null);
+ ui.document.querySelectorAll('[data-facility]').find(n=>n.dataset.facility==='a'&&n.attributes.class==='facility-detail-button').click();
+ noRoutes();assert.equal(ui.document.querySelector('.photo-provider-link'),null);
+ ui.document.getElementById('route-toggle').click();
+ assert.equal(ui.document.querySelectorAll('[data-travel-mode]').length,3);assert.equal(ui.run('window.mapOptions.routePaths.length'),1);
+ ui.document.getElementById('route-toggle').click();noRoutes();
+ ui.document.getElementById('close-detail').click();noRoutes();
+ ui.document.querySelectorAll('[data-route-jump]').find(n=>n.dataset.facility==='b').click();
+ assert.equal(ui.run('state.routing.openId'),'b');assert.ok(ui.document.getElementById('route-heading'));
+ ui.run("selectFacility('a')");noRoutes();
+});

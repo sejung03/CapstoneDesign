@@ -1,0 +1,28 @@
+{
+  "name": "capstone-medical-frontend",
+  "version": "0.24.2",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --hostname 127.0.0.1 --port 3080",
+    "check": "node --check dev-console.mjs && node --check account-session.mjs && node --check favorites.mjs && node --check health-updates.mjs && node --check signup-consent.mjs && node --check report-import.mjs && node --check health-consent.mjs && node --check emergency-picker.mjs && node --check emergency-resources.mjs && node --check emergency.mjs && node --check recommendations.mjs && node --check workspace-model.mjs && node --check departments.mjs && node --check public-hours.mjs && node --check public-data-server.mjs && node --check report.mjs && node --check routing.mjs && node --check routing-server.mjs && node --check facility-art.mjs && node --check ui-icons.mjs && node --check copy.mjs && node --check discovery.mjs && node --check assistant.mjs && node --check intake-data.mjs && node --check intake-view.mjs && node --check app.js && node --check profile.mjs && node --check care-context.mjs && node --check live-data.mjs && node --check kakao-client.mjs && node --check chat-view.mjs && node --check facilities-view.mjs && node --check server.mjs && node --check lib/server-api.mjs && node --check lib/security.mjs && node --test tests/*.test.mjs",
+    "predev": "node scripts/prepare-public.mjs",
+    "prebuild": "node scripts/prepare-public.mjs",
+    "build": "next build",
+    "start": "next start --hostname 127.0.0.1 --port 3080",
+    "test": "node --test tests/*.test.mjs",
+    "check:next": "node --test tests-next/*.test.mjs"
+  },
+  "dependencies": {
+    "next": "16.4.5",
+    "pdfjs-dist": "6.5.438",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "engines": {
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+  },
+  "devDependencies": {
+    "jsdom": "31.0.0"
+  }
+}
