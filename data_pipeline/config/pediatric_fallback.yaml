@@ -1,0 +1,11 @@
+# fallback 증상의 소아 그룹(fallback_group = pediatric) 판정 대상 (pipeline/step2c_combine.py)
+# ICPC 이름 기준 판정, 2026-11-14 고정.
+#   원래 규칙: ICPC-2e 영어 이름(preferred)에 recommend.yaml의 fallback.pediatric_preferred_keywords
+#   (infant, child)가 들어 있는 증상. ICPC 원본 문구를 저장소·빌드 입력에서 빼면서(저작권 대응)
+#   그 판정 결과를 증상 id로 고정했다. 이 중 fallback 증상(추천 없음)만 pediatric 그룹이 된다
+#   (2026-11-14 기준 T04, A16).
+# 표준 증상이 바뀌면(새 증상 추가 등) 이 목록을 사람이 다시 확인한다.
+symptom_ids:
+  - P22   # 아이의 행동·발달 문제
+  - T04   # 영유아 수유·식사 문제
+  - A16   # 심하게 보채는 아기

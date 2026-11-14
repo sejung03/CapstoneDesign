@@ -1,0 +1,236 @@
+﻿item_id,icpc2_code,confidence,note
+T1-001,A03,high,
+T1-002,A04,high,
+T1-003,T03,high,
+T1-004,K07,low,부위 불명. 혹이 아닌 부종으로 봄(A08과 경계)
+T1-005,D10,high,
+T1-006,N01,high,
+T1-007,T08,high,
+T1-008,L20,high,
+T1-009,S06,low,범위(국소/전신) 불명. redness는 S06 포함어
+T1-010,R05,high,
+T1-011,D09,high,
+T1-012,A02,high,
+T1-013,S02,high,
+T1-014,L18,high,
+T1-015,F05,high,visual loss
+T1-016,R02,high,
+T1-017,H01,high,
+T1-018,N19,high,dysarthria
+T1-019,D02,high,
+T1-020,D11,high,
+T1-021,NONE,low,얼굴 형태 이상에 맞는 증상 코드 없음(A18은 외모 걱정)
+T1-022,K29,high,low blood pressure 포함어
+T1-023,AMBIGUOUS,low,X06/X08/X12/X13 중 시기·양상 불명
+T1-024,H02,high,
+T1-025,A08,low,부위 불명의 혹. 피부면 S04
+T1-026,R25,high,
+T1-027,AMBIGUOUS,low,여성 X01(pelvic pain) / 남성 Y02(pain pelvis)
+T1-028,A05,low,malaise로 봄. lassitude(A04)와 경계
+T1-029,P20,high,amnesia
+T1-030,F02,high,
+T1-031,F01,high,
+T1-032,F05,high,photophobia
+T1-033,N19,low,
+T1-034,L17,high,
+T1-035,U01,high,
+T1-036,K04,high,tachycardia 포함어
+T1-037,T10,high,
+T1-038,D07,high,
+T1-039,L12,high,
+T1-040,A04,high,
+T1-041,F05,high,blurred vision
+T1-042,AMBIGUOUS,low,N08/N18/N29 중 어떤 운동 문제인지 불명
+T1-043,P10,high,
+T1-044,P10,high,
+T1-045,P20,low,disorientation 포함어. 의식 수준 문제면 A07
+T1-046,P20,low,
+T1-047,L07,high,
+T1-048,D20,low,잇몸 출혈이면 D19
+T1-049,D20,high,sore mouth
+T1-050,B04,low,전용 코드 없음. 여러 부위 출혈이면 A10
+T1-051,L07,high,
+T1-052,S04,low,papule
+T1-053,U06,high,
+T1-054,A07,high,
+T1-055,P29,high,
+T1-056,D13,high,
+T1-057,P04,high,agitation NOS
+T1-058,T01,high,
+T1-059,N07,high,
+T1-060,A04,high,lethargy
+T1-061,D25,high,
+T1-062,D29,high,ascites 포함어
+T1-063,D01,high,
+T1-064,AMBIGUOUS,low,여성 W15 / 남성 Y10
+T1-065,U02,high,
+T1-066,R04,high,tachypnoea 포함어
+T1-067,D21,high,
+T1-068,AMBIGUOUS,low,여성 X29 / 남성 Y29
+T1-069,X13,high,
+T1-070,U07,high,
+T1-071,S22,high,
+T1-072,T04,low,영아 수유 문제로 봄. 모유 분비 문제면 W19
+T1-073,F05,high,scotoma
+T1-074,AMBIGUOUS,low,L07(턱) / D19(치아) / D21(삼킴)
+T1-075,A01,low,부위 불명의 통증으로 봄
+T1-076,L08,high,
+T1-077,P22,high,speech delay 포함어
+T1-078,AMBIGUOUS,low,A03(열) / S08(홍조) / A29
+T1-079,A07,low,stupor 포함어
+T1-080,L07,low,
+T1-081,D20,low,sore mouth로 봄
+T1-082,S29,high,petechiae; spontaneous ecchymosis
+T1-083,U02,high,
+T1-084,P29,low,전용 코드 없음
+T1-085,H02,high,hyperacusis 포함어
+T1-086,S08,high,cyanosis 포함어
+T1-087,A04,low,
+T1-088,L07,high,
+T1-089,D06,high,
+T1-090,R29,high,chest tightness 포함어(K02와 경계)
+T1-091,N06,high,numbness
+T1-092,NONE,low,hyperventilation은 R98(증상 코드 아님)로 R02/R04에서 제외
+T1-093,L20,high,stiffness in joint
+T1-094,H13,high,
+T1-095,H04,high,
+T1-096,L19,low,weakness of muscle. 마비성이면 N18
+T1-097,P20,high,
+T1-098,F16,high,abnormal blinking
+T1-099,F13,high,burning eye
+T1-100,F05,high,eye strain
+T1-101,F16,high,ptosis
+T1-102,U02,high,polyuria 포함어
+T1-103,L14,high,
+T1-104,L02,high,
+T1-105,B02,high,
+T1-106,K05,low,K04와 경계
+T1-107,N08,low,shaking. 틱이면 P10
+T1-108,R21,high,lump in throat
+T1-109,AMBIGUOUS,low,목이 목구멍(R21)인지 경부(L01)인지 불명
+T1-110,A01,low,multiple aches로 봄. 병감이면 A05
+T1-111,A04,low,
+T1-112,L15,high,
+T1-113,L16,high,
+T1-114,L17,high,
+T1-115,AMBIGUOUS,low,S06(국소) / S07(전신) 범위 불명
+T1-116,U05,low,소변이 아예 안 나오면 U08
+T1-117,U01,high,burning urination
+T1-118,NONE,low,비만·과체중은 T82/T83(증상 코드 아님)
+T1-119,F05,high,diplopia
+T1-120,P01,high,
+T1-121,F04,high,
+T1-122,D21,low,인후통이면 R21
+T1-123,NONE,low,맞는 증상 코드 없음
+T1-124,NONE,low,delayed puberty는 T99로 T10에서 제외
+T1-125,U07,high,
+T1-126,U07,low,
+T1-127,U05,high,oliguria 포함어
+T1-128,D02,low,epigastric discomfort로 봄. D07과 경계
+T1-129,D03,high,
+T1-130,K29,low,전용 코드 없음
+T1-131,T04,low,영아 수유 문제로 봄
+T1-132,S08,high,flushing 포함어
+T1-133,F14,high,
+T1-134,N08,low,jerking. 틱이면 P10
+T1-135,N19,high,
+T1-136,NONE,low,여드름은 S96(증상 코드 아님)
+T1-137,L03,high,
+T1-138,X06,high,
+T1-139,N08,low,불수의 운동으로 봄. 틱이면 P10
+T1-140,D20,high,dry mouth
+T1-141,D20,low,
+T1-142,D20,high,
+T1-143,D19,low,
+T1-144,U05,low,U13과 경계
+T1-145,NONE,low,저체온은 A88(증상 코드 아님)
+T1-146,A29,high,drowsiness 포함어
+T1-147,X14,high,
+T1-148,X01,high,
+T1-149,P20,high,disturbance of concentration
+T1-150,S08,high,pallor
+T1-151,T07,high,
+T1-152,D19,low,턱 문제면 L07
+T1-153,R06,high,
+T1-154,R07,high,
+T1-155,AMBIGUOUS,low,R08(코 증상) / P10(음성 틱)
+T1-156,L07,high,cramps/spasm jaw
+T1-157,L07,high,
+T1-158,S01,high,
+T1-159,AMBIGUOUS,low,S06(blotch) / S08(색 변화)
+T1-160,S29,low,
+T1-161,R05,low,틱이면 P10
+T1-162,A11,high,
+T1-163,D23,low,간 비대만 해당. 비장 비대 B87은 증상 코드 아님
+T1-164,N29,high,gait abnormality
+T1-165,NONE,low,열사병·고체온은 A88로 A03에서 제외
+T1-166,NONE,low,맞는 증상 코드 없음
+T1-167,AMBIGUOUS,high,D09(구역) / D10(구토)
+T1-168,N29,low,ataxia. 어지럼성 균형 문제면 N17
+T1-169,NONE,low,기도 이물은 R87(증상 코드 아님). D21 choking feeling과 다름
+T1-170,AMBIGUOUS,low,R06(코피) / R24(객혈)
+T1-171,U29,high,
+T1-172,D29,high,
+T1-173,AMBIGUOUS,high,K29 / R29
+T1-174,AMBIGUOUS,high,N29 / L29
+T1-175,A29,high,
+T1-176,P24,high,dyslexia 포함어
+T1-177,P05,high,senescence 포함어
+T1-178,AMBIGUOUS,low,N18(마비) / N19(말 어눌)
+T1-179,A09,high,
+T1-180,N08,high,
+T1-181,AMBIGUOUS,low,R21(목) / A11(가슴)
+T1-182,R23,high,
+T1-183,D17,high,
+T1-184,AMBIGUOUS,low,T10(성장) / P22(발달)
+T1-185,U08,high,
+T1-186,NONE,low,쇼크에 맞는 증상 코드 없음(P02의 shock은 심리적 충격)
+T1-187,A06,high,
+T1-188,NONE,high,심잡음은 K81(증상 코드 아님)
+T1-189,K04,low,빈맥·서맥 포함. 불규칙이면 K05
+T1-190,NONE,low,응급 상태. 맞는 증상 코드 없음
+T1-191,T08,high,cachexia 포함어
+T1-192,NONE,low,알레르기는 A92(증상 코드 아님)
+T1-193,N17,high,
+T1-194,P29,low,strange behaviour; poor hygiene
+T1-195,AMBIGUOUS,low,남성 Y03 / 여성 X29
+T1-196,U04,high,
+T1-197,NONE,high,증상 아님
+T1-198,P29,low,자살 생각 전용 코드 없음. 이상 행동은 P29
+T1-199,NONE,high,진단 기준. 증상 아님
+T1-200,AMBIGUOUS,low,P01 / P03 / P04
+T1-201,A10,high,
+T1-202,A01,low,
+T1-203,AMBIGUOUS,low,N05 / N06 / S01
+T1-204,K29,low,저혈압만 해당. 고혈압 K85는 증상 코드 아님
+T1-205,R04,high,abnormal breathing
+T1-206,A08,low,부위 불명의 혹. 피부면 S04
+T1-207,P29,high,
+T1-208,N16,high,
+T1-209,NONE,high,사고 상황
+T1-210,NONE,high,사고 상황
+T1-211,NONE,low,손상/질환 범주. 증상 하나로 특정 불가
+T1-212,S13,high,
+T1-213,NONE,high,손상 범주
+T1-214,NONE,high,사고 상황
+T1-215,NONE,high,사고 상황
+T1-216,W29,low,임신 관련 증상 일반
+T1-217,AMBIGUOUS,low,S18(베임) / S19(찔림)
+T1-218,NONE,high,중독은 A84/A86(증상 코드 아님)
+T1-219,A29,low,falls 포함어
+T1-220,AMBIGUOUS,low,S18(열상) / A10(출혈)
+T1-221,NONE,high,사건 상황
+T1-222,S14,high,
+T1-223,H03,high,
+T1-224,R07,high,
+T1-225,R07,high,
+T1-226,D12,high,
+T1-227,AMBIGUOUS,high,D16(선혈) / D15(검은 변)
+T1-228,R24,high,
+T1-229,P06,high,insomnia
+T1-230,P03,high,
+T1-231,D19,high,toothache 포함어
+T1-232,X02,high,
+T1-233,NONE,low,두드러기는 S98(증상 코드 아님)
+T1-234,N18,low,paresis
+T1-235,F03,high,purulent discharge

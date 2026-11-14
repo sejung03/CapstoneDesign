@@ -1,0 +1,38 @@
+# 119 상담 매뉴얼 주증상 범주 33개 (v2 기준 목록, 2026-11-12 확정)
+# pipeline/step1_merge.py의 TRIAGE와 다르면 이 목록을 따른다.
+# pipeline/01d_label_inputs.py가 읽어 label_options_T2_triage.csv를 만든다.
+
+categories:
+  - {id: 1, group: 질환, name: 기도이물}
+  - {id: 2, group: 질환, name: 뇌졸중 의증}
+  - {id: 3, group: 질환, name: 두통}
+  - {id: 4, group: 질환, name: 발열}
+  - {id: 5, group: 질환, name: 발작/경련}
+  - {id: 6, group: 질환, name: 복통}
+  - {id: 7, group: 질환, name: 비외상성 출혈}
+  - {id: 8, group: 질환, name: 심정지/호흡정지}
+  - {id: 9, group: 질환, name: 알러지}
+  - {id: 10, group: 질환, name: 오심/구토}
+  - {id: 11, group: 질환, name: 비외상성 요통}
+  - {id: 12, group: 질환, name: 의식장애/실신}
+  - {id: 13, group: 질환, name: 임신/분만/낙태}
+  - {id: 14, group: 질환, name: 정신/행동장애/자살}
+  - {id: 15, group: 질환, name: 호흡곤란}
+  - {id: 16, group: 질환, name: 환경(고체온/저체온)}
+  - {id: 17, group: 질환, name: 흉통}
+  - {id: 18, group: 질환, name: 기타 비특이적 증상}
+  - {id: 19, group: 손상, name: 감전/낙뢰}
+  - {id: 20, group: 손상, name: 교통사고}
+  - {id: 21, group: 손상, name: 눈 손상/질환}
+  - {id: 22, group: 손상, name: 두부/신경학적 손상}
+  - {id: 23, group: 손상, name: 동물 교상}
+  - {id: 24, group: 손상, name: 익수}
+  - {id: 25, group: 손상, name: 일산화탄소 중독/흡입/HAZMAT}
+  - {id: 26, group: 손상, name: 자상/관통상/총상}
+  - {id: 27, group: 손상, name: 중독}
+  - {id: 28, group: 손상, name: 추락/낙상}
+  - {id: 29, group: 손상, name: 출혈/열상}
+  - {id: 30, group: 손상, name: 폭행/성폭행}
+  - {id: 31, group: 손상, name: 화상}
+  - {id: 32, group: 기타, name: 환자 상태 파악 불가능}
+  - {id: 33, group: 기타, name: 기타 상황}

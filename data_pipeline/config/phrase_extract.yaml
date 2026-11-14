@@ -1,0 +1,89 @@
+# 3단계 S3-2: 증상 답변에서 후보 구절을 규칙으로 뽑는 방법 (2026-11-12)
+# 스크립트: pipeline/03b_candidate_phrases.py  (LLM을 쓰지 않는다)
+# 빈도(n_answers, n_diseases)를 셀 때의 매칭 방법은 config/symptom_match.yaml을 그대로 쓴다.
+
+# 1. 문장 나누기
+sentence_delimiters: [".", "?", "!", "\n"]
+
+# 2. 나열 항목 뽑기: 문장을 아래 기준으로 나눈다
+item_split:
+  chars: [",", "·"]                   # 어디에 있든 나눈다
+  words: ["및", "또는", "그리고"]      # 낱말로 떨어져 있을 때만 (앞은 공백이나 문장 처음, 뒤는 공백)
+  particles: ["과", "와"]             # 한글 바로 뒤에 붙고, 뒤에 공백이 올 때만 ("기침과 가래")
+
+# 3. 항목 다듬기 (위에서 아래 순서로 한 번씩)
+trim:
+  # 앞뒤에서 떼는 글자: 공백, 괄호, 따옴표, 쌍점
+  strip_chars: " \t()[]{}<>〈〉《》「」『』\"'“”‘’:;"
+  # 끝 낱말 제거. 긴 것부터 본다.
+  trailing_words: ["등의", "등이", "같은", "등"]
+  # true면 앞에 공백이 있을 때만 뗀다 ("가려움증 등" → "가려움증"). "손등", "발등"을 지키기 위함.
+  trailing_words_need_space: true
+  # 끝 조사 한 번 제거. 긴 것부터 본다.
+  particles: ["으로", "이", "가", "을", "를", "은", "는", "도", "의", "로"]
+  # true면 받침 규칙에 맞을 때만 조사로 본다.
+  #   이·은·을·으로: 앞 글자에 받침이 있을 때 / 가·는·를: 받침이 없을 때 / 로: 받침이 없거나 ㄹ일 때 / 도·의: 언제나
+  #   예: "체중 증가"의 "가"는 떼지 않는다("증"에 받침이 있음). "기침이" → "기침".
+  particle_batchim_check: true
+  # 이 말로 끝나는 항목은 조사를 떼지 않는다 (끝 글자가 조사가 아니라 낱말의 일부)
+  particle_keep_endings:
+    - 피로
+    - 과로
+    - 경로
+    - 별로
+    - 정도
+    - 빈도
+    - 속도
+    - 강도
+    - 온도
+    - 농도
+    - 밀도
+    - 각도
+    - 과도
+    - 태도
+    - 기도
+    - 식도
+    - 요도
+    - 편도
+    - 주의
+    - 같이
+    - 많이
+    - 깊이
+    - 높이
+
+# 4. 남기는 항목
+length:
+  min: 2      # 다듬은 뒤 글자 수 (공백 포함)
+  max: 15
+drop_digits_only: true     # 숫자·기호만 있는 항목
+drop_english_only: true    # 영문·숫자·기호만 있는 항목
+
+# 5. 추가 출처: Claude가 표본 2,759개를 직접 읽고 뽑은 구절 (고유 구절만 합친다)
+#    길이 제한(4번)은 적용하지 않는다. 다만 아래 min_phrase_length보다 짧은 구절은 뺀다(두 출처 모두).
+#    고정 입력(다시 만들지 않음). AI Hub에서 뽑은 구절이라 git에 올리지 않는다(.gitignore).
+claude_read:
+  path: data/frozen/phrases_claude.csv
+  column: phrase
+
+# 후보 구절 최소 글자 수(공백 제외). 2026-11-12 S3-2를 돌릴 때 쓴 symptom_match.yaml의 min_term_length(2)를
+# 그대로 옮겼다. symptom_match.yaml에서 그 값을 없앤 뒤에도(S3-5 수정) S3-2 결과가 같게 나오도록 하기 위함.
+min_phrase_length: 2
+
+# 입력·출력
+input:
+  answers: data/interim/v3/symptom_answers.csv
+  synonyms: data/processed/v2/symptom_synonym_v2.csv      # term
+  standard: data/processed/v2/standard_symptoms_v2.csv    # name_ko
+output: data/interim/v3/candidate_phrases.csv
+
+# 7. known: 기존 사전(v2 동의어 term + name_ko)과 같은 구절.
+#    true면 구절 안의 공백 차이는 무시한다 (symptom_match.yaml의 ignore_inner_whitespace와 같은 기준)
+known_ignore_whitespace: true
+
+# 보고용 (출력 파일에는 영향 없음)
+report:
+  thresholds: [3, 5, 10, 20]     # known이 아닌 구절의 n_answers 기준값
+  label_budget: 1500             # 라벨링 대상 상한
+  top_n: 50
+  # 재현율 검증용. 후보에는 넣지 않는다.
+  codex_path: data/frozen/phrases_codex.csv     # 없으면 재현율 검증만 건너뛴다

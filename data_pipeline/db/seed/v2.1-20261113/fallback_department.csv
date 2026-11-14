@@ -1,0 +1,6 @@
+﻿grp,rank,dept_id,n_support,data_version
+injury,1,orthopedic_surgery,5,v2.1-20261113
+injury,2,dermatology,2,v2.1-20261113
+pediatric,1,pediatrics,,v2.1-20261113
+general,1,internal_medicine,,v2.1-20261113
+general,2,family_medicine,,v2.1-20261113

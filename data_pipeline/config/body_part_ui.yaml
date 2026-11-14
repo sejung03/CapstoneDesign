@@ -1,0 +1,31 @@
+# 화면용 신체 부위 그룹 (pipeline/01e_merge_labels.py → standard_symptoms_v2.csv의 body_part_ui)
+# ICPC-2 장(chapter) → 화면 그룹 기본값을 쓰고, 예외만 코드별로 덮어쓴다.
+
+chapter_default:
+  A: 전신
+  B: 전신
+  D: 배
+  F: 눈
+  H: 귀
+  K: 가슴
+  L: 팔다리·허리
+  N: 머리·신경
+  P: 마음
+  R: 코·목·가슴
+  S: 피부
+  T: 전신
+  U: 소변
+  W: 임신
+  X: 여성
+  Y: 남성
+
+# 코드별 예외: {코드: {group: 화면 그룹, reason: 근거 한 줄}}
+overrides:
+  D19: {group: 입·치아, reason: "치아·잇몸 증상. 소화기(배)가 아니라 입에서 찾는다"}
+  D20: {group: 입·치아, reason: "입·혀·입술 증상. 소화기(배)가 아니라 입에서 찾는다"}
+  K07: {group: 팔다리·허리, reason: "부종 부위가 발·다리. 순환기(가슴)가 아니라 팔다리에서 찾는다"}
+  L07: {group: 입·치아, reason: "턱관절은 치과에서도 진료"}
+  L01: {group: 목·어깨, reason: "목(경추) 증상. 팔다리·허리보다 목에서 찾는다"}
+  L08: {group: 목·어깨, reason: "어깨 증상. 그룹 이름(목·어깨)에 맞춤 — 지시서 예시에는 없어 확인 필요"}
+  L02: {group: 허리·등, reason: "등 증상"}
+  L03: {group: 허리·등, reason: "허리 증상"}

@@ -1,0 +1,236 @@
+﻿item_id,term_ko,source,v1_symptom_id
+T1-001,발열,step1,SYM016
+T1-002,피로,step1,SYM017
+T1-003,식욕부진,step1,SYM018
+T1-004,부기,step1,SYM021
+T1-005,구토,step1,SYM032
+T1-006,두통,step1,SYM001
+T1-007,체중 감소,step1,SYM019
+T1-008,관절통,step1,SYM058
+T1-009,발적,step1,SYM052
+T1-010,기침,step1,SYM025
+T1-011,메스꺼움,step1,SYM032
+T1-012,오한,step1,SYM016
+T1-013,가려움,step1,SYM050
+T1-014,근육통,step1,SYM059
+T1-015,시력 저하,step1,SYM062
+T1-016,호흡곤란,step1,SYM027
+T1-017,귀 통증,step1,SYM070
+T1-018,발음 장애,step1,SYM003
+T1-019,상복부 통증,step1,SYM031
+T1-020,설사,step1,SYM036
+T1-021,얼굴 형태 이상,step1,
+T1-022,저혈압,step1,
+T1-023,질 출혈,step1,SYM047
+T1-024,청력 저하,step1,SYM072
+T1-025,혹,step1,SYM055
+T1-026,가래,step1,SYM026
+T1-027,골반 통증,step1,SYM031
+T1-028,권태감,step1,SYM017
+T1-029,기억 상실,step1,SYM011
+T1-030,눈 충혈,step1,SYM066
+T1-031,눈 통증,step1,SYM065
+T1-032,눈부심,step1,SYM067
+T1-033,말하기 어려움,step1,SYM003
+T1-034,발뒤꿈치 통증,step1,SYM060
+T1-035,배뇨통,step1,SYM040
+T1-036,빈맥,step1,SYM029
+T1-037,성장 부진,step1,
+T1-038,소화불량,step1,SYM034
+T1-039,손 통증,step1,SYM060
+T1-040,쇠약감,step1,SYM017
+T1-041,시야 흐림,step1,SYM062
+T1-042,운동 장애,step1,
+T1-043,운동 틱,step1,SYM015
+T1-044,음성 틱,step1,SYM015
+T1-045,의식 혼란,step1,SYM010
+T1-046,인지 저하,step1,SYM011
+T1-047,입 벌리기 어려움,step1,SYM082
+T1-048,입안 출혈,step1,SYM081
+T1-049,입안 통증,step1,SYM079
+T1-050,출혈 경향,step1,SYM053
+T1-051,턱 통증,step1,SYM082
+T1-052,피부 융기,step1,SYM055
+T1-053,혈뇨,step1,SYM041
+T1-054,혼수,step1,SYM010
+T1-055,환각,step1,SYM013
+T1-056,황달,step1,SYM039
+T1-057,흥분,step1,SYM012
+T1-058,갈증,step1,SYM020
+T1-059,경련,step1,SYM008
+T1-060,무기력,step1,SYM017
+T1-061,복부 팽만,step1,SYM035
+T1-062,복수,step1,SYM035
+T1-063,복통,step1,SYM031
+T1-064,불임,step1,
+T1-065,빈뇨,step1,SYM042
+T1-066,빈호흡,step1,SYM027
+T1-067,삼킴 곤란,step1,SYM038
+T1-068,생식기 이상,step1,
+T1-069,성교 시 출혈,step1,SYM047
+T1-070,소변 색 변화,step1,SYM045
+T1-071,손발톱 이상,step1,SYM057
+T1-072,수유 곤란,step1,
+T1-073,시야 결손,step1,SYM063
+T1-074,씹기 곤란,step1,SYM082
+T1-075,압통,step1,
+T1-076,어깨 통증,step1,SYM058
+T1-077,언어 발달 지연,step1,
+T1-078,열감,step1,SYM016
+T1-079,의식 저하,step1,SYM010
+T1-080,입 다물기 어려움,step1,SYM082
+T1-081,입안 궤양,step1,SYM080
+T1-082,자반,step1,SYM053
+T1-083,절박뇨,step1,SYM042
+T1-084,정체감 혼란,step1,
+T1-085,청각 과민,held,
+T1-086,청색증,step1,SYM030
+T1-087,체력 저하,step1,SYM017
+T1-088,턱 소리,step1,SYM082
+T1-089,하복부 통증,step1,SYM031
+T1-090,가슴 답답함,step1,SYM027
+T1-091,감각 저하,step1,SYM004
+T1-092,과호흡,step1,SYM027
+T1-093,관절 움직임 불편,step1,SYM058
+T1-094,귀 먹먹함,step1,SYM072
+T1-095,귀 분비물,step1,SYM071
+T1-096,근력 약화,step1,SYM007
+T1-097,기억력 저하,step1,SYM011
+T1-098,눈 깜빡임,step1,SYM015
+T1-099,눈 따가움,step1,SYM065
+T1-100,눈 피로,step1,SYM065
+T1-101,눈꺼풀 처짐,step1,SYM069
+T1-102,다뇨,step1,SYM042
+T1-103,다리 통증,step1,SYM060
+T1-104,등 통증,step1,SYM061
+T1-105,림프절 붓기,step1,SYM024
+T1-106,맥박 이상,step1,SYM029
+T1-107,머리 흔들기,step1,SYM015
+T1-108,목 이물감,step1,SYM078
+T1-109,목 통증,step1,SYM077
+T1-110,몸살,step1,SYM017
+T1-111,무력감,step1,SYM017
+T1-112,무릎 통증,step1,SYM058
+T1-113,발목 통증,step1,SYM058
+T1-114,발바닥 통증,step1,SYM060
+T1-115,발진,step1,SYM051
+T1-116,배뇨 곤란,step1,SYM043
+T1-117,배뇨 시 화끈거림,step1,SYM040
+T1-118,복부 비만,step1,
+T1-119,복시,step1,SYM064
+T1-120,불안,step1,SYM012
+T1-121,비문증,step1,SYM068
+T1-122,삼킴 통증,step1,SYM077
+T1-123,상처 치유 지연,step1,
+T1-124,성 발달 지연,step1,
+T1-125,소변 악취,step1,SYM045
+T1-126,소변 혼탁,step1,SYM045
+T1-127,소변량 감소,held,
+T1-128,속 불편감,step1,SYM034
+T1-129,속쓰림,step1,SYM033
+T1-130,손발 차가움,held,
+T1-131,수유 시 코로 역류,step1,
+T1-132,안면 홍조,step1,SYM052
+T1-133,안진,step1,
+T1-134,어깨 들썩임,step1,SYM015
+T1-135,언어 장애,step1,SYM003
+T1-136,여드름,step1,SYM056
+T1-137,요통,step1,SYM061
+T1-138,월경 과다,step1,SYM047
+T1-139,입 내밀기,step1,SYM015
+T1-140,입마름,step1,SYM023
+T1-141,입안 과민,step1,SYM079
+T1-142,입안 불편감,step1,SYM079
+T1-143,잇몸 노출,step1,
+T1-144,잔뇨감,step1,SYM043
+T1-145,저체온,step1,
+T1-146,졸음,step1,SYM010
+T1-147,질 분비물,step1,SYM048
+T1-148,질 통증,step1,SYM049
+T1-149,집중력 저하,step1,SYM011
+T1-150,창백,step1,SYM054
+T1-151,체중 증가,held,
+T1-152,치아·턱 흔들림,step1,
+T1-153,코피,step1,SYM074
+T1-154,콧물,step1,SYM073
+T1-155,킁킁거림,step1,SYM015
+T1-156,턱 근육 경련,step1,SYM082
+T1-157,턱 뻐근함,step1,SYM082
+T1-158,피부 따가움,step1,SYM050
+T1-159,피부 반점,held,
+T1-160,피부 변화,step1,
+T1-161,헛기침 소리,step1,SYM015
+T1-162,흉통,step1,SYM028
+T1-163,간·비장 비대,step1,
+T1-164,걸음걸이 이상,step1,SYM006
+T1-165,고체온,step1,
+T1-166,괴저,step1,
+T1-167,구역·구토,step1,SYM032
+T1-168,균형·협조 장애,step1,SYM006
+T1-169,기도 이물(숨막힘),step1,
+T1-170,기도출혈,step1,SYM074
+T1-171,기타 비뇨기 증상,step1,
+T1-172,기타 소화기 증상,step1,
+T1-173,기타 순환·호흡 증상,step1,
+T1-174,기타 신경·근골격 증상,step1,
+T1-175,기타 전신 증상,step1,
+T1-176,난독증,step1,
+T1-177,노쇠,step1,
+T1-178,뇌졸중 의심(한쪽 마비·말 어눌),step1,
+T1-179,땀 과다,step1,SYM022
+T1-180,떨림·불수의 운동,step1,SYM005
+T1-181,목·가슴 통증,step1,SYM028
+T1-182,목소리 변화,step1,SYM076
+T1-183,변실금,step1,SYM037
+T1-184,성장·발달 지연,step1,
+T1-185,소변 정체,step1,SYM043
+T1-186,쇼크,step1,
+T1-187,실신,step1,SYM009
+T1-188,심잡음,step1,
+T1-189,심장박동 이상,step1,SYM029
+T1-190,심정지·호흡정지,step1,
+T1-191,악액질,step1,SYM019
+T1-192,알레르기 반응,step1,
+T1-193,어지럼,step1,SYM002
+T1-194,외양·행동 이상,step1,
+T1-195,요도 분비물,step1,SYM046
+T1-196,요실금,step1,SYM044
+T1-197,원인 불명 질환,step1,
+T1-198,자살 생각·이상 행동,step1,SYM014
+T1-199,전신염증반응,step1,
+T1-200,정서 이상,step1,SYM012
+T1-201,출혈,step1,
+T1-202,통증(부위 불명),step1,
+T1-203,피부 감각 이상,step1,SYM004
+T1-204,혈압 이상,step1,
+T1-205,호흡 이상,step1,SYM027
+T1-206,혹·멍울,step1,SYM055
+T1-207,환각·지각 이상,step1,SYM013
+T1-208,후각·미각 이상,step1,SYM075
+T1-209,감전/낙뢰,step1,
+T1-210,교통사고,step1,
+T1-211,눈 손상/질환,step1,
+T1-212,동물 교상,step1,
+T1-213,두부/신경학적 손상,step1,
+T1-214,익수,step1,
+T1-215,일산화탄소 중독/흡입/HAZMAT,step1,
+T1-216,임신 관련,step1,
+T1-217,자상/관통상/총상,step1,
+T1-218,중독,step1,
+T1-219,추락/낙상,step1,
+T1-220,출혈/열상,step1,
+T1-221,폭행/성폭행,step1,
+T1-222,화상,step1,
+T1-223,이명(귀울림),added_common,SYM083
+T1-224,코막힘,added_common,SYM084
+T1-225,재채기,added_common,SYM085
+T1-226,변비,added_common,SYM086
+T1-227,혈변·검은 변,added_common,SYM087
+T1-228,객혈(피 섞인 가래),added_common,SYM088
+T1-229,불면,added_common,SYM089
+T1-230,우울감,added_common,SYM090
+T1-231,치통,added_common,SYM091
+T1-232,생리통,added_common,SYM092
+T1-233,두드러기,added_common,SYM093
+T1-234,한쪽 마비·얼굴 처짐,added_common,SYM094
+T1-235,눈곱,added_common,SYM095

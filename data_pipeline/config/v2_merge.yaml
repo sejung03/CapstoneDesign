@@ -1,0 +1,44 @@
+# P3: 두 평가자 라벨 합치기 규칙 (pipeline/01e_merge_labels.py)
+
+raters: [claude, codex]        # labels/v2/<이름>/T1.csv, T2.csv
+
+# T1 (표현 → ICPC 코드)
+#   둘이 같은 코드(NONE·AMBIGUOUS 제외) → agreed (채택)
+#   둘 다 NONE                          → none (버림)
+#   그 외                               → disagree (동의어에서 제외. 런타임에서 LLM 해석 + 확인 질문)
+
+# 후보 집합 일치 규칙 (2026-11-12 추가). 위 규칙으로 disagree가 된 표현에만 적용한다(agreed·none은 그대로).
+#   평가자별 후보 집합: 코드를 골랐으면 {그 코드}, AMBIGUOUS면 note에서 code_pattern으로 뽑은 코드들
+#   (label_options_T1.csv에 있는 코드만 인정), NONE이면 빈 집합.
+#   두 후보 집합의 교집합이
+#     1개      → 그 코드로 매핑, status=agreed_partial
+#     2개 이상 → 그 코드들 모두에 매핑, status=agreed_span (동의어 파일에서 term_type=span, 같은 표현이 여러 symptom_id 행으로 들어감)
+#     0개      → disagree
+#   agreed_partial·agreed_span도 v2 포함 조건(agreed 표현 1개 이상)에 들어간다.
+t1_candidate_overlap:
+  enabled: true
+  code_pattern: "[A-Z][0-9]{2}"
+
+# T2 119 범주: 두 결과의 합집합. 한쪽에만 있는 연결은 triage_status=one_rater.
+# 단, 아래 "기타" 범주는 두 평가자가 모두 고른 경우만 인정하고 한쪽만 고른 것은 버린다.
+# (2026-11-12: codex가 18을 기본값처럼 139개 코드에 붙인 것을 확인하고 추가)
+weak_categories: [18, 32, 33]
+
+# 라벨 결과와 관계없이 반드시 연결하는 119 범주. key = T1 term_ko.
+# 그 표현이 agreed로 간 코드에 범주를 더한다. unmapped면 config/symptom_exceptions.yaml의 예외 증상에 있어야 한다.
+force_triage:
+  "자살 생각·이상 행동": [14]
+
+# 성별 제한 (standard_symptoms_v2.csv의 sex_restriction). ICPC-2 장 기준. 예외 증상(EX)은 default.
+sex_restriction:
+  default: none
+  chapter:
+    X: female      # 여성 생식기
+    W: female      # 임신·출산·가족계획
+    Y: male        # 남성 생식기
+
+# name_ko 결정 순서 (2026-11-12 변경: T1 표현은 이름에 쓰지 않고 동의어로만 쓴다)
+#   1) 두 평가자의 name_ko_proposal이 같으면 그 이름                                   → name_status=agreed
+#   2) 다르면 primary_rater 제안을 쓰고 다른 평가자 제안은 name_ko_alt에               → name_status=check
+# reports/v2_review_name_check.csv의 synonyms_top3 = 그 코드의 agreed 표현 중 step1 답변 수 상위 3개
+primary_rater: claude

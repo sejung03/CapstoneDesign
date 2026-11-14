@@ -1,0 +1,5 @@
+﻿rule_id,priority,combine,result,terminal,triage_category_id,message_key,evidence_source,evidence_page,evidence_note,review_status,data_version
+R-Q0-EMERGENCY,10,all,EMERGENCY_STOP,true,,emergency_call_119,team_pdf,1,Q0 예 → 즉시 119 연락 버튼을 제공하고 응급 신고 준비 화면으로 이동,draft,v2.1-20261113
+R-N1-CONSCIOUSNESS,20,all,URGENT_NOTICE,true,12,urgent_notice_consciousness,team_pdf,3,N1 아니요 → 긴급 안내. '잘 모르겠어요'·확인 불가는 안전하다고 판단하지 않음,draft,v2.1-20261113
+R-N2-BREATHING,30,all,URGENT_NOTICE,true,15,urgent_notice_breathing,team_pdf,3,N2 아니요 → 긴급 안내. '잘 모르겠어요'·확인 불가는 안전하다고 판단하지 않음,draft,v2.1-20261113
+R-N3-RED-FLAGS,40,all,URGENT_NOTICE,true,,urgent_notice_red_flags,team_pdf,3,N3 예 → 긴급 안내. '잘 모르겠어요'·확인 불가는 안전하다고 판단하지 않음,draft,v2.1-20261113

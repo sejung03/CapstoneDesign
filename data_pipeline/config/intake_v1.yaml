@@ -1,0 +1,674 @@
+# 문진 v1 (D5) — 사람이 읽고 고치는 원본. 네 구역: 문항 정의 / 안전 규칙 / 결과 매핑 / 질문 주제
+# 원본: data/raw/응급 및 비응급 공통 문진.pdf (팀 작성, 5쪽). PDF에 있는 질문 문구는 그대로 쓴다.
+# 검사: python pipeline/intake_check.py  (적재용 시드는 다음 단계 pipeline/06d_build_intake_seed.py)
+#
+# 문항 정의는 HL7 FHIR R4 Questionnaire를 참조한 "제한된 스키마"다(FHIR 준수가 아님).
+#   지원: type choice|string|display, answer_options, required,
+#         enable_when(operator = | != | exists), enable_behavior(all|any, 조건 목록 한 단계만)
+#   미지원(검사에서 거부): 중첩 그룹, 반복 문항, 복수 선택, 다른 operator, 조건 안의 조건
+#   enable_when은 자기보다 앞 문항만 가리킨다. 가리킨 문항이 안 보이면 답이 없으므로 = 조건은 거짓이다.
+# 응급 판단은 문항에 달지 않는다. 엔진이 답이 들어올 때마다 safety_rules부터 평가한다(엔진은 다음 단계).
+# 프론트 제약: 서버가 보내는 질문은 choice만 그려진다. 선택지 1~12개, ID는 영문·숫자·밑줄·하이픈 1~80자,
+#   문구 300자 이하. string 문항은 대화 메시지로 받는다. 프론트 기존 기능이 처리하는 문항은 ui: frontend.
+# source: team_pdf = PDF 질문 그대로, added = PDF에 없거나 PDF의 "→ ○○ 확인"을 문항으로 만든 것(문구는 이 파일에서 씀)
+# todo: true = PDF에 선택지 목록이 없어 비워 둔 문항(선택지를 지어내지 않음). v1 엔진은 todo 문항을 건너뛴다.
+
+questionnaire:
+  id: intake-v1
+  version: intake-v1
+  title: 응급 및 비응급 공통 문진
+  source: "팀 문진 PDF 「응급 및 비응급 공통 문진」(data/raw/응급 및 비응급 공통 문진.pdf)"
+
+# 공통 선택지
+_options:
+  yes_no: &yes_no
+    - {code: "yes", display: 예}
+    - {code: "no", display: 아니요}
+  yes_no_cannot: &yes_no_cannot          # 응급 문진 E4~E6: PDF "확인 불가"
+    - {code: "yes", display: 예}
+    - {code: "no", display: 아니요}
+    - {code: unknown, display: 확인 불가}
+  yes_no_dontknow: &yes_no_dontknow      # 비응급 안전 질문 N1~N3, F2: '잘 모르겠어요' 추가
+    - {code: "yes", display: 예}
+    - {code: "no", display: 아니요}
+    - {code: unknown, display: 잘 모르겠어요}
+  onset: &onset                          # 시작·악화 시점
+    - {code: onset_lt1h, display: 1시간 이내}
+    - {code: onset_today, display: 오늘}
+    - {code: onset_1_3d, display: 1~3일 전}
+    - {code: onset_4_7d, display: 4~7일 전}
+    - {code: onset_1_4w, display: 1~4주 전}
+    - {code: onset_gt1m, display: 1달 이상}
+    - {code: unknown, display: 모름}
+
+# 비응급 문항 공통 조건: Q0 = no
+_when_nonemergency: &nonemergency
+  - {question: Q0, operator: "=", answer: "no"}
+
+# ============================================================
+# [items] 문항 정의
+# ============================================================
+items:
+  # ---------- start ----------
+  - link_id: Q0
+    order: 10
+    flow: start
+    source: team_pdf
+    text: 현재 119 신고가 필요하다고 생각되는 응급 상황인가요?
+    type: choice
+    required: true
+    answer_options: *yes_no
+
+  # ---------- emergency (Q0 = yes). 119 신고를 지연시키지 않는 범위에서 묻는다 ----------
+  - link_id: E1
+    order: 20
+    flow: emergency
+    source: team_pdf
+    text: 환자는 본인인가요?
+    type: choice
+    required: false
+    answer_options: *yes_no
+    enable_when: [{question: Q0, operator: "=", answer: "yes"}]
+  - link_id: E2
+    order: 30
+    flow: emergency
+    source: team_pdf
+    text: 지금 환자와 함께 있나요?
+    type: choice
+    required: false
+    answer_options: *yes_no
+    enable_when: [{question: Q0, operator: "=", answer: "yes"}]
+  - link_id: E3
+    order: 40
+    flow: emergency
+    source: team_pdf
+    text: 현재 환자가 있는 곳의 정확한 주소나 위치를 알고 있나요?
+    type: choice
+    required: false
+    answer_options: *yes_no
+    ui: frontend          # "→ 위치 입력"은 프론트 응급 모달의 위치 기능이 처리
+    enable_when: [{question: Q0, operator: "=", answer: "yes"}]
+  - link_id: E4
+    order: 50
+    flow: emergency
+    source: team_pdf
+    text: 환자가 의식이 있고 질문에 반응하나요?
+    type: choice
+    required: false
+    answer_options: *yes_no_cannot
+    enable_when: [{question: Q0, operator: "=", answer: "yes"}]
+  - link_id: E5
+    order: 60
+    flow: emergency
+    source: team_pdf
+    text: 환자가 평소처럼 정상적으로 숨을 쉬고 있나요?
+    type: choice
+    required: false
+    answer_options: *yes_no_cannot
+    enable_when: [{question: Q0, operator: "=", answer: "yes"}]
+  - link_id: E6
+    order: 70
+    flow: emergency
+    source: team_pdf
+    text: 환자에게 심한 출혈이 있나요?
+    type: choice
+    required: false
+    answer_options: *yes_no_cannot
+    enable_when: [{question: Q0, operator: "=", answer: "yes"}]
+  - link_id: E7
+    order: 80
+    flow: emergency
+    source: team_pdf
+    text: 환자가 넘어지거나 사고를 당했나요?
+    type: choice
+    required: false
+    answer_options: *yes_no
+    enable_when: [{question: Q0, operator: "=", answer: "yes"}]
+  - link_id: E8
+    order: 90
+    flow: emergency
+    source: team_pdf
+    text: 환자가 여러 명인가요?
+    type: choice
+    required: false
+    answer_options: *yes_no
+    enable_when: [{question: Q0, operator: "=", answer: "yes"}]
+  - link_id: E8-1
+    order: 100
+    flow: emergency
+    source: added        # PDF "예 → 환자 수 입력"
+    text: 환자는 몇 명인가요?
+    type: choice
+    required: false
+    answer_options:
+      - {code: count_2, display: 2명}
+      - {code: count_3plus, display: 3명 이상}
+      - {code: unknown, display: 모름}
+    enable_when: [{question: E8, operator: "=", answer: "yes"}]
+  - link_id: E9
+    order: 110
+    flow: emergency
+    source: team_pdf
+    text: 증상이 시작된 시각을 알고 있나요?
+    type: choice
+    required: false
+    answer_options: *yes_no
+    enable_when: [{question: Q0, operator: "=", answer: "yes"}]
+  - link_id: E9-1
+    order: 120
+    flow: emergency
+    source: added        # PDF "예 → 시각 입력"
+    text: 증상은 언제 시작되었나요?
+    type: choice
+    required: false
+    answer_options:
+      - {code: onset_lt1h, display: 1시간 이내}
+      - {code: onset_1_6h, display: 1~6시간}
+      - {code: onset_6_24h, display: 6~24시간}
+      - {code: onset_gt1d, display: 하루 이상}
+    enable_when: [{question: E9, operator: "=", answer: "yes"}]
+
+  # ---------- safety (Q0 = no). '잘 모르겠어요'는 안전하다고 보지 않는다(PDF 3-1) ----------
+  - link_id: N1
+    order: 200
+    flow: safety
+    source: team_pdf
+    text: 현재 의식이 또렷하고 정상적으로 활동할 수 있나요?
+    type: choice
+    required: true
+    # 선택지 표시는 PDF(예/아니요)와 다르다: 답의 뜻을 문구에 넣어 응답 오류를 줄인다(code는 그대로)
+    answer_options:
+      - {code: "yes", display: "예, 괜찮아요"}
+      - {code: "no", display: "아니요, 이상해요"}
+      - {code: unknown, display: 잘 모르겠어요}
+    enable_when: *nonemergency
+  - link_id: N2
+    order: 210
+    flow: safety
+    source: team_pdf
+    text: 현재 숨쉬는 데 심한 어려움이 없나요?
+    type: choice
+    required: true
+    # 부정형 질문이라 "예/아니요"만 두면 답이 뒤집힐 수 있다 → 답의 뜻을 문구에 넣는다(code는 그대로)
+    answer_options:
+      - {code: "yes", display: "예, 숨쉬기 괜찮아요"}
+      - {code: "no", display: "아니요, 숨쉬기 힘들어요"}
+      - {code: unknown, display: 잘 모르겠어요}
+    enable_when: *nonemergency
+  - link_id: N3
+    order: 220
+    flow: safety
+    source: team_pdf
+    text: 갑작스러운 마비, 언어장애, 심한 흉통, 멈추지 않는 출혈 중 하나라도 있나요?
+    type: choice
+    required: true
+    answer_options: *yes_no_dontknow
+    enable_when: *nonemergency
+
+  # ---------- target (추가 문항: 상담 대상. 진료과 필터에 쓰고 저장하지 않는다) ----------
+  - link_id: T1
+    order: 300
+    flow: target
+    source: added
+    text: 누구의 증상인가요?
+    type: choice
+    required: true
+    answer_options:
+      - {code: self, display: 본인}
+      - {code: child, display: 아이}
+      - {code: other, display: 다른 사람}
+    enable_when: *nonemergency
+  - link_id: T2
+    order: 310
+    flow: target
+    source: added
+    # 용도별로 묻는다(진료과 필터용 신체 기준 성별). 저장하지 않고 filter.sex로만 쓴다
+    text: 진료과 추천에 쓸 신체 기준 성별을 알려주세요.
+    type: choice
+    required: true
+    answer_options:
+      - {code: female, display: 여성}
+      - {code: male, display: 남성}
+      - {code: not_specified, display: 그 밖이거나 답하지 않을게요}
+      - {code: unknown, display: 모름}
+    enable_when: *nonemergency
+  - link_id: T3
+    order: 320
+    flow: target
+    source: added
+    text: 나이는 어떻게 되나요?
+    type: choice
+    required: true
+    answer_options:
+      - {code: age_lt1, display: 1세 미만}
+      - {code: age_1_12, display: 1~12세}
+      - {code: age_13_18, display: 13~18세}
+      - {code: age_19_64, display: 19~64세}
+      - {code: age_65plus, display: 65세 이상}
+      - {code: unknown, display: 모름}
+    enable_when: *nonemergency
+
+  # ---------- detail: 기본 증상 정보 (PDF 3-1 "기본 증상 정보") ----------
+  - link_id: N4
+    order: 400
+    flow: detail
+    source: team_pdf
+    text: 현재 가장 불편한 증상은 무엇인가요?
+    type: string          # 대화 메시지로 받는다. 사전 매칭 대상
+    required: true
+    enable_when: *nonemergency
+  - link_id: N5
+    order: 410
+    flow: detail
+    source: team_pdf
+    text: 이 증상이 오늘 처음 시작되었나요?
+    type: choice
+    required: false
+    answer_options: *yes_no
+    enable_when: *nonemergency
+  - link_id: N5-1
+    order: 420
+    flow: detail
+    source: added        # PDF "예 → 오늘의 발생 시각 확인, 아니요 → 이전 시작 시점 확인"을 한 문항으로
+    text: 증상은 언제 시작되었나요?
+    type: choice
+    required: false
+    answer_options: *onset
+    enable_when: [{question: N5, operator: exists, answer: true}]
+  - link_id: N6
+    order: 430
+    flow: detail
+    source: team_pdf
+    text: 증상이 계속 나타나고 있나요?
+    type: choice
+    required: false
+    answer_options: *yes_no
+    enable_when: *nonemergency
+  - link_id: N6-1
+    order: 440
+    flow: detail
+    source: added        # PDF "아니요 → 반복되는 빈도·지속 시간 확인" 중 빈도
+    text: 증상이 얼마나 자주 나타나나요?
+    type: choice
+    required: false
+    answer_options:
+      - {code: freq_many_daily, display: 하루 여러 번}
+      - {code: freq_daily, display: 하루 한 번}
+      - {code: freq_few_days, display: 며칠에 한 번}
+      - {code: freq_sometimes, display: 가끔}
+      - {code: unknown, display: 모름}
+    enable_when: [{question: N6, operator: "=", answer: "no"}]
+  - link_id: N6-2
+    order: 450
+    flow: detail
+    source: added        # PDF "아니요 → 반복되는 빈도·지속 시간 확인" 중 지속 시간. 선택지 목록이 PDF에 없음
+    text: 증상이 한 번 나타나면 얼마나 지속되나요?
+    type: choice
+    required: false
+    todo: true
+    answer_options: []
+    enable_when: [{question: N6, operator: "=", answer: "no"}]
+  - link_id: N7
+    order: 460
+    flow: detail
+    source: team_pdf
+    text: 시간이 지나면서 증상이 심해지고 있나요?
+    type: choice
+    required: false
+    answer_options: *yes_no
+    enable_when: *nonemergency
+  - link_id: N7-1
+    order: 470
+    flow: detail
+    source: added        # PDF "예 → 악화 시점 확인"
+    text: 언제부터 심해졌나요?
+    type: choice
+    required: false
+    answer_options: *onset
+    enable_when: [{question: N7, operator: "=", answer: "yes"}]
+  - link_id: N8
+    order: 480
+    flow: detail
+    source: team_pdf
+    text: 이전에도 비슷한 증상을 경험한 적이 있나요?
+    type: choice
+    required: false
+    answer_options: *yes_no
+    enable_when: *nonemergency
+  - link_id: N8-1
+    order: 490
+    flow: detail
+    source: added        # PDF "예 → 이전과 다른 점 확인". 선택지 목록이 없어 대화 입력으로 받음
+    text: 이전과 다른 점이 있나요?
+    type: string
+    required: false
+    enable_when: [{question: N8, operator: "=", answer: "yes"}]
+  - link_id: N9
+    order: 500
+    flow: detail
+    source: team_pdf
+    text: 특정 행동이나 상황에서 증상이 심해지나요?
+    type: choice
+    required: false
+    answer_options: *yes_no
+    enable_when: *nonemergency
+  - link_id: N9-1
+    order: 510
+    flow: detail
+    source: added        # PDF "예 → 악화 요인 선택". 선택지 목록이 PDF에 없음
+    text: 어떤 때 증상이 심해지나요?
+    type: choice
+    required: false
+    todo: true
+    answer_options: []
+    enable_when: [{question: N9, operator: "=", answer: "yes"}]
+  - link_id: N10
+    order: 520
+    flow: detail
+    source: team_pdf
+    text: 특정 행동이나 상황에서 증상이 완화되나요?
+    type: choice
+    required: false
+    answer_options: *yes_no
+    enable_when: *nonemergency
+  - link_id: N10-1
+    order: 530
+    flow: detail
+    source: added        # PDF "예 → 완화 요인 선택". 선택지 목록이 PDF에 없음
+    text: 어떤 때 증상이 나아지나요?
+    type: choice
+    required: false
+    todo: true
+    answer_options: []
+    enable_when: [{question: N10, operator: "=", answer: "yes"}]
+  - link_id: N11
+    order: 540
+    flow: detail
+    source: team_pdf
+    text: 증상을 줄이기 위해 약을 먹거나 처치를 했나요?
+    type: choice
+    required: false
+    answer_options: *yes_no
+    enable_when: *nonemergency
+  - link_id: N11-1
+    order: 550
+    flow: detail
+    source: added        # PDF "예 → 약·처치·효과 확인" 중 약·처치
+    text: 어떤 약이나 처치를 했나요?
+    type: string
+    required: false
+    enable_when: [{question: N11, operator: "=", answer: "yes"}]
+  - link_id: N11-2
+    order: 560
+    flow: detail
+    source: added        # PDF "예 → 약·처치·효과 확인" 중 효과
+    text: 약이나 처치 후 증상은 어땠나요?
+    type: choice
+    required: false
+    answer_options:
+      - {code: better, display: 좋아짐}
+      - {code: same, display: 그대로}
+      - {code: worse, display: 나빠짐}
+      - {code: unknown, display: 모름}
+    enable_when: [{question: N11, operator: "=", answer: "yes"}]
+  - link_id: N12
+    order: 570
+    flow: detail
+    source: team_pdf
+    text: 현재 증상으로 일상생활에 어려움이 있나요?
+    type: choice
+    required: false
+    answer_options: *yes_no
+    enable_when: *nonemergency
+  - link_id: N12-1
+    order: 580
+    flow: detail
+    source: added        # PDF "예 → 수면·식사·보행·업무 등 확인". 복수 선택 미지원 → 가장 불편한 것 하나
+    text: 가장 불편한 것 하나를 골라 주세요.
+    type: choice
+    required: false
+    answer_options:
+      - {code: sleep, display: 수면}
+      - {code: meal, display: 식사}
+      - {code: walking, display: 보행}
+      - {code: work_study, display: 업무·학업}
+      - {code: other, display: 기타}
+    enable_when: [{question: N12, operator: "=", answer: "yes"}]
+  - link_id: N13
+    order: 590
+    flow: detail
+    source: team_pdf
+    text: 현재 증상과 관련된 기존 질환이 있나요?
+    type: choice
+    required: false
+    answer_options: *yes_no
+    enable_when: *nonemergency
+  - link_id: N13-1
+    order: 600
+    flow: detail
+    source: added        # PDF "예 → 질환명 선택 또는 입력". 선택 목록이 없어 입력만
+    text: 어떤 질환인가요?
+    type: string
+    required: false
+    enable_when: [{question: N13, operator: "=", answer: "yes"}]
+
+  # ---------- pain (PDF "추가로 통증이 있는 경우") ----------
+  - link_id: P0
+    order: 700
+    flow: pain
+    source: added        # PDF의 "통증이 있는 경우"를 묻는 문항
+    text: 통증이 있나요?
+    type: choice
+    required: false
+    answer_options: *yes_no
+    enable_when: *nonemergency
+  - link_id: P1
+    order: 710
+    flow: pain
+    source: added        # PDF "통증 강도 0~10점"
+    text: 통증은 0~10점 중 몇 점인가요? (0 = 통증 없음, 10 = 상상할 수 있는 가장 심한 통증)
+    type: choice
+    required: false
+    answer_options:
+      - {code: pain_0, display: "0"}
+      - {code: pain_1, display: "1"}
+      - {code: pain_2, display: "2"}
+      - {code: pain_3, display: "3"}
+      - {code: pain_4, display: "4"}
+      - {code: pain_5, display: "5"}
+      - {code: pain_6, display: "6"}
+      - {code: pain_7, display: "7"}
+      - {code: pain_8, display: "8"}
+      - {code: pain_9, display: "9"}
+      - {code: pain_10, display: "10"}
+    enable_when: [{question: P0, operator: "=", answer: "yes"}]
+  - link_id: P2
+    order: 720
+    flow: pain
+    source: added        # PDF "통증 부위". body_part_ui 화면 그룹이 17개라 선택지 12개 제한을 넘음
+    text: 어디가 아픈가요?
+    type: choice
+    required: false
+    todo: true
+    answer_options: []
+    enable_when: [{question: P0, operator: "=", answer: "yes"}]
+  - link_id: P3
+    order: 730
+    flow: pain
+    source: added        # PDF "통증 양상". 선택지 목록이 PDF에 없음
+    text: 어떻게 아픈가요?
+    type: choice
+    required: false
+    todo: true
+    answer_options: []
+    enable_when: [{question: P0, operator: "=", answer: "yes"}]
+
+  # ---------- fallback 되묻기 ----------
+  # enable_when이 아니라 엔진 조건으로 낸다: N4로 찾은 증상이 fallback(ref.recommend_departments의
+  # is_fallback = true)일 때만. 아래 enable_when(Q0 = no)은 응급 흐름에서 나오지 않게 하는 최소 조건이다.
+  - link_id: F1
+    order: 800
+    flow: fallback
+    source: added
+    engine_condition: symptom_is_fallback
+    text: 불편한 곳이 몸의 어느 부위인가요?
+    type: choice
+    required: false
+    todo: true            # body_part_ui 화면 그룹 17개 > 선택지 12개 제한
+    answer_options: []
+    enable_when: *nonemergency
+  - link_id: F2
+    order: 810
+    flow: fallback
+    source: added
+    engine_condition: symptom_is_fallback
+    text: 다쳐서 생긴 증상인가요?
+    type: choice
+    required: false
+    answer_options:
+      - {code: "yes", display: 예}
+      - {code: "no", display: 아니요}
+      - {code: unknown, display: 모름}
+    enable_when: *nonemergency
+  - link_id: F3
+    order: 820
+    flow: fallback
+    source: added
+    engine_condition: symptom_is_fallback
+    text: 같이 있는 다른 증상이 있나요?
+    type: string
+    required: false
+    enable_when: *nonemergency
+
+# ============================================================
+# [safety_rules] 안전 규칙 (결정표). 1차는 문진 PDF에 있는 것만.
+# 자유 입력의 위험 표현 규칙은 다음 작업(위험 표현 사전)에서 추가한다.
+# ============================================================
+safety_rules:
+  - rule_id: R-Q0-EMERGENCY
+    priority: 10
+    conditions: [{question: Q0, operator: "=", answer: "yes"}]
+    combine: all
+    result: EMERGENCY_STOP
+    terminal: true
+    triage_category_id: null
+    message_key: emergency_call_119
+    evidence: {source: team_pdf, page: 1, note: "Q0 예 → 즉시 119 연락 버튼을 제공하고 응급 신고 준비 화면으로 이동"}
+    review_status: draft
+  - rule_id: R-N1-CONSCIOUSNESS
+    priority: 20
+    conditions: [{question: N1, operator: in, answers: ["no", unknown]}]
+    combine: all
+    result: URGENT_NOTICE
+    terminal: true        # PDF "긴급 안내"만으로는 정해지지 않음. 안전 쪽으로 true(보고에 판단으로 적음)
+    triage_category_id: 12   # 의식장애/실신
+    message_key: urgent_notice_consciousness
+    evidence: {source: team_pdf, page: 3, note: "N1 아니요 → 긴급 안내. '잘 모르겠어요'·확인 불가는 안전하다고 판단하지 않음"}
+    review_status: draft
+  - rule_id: R-N2-BREATHING
+    priority: 30
+    conditions: [{question: N2, operator: in, answers: ["no", unknown]}]
+    combine: all
+    result: URGENT_NOTICE
+    terminal: true
+    triage_category_id: 15   # 호흡곤란
+    message_key: urgent_notice_breathing
+    evidence: {source: team_pdf, page: 3, note: "N2 아니요 → 긴급 안내. '잘 모르겠어요'·확인 불가는 안전하다고 판단하지 않음"}
+    review_status: draft
+  - rule_id: R-N3-RED-FLAGS
+    priority: 40
+    conditions: [{question: N3, operator: in, answers: ["yes", unknown]}]
+    combine: all
+    result: URGENT_NOTICE
+    terminal: true
+    triage_category_id: null   # 마비·언어장애·흉통·출혈이 한 문항에 묶여 범주 하나로 정할 수 없음
+    message_key: urgent_notice_red_flags
+    evidence: {source: team_pdf, page: 3, note: "N3 예 → 긴급 안내. '잘 모르겠어요'·확인 불가는 안전하다고 판단하지 않음"}
+    review_status: draft
+
+# ============================================================
+# [output_mappings] 결과 매핑: 답 값·규칙 결과 → 119 신고 카드(card) / 분석서(report) / 진료과 필터(filter) / 상세(detail) / 흐름(flow)
+#   from: answer(question, when = 답 code 또는 any) | rule(rule_id)
+#   value가 없으면 답 code(string 문항은 입력 내용)를 그대로 넣는다
+# ============================================================
+output_mappings:
+  # 119 신고 요약 카드 (응급 문진)
+  - {from: answer, question: E1, when: any, slot: card.is_self}
+  - {from: answer, question: E2, when: any, slot: card.with_patient}
+  - {from: answer, question: E3, when: any, slot: card.location_known}
+  - {from: answer, question: E4, when: any, slot: card.consciousness}
+  - {from: answer, question: E5, when: any, slot: card.breathing}
+  - {from: answer, question: E6, when: any, slot: card.bleeding}
+  - {from: answer, question: E7, when: any, slot: card.injury}
+  - {from: answer, question: E8, when: "no", slot: card.patient_count, value: count_1}
+  - {from: answer, question: E8-1, when: any, slot: card.patient_count}
+  - {from: answer, question: E9, when: "no", slot: card.onset, value: unknown}
+  - {from: answer, question: E9-1, when: any, slot: card.onset}
+  # 진료과 필터 (저장하지 않고 ref.recommend_departments 인자로만)
+  - {from: answer, question: T2, when: female, slot: filter.sex, value: female}
+  - {from: answer, question: T2, when: male, slot: filter.sex, value: male}
+  - {from: answer, question: T2, when: not_specified, slot: filter.sex, value: unknown}   # 모든 과 표시
+  - {from: answer, question: T2, when: unknown, slot: filter.sex, value: unknown}
+  - {from: answer, question: T3, when: age_lt1, slot: filter.age_band, value: child}
+  - {from: answer, question: T3, when: age_1_12, slot: filter.age_band, value: child}
+  - {from: answer, question: T3, when: age_13_18, slot: filter.age_band, value: child}
+  - {from: answer, question: T3, when: age_19_64, slot: filter.age_band, value: adult}
+  - {from: answer, question: T3, when: age_65plus, slot: filter.age_band, value: adult}
+  - {from: answer, question: T3, when: unknown, slot: filter.age_band, value: unknown}
+  - {from: answer, question: T3, when: age_lt1, slot: filter.infant, value: "true"}
+  - {from: answer, question: T3, when: age_1_12, slot: filter.infant, value: "false"}
+  - {from: answer, question: T3, when: age_13_18, slot: filter.infant, value: "false"}
+  - {from: answer, question: T3, when: age_19_64, slot: filter.infant, value: "false"}
+  - {from: answer, question: T3, when: age_65plus, slot: filter.infant, value: "false"}
+  # 분석서
+  - {from: answer, question: N4, when: any, slot: report.symptom}
+  - {from: answer, question: N5-1, when: any, slot: report.onset}
+  - {from: answer, question: N6-1, when: any, slot: report.notes}
+  - {from: answer, question: N6-2, when: any, slot: report.notes}
+  - {from: answer, question: N7-1, when: any, slot: report.notes}
+  - {from: answer, question: N8-1, when: any, slot: report.notes}
+  - {from: answer, question: N11-2, when: any, slot: report.notes}
+  - {from: answer, question: F3, when: any, slot: report.notes}
+  # 상세
+  - {from: answer, question: N6, when: any, slot: detail.continuous}
+  - {from: answer, question: N7, when: any, slot: detail.worsening}
+  - {from: answer, question: N8, when: any, slot: detail.prior_episode}
+  - {from: answer, question: N9, when: "no", slot: detail.aggravating, value: none}
+  - {from: answer, question: N9-1, when: any, slot: detail.aggravating}
+  - {from: answer, question: N10, when: "no", slot: detail.relieving, value: none}
+  - {from: answer, question: N10-1, when: any, slot: detail.relieving}
+  - {from: answer, question: N11, when: "no", slot: detail.self_treatment, value: none}
+  - {from: answer, question: N11-1, when: any, slot: detail.self_treatment}
+  - {from: answer, question: N12, when: "no", slot: detail.daily_impact, value: none}
+  - {from: answer, question: N12-1, when: any, slot: detail.daily_impact}
+  - {from: answer, question: N13, when: "no", slot: detail.related_condition, value: none}
+  - {from: answer, question: N13-1, when: any, slot: detail.related_condition}
+  - {from: answer, question: P1, when: any, slot: detail.pain_score}
+  - {from: answer, question: P2, when: any, slot: detail.pain_site}
+  - {from: answer, question: P3, when: any, slot: detail.pain_quality}
+  # 흐름
+  - {from: rule, rule_id: R-Q0-EMERGENCY, slot: flow.emergency_stop, value: "true"}
+  - {from: rule, rule_id: R-N1-CONSCIOUSNESS, slot: flow.urgent_notice, value: "true"}
+  - {from: rule, rule_id: R-N2-BREATHING, slot: flow.urgent_notice, value: "true"}
+  - {from: rule, rule_id: R-N3-RED-FLAGS, slot: flow.urgent_notice, value: "true"}
+
+# ============================================================
+# [item_topics] 질문 주제: 질문이 다루는 119 범주·증상. "사용자에게 그 증상이 있다"는 뜻이 아니다.
+# 주제가 분명한 질문만 넣는다.
+# ============================================================
+item_topics:
+  - {question: E4, system: triage_119, system_version: "119 상담 매뉴얼 2020", code: "12"}   # 의식장애/실신
+  - {question: E5, system: triage_119, system_version: "119 상담 매뉴얼 2020", code: "15"}   # 호흡곤란
+  - {question: E6, system: triage_119, system_version: "119 상담 매뉴얼 2020", code: "7"}    # 비외상성 출혈
+  - {question: E6, system: triage_119, system_version: "119 상담 매뉴얼 2020", code: "29"}   # 출혈/열상
+  - {question: N1, system: triage_119, system_version: "119 상담 매뉴얼 2020", code: "12"}
+  - {question: N1, system: symptom_id, system_version: v2.1-20261113, code: A07}              # 의식이 없거나 반응이 둔함
+  - {question: N2, system: triage_119, system_version: "119 상담 매뉴얼 2020", code: "15"}
+  - {question: N2, system: symptom_id, system_version: v2.1-20261113, code: R02}              # 숨이 참
+  - {question: N3, system: triage_119, system_version: "119 상담 매뉴얼 2020", code: "2"}    # 뇌졸중 의증(마비·언어장애)
+  - {question: N3, system: triage_119, system_version: "119 상담 매뉴얼 2020", code: "17"}   # 흉통
+  - {question: N3, system: triage_119, system_version: "119 상담 매뉴얼 2020", code: "7"}    # 비외상성 출혈
+  - {question: N3, system: triage_119, system_version: "119 상담 매뉴얼 2020", code: "29"}   # 출혈/열상
+  - {question: N3, system: symptom_id, system_version: v2.1-20261113, code: N18}              # 마비·팔다리 힘 빠짐
+  - {question: N3, system: symptom_id, system_version: v2.1-20261113, code: N19}              # 말이 어눌함·말하기 어려움
+  - {question: N3, system: symptom_id, system_version: v2.1-20261113, code: A11}              # 가슴 통증

@@ -1,0 +1,5 @@
+﻿id,rule_id,question,operator,answers,data_version
+1,R-Q0-EMERGENCY,Q0,=,{yes},v2.1-20261113
+2,R-N1-CONSCIOUSNESS,N1,in,"{no,unknown}",v2.1-20261113
+3,R-N2-BREATHING,N2,in,"{no,unknown}",v2.1-20261113
+4,R-N3-RED-FLAGS,N3,in,"{yes,unknown}",v2.1-20261113

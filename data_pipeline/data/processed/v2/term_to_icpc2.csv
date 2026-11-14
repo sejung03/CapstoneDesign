@@ -1,0 +1,236 @@
+﻿item_id,term_ko,source,code_claude,code_codex,final_code,status
+T1-001,발열,step1,A03,A03,A03,agreed
+T1-002,피로,step1,A04,A04,A04,agreed
+T1-003,식욕부진,step1,T03,T03,T03,agreed
+T1-004,부기,step1,K07,AMBIGUOUS,K07,agreed_partial
+T1-005,구토,step1,D10,D10,D10,agreed
+T1-006,두통,step1,N01,N01,N01,agreed
+T1-007,체중 감소,step1,T08,T08,T08,agreed
+T1-008,관절통,step1,L20,L20,L20,agreed
+T1-009,발적,step1,S06,AMBIGUOUS,S06,agreed_partial
+T1-010,기침,step1,R05,R05,R05,agreed
+T1-011,메스꺼움,step1,D09,D09,D09,agreed
+T1-012,오한,step1,A02,A02,A02,agreed
+T1-013,가려움,step1,S02,S02,S02,agreed
+T1-014,근육통,step1,L18,L18,L18,agreed
+T1-015,시력 저하,step1,F05,F05,F05,agreed
+T1-016,호흡곤란,step1,R02,R02,R02,agreed
+T1-017,귀 통증,step1,H01,H01,H01,agreed
+T1-018,발음 장애,step1,N19,N19,N19,agreed
+T1-019,상복부 통증,step1,D02,D02,D02,agreed
+T1-020,설사,step1,D11,D11,D11,agreed
+T1-021,얼굴 형태 이상,step1,NONE,A18,,disagree
+T1-022,저혈압,step1,K29,K29,K29,agreed
+T1-023,질 출혈,step1,AMBIGUOUS,AMBIGUOUS,,disagree
+T1-024,청력 저하,step1,H02,H02,H02,agreed
+T1-025,혹,step1,A08,A08,A08,agreed
+T1-026,가래,step1,R25,R25,R25,agreed
+T1-027,골반 통증,step1,AMBIGUOUS,AMBIGUOUS,X01; Y02,agreed_span
+T1-028,권태감,step1,A05,A05,A05,agreed
+T1-029,기억 상실,step1,P20,P20,P20,agreed
+T1-030,눈 충혈,step1,F02,F02,F02,agreed
+T1-031,눈 통증,step1,F01,F01,F01,agreed
+T1-032,눈부심,step1,F05,F05,F05,agreed
+T1-033,말하기 어려움,step1,N19,N19,N19,agreed
+T1-034,발뒤꿈치 통증,step1,L17,L17,L17,agreed
+T1-035,배뇨통,step1,U01,U01,U01,agreed
+T1-036,빈맥,step1,K04,K04,K04,agreed
+T1-037,성장 부진,step1,T10,T10,T10,agreed
+T1-038,소화불량,step1,D07,D07,D07,agreed
+T1-039,손 통증,step1,L12,L12,L12,agreed
+T1-040,쇠약감,step1,A04,A04,A04,agreed
+T1-041,시야 흐림,step1,F05,F05,F05,agreed
+T1-042,운동 장애,step1,AMBIGUOUS,N29,N29,agreed_partial
+T1-043,운동 틱,step1,P10,P10,P10,agreed
+T1-044,음성 틱,step1,P10,P10,P10,agreed
+T1-045,의식 혼란,step1,P20,P20,P20,agreed
+T1-046,인지 저하,step1,P20,P20,P20,agreed
+T1-047,입 벌리기 어려움,step1,L07,L07,L07,agreed
+T1-048,입안 출혈,step1,D20,D20,D20,agreed
+T1-049,입안 통증,step1,D20,D20,D20,agreed
+T1-050,출혈 경향,step1,B04,B04,B04,agreed
+T1-051,턱 통증,step1,L07,L07,L07,agreed
+T1-052,피부 융기,step1,S04,AMBIGUOUS,S04,agreed_partial
+T1-053,혈뇨,step1,U06,U06,U06,agreed
+T1-054,혼수,step1,A07,A07,A07,agreed
+T1-055,환각,step1,P29,P29,P29,agreed
+T1-056,황달,step1,D13,D13,D13,agreed
+T1-057,흥분,step1,P04,P04,P04,agreed
+T1-058,갈증,step1,T01,T01,T01,agreed
+T1-059,경련,step1,N07,N07,N07,agreed
+T1-060,무기력,step1,A04,A04,A04,agreed
+T1-061,복부 팽만,step1,D25,AMBIGUOUS,D25,agreed_partial
+T1-062,복수,step1,D29,D29,D29,agreed
+T1-063,복통,step1,D01,D01,D01,agreed
+T1-064,불임,step1,AMBIGUOUS,NONE,,disagree
+T1-065,빈뇨,step1,U02,U02,U02,agreed
+T1-066,빈호흡,step1,R04,R04,R04,agreed
+T1-067,삼킴 곤란,step1,D21,D21,D21,agreed
+T1-068,생식기 이상,step1,AMBIGUOUS,AMBIGUOUS,X29; Y29,agreed_span
+T1-069,성교 시 출혈,step1,X13,X13,X13,agreed
+T1-070,소변 색 변화,step1,U07,U07,U07,agreed
+T1-071,손발톱 이상,step1,S22,S22,S22,agreed
+T1-072,수유 곤란,step1,T04,AMBIGUOUS,T04,agreed_partial
+T1-073,시야 결손,step1,F05,F05,F05,agreed
+T1-074,씹기 곤란,step1,AMBIGUOUS,L07,L07,agreed_partial
+T1-075,압통,step1,A01,A01,A01,agreed
+T1-076,어깨 통증,step1,L08,L08,L08,agreed
+T1-077,언어 발달 지연,step1,P22,P22,P22,agreed
+T1-078,열감,step1,AMBIGUOUS,A03,A03,agreed_partial
+T1-079,의식 저하,step1,A07,A07,A07,agreed
+T1-080,입 다물기 어려움,step1,L07,L07,L07,agreed
+T1-081,입안 궤양,step1,D20,D20,D20,agreed
+T1-082,자반,step1,S29,S29,S29,agreed
+T1-083,절박뇨,step1,U02,U02,U02,agreed
+T1-084,정체감 혼란,step1,P29,P29,P29,agreed
+T1-085,청각 과민,held,H02,H02,H02,agreed
+T1-086,청색증,step1,S08,S08,S08,agreed
+T1-087,체력 저하,step1,A04,A04,A04,agreed
+T1-088,턱 소리,step1,L07,L07,L07,agreed
+T1-089,하복부 통증,step1,D06,D06,D06,agreed
+T1-090,가슴 답답함,step1,R29,R29,R29,agreed
+T1-091,감각 저하,step1,N06,N06,N06,agreed
+T1-092,과호흡,step1,NONE,NONE,,none
+T1-093,관절 움직임 불편,step1,L20,L20,L20,agreed
+T1-094,귀 먹먹함,step1,H13,H13,H13,agreed
+T1-095,귀 분비물,step1,H04,H04,H04,agreed
+T1-096,근력 약화,step1,L19,L19,L19,agreed
+T1-097,기억력 저하,step1,P20,P20,P20,agreed
+T1-098,눈 깜빡임,step1,F16,F16,F16,agreed
+T1-099,눈 따가움,step1,F13,F13,F13,agreed
+T1-100,눈 피로,step1,F05,F05,F05,agreed
+T1-101,눈꺼풀 처짐,step1,F16,F16,F16,agreed
+T1-102,다뇨,step1,U02,U02,U02,agreed
+T1-103,다리 통증,step1,L14,L14,L14,agreed
+T1-104,등 통증,step1,L02,L02,L02,agreed
+T1-105,림프절 붓기,step1,B02,B02,B02,agreed
+T1-106,맥박 이상,step1,K05,AMBIGUOUS,K05,agreed_partial
+T1-107,머리 흔들기,step1,N08,N08,N08,agreed
+T1-108,목 이물감,step1,R21,R21,R21,agreed
+T1-109,목 통증,step1,AMBIGUOUS,AMBIGUOUS,L01; R21,agreed_span
+T1-110,몸살,step1,A01,A05,,disagree
+T1-111,무력감,step1,A04,A04,A04,agreed
+T1-112,무릎 통증,step1,L15,L15,L15,agreed
+T1-113,발목 통증,step1,L16,L16,L16,agreed
+T1-114,발바닥 통증,step1,L17,L17,L17,agreed
+T1-115,발진,step1,AMBIGUOUS,AMBIGUOUS,S06; S07,agreed_span
+T1-116,배뇨 곤란,step1,U05,U05,U05,agreed
+T1-117,배뇨 시 화끈거림,step1,U01,U01,U01,agreed
+T1-118,복부 비만,step1,NONE,NONE,,none
+T1-119,복시,step1,F05,F05,F05,agreed
+T1-120,불안,step1,P01,P01,P01,agreed
+T1-121,비문증,step1,F04,F04,F04,agreed
+T1-122,삼킴 통증,step1,D21,D21,D21,agreed
+T1-123,상처 치유 지연,step1,NONE,S29,,disagree
+T1-124,성 발달 지연,step1,NONE,NONE,,none
+T1-125,소변 악취,step1,U07,U07,U07,agreed
+T1-126,소변 혼탁,step1,U07,U07,U07,agreed
+T1-127,소변량 감소,held,U05,U05,U05,agreed
+T1-128,속 불편감,step1,D02,AMBIGUOUS,D02,agreed_partial
+T1-129,속쓰림,step1,D03,D03,D03,agreed
+T1-130,손발 차가움,held,K29,A29,,disagree
+T1-131,수유 시 코로 역류,step1,T04,T04,T04,agreed
+T1-132,안면 홍조,step1,S08,S08,S08,agreed
+T1-133,안진,step1,F14,F14,F14,agreed
+T1-134,어깨 들썩임,step1,N08,N08,N08,agreed
+T1-135,언어 장애,step1,N19,N19,N19,agreed
+T1-136,여드름,step1,NONE,NONE,,none
+T1-137,요통,step1,L03,L03,L03,agreed
+T1-138,월경 과다,step1,X06,X06,X06,agreed
+T1-139,입 내밀기,step1,N08,AMBIGUOUS,N08,agreed_partial
+T1-140,입마름,step1,D20,D20,D20,agreed
+T1-141,입안 과민,step1,D20,D20,D20,agreed
+T1-142,입안 불편감,step1,D20,D20,D20,agreed
+T1-143,잇몸 노출,step1,D19,D19,D19,agreed
+T1-144,잔뇨감,step1,U05,U05,U05,agreed
+T1-145,저체온,step1,NONE,A29,,disagree
+T1-146,졸음,step1,A29,A29,A29,agreed
+T1-147,질 분비물,step1,X14,X14,X14,agreed
+T1-148,질 통증,step1,X01,X01,X01,agreed
+T1-149,집중력 저하,step1,P20,P20,P20,agreed
+T1-150,창백,step1,S08,S08,S08,agreed
+T1-151,체중 증가,held,T07,T07,T07,agreed
+T1-152,치아·턱 흔들림,step1,D19,AMBIGUOUS,D19,agreed_partial
+T1-153,코피,step1,R06,R06,R06,agreed
+T1-154,콧물,step1,R07,R07,R07,agreed
+T1-155,킁킁거림,step1,AMBIGUOUS,AMBIGUOUS,P10; R08,agreed_span
+T1-156,턱 근육 경련,step1,L07,L07,L07,agreed
+T1-157,턱 뻐근함,step1,L07,L07,L07,agreed
+T1-158,피부 따가움,step1,S01,S01,S01,agreed
+T1-159,피부 반점,held,AMBIGUOUS,AMBIGUOUS,S06; S08,agreed_span
+T1-160,피부 변화,step1,S29,S29,S29,agreed
+T1-161,헛기침 소리,step1,R05,R05,R05,agreed
+T1-162,흉통,step1,A11,A11,A11,agreed
+T1-163,간·비장 비대,step1,D23,AMBIGUOUS,D23,agreed_partial
+T1-164,걸음걸이 이상,step1,N29,N29,N29,agreed
+T1-165,고체온,step1,NONE,A03,,disagree
+T1-166,괴저,step1,NONE,NONE,,none
+T1-167,구역·구토,step1,AMBIGUOUS,AMBIGUOUS,D09; D10,agreed_span
+T1-168,균형·협조 장애,step1,N29,AMBIGUOUS,N29,agreed_partial
+T1-169,기도 이물(숨막힘),step1,NONE,NONE,,none
+T1-170,기도출혈,step1,AMBIGUOUS,R24,R24,agreed_partial
+T1-171,기타 비뇨기 증상,step1,U29,U29,U29,agreed
+T1-172,기타 소화기 증상,step1,D29,D29,D29,agreed
+T1-173,기타 순환·호흡 증상,step1,AMBIGUOUS,AMBIGUOUS,K29; R29,agreed_span
+T1-174,기타 신경·근골격 증상,step1,AMBIGUOUS,AMBIGUOUS,L29; N29,agreed_span
+T1-175,기타 전신 증상,step1,A29,A29,A29,agreed
+T1-176,난독증,step1,P24,P24,P24,agreed
+T1-177,노쇠,step1,P05,P05,P05,agreed
+T1-178,뇌졸중 의심(한쪽 마비·말 어눌),step1,AMBIGUOUS,AMBIGUOUS,N18; N19,agreed_span
+T1-179,땀 과다,step1,A09,A09,A09,agreed
+T1-180,떨림·불수의 운동,step1,N08,N08,N08,agreed
+T1-181,목·가슴 통증,step1,AMBIGUOUS,AMBIGUOUS,,disagree
+T1-182,목소리 변화,step1,R23,R23,R23,agreed
+T1-183,변실금,step1,D17,D17,D17,agreed
+T1-184,성장·발달 지연,step1,AMBIGUOUS,AMBIGUOUS,P22; T10,agreed_span
+T1-185,소변 정체,step1,U08,U08,U08,agreed
+T1-186,쇼크,step1,NONE,NONE,,none
+T1-187,실신,step1,A06,A06,A06,agreed
+T1-188,심잡음,step1,NONE,K29,,disagree
+T1-189,심장박동 이상,step1,K04,AMBIGUOUS,K04,agreed_partial
+T1-190,심정지·호흡정지,step1,NONE,NONE,,none
+T1-191,악액질,step1,T08,T08,T08,agreed
+T1-192,알레르기 반응,step1,NONE,NONE,,none
+T1-193,어지럼,step1,N17,N17,N17,agreed
+T1-194,외양·행동 이상,step1,P29,AMBIGUOUS,P29,agreed_partial
+T1-195,요도 분비물,step1,AMBIGUOUS,AMBIGUOUS,X29; Y03,agreed_span
+T1-196,요실금,step1,U04,U04,U04,agreed
+T1-197,원인 불명 질환,step1,NONE,NONE,,none
+T1-198,자살 생각·이상 행동,step1,P29,P29,P29,agreed
+T1-199,전신염증반응,step1,NONE,NONE,,none
+T1-200,정서 이상,step1,AMBIGUOUS,P29,,disagree
+T1-201,출혈,step1,A10,A10,A10,agreed
+T1-202,통증(부위 불명),step1,A01,A01,A01,agreed
+T1-203,피부 감각 이상,step1,AMBIGUOUS,N06,N06,agreed_partial
+T1-204,혈압 이상,step1,K29,K29,K29,agreed
+T1-205,호흡 이상,step1,R04,R04,R04,agreed
+T1-206,혹·멍울,step1,A08,A08,A08,agreed
+T1-207,환각·지각 이상,step1,P29,P29,P29,agreed
+T1-208,후각·미각 이상,step1,N16,N16,N16,agreed
+T1-209,감전/낙뢰,step1,NONE,NONE,,none
+T1-210,교통사고,step1,NONE,NONE,,none
+T1-211,눈 손상/질환,step1,NONE,NONE,,none
+T1-212,동물 교상,step1,S13,NONE,,disagree
+T1-213,두부/신경학적 손상,step1,NONE,NONE,,none
+T1-214,익수,step1,NONE,NONE,,none
+T1-215,일산화탄소 중독/흡입/HAZMAT,step1,NONE,NONE,,none
+T1-216,임신 관련,step1,W29,NONE,,disagree
+T1-217,자상/관통상/총상,step1,AMBIGUOUS,NONE,,disagree
+T1-218,중독,step1,NONE,NONE,,none
+T1-219,추락/낙상,step1,A29,NONE,,disagree
+T1-220,출혈/열상,step1,AMBIGUOUS,NONE,,disagree
+T1-221,폭행/성폭행,step1,NONE,NONE,,none
+T1-222,화상,step1,S14,NONE,,disagree
+T1-223,이명(귀울림),added_common,H03,H03,H03,agreed
+T1-224,코막힘,added_common,R07,R07,R07,agreed
+T1-225,재채기,added_common,R07,R07,R07,agreed
+T1-226,변비,added_common,D12,D12,D12,agreed
+T1-227,혈변·검은 변,added_common,AMBIGUOUS,AMBIGUOUS,D15; D16,agreed_span
+T1-228,객혈(피 섞인 가래),added_common,R24,R24,R24,agreed
+T1-229,불면,added_common,P06,P06,P06,agreed
+T1-230,우울감,added_common,P03,P03,P03,agreed
+T1-231,치통,added_common,D19,D19,D19,agreed
+T1-232,생리통,added_common,X02,X02,X02,agreed
+T1-233,두드러기,added_common,NONE,NONE,,none
+T1-234,한쪽 마비·얼굴 처짐,added_common,N18,N18,N18,agreed
+T1-235,눈곱,added_common,F03,F03,F03,agreed

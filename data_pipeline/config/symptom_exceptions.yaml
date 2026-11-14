@@ -1,0 +1,23 @@
+# ICPC-2 증상 코드(component 1)에 맞는 코드가 없는데 v1에 있던 증상 (pipeline/01e_merge_labels.py)
+# 넣는 조건: v1 항목이 라벨링 후 unmapped이고, 그 구성 표현을 두 평가자가 모두 NONE으로 답한 경우만.
+#   (평가자 의견이 갈려서 unmapped인 항목은 여기 넣지 않는다 → reports/v2_review_v1_unmapped.csv에서 사람이 결정)
+# id는 EX01, EX02… (X01은 ICPC X장과 겹치므로 쓰지 않는다). 한번 준 id는 바꾸지 않는다.
+# icd10_3, triage_category는 v1(standard_symptoms_v1.csv) 값을 그대로 옮긴 것이다.
+
+exceptions:
+  - id: EX01
+    name_ko: 여드름
+    v1_symptom_id: SYM056
+    v1_terms: [여드름]
+    icd10_3: [L70]
+    triage_category: []
+    body_part_ui: 피부
+    reason: "ICPC-2에서 여드름은 진단 코드 S96(component 7)뿐이고 증상 코드가 없음. 두 평가자 모두 NONE"
+  - id: EX02
+    name_ko: 두드러기
+    v1_symptom_id: SYM093
+    v1_terms: [두드러기]
+    icd10_3: [L50]
+    triage_category: [9]
+    body_part_ui: 피부
+    reason: "ICPC-2에서 두드러기는 진단 코드 S98(component 7)뿐이고 증상 코드가 없음. 두 평가자 모두 NONE. 119 범주 9(알러지)는 v1 연결을 유지"

@@ -1,0 +1,62 @@
+# 4단계 S4-1: AI Hub department_raw 표기 → 표준 진료과 라벨링 입력 (pipeline/04a_dept_label_inputs.py)
+# output은 입력을 "만드는" 쪽 경로다(data/interim/). 실제 라벨링에 쓴 입력과 결과는 labels/v4/에 있고,
+# 합치기(S4-2, 04b)는 merge 절의 labels/ 경로를 읽는다.
+
+input:
+  answers: data/interim/v3/symptom_answers.csv     # department_raw = JSON 배열 문자열
+
+# department_raw 값 나누기: JSON 배열의 각 원소를 이 글자로 다시 나눈다. 나눈 값은 그대로(앞뒤 공백 포함) 센다.
+split_chars: ["\n"]
+
+output:
+  raw_values: data/interim/v4/dept_raw_values.csv
+  options: data/interim/v4/label_options_dept.csv
+  guide: data/interim/v4/labeling_guide_dept.md
+
+# 표준 진료과 = 심평원 의원급 표시과목(data/raw 파일에서 읽음). 치과 계열은 "치과" 하나(의원급에는 원래 "치과"만 있음).
+clinic_file_keywords: ["의원급", "표시과목"]
+clinic_dept_column: 표시과목
+# 의원급 표시과목 중 진료과가 아닌 값은 선택지에서 뺀다
+clinic_not_dept: [일반의]
+# 의원급 표시과목에서 여러 이름이 붙은 값은 하나로 쓴다
+clinic_rename:
+  "진단방사선과,영상의학과": 영상의학과
+# 의원급 표시과목에는 없지만 2A에서 쓰거나 AI Hub에 나오는 과 (2026-11-12)
+extra_depts:
+  응급의학과: "병원급 통계에만 있음. 2A는 er_share로만 씀"
+  방사선종양학과: "병원급 통계에만 있음. 2A 제외 진료과"
+  의학유전학과: "심평원 통계에 없음. AI Hub에 나옴"
+
+special_options:
+  DROP: 진료과가 아님(질환명·물건 등)
+  AMBIGUOUS: 둘 이상에 걸쳐 애매함(note에 후보를 모두 적는다)
+
+# ---------- S4-2: 진료과 정리표와 경로 A (pipeline/04b_path_a.py) ----------
+# 합치기: 두 평가자가 같은 dept(DROP·AMBIGUOUS 제외) → adopted. 둘 다 DROP → drop.
+# 그 외에는 후보 겹침 규칙(증상 T1과 같은 규칙, 2026-11-12 추가):
+#   평가자별 후보 집합 = 고른 과 하나 / AMBIGUOUS면 note의 과들 / DROP이면 빈 집합
+#   교집합 1개 → adopted_partial (그 과) / 2개 이상 → adopted_span (그 과들에 1/n씩) / 0개 → disagree (미채택)
+#   note의 후보: note를 note_split_chars로 나눈 토큰 중 선택지 dept와 정확히 같은 것만 인정한다
+#   ("신경외과" 안의 "외과"처럼 부분 문자열은 인정하지 않는다).
+#   adopted·adopted_partial·adopted_span만 계산에 쓴다.
+merge:
+  raters: [claude, codex]
+  raw_values: labels/v4/inputs/dept_raw_values.csv     # 라벨링에 쓴 입력
+  options: labels/v4/inputs/label_options_dept.csv
+  labels_dir: labels/v4                      # <평가자>/dept.csv
+  candidate_overlap: true
+  note_split_chars: ",()/·;"                 # 공백도 나눈다
+path_a:
+  disease_symptom: data/processed/v3/disease_symptom.csv
+  standard: data/processed/v3/standard_symptoms_v2_1.csv
+  # 질환별 진료과는 "증상" 답변만 쓴다. 2026-11-12 기준 564개 질환 모두 증상 답변에 채택된 진료과가 있어
+  # 다른 intention 답변은 넣지 않았다.
+  # disease share = 그 과가 나온 답변 수 / 그 질환의 (답변, 과) 건수 합 → 질환 안에서 합이 1
+  output:
+    alias: data/processed/v4/department_alias.csv
+    disease_department: data/processed/v4/disease_department.csv
+    symptom_department: data/processed/v4/symptom_department_path_a.csv
+    stats: data/interim/v4/s4_2_stats.json
+  # 교차검증 미리보기(화면에만): 경로 B 결과 파일 (2A-1 결과, 다시 만들지 않는 고정 파일)
+  path_b: data/frozen/symptom_department_v2.csv
+  top_n_diff: 20

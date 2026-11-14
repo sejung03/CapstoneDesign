@@ -1,0 +1,223 @@
+﻿candidate_id,name_ko,body_part,synonyms_master,from_llm,from_rcode,from_119,r_code,r_code_name,triage_category,is_event,n_diseases,n_answers,merge_suggestion,note
+S001,발열,전신,,true,true,true,R50,기타 및 원인미상의 열,4,false,9,19,열감;오한;고체온,
+S002,피로,전신,무력증 NOS;쇠약 NOS;만성 쇠약;전신쇠약;전신적 신체악화;졸림;피로;허로(虛勞);노권(勞倦),true,true,false,R53,병감 및 피로,,false,8,15,권태감;무력감;쇠약감;무기력;체력 저하;몸살,
+S003,식욕부진,전신,,true,true,false,R63,음식 및 수액 섭취에 관계된 증상 및 징후,,false,7,13,체중 감소;악액질,"R63: R63.0 식욕부진 외 R63.1 다음, R63.3 수유곤란, R63.4/5 체중 변화 포함"
+S004,부기,귀코목;눈;피부;머리;전신,,true,true,false,R60,달리 분류되지 않은 부종,,false,8,12,림프절 붓기,부위가 여러 곳(귀·눈·피부·턱 등). 부위별로 나눌지 결정 필요 / R60: 부종
+S005,구토,배,,true,false,false,R11,구역 및 구토,10,false,6,10,구역·구토;메스꺼움,
+S006,두통,머리,안면통증 NOS;두풍(頭風);뇌풍(腦風);수풍(首風),true,true,true,R51,두통,3,false,8,10,,R51: 마스터 동의어에 '안면통증'도 있음
+S007,체중 감소,전신,,true,false,false,R63;R64,음식 및 수액 섭취에 관계된 증상 및 징후;카켁시아,,false,7,10,식욕부진;악액질,
+S008,관절통,팔다리·관절,,true,false,false,,,,false,5,8,,
+S009,발적,피부;귀코목,,true,false,false,R23,기타 피부변화,,false,5,8,안면 홍조,부위가 여러 곳
+S010,기침,가슴,해역(咳逆),true,true,false,R05,기침,,false,3,7,,
+S011,메스꺼움,배,,true,false,false,R11,구역 및 구토,10,false,5,7,구역·구토;구토,
+S012,오한,전신,,true,false,false,R50,기타 및 원인미상의 열,,false,4,7,발열;열감;고체온,
+S013,가려움,귀코목;피부,,true,false,false,,,,false,3,6,피부 따가움,귀/피부 부위로 나뉨
+S014,근육통,전신,,true,false,false,,,,false,4,6,,
+S015,시력 저하,눈,,true,false,false,,,21,false,2,5,시야 흐림;시야 결손,
+S016,호흡곤란,가슴,,true,false,true,R06,호흡의 이상,15,false,4,5,호흡 이상;빈호흡;과호흡;가슴 답답함,
+S017,귀 통증,귀코목,,true,false,false,,,,false,2,4,,
+S018,발음 장애,귀코목,,true,false,false,R47,달리 분류되지 않은 언어장애,,false,3,4,언어 장애;말하기 어려움,
+S019,상복부 통증,배,,true,false,false,R10,복부 및 골반 통증,6,false,2,4,복통;하복부 통증;골반 통증,
+S020,설사,배,,true,false,false,R19,소화계통 및 복부의 기타 증상 및 징후,,false,3,4,,
+S021,얼굴 형태 이상,머리,,true,false,false,,,,false,2,4,,선천 기형 외형 소견. 사용자가 호소하는 증상 아님
+S022,저혈압,전신,,true,false,false,R03;R57,진단명 없는 혈압수치이상;달리 분류되지 않은 쇼크,,false,2,4,혈압 이상;쇼크,측정해야 아는 징후. 사용자 입력용은 '어지러움·쓰러질 것 같음'으로 바꿔야
+S023,질 출혈,비뇨생식,,true,false,false,,,7,false,2,4,성교 시 출혈;월경 과다,
+S024,청력 저하,귀코목,,true,false,false,,,,false,2,4,귀 먹먹함,
+S025,혹,팔다리·관절;피부,,true,false,false,R22,"피부 및 피하조직의 국소적 부기, 종괴 및 덩이",,false,2,4,혹·멍울,결정종(손)·지방종(피부밑) 둘 다. 부위 구분 필요
+S026,가래,가슴,,true,false,false,R09,순환계통 및 호흡계통의 기타 증상 및 징후,,false,1,3,,
+S027,골반 통증,배,,true,false,false,R10,복부 및 골반 통증,,false,3,3,복통;상복부 통증;하복부 통증,
+S028,권태감,전신,,true,false,false,R53,병감 및 피로,,false,2,3,피로;무력감;쇠약감;무기력;체력 저하;몸살,
+S029,기억 상실,정신,,true,false,false,R41,인지기능 및 자각에 관련된 기타 증상 및 징후,,false,1,3,인지 저하;기억력 저하;집중력 저하,
+S030,눈 충혈,눈,,true,false,false,,,21,false,1,3,,
+S031,눈 통증,눈,,true,false,false,,,21,false,1,3,눈 따가움;눈 피로,
+S032,눈부심,눈,,true,false,false,,,,false,1,3,,
+S033,말하기 어려움,귀코목,,true,false,false,R47,달리 분류되지 않은 언어장애,,false,2,3,언어 장애;발음 장애,
+S034,발뒤꿈치 통증,팔다리·관절,,true,false,false,,,,false,1,3,발바닥 통증,
+S035,배뇨통,비뇨생식,,true,true,false,R30,배뇨와 연관된 통증,,false,1,3,배뇨 시 화끈거림,
+S036,빈맥,가슴,,true,false,false,R00,심장박동의 이상,,false,2,3,심장박동 이상;맥박 이상,측정 징후. 사용자 표현은 '가슴 두근거림'
+S037,성장 부진,전신,,true,false,false,R62,기대되는 정상 생리학적 발달의 결여,,false,2,3,성장·발달 지연;언어 발달 지연;성 발달 지연,소아 발달 소견
+S038,소화불량,배,,true,false,false,,,,false,2,3,속 불편감;속쓰림,
+S039,손 통증,팔다리·관절,,true,false,false,,,,false,1,3,압통,
+S040,쇠약감,전신,,true,false,false,R53,병감 및 피로,,false,3,3,피로;권태감;무력감;무기력;체력 저하;몸살,
+S041,시야 흐림,눈,,true,false,false,,,,false,1,3,시력 저하;시야 결손,
+S042,운동 장애,팔다리·관절,,true,false,false,R29,신경계통 및 근골격계통의 기타 증상 및 징후,,false,2,3,,혈관염(운동 기능 저하)과 윌리암스(운동 발달 문제)에서 뜻이 다름
+S043,운동 틱,정신,,true,false,false,,,,false,1,3,눈 깜빡임;어깨 들썩임;머리 흔들기;입 내밀기,틱 행동. 부위는 '정신'으로 둠(안과·정형외과로 가지 않게)
+S044,음성 틱,정신,,true,false,false,,,,false,1,3,킁킁거림;헛기침 소리,
+S045,의식 혼란,정신,,true,false,false,R41,인지기능 및 자각에 관련된 기타 증상 및 징후,12,false,1,3,의식 저하;혼수;졸음,
+S046,인지 저하,정신,,true,true,false,R41,인지기능 및 자각에 관련된 기타 증상 및 징후,,false,2,3,기억력 저하;집중력 저하;기억 상실,R41: R41.0 지남력장애(혼란) 포함
+S047,입 벌리기 어려움,귀코목,,true,false,false,,,,false,2,3,입 다물기 어려움;씹기 곤란,
+S048,입안 출혈,귀코목,,true,false,false,R58,달리 분류되지 않은 출혈,7,false,2,3,,
+S049,입안 통증,귀코목,,true,false,false,,,,false,1,3,삼킴 통증;입안 불편감;입안 과민,
+S050,출혈 경향,전신,,true,false,false,R58,달리 분류되지 않은 출혈,7,false,1,3,자반;피부 반점;출혈,
+S051,턱 통증,귀코목,,true,false,false,,,,false,1,3,턱 뻐근함;턱 근육 경련,
+S052,피부 융기,피부,,true,false,false,,,,false,1,3,피부 변화,
+S053,혈뇨,비뇨생식,,true,true,false,R31,상세불명의 혈뇨,7,false,2,3,소변 색 변화;소변 혼탁,
+S054,혼수,전신,,true,false,false,R40,"기면, 혼미 및 혼수",12,false,1,3,의식 저하;의식 혼란;졸음,
+S055,환각,정신,,true,false,false,R44,일반적 감각 및 지각에 관련된 기타 증상 및 징후,,false,1,3,,
+S056,황달,피부;눈,,true,true,false,R17,황달을 동반하거나 동반하지 않은 달리 분류되지 않은 과빌리루빈혈증,,false,2,3,,부위가 피부·눈 두 곳으로 잡힘 / R17: 공식명은 과빌리루빈혈증(검사 소견) 중심
+S057,흥분,정신,,true,false,false,R45,정서상태에 관련된 증상 및 징후,,false,1,3,,
+S058,갈증,전신,,true,false,false,R63,음식 및 수액 섭취에 관계된 증상 및 징후,,false,1,2,,
+S059,경련,전신,,true,true,true,R56,달리 분류되지 않은 경련,5,false,1,2,,
+S060,무기력,전신,,true,false,false,R53,병감 및 피로,,false,2,2,피로;권태감;무력감;쇠약감;체력 저하;몸살,
+S061,복부 팽만,배,복부의 가스팽만;배부품;트림;가스통증;고창(복부성)(장성);비만,true,true,false,R14,고창 및 연관된 병태,,false,2,2,복수,R14: 마스터 동의어에 '비만'이 섞여 있음(오류 의심)
+S062,복수,배,복막강의 삼출액,true,true,false,R18,복수,,false,1,2,복부 팽만,
+S063,복통,배,,true,true,true,R10,복부 및 골반 통증,6,false,2,2,상복부 통증;하복부 통증;골반 통증,
+S064,불임,비뇨생식,,true,false,false,,,,false,1,2,,증상이라기보다 결과
+S065,빈뇨,비뇨생식,,true,false,false,R35,다뇨,,false,1,2,다뇨;절박뇨,
+S066,빈호흡,가슴,,true,false,false,R06,호흡의 이상,15,false,1,2,호흡 이상;호흡곤란;과호흡;가슴 답답함,측정 징후. 사용자 표현은 '숨이 가쁨'
+S067,삼킴 곤란,귀코목,열격,true,true,false,R13,삼킴곤란,,false,1,2,삼킴 통증,
+S068,생식기 이상,비뇨생식,,true,false,false,,,,false,1,2,,선천 기형 소견
+S069,성교 시 출혈,비뇨생식,,true,false,false,,,,false,1,2,질 출혈;월경 과다,
+S070,소변 색 변화,비뇨생식,,true,false,false,R39,비뇨계통의 기타 증상 및 징후,,false,1,2,소변 혼탁;혈뇨,
+S071,손발톱 이상,피부,,true,false,false,,,,false,2,2,,
+S072,수유 곤란,전신,,true,false,false,R63,음식 및 수액 섭취에 관계된 증상 및 징후,,false,2,2,,
+S073,시야 결손,눈,,true,false,false,,,,false,2,2,시력 저하;시야 흐림,
+S074,씹기 곤란,귀코목,,true,false,false,,,,false,2,2,입 벌리기 어려움;입 다물기 어려움,
+S075,압통,팔다리·관절;귀코목,,true,false,false,,,,false,2,2,손 통증,
+S076,어깨 통증,팔다리·관절,,true,false,false,,,,false,1,2,,
+S077,언어 발달 지연,정신,,true,false,false,R62,기대되는 정상 생리학적 발달의 결여,,false,1,2,성장·발달 지연;성장 부진;성 발달 지연,
+S078,열감,전신,,true,false,false,R50,기타 및 원인미상의 열,,false,2,2,발열;오한;고체온,
+S079,의식 저하,전신,,true,true,true,R40,"기면, 혼미 및 혼수",12,false,2,2,혼수;의식 혼란;졸음,R40: 기면·혼미·혼수
+S080,입 다물기 어려움,귀코목,,true,false,false,,,,false,2,2,입 벌리기 어려움;씹기 곤란,
+S081,입안 궤양,귀코목,,true,false,false,,,,false,1,2,,
+S082,자반,피부,,true,false,false,R23,기타 피부변화,,false,1,2,피부 반점;출혈 경향,
+S083,절박뇨,비뇨생식,,true,false,false,R39,비뇨계통의 기타 증상 및 징후,,false,1,2,다뇨;빈뇨,
+S084,정체감 혼란,정신,,true,false,false,,,,false,1,2,,
+S085,청각 과민,귀코목,,true,false,false,,,,false,1,2,,
+S086,청색증,피부,,true,false,false,R23,기타 피부변화,15,false,2,2,,
+S087,체력 저하,전신,,true,false,false,R53,병감 및 피로,,false,2,2,피로;권태감;무력감;쇠약감;무기력;몸살,
+S088,턱 소리,귀코목,,true,false,false,,,,false,1,2,,
+S089,하복부 통증,배,,true,false,false,R10,복부 및 골반 통증,6,false,2,2,복통;상복부 통증;골반 통증,
+S090,가슴 답답함,가슴,,true,false,false,,,15,false,1,1,호흡 이상;호흡곤란;빈호흡;과호흡,
+S091,감각 저하,팔다리·관절,,true,false,false,R20,피부감각의 장애,,false,1,1,,
+S092,과호흡,가슴,,true,false,false,R06,호흡의 이상,15,false,1,1,호흡 이상;호흡곤란;빈호흡;가슴 답답함,
+S093,관절 움직임 불편,팔다리·관절,,true,false,false,,,,false,1,1,,
+S094,귀 먹먹함,귀코목,,true,false,false,,,,false,1,1,청력 저하,
+S095,귀 분비물,귀코목,,true,false,false,,,,false,1,1,,
+S096,근력 약화,전신,,true,false,false,,,,false,1,1,,
+S097,기억력 저하,정신,,true,false,false,R41,인지기능 및 자각에 관련된 기타 증상 및 징후,,false,1,1,인지 저하;집중력 저하;기억 상실,
+S098,눈 깜빡임,정신,,true,false,false,,,,false,1,1,운동 틱;어깨 들썩임;머리 흔들기;입 내밀기,틱 행동으로 나옴. 안과 증상과 구분 필요
+S099,눈 따가움,눈,,true,false,false,,,,false,1,1,눈 통증;눈 피로,
+S100,눈 피로,눈,,true,false,false,,,,false,1,1,눈 통증;눈 따가움,
+S101,눈꺼풀 처짐,눈,,true,false,false,,,,false,1,1,,B형 간염 답변에서 나옴. 의학적으로 의심스러움
+S102,다뇨,비뇨생식,,true,true,false,R35,다뇨,,false,1,1,빈뇨;절박뇨,R35: KCD R35에 빈뇨 포함
+S103,다리 통증,팔다리·관절,,true,false,false,,,,false,1,1,,
+S104,등 통증,허리·등,,true,false,false,,,,false,1,1,,
+S105,림프절 붓기,전신,림프절부기,true,true,false,R59,림프절비대,,false,1,1,부기,
+S106,맥박 이상,가슴,,true,false,false,R00,심장박동의 이상,,false,1,1,심장박동 이상;빈맥,측정 징후
+S107,머리 흔들기,정신,,true,false,false,,,,false,1,1,운동 틱;눈 깜빡임;어깨 들썩임;입 내밀기,
+S108,목 이물감,귀코목,,true,false,false,,,,false,1,1,,
+S109,목 통증,귀코목,,true,false,false,R07,목구멍 및 가슴의 통증,,false,1,1,목·가슴 통증;흉통,
+S110,몸살,전신,,true,false,false,R53,병감 및 피로,,false,1,1,피로;권태감;무력감;쇠약감;무기력;체력 저하,
+S111,무력감,전신,,true,false,false,R53,병감 및 피로,,false,1,1,피로;권태감;쇠약감;무기력;체력 저하;몸살,
+S112,무릎 통증,팔다리·관절,,true,false,false,,,,false,1,1,,
+S113,발목 통증,팔다리·관절,,true,false,false,,,,false,1,1,,
+S114,발바닥 통증,팔다리·관절,,true,false,false,,,,false,1,1,발뒤꿈치 통증,
+S115,발진,피부,음독(陰毒);양독(陽毒),true,true,false,R21,발진 및 기타 비특이성 피부발진,,false,1,1,,
+S116,배뇨 곤란,비뇨생식,,true,false,false,R33,소변정체,,false,1,1,,
+S117,배뇨 시 화끈거림,비뇨생식,,true,false,false,R30,배뇨와 연관된 통증,,false,1,1,배뇨통,
+S118,복부 비만,전신,,true,false,false,,,,false,1,1,,부신암(쿠싱) 소견
+S119,복시,눈,,true,false,false,,,,false,1,1,,
+S120,불안,정신,,true,false,false,R45,정서상태에 관련된 증상 및 징후,,false,1,1,,
+S121,비문증,눈,,true,false,false,,,,false,1,1,,
+S122,삼킴 통증,귀코목,,true,false,false,R13,삼킴곤란,,false,1,1,입안 통증;입안 불편감;입안 과민;삼킴 곤란,
+S123,상처 치유 지연,피부,,true,false,false,,,,false,1,1,,
+S124,성 발달 지연,비뇨생식,,true,false,false,R62,기대되는 정상 생리학적 발달의 결여,,false,1,1,성장·발달 지연;성장 부진;언어 발달 지연,
+S125,소변 악취,비뇨생식,,true,false,false,R39,비뇨계통의 기타 증상 및 징후,,false,1,1,,
+S126,소변 혼탁,비뇨생식,,true,false,false,R39,비뇨계통의 기타 증상 및 징후,,false,1,1,소변 색 변화;혈뇨,
+S127,소변량 감소,비뇨생식,,true,true,false,R34,무뇨 및 핍뇨,,false,1,1,,R34: 무뇨·핍뇨
+S128,속 불편감,배,,true,false,false,R19,소화계통 및 복부의 기타 증상 및 징후,,false,1,1,소화불량;속쓰림,
+S129,속쓰림,배,,true,true,false,R12,속쓰림,,false,1,1,속 불편감;소화불량,
+S130,손발 차가움,팔다리·관절,,true,false,false,R68,기타 전신 증상 및 징후,,false,1,1,,
+S131,수유 시 코로 역류,귀코목,,true,false,false,,,,false,1,1,,구개열 특이 증상
+S132,안면 홍조,피부,,true,false,false,R23,기타 피부변화,,false,1,1,발적,
+S133,안진,눈,,true,false,false,,,,false,1,1,,
+S134,어깨 들썩임,정신,,true,false,false,,,,false,1,1,운동 틱;눈 깜빡임;머리 흔들기;입 내밀기,
+S135,언어 장애,머리,,true,true,false,R47,달리 분류되지 않은 언어장애,,false,1,1,말하기 어려움;발음 장애,
+S136,여드름,피부,,true,false,false,,,,false,1,1,,
+S137,요통,허리·등,,true,false,true,,,11,false,1,1,,
+S138,월경 과다,비뇨생식,,true,false,false,,,,false,1,1,질 출혈;성교 시 출혈,
+S139,입 내밀기,정신,,true,false,false,,,,false,1,1,운동 틱;눈 깜빡임;어깨 들썩임;머리 흔들기,
+S140,입마름,귀코목,,true,false,false,R68,기타 전신 증상 및 징후,,false,1,1,,
+S141,입안 과민,귀코목,,true,false,false,,,,false,1,1,입안 통증;삼킴 통증;입안 불편감,
+S142,입안 불편감,귀코목,,true,false,false,,,,false,1,1,입안 통증;삼킴 통증;입안 과민,
+S143,잇몸 노출,귀코목,,true,false,false,,,,false,1,1,,
+S144,잔뇨감,비뇨생식,,true,false,false,R33,소변정체,,false,1,1,,
+S145,저체온,전신,,true,false,true,,,16,false,1,1,,119-16: 환경 노출에 따른 상태
+S146,졸음,전신,,true,false,false,R40,"기면, 혼미 및 혼수",,false,1,1,의식 저하;혼수;의식 혼란,
+S147,질 분비물,비뇨생식,,true,false,false,,,,false,1,1,,
+S148,질 통증,비뇨생식,,true,false,false,,,,false,1,1,,
+S149,집중력 저하,정신,,true,false,false,R41,인지기능 및 자각에 관련된 기타 증상 및 징후,,false,1,1,인지 저하;기억력 저하;기억 상실,
+S150,창백,피부,,true,false,false,R23,기타 피부변화,,false,1,1,,
+S151,체중 증가,전신,,true,false,false,R63,음식 및 수액 섭취에 관계된 증상 및 징후,,false,1,1,,
+S152,치아·턱 흔들림,귀코목,,true,false,false,,,,false,1,1,,본문 표기가 모호('치아와 턱의 불안정감')
+S153,코피,귀코목,,true,false,false,R04,기도출혈,7,false,1,1,기도출혈,구강암 답변의 '비출혈'. 의학적으로 의심스러움
+S154,콧물,귀코목,,true,false,false,,,,false,1,1,,
+S155,킁킁거림,정신,,true,false,false,,,,false,1,1,음성 틱;헛기침 소리,
+S156,턱 근육 경련,귀코목,,true,false,false,R25,이상불수의운동,,false,1,1,턱 통증;턱 뻐근함,
+S157,턱 뻐근함,귀코목,,true,false,false,,,,false,1,1,턱 통증;턱 근육 경련,
+S158,피부 따가움,피부,,true,false,false,,,,false,1,1,가려움,
+S159,피부 반점,피부,,true,false,false,R23,기타 피부변화,,false,1,1,자반;출혈 경향,
+S160,피부 변화,피부,,true,true,false,R23,기타 피부변화,,false,1,1,피부 융기,R23: R23.0 청색증~R23.3 반상출혈 포함
+S161,헛기침 소리,정신,,true,false,false,,,,false,1,1,음성 틱;킁킁거림,
+S162,흉통,가슴,,true,false,true,R07,목구멍 및 가슴의 통증,17,false,1,1,목·가슴 통증;목 통증,
+S163,간·비장 비대,배,,false,true,false,R16,달리 분류되지 않은 간비대 및 비장비대,,false,0,0,,R16: 진찰·영상 소견
+S164,걸음걸이 이상,팔다리·관절,,false,true,false,R26,보행과 이동의 이상,,false,0,0,,
+S165,고체온,전신,,false,false,true,,,16,false,0,0,발열;열감;오한,
+S166,괴저,피부,,false,true,false,R02,달리 분류되지 않은 괴저,,false,0,0,,R02: 진단 소견에 가까움
+S167,구역·구토,배,,false,true,true,R11,구역 및 구토,10,false,0,0,메스꺼움;구토,
+S168,균형·협조 장애,팔다리·관절,,false,true,false,R27,기타 협조결여,,false,0,0,,
+S169,기도 이물(숨막힘),귀코목,,false,false,true,,,1,false,0,0,,119-1: 상황에 가까움. '숨막힘'으로 표현
+S170,기도출혈,귀코목,,false,true,false,R04,기도출혈,,false,0,0,코피,"R04: R04.0 코피, R04.2 객혈 포함. 코피·객혈로 나누는 게 나음"
+S171,기타 비뇨기 증상,비뇨생식,,false,true,false,R39,비뇨계통의 기타 증상 및 징후,,false,0,0,,R39: R39.1 절박뇨 등
+S172,기타 소화기 증상,배,,false,true,false,R19,소화계통 및 복부의 기타 증상 및 징후,,false,0,0,,R19: R19.7 설사 포함
+S173,기타 순환·호흡 증상,가슴,,false,true,false,R09,순환계통 및 호흡계통의 기타 증상 및 징후,,false,0,0,,R09: R09.3 이상 가래 포함
+S174,기타 신경·근골격 증상,팔다리·관절,,false,true,false,R29,신경계통 및 근골격계통의 기타 증상 및 징후,,false,0,0,,
+S175,기타 전신 증상,전신,,false,true,false,R68,기타 전신 증상 및 징후,,false,0,0,,R68: R68.2 입마름 포함
+S176,난독증,정신,,false,true,false,R48,달리 분류되지 않은 난독증 및 기타 상징적 기능이상,,false,0,0,,
+S177,노쇠,전신,정신병에 대한 언급이 없는 노년;정신병에 대한 언급이 없는 노화;노년무력증;노년쇠약,false,true,false,R54,노쇠,,false,0,0,,R54: 증상 아님(노화)
+S178,뇌졸중 의심(한쪽 마비·말 어눌),머리,,false,false,true,,,2,false,0,0,,119-2: 질환 의심 범주. 한쪽 마비·발음 이상 등으로 풀어야
+S179,땀 과다,피부,,false,true,false,R61,다한증,,false,0,0,,R61: 다한증
+S180,떨림·불수의 운동,팔다리·관절,,false,true,false,R25,이상불수의운동,,false,0,0,,R25: R25.2 쥐(근육 경련) 포함. 틱은 F95라 제외
+S181,목·가슴 통증,가슴,,false,true,false,R07,목구멍 및 가슴의 통증,,false,0,0,흉통;목 통증,R07: 목 통증(인후통)과 흉통은 진료과가 달라 분리 권장
+S182,목소리 변화,귀코목,,false,true,false,R49,음성장애,,false,0,0,,R49: 쉰 목소리 등
+S183,변실금,배,유분증 NOS,false,true,false,R15,대변실금,,false,0,0,,
+S184,성장·발달 지연,전신,,false,true,false,R62,기대되는 정상 생리학적 발달의 결여,,false,0,0,성장 부진;언어 발달 지연;성 발달 지연,R62: 소아 대상
+S185,소변 정체,비뇨생식,,false,true,false,R33,소변정체,,false,0,0,,
+S186,쇼크,전신,,false,true,false,R57,달리 분류되지 않은 쇼크,,false,0,0,저혈압;혈압 이상,R57: 진단 상태. 사용자 표현 아님
+S187,실신,전신,일시적 의식상실;실신,false,true,true,R55,실신 및 허탈,12,false,0,0,,
+S188,심잡음,가슴,,false,true,false,R01,심잡음 및 기타 심음,,false,0,0,,R01: 청진 소견. 사용자가 호소하는 증상 아님
+S189,심장박동 이상,가슴,,false,true,false,R00,심장박동의 이상,,false,0,0,맥박 이상;빈맥,R00: 사용자 표현은 '두근거림'에 가까움
+S190,심정지·호흡정지,전신,,false,false,true,,,8,false,0,0,,119-8: 증상이 아닌 응급 상태
+S191,악액질,전신,성인의 성장장애,false,true,false,R64,카켁시아,,false,0,0,식욕부진;체중 감소,
+S192,알레르기 반응,전신,,false,false,true,,,9,false,0,0,,119-9: 두드러기·입술 부기 등으로 풀어야
+S193,어지럼,머리,어찔어찔함;현기증 NOS,false,true,false,R42,어지럼증 및 어지럼,,false,0,0,,R42: 샘플엔 없지만 핵심 증상
+S194,외양·행동 이상,정신,,false,true,false,R46,외양 및 행동에 관련된 증상 및 징후,,false,0,0,,
+S195,요도 분비물,비뇨생식,음경분비물;요도루,false,true,false,R36,요도분비물,,false,0,0,,
+S196,요실금,비뇨생식,유뇨증 NOS,false,true,false,R32,상세불명의 요실금,,false,0,0,,
+S197,원인 불명 질환,전신,병 NOS;부위나 계통이 명시되지 않은 진단미상의 질환,false,true,false,R69,미상 및 상세불명의 병인,,false,0,0,,R69: 증상 아님
+S198,자살 생각·이상 행동,정신,,false,false,true,,,14,false,0,0,,
+S199,전신염증반응,전신,,false,true,false,R65,전신염증반응증후군,,false,0,0,,R65: 진단 기준(SIRS). 사용자 증상 아님
+S200,정서 이상,정신,,false,true,false,R45,정서상태에 관련된 증상 및 징후,,false,0,0,,R45: 불안·초조·과민 등
+S201,출혈,전신,출혈 NOS,false,true,true,R58,달리 분류되지 않은 출혈,7,false,0,0,출혈 경향,R58: 부위별 출혈은 각 계통 코드가 따로 있음
+S202,통증(부위 불명),전신,어느 한 기관이나 신체부위에 속하지 않은 통증,false,true,false,R52,달리 분류되지 않은 통증,,false,0,0,,R52: 부위 없는 통증. 표준명으로는 쓰기 어려움
+S203,피부 감각 이상,피부,,false,true,false,R20,피부감각의 장애,,false,0,0,,R20: 저림·무감각
+S204,혈압 이상,전신,,false,true,false,R03,진단명 없는 혈압수치이상,,false,0,0,저혈압;쇼크,R03: 측정해야 아는 수치
+S205,호흡 이상,가슴,,false,true,false,R06,호흡의 이상,,false,0,0,호흡곤란;빈호흡;과호흡;가슴 답답함,
+S206,혹·멍울,피부,피하결절(국소적)(표재성),false,true,false,R22,"피부 및 피하조직의 국소적 부기, 종괴 및 덩이",,false,0,0,혹,R22: 국소 부기·종괴
+S207,환각·지각 이상,정신,,false,true,false,R44,일반적 감각 및 지각에 관련된 기타 증상 및 징후,,false,0,0,,
+S208,후각·미각 이상,귀코목,,false,true,false,R43,후각 및 미각 장애,,false,0,0,,
+S209,감전/낙뢰,,,false,false,true,,,19,true,0,0,,
+S210,교통사고,,,false,false,true,,,20,true,0,0,,
+S211,눈 손상/질환,눈,,false,false,true,,,21,true,0,0,,119-21: 눈 질환도 포함. 눈 증상 후보와 연결 필요
+S212,동물 교상,,,false,false,true,,,23,true,0,0,,
+S213,두부/신경학적 손상,,,false,false,true,,,22,true,0,0,,
+S214,익수,,,false,false,true,,,24,true,0,0,,
+S215,일산화탄소 중독/흡입/HAZMAT,,,false,false,true,,,25,true,0,0,,
+S216,임신 관련,비뇨생식,,false,false,true,,,13,true,0,0,,119-13: 사고는 아니지만 증상이 아닌 상황 범주
+S217,자상/관통상/총상,,,false,false,true,,,26,true,0,0,,
+S218,중독,,,false,false,true,,,27,true,0,0,,
+S219,추락/낙상,,,false,false,true,,,28,true,0,0,,
+S220,출혈/열상,,,false,false,true,,,29,true,0,0,,
+S221,폭행/성폭행,,,false,false,true,,,30,true,0,0,,
+S222,화상,,,false,false,true,,,31,true,0,0,,

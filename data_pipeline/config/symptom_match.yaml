@@ -1,0 +1,20 @@
+# 3단계: AI Hub "증상" 답변에서 사전 표현을 찾는 방법 (2026-11-12, 최종 확정은 S3-5)
+# 사전 = data/processed/v2/symptom_synonym_v2.csv의 term + standard_symptoms_v2.csv의 name_ko
+# 찾은 뒤 문맥으로 버리는 규칙은 config/symptom_exclusion.yaml에 있다.
+
+# 표현 안의 공백은 있어도 없어도 맞는 것으로 본다 (체중 감소 = 체중감소)
+ignore_inner_whitespace: true
+
+# 한 글자 표현(공백 제외)은 바로 뒤에 아래 글자 중 하나가 붙을 때만 매칭한다 (2026-11-12, S3-5 수정).
+#   예: "멍이", "혹이"는 매칭, "혹은"·"멍하다"는 제외. 두 글자 이상 표현에는 적용하지 않는다.
+#   (전에 있던 min_term_length: 2는 없앴다. S3-2 후보 구절 길이 기준은 config/phrase_extract.yaml의 min_phrase_length)
+single_char_terms:
+  next_chars: ["이", "가", "을", "를"]
+
+# 왼쪽 경계: 표현 바로 앞이 문장(글) 시작이거나 아래 글자 종류가 아닐 때만 매칭한다.
+# 즉 앞이 공백·문장부호면 매칭하고, 한글·영문·숫자면 다른 낱말의 일부로 보고 매칭하지 않는다.
+#   예: "뇌출혈"의 "출혈"은 매칭하지 않는다. "잦은 출혈", "(출혈" 은 매칭한다.
+# 오른쪽은 제한하지 않는다 (출혈이, 출혈과, 가려움증 …).
+left_boundary:
+  enabled: true
+  blocked_before: "가-힣A-Za-z0-9"   # 정규식 문자 클래스 안에 넣는 범위

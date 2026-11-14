@@ -1,0 +1,236 @@
+item_id,icpc2_code,confidence,note
+T1-001,A03,high,
+T1-002,A04,high,
+T1-003,T03,high,
+T1-004,AMBIGUOUS,low,A08·K07 등 부기 성격 불명
+T1-005,D10,high,
+T1-006,N01,high,
+T1-007,T08,high,
+T1-008,L20,high,
+T1-009,AMBIGUOUS,low,S06·S07 분포 불명
+T1-010,R05,high,
+T1-011,D09,high,
+T1-012,A02,high,
+T1-013,S02,high,
+T1-014,L18,high,
+T1-015,F05,high,
+T1-016,R02,high,
+T1-017,H01,high,
+T1-018,N19,high,
+T1-019,D02,high,
+T1-020,D11,high,
+T1-021,A18,low,얼굴 외양에 대한 증상 호소로 해석
+T1-022,K29,high,
+T1-023,AMBIGUOUS,low,월경·임신·폐경 여부 불명
+T1-024,H02,high,
+T1-025,A08,high,
+T1-026,R25,high,
+T1-027,AMBIGUOUS,low,X01·Y02 등 성별 및 통증 기원 불명
+T1-028,A05,high,
+T1-029,P20,high,
+T1-030,F02,high,
+T1-031,F01,high,
+T1-032,F05,high,
+T1-033,N19,high,
+T1-034,L17,high,
+T1-035,U01,high,
+T1-036,K04,high,
+T1-037,T10,high,
+T1-038,D07,high,
+T1-039,L12,high,
+T1-040,A04,high,
+T1-041,F05,high,
+T1-042,N29,low,포괄적인 운동 기능 이상
+T1-043,P10,high,
+T1-044,P10,high,
+T1-045,P20,low,지남력 혼란으로 해석
+T1-046,P20,low,기억·집중 등 인지 기능 저하로 해석
+T1-047,L07,high,
+T1-048,D20,low,잇몸 등 특정 부위가 명시되지 않음
+T1-049,D20,high,
+T1-050,B04,high,
+T1-051,L07,high,
+T1-052,AMBIGUOUS,low,S04·S05 분포 불명
+T1-053,U06,high,
+T1-054,A07,high,
+T1-055,P29,high,
+T1-056,D13,high,
+T1-057,P04,high,
+T1-058,T01,high,
+T1-059,N07,low,발작성 경련으로 해석
+T1-060,A04,high,
+T1-061,AMBIGUOUS,low,D08의 가스 팽만과 D25의 복부 크기 증가 구별 불가
+T1-062,D29,high,
+T1-063,D01,high,
+T1-064,NONE,high,진단명이며 성별도 불명
+T1-065,U02,high,
+T1-066,R04,high,
+T1-067,D21,high,
+T1-068,AMBIGUOUS,low,X29·Y29 성별 불명
+T1-069,X13,high,
+T1-070,U07,high,
+T1-071,S22,high,
+T1-072,AMBIGUOUS,low,영아의 먹기 문제 T04와 모체 수유 문제 W19 구별 불가
+T1-073,F05,high,
+T1-074,L07,low,턱 기능 불편으로 해석
+T1-075,A01,low,부위 불명 통증 호소
+T1-076,L08,high,
+T1-077,P22,high,
+T1-078,A03,low,전신 발열감으로 해석
+T1-079,A07,low,혼미를 포함하는 의식 저하로 해석
+T1-080,L07,high,
+T1-081,D20,high,
+T1-082,S29,high,자발성 피부 출혈 반점
+T1-083,U02,high,
+T1-084,P29,low,정체감 관련 심리적 호소
+T1-085,H02,high,
+T1-086,S08,high,
+T1-087,A04,high,
+T1-088,L07,high,
+T1-089,D06,high,
+T1-090,R29,high,가슴 조임을 inclusion에 명시
+T1-091,N06,high,
+T1-092,NONE,high,R98은 선택지에 없고 R02·R04에서 제외
+T1-093,L20,high,
+T1-094,H13,high,
+T1-095,H04,high,
+T1-096,L19,high,근육 약화가 inclusion에 명시
+T1-097,P20,high,
+T1-098,F16,high,틱이라는 정보 없이 눈꺼풀 깜빡임만 명시
+T1-099,F13,high,
+T1-100,F05,high,
+T1-101,F16,high,
+T1-102,U02,high,
+T1-103,L14,high,
+T1-104,L02,high,
+T1-105,B02,high,
+T1-106,AMBIGUOUS,low,K04·K05 맥박 이상 성격 불명
+T1-107,N08,low,틱이라는 정보 없이 불수의 흔들림으로 해석
+T1-108,R21,high,
+T1-109,AMBIGUOUS,low,인후 R21와 경부 근골격 L01 구별 불가
+T1-110,A05,low,전신이 아픈 느낌으로 해석
+T1-111,A04,high,
+T1-112,L15,high,
+T1-113,L16,high,
+T1-114,L17,high,
+T1-115,AMBIGUOUS,low,S06·S07 분포 불명
+T1-116,U05,low,정체나 통증이 명시되지 않은 배뇨 어려움
+T1-117,U01,high,
+T1-118,NONE,high,비만 진단이며 해당 코드 없음
+T1-119,F05,high,
+T1-120,P01,high,
+T1-121,F04,high,
+T1-122,D21,low,삼킴 동작에 따른 통증이며 인후 부위는 불명
+T1-123,S29,low,상처 관련 피부 호소
+T1-124,NONE,high,사춘기 지연 T99는 선택지에 없으며 T10에서 제외
+T1-125,U07,high,
+T1-126,U07,high,
+T1-127,U05,high,
+T1-128,AMBIGUOUS,low,D01·D02·D07 불편감 위치와 성격 불명
+T1-129,D03,high,
+T1-130,A29,low,냉감 자체에 맞는 세부 코드 없음
+T1-131,T04,high,
+T1-132,S08,high,
+T1-133,F14,high,
+T1-134,N08,low,틱이라는 정보 없이 불수의 움직임으로 해석
+T1-135,N19,high,
+T1-136,NONE,high,여드름 진단 코드가 선택지에 없음
+T1-137,L03,high,
+T1-138,X06,high,
+T1-139,AMBIGUOUS,low,정상 동작인지 틱 P10인지 불수의 운동 N08인지 불명
+T1-140,D20,high,
+T1-141,D20,high,
+T1-142,D20,high,
+T1-143,D19,low,잇몸 외양 호소로 해석
+T1-144,U05,low,실제 정체가 확정되지 않은 배뇨 후 불편감
+T1-145,A29,low,저체온 전용 코드 없음
+T1-146,A29,high,
+T1-147,X14,high,
+T1-148,X01,high,
+T1-149,P20,high,
+T1-150,S08,high,
+T1-151,T07,high,
+T1-152,AMBIGUOUS,low,치아 D19와 턱 L07가 함께 제시됨
+T1-153,R06,high,
+T1-154,R07,high,
+T1-155,AMBIGUOUS,low,코 증상 R08인지 음성 틱 P10인지 불명
+T1-156,L07,high,N08에서 턱 경련 제외
+T1-157,L07,high,
+T1-158,S01,high,
+T1-159,AMBIGUOUS,low,발진 S06·S07과 색 변화 S08 구별 불가
+T1-160,S29,low,피부 변화 성격 불명
+T1-161,R05,low,틱으로 명시되지 않은 헛기침
+T1-162,A11,high,
+T1-163,AMBIGUOUS,low,간 비대 D23와 선택지에 없는 비장 비대가 함께 제시됨
+T1-164,N29,high,
+T1-165,A03,low,환경성 고체온이라는 정보 없음
+T1-166,NONE,high,괴저 진단 코드 없음
+T1-167,AMBIGUOUS,low,구역 D09와 구토 D10가 함께 제시됨
+T1-168,AMBIGUOUS,low,균형 상실 N17와 협조 장애 N29가 함께 제시됨
+T1-169,NONE,high,기도 이물 손상에 해당하는 코드 없음
+T1-170,R24,low,호흡기에서 나오는 출혈로 해석
+T1-171,U29,high,
+T1-172,D29,high,
+T1-173,AMBIGUOUS,low,K29·R29가 함께 제시됨
+T1-174,AMBIGUOUS,low,N29·L29가 함께 제시됨
+T1-175,A29,high,
+T1-176,P24,high,난독 증상을 inclusion에 명시
+T1-177,P05,high,
+T1-178,AMBIGUOUS,low,마비 N18와 언어 장애 N19가 함께 제시됨
+T1-179,A09,high,
+T1-180,N08,high,
+T1-181,AMBIGUOUS,low,목과 가슴의 통증 부위가 함께 제시됨
+T1-182,R23,high,
+T1-183,D17,high,
+T1-184,AMBIGUOUS,low,신체 성장 T10와 발달 이정표 P22 구별 불가
+T1-185,U08,high,
+T1-186,NONE,high,순환성 쇼크 진단 코드 없음
+T1-187,A06,high,
+T1-188,K29,low,기타 심혈관 징후
+T1-189,AMBIGUOUS,low,K04·K05 박동 이상 성격 불명
+T1-190,NONE,high,심정지와 호흡정지의 복합 상태에 맞는 코드 없음
+T1-191,T08,high,inclusion에 cachexia 명시
+T1-192,NONE,high,알레르기 반응 코드 없음
+T1-193,N17,high,
+T1-194,AMBIGUOUS,low,외양 A18와 이상 행동 P29가 함께 제시됨
+T1-195,AMBIGUOUS,low,남성 Y03·여성 X29 성별 불명
+T1-196,U04,high,
+T1-197,NONE,high,증상 표현이 아님
+T1-198,P29,low,자살 사고와 이상 행동의 심리적 호소
+T1-199,NONE,high,증후군 표현이며 해당 코드 없음
+T1-200,P29,low,정서 종류 불명인 심리적 호소
+T1-201,A10,high,
+T1-202,A01,high,
+T1-203,N06,high,
+T1-204,K29,low,방향 불명인 혈압 관련 호소
+T1-205,R04,high,
+T1-206,A08,high,
+T1-207,P29,high,
+T1-208,N16,high,
+T1-209,NONE,high,손상 기전이며 해당 코드 없음
+T1-210,NONE,high,사고 기전이며 증상 아님
+T1-211,NONE,high,손상·질환 범주로 구체적 증상 없음
+T1-212,NONE,high,손상 유형이며 증상 표현 아님
+T1-213,NONE,high,손상 범주이며 구체적 증상 없음
+T1-214,NONE,high,사고 상태이며 해당 코드 없음
+T1-215,NONE,high,노출·중독 범주이며 증상 아님
+T1-216,NONE,high,임신 관련 범주만 있고 증상 없음
+T1-217,NONE,high,손상 유형이며 증상 표현 아님
+T1-218,NONE,high,중독 범주이며 증상 아님
+T1-219,NONE,high,사고 기전이며 증상 아님
+T1-220,NONE,low,출혈 증상과 열상 손상 범주가 함께 제시됨
+T1-221,NONE,high,사건 유형이며 증상 아님
+T1-222,NONE,high,화상 손상명이며 증상 표현 아님
+T1-223,H03,high,
+T1-224,R07,high,
+T1-225,R07,high,
+T1-226,D12,high,
+T1-227,AMBIGUOUS,low,선혈 D16와 검은 변 D15가 함께 제시됨
+T1-228,R24,high,
+T1-229,P06,high,
+T1-230,P03,high,
+T1-231,D19,high,
+T1-232,X02,high,
+T1-233,NONE,high,두드러기 진단 코드 없음
+T1-234,N18,high,
+T1-235,F03,high,

@@ -1,0 +1,30 @@
+# 원본·중간 산출물 (AI Hub 재배포 금지, 다시 만들 수 있음)
+data/raw/
+data/interim/
+samples/
+
+# 비밀 정보
+.env
+.env.*
+!.env.example
+
+# AI Hub 답변에서 뽑은 구절 (S3-2 고정 입력, 공유하지 않음)
+data/frozen/phrases_*.csv
+
+# AI Hub 질환 단위 데이터 (DB에도 올리지 않음, 스크립트로 다시 생성)
+data/processed/v3/disease_symptom.csv
+data/processed/v4/disease_department.csv
+data/processed/v4/symptom_department_path_a.csv
+
+# 파이썬
+__pycache__/
+*.pyc
+
+# 사람이 볼 점검 목록 (01e·03d가 다시 만듦). ICPC-2 원본 문구가 들어 있어 커밋하지 않는다
+reports/v2_review_*.csv
+reports/name_check_v2_1.csv
+# 2026-11-14부터 data/interim/v4/에 씀 (ICD-10 연결표를 펼친 것)
+reports/code_chapter_spread.csv
+
+# 팀 내부 문서(확정사항 및 방법론): 저장소에 넣지 않는다
+docs/확정사항_및_방법론.md

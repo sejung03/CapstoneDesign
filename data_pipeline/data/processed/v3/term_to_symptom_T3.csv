@@ -1,0 +1,1123 @@
+﻿item_id,phrase,variants,source,n_answers,code_claude,code_codex,final_code,status,symptom_ids
+T3-0001,통증,통증,both,9409,A01,A11,,disagree,
+T3-0002,피로감,피로감,both,3007,A04,A04,A04,agreed,A04
+T3-0003,의심,의심,both,2858,NONE,NONE,,none,
+T3-0004,불편,불편,both,2675,NONE,A29,,disagree,
+T3-0005,가려움증,가려움증,both,2121,S02,S02,S02,agreed,S02
+T3-0006,어지러움,어지러움,both,1686,N17,N17,N17,agreed,N17
+T3-0007,고열,고열,both,1663,A03,A03,A03,agreed,A03
+T3-0008,부종,부종,both,1578,K07,R21,,disagree,
+T3-0009,발작,발작,both,1368,AMBIGUOUS,R05,R05,agreed_partial,R05
+T3-0010,이루,이루,both,1306,NONE,NONE,,none,
+T3-0011,압박,압박,both,1183,AMBIGUOUS,A11,,disagree,
+T3-0012,마비,마비,both,1156,N18,NONE,,disagree,
+T3-0013,불편함,불편함,both,1086,NONE,R21,,disagree,
+T3-0014,관절 통증,관절 통증,both,1027,L20,L20,L20,agreed,L20
+T3-0015,피부 발진,피부 발진,both,967,AMBIGUOUS,S06,S06,agreed_partial,S06
+T3-0016,건조,건조,both,952,NONE,R29,,disagree,
+T3-0017,분비물,분비물,both,943,NONE,R25,,disagree,
+T3-0018,혼란,혼란,both,882,P20,P20,P20,agreed,P20
+T3-0019,현기증,현기증,both,812,N17,N17,N17,agreed,N17
+T3-0020,혼수 상태,혼수 상태; 혼수상태,both,760,A07,A07,A07,agreed,A07
+T3-0021,긴장,긴장,both,724,AMBIGUOUS,L19,L19,agreed_partial,L19
+T3-0022,우울,우울,both,707,P03,P03,P03,agreed,P03
+T3-0023,불편감,불편감,both,682,NONE,R02,,disagree,
+T3-0024,사마귀,사마귀,both,655,S03,S03,S03,agreed,S03
+T3-0025,복부 통증,복부 통증; 복부통증,both,625,D01,D01,D01,agreed,D01
+T3-0026,청소,청소,both,623,NONE,NONE,,none,
+T3-0027,덩어리,덩어리,both,608,A08,Y05,,disagree,
+T3-0028,비만,비만,both,598,NONE,NONE,,none,
+T3-0029,오심,오심,both,577,D09,D09,D09,agreed,D09
+T3-0030,반점,반점,both,553,AMBIGUOUS,S29,,disagree,
+T3-0031,궤양,궤양,both,534,NONE,NONE,,none,
+T3-0032,근육 약화,근육 약화,both,530,L19,L19,L19,agreed,L19
+T3-0033,변형,변형,both,510,NONE,NONE,,none,
+T3-0034,인후통,인후통,both,505,R21,R21,R21,agreed,R21
+T3-0035,혼동,혼동,both,487,NONE,NONE,,none,
+T3-0036,편두통,편두통,both,486,NONE,NONE,,none,
+T3-0037,구역,구역,both,473,D09,D09,D09,agreed,D09
+T3-0038,불쾌감,불쾌감,both,460,NONE,R29,,disagree,
+T3-0039,압박감,압박감,both,456,AMBIGUOUS,R29,R29,agreed_partial,R29
+T3-0040,경직,경직,both,455,L19,NONE,,disagree,
+T3-0041,기능 장애,기능 장애,both,450,NONE,R04,,disagree,
+T3-0042,다음,다음,both,447,NONE,NONE,,none,
+T3-0043,체온 상승,체온 상승,both,441,A03,A03,A03,agreed,A03
+T3-0044,수면 장애,수면 장애; 수면장애,both,437,P06,P06,P06,agreed,P06
+T3-0045,심장 박동,심장 박동,both,434,K04,K04,K04,agreed,K04
+T3-0046,미열,미열,both,432,A03,A03,A03,agreed,A03
+T3-0047,심한 두통,심한 두통,both,429,N01,N01,N01,agreed,N01
+T3-0048,주의력 결핍,주의력 결핍,both,424,P20,NONE,,disagree,
+T3-0049,과잉 행동,과잉 행동; 과잉행동,both,422,P22,NONE,,disagree,
+T3-0050,홍반,홍반,both,406,S06,NONE,,disagree,
+T3-0051,강직,강직,both,403,AMBIGUOUS,L20,L20,agreed_partial,L20
+T3-0052,떨림,떨림,both,400,AMBIGUOUS,A02,A02,agreed_partial,A02
+T3-0053,의식 장애,의식 장애; 의식장애,both,398,A07,N29,,disagree,
+T3-0054,붓기,붓기,both,390,A08,Y05,,disagree,
+T3-0055,심계항진,심계항진,both,389,K04,K04,K04,agreed,K04
+T3-0056,우울증,우울증,both,389,NONE,NONE,,none,
+T3-0057,충혈,충혈,both,389,F02,F02,F02,agreed,F02
+T3-0058,쇠약,쇠약,both,387,A04,A04,A04,agreed,A04
+T3-0059,근육 긴장,근육 긴장,both,372,L19,AMBIGUOUS,,disagree,
+T3-0060,홍조,홍조,both,369,S08,S08,S08,agreed,S08
+T3-0061,주의력 결핍 과잉행동,주의력 결핍 과잉행동,claude_read,348,NONE,NONE,,none,
+T3-0062,식욕 감소,식욕 감소; 식욕감소,both,340,T03,T03,T03,agreed,T03
+T3-0063,물집,물집,both,332,S17,S17,S17,agreed,S17
+T3-0064,감각 이상,감각 이상; 감각이상,both,331,N06,N06,N06,agreed,N06
+T3-0065,심한 통증,심한 통증,both,331,A01,R01,,disagree,
+T3-0066,질 출혈,질 출혈; 질출혈,both,331,AMBIGUOUS,X08,X08,agreed_partial,X08
+T3-0067,호흡부전,호흡부전,both,325,NONE,NONE,,none,
+T3-0068,불안감,불안감,both,323,P01,P01,P01,agreed,P01
+T3-0069,눈물,눈물,both,315,F03,F03,F03,agreed,F03
+T3-0070,소화 장애,소화 장애; 소화장애,both,310,D07,D07,D07,agreed,D07
+T3-0071,주름,주름,both,308,NONE,NONE,,none,
+T3-0072,어지럼증,어지럼증,both,306,N17,N17,N17,agreed,N17
+T3-0073,안면신경 마비,안면신경 마비,both,299,N18,NONE,,disagree,
+T3-0074,붉은 반점,붉은 반점,both,296,S06,S06,S06,agreed,S06
+T3-0075,이통,이통,both,288,NONE,NONE,,none,
+T3-0076,뼈 통증,뼈 통증; 뼈통증,both,283,L29,L29,L29,agreed,L29
+T3-0077,뇌전증 발작,뇌전증 발작,both,282,N07,N07,N07,agreed,N07
+T3-0078,비정상적인 출혈,비정상적인 출혈,both,278,A10,NONE,,disagree,
+T3-0079,팽만감,팽만감,both,273,D08,D08,D08,agreed,D08
+T3-0080,충동성,충동성,both,267,P29,P22,,disagree,
+T3-0081,무기력감,무기력감,both,259,A04,A04,A04,agreed,A04
+T3-0082,이물감,이물감,both,254,R21,R21,R21,agreed,R21
+T3-0083,저림,저림,both,254,N05,N06,,disagree,
+T3-0084,근육 경련,근육 경련,both,253,L18,L18,L18,agreed,L18
+T3-0085,각질,각질,both,251,S21,S21,S21,agreed,S21
+T3-0086,붓고,붓고,claude_read,250,A08,Y05,,disagree,
+T3-0087,시야 장애,시야 장애; 시야장애,both,240,F05,F05,F05,agreed,F05
+T3-0088,숨 가쁨,숨 가쁨; 숨가쁨,both,235,R02,R02,R02,agreed,R02
+T3-0089,시력 감소,시력 감소,both,232,F05,F05,F05,agreed,F05
+T3-0090,식욕 감퇴,식욕 감퇴; 식욕감퇴,both,229,T03,T03,T03,agreed,T03
+T3-0091,발한,발한,both,228,A09,A09,A09,agreed,A09
+T3-0092,식욕 변화,식욕 변화,both,228,AMBIGUOUS,T29,,disagree,
+T3-0093,종괴,종괴,both,228,A08,NONE,,disagree,
+T3-0094,붉은 색,붉은 색,both,227,NONE,Y05,,disagree,
+T3-0095,불면증,불면증,both,225,P06,P06,P06,agreed,P06
+T3-0096,예민,예민,both,220,P04,P04,P04,agreed,P04
+T3-0097,몸살,몸살,both,219,A01,A05,,disagree,
+T3-0098,구역질,구역질,both,216,D09,D09,D09,agreed,D09
+T3-0099,복부 팽만감,복부 팽만감,both,216,D08,D08,D08,agreed,D08
+T3-0100,답답함,답답함,both,215,R29,R29,R29,agreed,R29
+T3-0101,체온이 상승,체온이 상승,claude_read,215,A03,A03,A03,agreed,A03
+T3-0102,고름,고름,both,214,R25,R25,R25,agreed,R25
+T3-0103,심각한 출혈,심각한 출혈,both,210,A10,NONE,,disagree,
+T3-0104,눈의 피로,눈의 피로,both,204,F05,F05,F05,agreed,F05
+T3-0105,붉어지고,붉어지고,both,204,S06,S06,S06,agreed,S06
+T3-0106,권태,권태,both,194,A05,A05,A05,agreed,A05
+T3-0107,시력이 저하,시력이 저하,claude_read,193,F05,F05,F05,agreed,F05
+T3-0108,근육 긴장도 저하,근육 긴장도 저하,both,190,L19,L19,L19,agreed,L19
+T3-0109,붉은 발진,붉은 발진,both,190,S06,X21,,disagree,
+T3-0110,건조함,건조함,both,189,D20-02,D20-02,D20-02,agreed,D20-02
+T3-0111,근육 통증,근육 통증,both,188,L18,L18,L18,agreed,L18
+T3-0112,진통,진통,both,187,NONE,NONE,,none,
+T3-0113,충동적,충동적,claude_read,187,P29,P22,,disagree,
+T3-0114,무감각,무감각,both,186,AMBIGUOUS,N16,N16,agreed_partial,N16
+T3-0115,뻣뻣함,뻣뻣함,both,185,L01,L01,L01,agreed,L01
+T3-0116,발달 지연,발달 지연,both,182,P22,P22,P22,agreed,P22
+T3-0117,지속적인 통증,지속적인 통증,both,181,A01,A01,A01,agreed,A01
+T3-0118,창백한 피부,창백한 피부,both,180,S08,S08,S08,agreed,S08
+T3-0119,결절,결절,both,179,NONE,NONE,,none,
+T3-0120,피부 건조,피부 건조,both,179,S21,S21,S21,agreed,S21
+T3-0121,만성 기침,만성 기침,both,178,R05,R05,R05,agreed,R05
+T3-0122,실명,실명,both,178,F05,NONE,,disagree,
+T3-0123,혼돈,혼돈,both,174,P20,P20,P20,agreed,P20
+T3-0124,팽진,팽진,both,173,S06,S04,,disagree,
+T3-0125,의식 소실,의식 소실,both,171,A06,A06,A06,agreed,A06
+T3-0126,부어 오름,부어 오름; 부어오름,both,169,A08,Y05,,disagree,
+T3-0127,피부 병변,피부 병변,both,168,S29,S29,S29,agreed,S29
+T3-0128,습진,습진,both,167,NONE,NONE,,none,
+T3-0129,변색,변색,both,165,S08,S08,S08,agreed,S08
+T3-0130,혈변,혈변,both,165,D16,D16,D16,agreed,D16
+T3-0131,창백함,창백함,both,163,S08,S08,S08,agreed,S08
+T3-0132,공포,공포,both,160,P01,P01,P01,agreed,P01
+T3-0133,의식 상실,의식 상실,both,160,A06,A06,A06,agreed,A06
+T3-0134,시력 장애,시력 장애; 시력장애,both,159,F05,F05,F05,agreed,F05
+T3-0135,점상 출혈,점상 출혈; 점상출혈,both,159,S29,H05,,disagree,
+T3-0136,발달 장애,발달 장애,both,156,NONE,NONE,,none,
+T3-0137,복부 비만,복부 비만; 복부비만,both,154,NONE,NONE,,none,
+T3-0138,보행 장애,보행 장애; 보행장애,both,152,N29,N29,N29,agreed,N29
+T3-0139,과도한 반응,과도한 반응,claude_read,151,NONE,F05,,disagree,
+T3-0140,의식을 잃고,의식을 잃고,claude_read,151,A06,A06,A06,agreed,A06
+T3-0141,수포,수포,both,150,S17,S17,S17,agreed,S17
+T3-0142,목의 통증,목의 통증,both,147,AMBIGUOUS,R21,R21,agreed_partial,R21
+T3-0143,혈관 부종,혈관 부종; 혈관부종,both,146,NONE,A08,,disagree,
+T3-0144,구진,구진,both,143,S04,S04,S04,agreed,S04
+T3-0145,움직임이 제한,움직임이 제한,claude_read,142,L29,L29,L29,agreed,L29
+T3-0146,피곤함,피곤함,both,142,A04,A04,A04,agreed,A04
+T3-0147,목마름,목마름,both,141,AMBIGUOUS,R21,R21,agreed_partial,R21
+T3-0148,소화 문제,소화 문제,both,141,D07,D29,,disagree,
+T3-0149,호흡 장애,호흡 장애; 호흡장애,both,139,R04,R04,R04,agreed,R04
+T3-0150,괴사,괴사,both,137,NONE,NONE,,none,
+T3-0151,안면 마비,안면 마비; 안면마비,both,137,N18,N18,N18,agreed,N18
+T3-0152,비정상적인 질 분비물,비정상적인 질 분비물,both,136,X14,X14,X14,agreed,X14
+T3-0153,무기력함,무기력함,both,135,A04,A04,A04,agreed,A04
+T3-0154,아몬드 모양의 눈,아몬드 모양의 눈,both,135,F15,F15,F15,agreed,F15
+T3-0155,충동적인 행동,충동적인 행동,both,133,P29,P29,P29,agreed,P29
+T3-0156,반신 마비,반신 마비; 반신마비,both,132,N18,N18,N18,agreed,N18
+T3-0157,인지 기능 저하,인지 기능 저하; 인지기능 저하,both,132,P20,P20,P20,agreed,P20
+T3-0158,객혈,객혈,both,131,R24,R24,R24,agreed,R24
+T3-0159,심한 피로,심한 피로,both,130,A04,A04,A04,agreed,A04
+T3-0160,아픔,아픔,both,129,A01,R21,,disagree,
+T3-0161,혼미,혼미,both,129,A07,A07,A07,agreed,A07
+T3-0162,부음,부음,both,126,A08,Y05,,disagree,
+T3-0163,과민성,과민성,both,124,NONE,U13,,disagree,
+T3-0164,비문,비문,claude_read,119,F04,F04,F04,agreed,F04
+T3-0165,감정 변화,감정 변화,both,118,P29,P29,P29,agreed,P29
+T3-0166,심박수 증가,심박수 증가,both,118,K04,K04,K04,agreed,K04
+T3-0167,인지 장애,인지 장애,both,118,P20,P20,P20,agreed,P20
+T3-0168,서동,서동,both,116,N29,N29,N29,agreed,N29
+T3-0169,정신 상태 변화,정신 상태 변화,both,116,P20,P29,,disagree,
+T3-0170,옆구리 통증,옆구리 통증,both,115,L05,L05,L05,agreed,L05
+T3-0171,호흡에 어려움,호흡에 어려움,claude_read,114,R02,R02,R02,agreed,R02
+T3-0172,붉게 변하고,붉게 변하고,claude_read,113,S06,Y04,,disagree,
+T3-0173,작은 멍,작은 멍,both,113,S16,S29,,disagree,
+T3-0174,시력 문제,시력 문제,both,111,F05,F05,F05,agreed,F05
+T3-0175,근육의 약화,근육의 약화,both,110,L19,L19,L19,agreed,L19
+T3-0176,얇은 윗입술,얇은 윗입술,both,110,D20-02,D20-02,D20-02,agreed,D20-02
+T3-0177,천명,천명,both,110,R03,R03,R03,agreed,R03
+T3-0178,배뇨 시 통증,배뇨 시 통증; 배뇨시 통증,both,109,U01,U01,U01,agreed,U01
+T3-0179,저체온,저체온,both,109,A29,A29,A29,agreed,A29
+T3-0180,전신 쇠약,전신 쇠약; 전신쇠약,both,109,A04,A04,A04,agreed,A04
+T3-0181,쇼크 상태,쇼크 상태,both,108,A29,NONE,,disagree,
+T3-0182,경련 발작,경련 발작; 경련발작,both,107,N07,N07,N07,agreed,N07
+T3-0183,과잉 활동,과잉 활동; 과잉활동,both,106,P22,P22,P22,agreed,P22
+T3-0184,근육 강직,근육 강직,both,106,L19,L19,L19,agreed,L19
+T3-0185,심한 가려움증,심한 가려움증,both,106,S02,S02,S02,agreed,S02
+T3-0186,골반통,골반통,both,105,X01,X01,X01,agreed,X01
+T3-0187,부어오르는,부어오르는,claude_read,103,A08,NONE,,disagree,
+T3-0188,출혈이 심한,출혈이 심한,claude_read,103,A10,U06,,disagree,
+T3-0189,위장관 출혈,위장관 출혈,both,102,AMBIGUOUS,D29,,disagree,
+T3-0190,의식 변화,의식 변화,both,102,AMBIGUOUS,N29,,disagree,
+T3-0191,딱지,딱지,both,101,S17,S21,,disagree,
+T3-0192,식욕 저하,식욕 저하; 식욕저하,both,100,T03,T03,T03,agreed,T03
+T3-0193,근육의 긴장,근육의 긴장,both,99,L19,L19,L19,agreed,L19
+T3-0194,식욕이 감소,식욕이 감소,claude_read,99,T03,T03,T03,agreed,T03
+T3-0195,가스,가스,both,98,NONE,NONE,,none,
+T3-0196,복부 부종,복부 부종,both,98,D25,D25,D25,agreed,D25
+T3-0197,호흡이 어려워지고,호흡이 어려워지고,both,98,R02,R02,R02,agreed,R02
+T3-0198,잇몸 출혈,잇몸 출혈,both,97,D19,D19,D19,agreed,D19
+T3-0199,저신장,저신장,both,97,T10,T10,T10,agreed,T10
+T3-0200,체중이 감소,체중이 감소,claude_read,97,T08,T08,T08,agreed,T08
+T3-0201,분비물의 변화,분비물의 변화,both,96,R25,R25,R25,agreed,R25
+T3-0202,손 씻기,손 씻기,both,95,NONE,NONE,,none,
+T3-0203,피부가 붉어지고,피부가 붉어지고,both,95,S06,S06,S06,agreed,S06
+T3-0204,배뇨 장애,배뇨 장애,both,94,U05,U05,U05,agreed,U05
+T3-0205,색소 침착,색소 침착; 색소침착,both,94,S08,S08,S08,agreed,S08
+T3-0206,시력 손상,시력 손상,both,94,F05,F05,F05,agreed,F05
+T3-0207,화농,화농,both,94,NONE,R25,,disagree,
+T3-0208,붓는,붓는,claude_read,93,A08,R21,,disagree,
+T3-0209,성장 지연,성장 지연,both,93,T10,T10,T10,agreed,T10
+T3-0210,식은 땀,식은 땀; 식은땀,both,92,A09,A09,A09,agreed,A09
+T3-0211,이명,이명,both,92,H03,H03,H03,agreed,H03
+T3-0212,무호흡,무호흡,both,90,R04,R04,R04,agreed,R04
+T3-0213,의식을 잃을,의식을 잃을,claude_read,89,A06,A06,A06,agreed,A06
+T3-0214,균형 장애,균형 장애,both,88,N17,N17,N17,agreed,N17
+T3-0215,악취,악취,both,88,U07,U07,U07,agreed,U07
+T3-0216,탈모,탈모,both,88,S23,S23,S23,agreed,S23
+T3-0217,마른 기침,마른 기침; 마른기침,both,87,R05,R05,R05,agreed,R05
+T3-0218,복부 불편감,복부 불편감,both,87,D01,D01,D01,agreed,D01
+T3-0219,성관계 중 통증,성관계 중 통증,both,87,X04,X04,X04,agreed,X04
+T3-0220,소변량의 감소,소변량의 감소,both,87,U05,U05,U05,agreed,U05
+T3-0221,눈이 건조,눈이 건조,claude_read,86,F13,F13,F13,agreed,F13
+T3-0222,땀 분비,땀 분비,both,86,A09,A09,A09,agreed,A09
+T3-0223,자궁 출혈,자궁 출혈,both,86,AMBIGUOUS,AMBIGUOUS,X06,agreed_partial,X06
+T3-0224,추위,추위,both,86,NONE,NONE,,none,
+T3-0225,기분 변화,기분 변화,both,85,P29,P29,P29,agreed,P29
+T3-0226,눈이 피로,눈이 피로,claude_read,85,F05,F05,F05,agreed,F05
+T3-0227,여성형 유방,여성형 유방,both,85,Y16,Y16,Y16,agreed,Y16
+T3-0228,가렵고,가렵고,both,84,S02,S02,S02,agreed,S02
+T3-0229,과식증,과식증,both,84,NONE,NONE,,none,
+T3-0230,따끔거림,따끔거림,both,84,R21,R21,R21,agreed,R21
+T3-0231,성격 변화,성격 변화,both,84,P29,P29,P29,agreed,P29
+T3-0232,이마 주름,이마 주름,claude_read,84,NONE,N18,,disagree,
+T3-0233,종창,종창,both,84,A08,A08,A08,agreed,A08
+T3-0234,질 분비물의 변화,질 분비물의 변화,both,84,X14,X14,X14,agreed,X14
+T3-0235,시야 손상,시야 손상,both,83,F05,F05,F05,agreed,F05
+T3-0236,얼굴 부기,얼굴 부기,both,83,A08,S04,,disagree,
+T3-0237,작은 물집,작은 물집,both,83,S17,S17,S17,agreed,S17
+T3-0238,피부의 변화,피부의 변화,both,83,S29,S29,S29,agreed,S29
+T3-0239,흉터,흉터,both,83,NONE,NONE,,none,
+T3-0240,극심한 두통,극심한 두통,both,82,N01,N01,N01,agreed,N01
+T3-0241,학습 장애,학습 장애,both,82,P24,P24,P24,agreed,P24
+T3-0242,호흡이 어려워지는,호흡이 어려워지는,claude_read,82,R02,R02,R02,agreed,R02
+T3-0243,피부가 건조하고,피부가 건조하고,claude_read,81,S21,S21,S21,agreed,S21
+T3-0244,빠른 호흡,빠른 호흡,both,80,R04,R04,R04,agreed,R04
+T3-0245,피부 손상,피부 손상,both,80,S19,S19,S19,agreed,S19
+T3-0246,난청,난청,both,79,H02,NONE,,disagree,
+T3-0247,직장 출혈,직장 출혈; 직장출혈,both,79,D16,D16,D16,agreed,D16
+T3-0248,진물,진물,both,79,S29,S29,S29,agreed,S29
+T3-0249,호흡 어려움,호흡 어려움,both,79,R02,R02,R02,agreed,R02
+T3-0250,혼란 상태,혼란 상태,both,79,P20,P20,P20,agreed,P20
+T3-0251,피부 가려움증,피부 가려움증,both,78,S02,NONE,,disagree,
+T3-0252,발육 부전,발육 부전; 발육부전,both,77,NONE,NONE,,none,
+T3-0253,배변 습관의 변화,배변 습관의 변화,both,77,D18,D18,D18,agreed,D18
+T3-0254,불편한 느낌,불편한 느낌,both,76,NONE,A29,,disagree,
+T3-0255,비자발적인 근육 움직임,비자발적인 근육 움직임,both,76,N08,N08,N08,agreed,N08
+T3-0256,비정상적인 질 출혈,비정상적인 질 출혈; 비정상적인 질출혈,both,76,X08,X08,X08,agreed,X08
+T3-0257,시력 손실,시력 손실,both,76,F05,NONE,,disagree,
+T3-0258,신경 마비,신경 마비; 신경마비,both,76,N18,N18,N18,agreed,N18
+T3-0259,붉어지며,붉어지며,both,75,S06,Y05,,disagree,
+T3-0260,지속적인 기침,지속적인 기침,both,75,R05,R05,R05,agreed,R05
+T3-0261,행동 장애,행동 장애,both,75,P29,P29,P29,agreed,P29
+T3-0262,흉부통,흉부통,claude_read,75,A11,R01,,disagree,
+T3-0263,감각 상실,감각 상실; 감각상실,both,74,N06,N06,N06,agreed,N06
+T3-0264,감각 장애,감각 장애; 감각장애,both,74,N06,N06,N06,agreed,N06
+T3-0265,높은 체온,높은 체온,both,74,A03,A03,A03,agreed,A03
+T3-0266,지적 장애,지적 장애,both,74,NONE,NONE,,none,
+T3-0267,호흡이 어려워질,호흡이 어려워질,claude_read,74,R02,R02,R02,agreed,R02
+T3-0268,흉부 통증,흉부 통증; 흉부통증,both,74,A11,R01,,disagree,
+T3-0269,두려움,두려움,both,73,P01,P01,P01,agreed,P01
+T3-0270,실어증,실어증,both,73,N19,N19,N19,agreed,N19
+T3-0271,심한 피로감,심한 피로감,both,73,A04,A04,A04,agreed,A04
+T3-0272,초조,초조,both,73,P01,P04,,disagree,
+T3-0273,피를 토하는,피를 토하는,claude_read,73,AMBIGUOUS,AMBIGUOUS,D14; R24,agreed_span,D14; R24
+T3-0274,신경통,신경통,both,72,NONE,NONE,,none,
+T3-0275,심한 구토,심한 구토,both,72,D10,D10,D10,agreed,D10
+T3-0276,의식을 잃거나,의식을 잃거나,both,72,A06,A06,A06,agreed,A06
+T3-0277,호흡 문제,호흡 문제,both,72,R04,R04,R04,agreed,R04
+T3-0278,근육 경직,근육 경직,both,71,L19,L19,L19,agreed,L19
+T3-0279,분비물의 증가,분비물의 증가,both,71,R07,R07,R07,agreed,R07
+T3-0280,서동증,서동증,both,71,N29,N29,N29,agreed,N29
+T3-0281,수면 무호흡,수면 무호흡,both,71,P06,P06,P06,agreed,P06
+T3-0282,가슴 두근거림,가슴 두근거림,both,70,K04,K04,K04,agreed,K04
+T3-0283,균열,균열,both,70,S21,S21,S21,agreed,S21
+T3-0284,비강 출혈,비강 출혈,both,70,R06,R06,R06,agreed,R06
+T3-0285,멍울,멍울,both,69,A08,Y05,,disagree,
+T3-0286,위장 장애,위장 장애,both,69,D29,D29,D29,agreed,D29
+T3-0287,화끈거림,화끈거림,both,68,U01,U01,U01,agreed,U01
+T3-0288,공격성,공격성,both,67,P04,P04,P04,agreed,P04
+T3-0289,기절,기절,both,67,A06,A06,A06,agreed,A06
+T3-0290,비늘,비늘,both,67,NONE,NONE,,none,
+T3-0291,비듬,비듬,both,67,NONE,NONE,,none,
+T3-0292,작열감,작열감,both,67,U01,U01,U01,agreed,U01
+T3-0293,근육의 경직,근육의 경직,both,66,L19,L19,L19,agreed,L19
+T3-0294,목 아픔,목 아픔,both,66,AMBIGUOUS,R21,R21,agreed_partial,R21
+T3-0295,성장 장애,성장 장애; 성장장애,both,66,T10,T10,T10,agreed,T10
+T3-0296,작은 발진,작은 발진,claude_read,66,S06,S06,S06,agreed,S06
+T3-0297,혈종,혈종,both,66,S16,NONE,,disagree,
+T3-0298,관절 부종,관절 부종,both,65,L20,L20,L20,agreed,L20
+T3-0299,수면 문제,수면 문제,both,65,P06,P06,P06,agreed,P06
+T3-0300,피부 궤양,피부 궤양,both,65,NONE,NONE,,none,
+T3-0301,빠른 심박수,빠른 심박수,both,64,K04,K04,K04,agreed,K04
+T3-0302,숨이 차거나,숨이 차거나,both,64,R02,R02,R02,agreed,R02
+T3-0303,눈물 흘림,눈물 흘림,both,63,F03,F03,F03,agreed,F03
+T3-0304,체온이 상승하고,체온이 상승하고,claude_read,63,A03,A03,A03,agreed,A03
+T3-0305,땀이 많이 나는,땀이 많이 나는,claude_read,62,A09,A09,A09,agreed,A09
+T3-0306,숨이 차고,숨이 차고,both,62,R02,R02,R02,agreed,R02
+T3-0307,유방통,유방통,both,62,X18,X18,X18,agreed,X18
+T3-0308,주의력 저하,주의력 저하,both,62,P20,P20,P20,agreed,P20
+T3-0309,눈의 통증,눈의 통증,both,61,F01,F01,F01,agreed,F01
+T3-0310,따끔거리는,따끔거리는,claude_read,61,U01,U01,U01,agreed,U01
+T3-0311,망상,망상,both,61,P29,P29,P29,agreed,P29
+T3-0312,후비루,후비루,both,61,R08,R08,R08,agreed,R08
+T3-0313,근육 이완,근육 이완,both,60,NONE,L19,,disagree,
+T3-0314,뇌신경 마비,뇌신경 마비,both,60,N18,N18,N18,agreed,N18
+T3-0315,무거움,무거움,both,60,NONE,Y06,,disagree,
+T3-0316,극심한 통증,극심한 통증,both,59,A01,U14,,disagree,
+T3-0317,경부 강직,경부 강직; 경부강직,both,58,AMBIGUOUS,N29,N29,agreed_partial,N29
+T3-0318,심한 복통,심한 복통,both,58,D01,D01,D01,agreed,D01
+T3-0319,이상 감각,이상 감각; 이상감각,both,58,N06,N06,N06,agreed,N06
+T3-0320,객담,객담,both,57,R25,R25,R25,agreed,R25
+T3-0321,근육 수축,근육 수축,both,57,NONE,L19,,disagree,
+T3-0322,눈의 충혈,눈의 충혈,both,57,F02,F02,F02,agreed,F02
+T3-0323,비출혈,비출혈,both,57,R06,R06,R06,agreed,R06
+T3-0324,숨이 차는,숨이 차는,claude_read,57,R02,R02,R02,agreed,R02
+T3-0325,심한 기침,심한 기침,both,57,R05,R05,R05,agreed,R05
+T3-0326,차가운 피부,차가운 피부,both,57,S29,S29,S29,agreed,S29
+T3-0327,혼돈 상태,혼돈 상태; 혼돈상태,both,57,P20,P20,P20,agreed,P20
+T3-0328,눈이 충혈,눈이 충혈,claude_read,56,F02,F02,F02,agreed,F02
+T3-0329,붉어짐,붉어짐,both,56,S08,S08,S08,agreed,S08
+T3-0330,코 출혈,코 출혈,both,56,R06,R06,R06,agreed,R06
+T3-0331,건조한 피부,건조한 피부,both,55,S21,S21,S21,agreed,S21
+T3-0332,동통,동통,both,55,A01,L05,,disagree,
+T3-0333,발기 부전,발기 부전; 발기부전,both,55,Y07,Y07,Y07,agreed,Y07
+T3-0334,시력 변화,시력 변화,both,55,F05,F05,F05,agreed,F05
+T3-0335,예민함,예민함,both,55,AMBIGUOUS,AMBIGUOUS,F05,agreed_partial,F05
+T3-0336,자궁 수축,자궁 수축,both,55,W29,W29,W29,agreed,W29
+T3-0337,작은 반점,작은 반점,claude_read,55,AMBIGUOUS,S07,S07,agreed_partial,S07
+T3-0338,작은 혹,작은 혹,claude_read,55,S04,S04,S04,agreed,S04
+T3-0339,전신 쇠약감,전신 쇠약감,both,55,A04,A04,A04,agreed,A04
+T3-0340,척추 변형,척추 변형,both,55,L29,NONE,,disagree,
+T3-0341,과민한 반응,과민한 반응,both,54,NONE,AMBIGUOUS,,disagree,
+T3-0342,기면,기면,both,54,A29,A29,A29,agreed,A29
+T3-0343,기억력 감퇴,기억력 감퇴,both,54,P20,P20,P20,agreed,P20
+T3-0344,땀 흘림,땀 흘림,both,54,A09,A09,A09,agreed,A09
+T3-0345,배변 습관 변화,배변 습관 변화,both,54,D18,D18,D18,agreed,D18
+T3-0346,복부 팽창,복부 팽창,both,54,D25,D25,D25,agreed,D25
+T3-0347,붓거나,붓거나,both,54,A08,R29,,disagree,
+T3-0348,인지기능장애,인지기능장애,claude_read,54,P20,P20,P20,agreed,P20
+T3-0349,저체중,저체중,both,54,T29,T29,T29,agreed,T29
+T3-0350,피부의 가려움증,피부의 가려움증,both,54,S02,S02,S02,agreed,S02
+T3-0351,근육 마비,근육 마비,both,53,N18,N18,N18,agreed,N18
+T3-0352,쉽게 피로,쉽게 피로,claude_read,53,A04,L19,,disagree,
+T3-0353,작은 키,작은 키,both,53,T10,T10,T10,agreed,T10
+T3-0354,전신 피로,전신 피로,both,53,A04,A04,A04,agreed,A04
+T3-0355,질 분비물의 증가,질 분비물의 증가,both,53,X14,X14,X14,agreed,X14
+T3-0356,찌르는 느낌,찌르는 느낌,both,53,NONE,A11,,disagree,
+T3-0357,천명음,천명음,both,53,R03,R03,R03,agreed,R03
+T3-0358,흉부 압박,흉부 압박,both,53,AMBIGUOUS,R29,R29,agreed_partial,R29
+T3-0359,간질 발작,간질 발작,both,52,N07,N07,N07,agreed,N07
+T3-0360,만성피로,만성피로,both,52,A04,A04,A04,agreed,A04
+T3-0361,무호흡증,무호흡증,both,52,P06,P06,P06,agreed,P06
+T3-0362,부어 오른,부어 오른; 부어오른,claude_read,52,A08,Y05,,disagree,
+T3-0363,의식 잃음,의식 잃음,both,52,A06,A06,A06,agreed,A06
+T3-0364,강한 통증,강한 통증,both,51,A01,AMBIGUOUS,,disagree,
+T3-0365,공황 발작,공황 발작,both,51,P01,P01,P01,agreed,P01
+T3-0366,근력 저하,근력 저하; 근력저하,both,51,L19,L19,L19,agreed,L19
+T3-0367,근육 피로,근육 피로,both,51,L19,L19,L19,agreed,L19
+T3-0368,따가움,따가움,both,51,S01,AMBIGUOUS,S01,agreed_partial,S01
+T3-0369,땀이 나는,땀이 나는,claude_read,51,A09,A09,A09,agreed,A09
+T3-0370,삼키는 데 어려움,삼키는 데 어려움,both,51,D21,D21,D21,agreed,D21
+T3-0371,수면 부족,수면 부족,both,51,P06,P06,P06,agreed,P06
+T3-0372,의식 손실,의식 손실,both,51,A06,A06,A06,agreed,A06
+T3-0373,기력 저하,기력 저하,both,50,A04,A04,A04,agreed,A04
+T3-0374,눈에 통증,눈에 통증,both,50,F01,F01,F01,agreed,F01
+T3-0375,눈의 건조함,눈의 건조함,both,50,F13,F13,F13,agreed,F13
+T3-0376,부풀어 오름,부풀어 오름,both,50,A08,Y04,,disagree,
+T3-0377,산만함,산만함,both,50,P20,P20,P20,agreed,P20
+T3-0378,성기능 장애,성기능 장애,both,50,AMBIGUOUS,AMBIGUOUS,P08; Y08,agreed_span,P08; Y08
+T3-0379,신경 장애,신경 장애,both,50,NONE,N29,,disagree,
+T3-0380,피로함,피로함,both,50,A04,A04,A04,agreed,A04
+T3-0381,항문 출혈,항문 출혈,both,50,D16,D16,D16,agreed,D16
+T3-0382,혼동 상태,혼동 상태,both,50,P20,P20,P20,agreed,P20
+T3-0383,과도한 운동,과도한 운동,both,49,NONE,NONE,,none,
+T3-0384,잔뇨,잔뇨,both,49,U05,U05,U05,agreed,U05
+T3-0385,정신 이상,정신 이상,both,49,P29,P29,P29,agreed,P29
+T3-0386,피부가 붉게 변하고,피부가 붉게 변하고,both,49,S06,S06,S06,agreed,S06
+T3-0387,붉어질,붉어질,claude_read,48,F02,F02,F02,agreed,F02
+T3-0388,새빨간 변,새빨간 변,both,48,D16,D16,D16,agreed,D16
+T3-0389,성관계 중에 통증,성관계 중에 통증,both,47,X04,X04,X04,agreed,X04
+T3-0390,작고 붉은 발진,작고 붉은 발진,claude_read,47,S07,S07,S07,agreed,S07
+T3-0391,허약,허약,both,47,A04,A04,A04,agreed,A04
+T3-0392,건조해지며,건조해지며,both,46,S21,S21,S21,agreed,S21
+T3-0393,움직임 제한,움직임 제한,both,46,N18,N18,N18,agreed,N18
+T3-0394,죄책감,죄책감,both,46,P03,P03,P03,agreed,P03
+T3-0395,집중력 부족,집중력 부족,both,46,P20,P20,P20,agreed,P20
+T3-0396,가슴의 통증,가슴의 통증,both,45,A11,A11,A11,agreed,A11
+T3-0397,발달 및 인지 지연,발달 및 인지 지연,claude_read,45,P22,P22,P22,agreed,P22
+T3-0398,숨 쉬기 어려움,숨 쉬기 어려움; 숨쉬기 어려움,both,45,R02,R02,R02,agreed,R02
+T3-0399,안검하수,안검하수,both,45,F16,F16,F16,agreed,F16
+T3-0400,야뇨,야뇨,both,45,AMBIGUOUS,U04,,disagree,
+T3-0401,연하곤란,연하곤란,both,45,D21,D21,D21,agreed,D21
+T3-0402,의식 혼탁,의식 혼탁; 의식혼탁,both,45,A07,N29,,disagree,
+T3-0403,의존성,의존성,both,45,P19,AMBIGUOUS,P19,agreed_partial,P19
+T3-0404,인후 통증,인후 통증,both,45,R21,R21,R21,agreed,R21
+T3-0405,청력 손실,청력 손실,both,45,H02,NONE,,disagree,
+T3-0406,체중 변화,체중 변화,both,45,AMBIGUOUS,AMBIGUOUS,T07; T08,agreed_span,T07; T08
+T3-0407,체중이 증가,체중이 증가,claude_read,45,T07,T10,,disagree,
+T3-0408,헛소리,헛소리,both,45,P29,P29,P29,agreed,P29
+T3-0409,후각 상실,후각 상실,both,45,N16,N16,N16,agreed,N16
+T3-0410,만성적인 기침,만성적인 기침,both,44,R05,R05,R05,agreed,R05
+T3-0411,배뇨 중 통증,배뇨 중 통증,both,44,U01,U01,U01,agreed,U01
+T3-0412,복부 불쾌감,복부 불쾌감,both,44,D01,D01,D01,agreed,D01
+T3-0413,성교 시 통증,성교 시 통증,both,44,AMBIGUOUS,AMBIGUOUS,P08; X04,agreed_span,P08; X04
+T3-0414,심장 박동 증가,심장 박동 증가; 심장박동 증가,both,44,K04,K04,K04,agreed,K04
+T3-0415,월경통,월경통,both,44,X02,X02,X02,agreed,X02
+T3-0416,피부 출혈,피부 출혈,both,44,S29,S29,S29,agreed,S29
+T3-0417,가슴의 답답함,가슴의 답답함,both,43,R29,R29,R29,agreed,R29
+T3-0418,소변량이 감소,소변량이 감소,claude_read,43,U05,U05,U05,agreed,U05
+T3-0419,입이 삐뚤어지는,입이 삐뚤어지는,claude_read,43,N18,D20-02,,disagree,
+T3-0420,집중력 감소,집중력 감소,both,43,P20,P20,P20,agreed,P20
+T3-0421,체중 감량,체중 감량,both,43,NONE,NONE,,none,
+T3-0422,피부가 건조해지고,피부가 건조해지고,both,43,S21,S21,S21,agreed,S21
+T3-0423,가렵거나,가렵거나,claude_read,42,S02,S02,S02,agreed,S02
+T3-0424,가슴이 두근거리는,가슴이 두근거리는,claude_read,42,K04,K04,K04,agreed,K04
+T3-0425,심한 호흡 곤란,심한 호흡 곤란,both,42,R02,R02,R02,agreed,R02
+T3-0426,유방 통증,유방 통증,both,42,X18,X18,X18,agreed,X18
+T3-0427,인지 능력 저하,인지 능력 저하; 인지능력 저하,both,42,P20,P20,P20,agreed,P20
+T3-0428,토혈,토혈,both,42,D14,D14,D14,agreed,D14
+T3-0429,포만감,포만감,both,42,D02,D02,D02,agreed,D02
+T3-0430,목의 혹,목의 혹,both,41,AMBIGUOUS,A08,A08,agreed_partial,A08
+T3-0431,붉음,붉음,both,41,F02,F02,F02,agreed,F02
+T3-0432,사시,사시,both,41,NONE,NONE,,none,
+T3-0433,숨소리,숨소리,both,41,R04,R04,R04,agreed,R04
+T3-0434,시각 장애,시각 장애; 시각장애,both,41,F05,F05,F05,agreed,F05
+T3-0435,시야의 흐림,시야의 흐림,both,41,F05,F05,F05,agreed,F05
+T3-0436,신경 과민,신경 과민; 신경과민,both,41,P04,P01,,disagree,
+T3-0437,심각한 통증,심각한 통증,both,41,A01,A11,,disagree,
+T3-0438,안정 시 떨림,안정 시 떨림,both,41,N08,N08,N08,agreed,N08
+T3-0439,어깨의 비대칭,어깨의 비대칭,both,41,L08,L08,L08,agreed,L08
+T3-0440,열이 나고,열이 나고,both,41,A03,A03,A03,agreed,A03
+T3-0441,정신 지체,정신 지체,both,41,NONE,NONE,,none,
+T3-0442,조기 진통,조기 진통,both,41,NONE,W29,,disagree,
+T3-0443,창백하거나 차가운 피부,창백하거나 차가운 피부,both,41,S08,AMBIGUOUS,S08,agreed_partial,S08
+T3-0444,척추의 변형,척추의 변형,both,41,L29,NONE,,disagree,
+T3-0445,흔들림,흔들림,both,41,N08,N01,,disagree,
+T3-0446,관절의 통증,관절의 통증,both,40,L20,L20,L20,agreed,L20
+T3-0447,근육이 경직,근육이 경직,claude_read,40,L19,L19,L19,agreed,L19
+T3-0448,성교통,성교통,both,40,AMBIGUOUS,AMBIGUOUS,P08; X04,agreed_span,P08; X04
+T3-0449,신체 마비,신체 마비,both,40,N18,N18,N18,agreed,N18
+T3-0450,이상한 행동,이상한 행동,both,40,P29,P29,P29,agreed,P29
+T3-0451,공격적인 행동,공격적인 행동,both,39,P04,P04,P04,agreed,P04
+T3-0452,둔한 통증,둔한 통증,both,39,A01,A11,,disagree,
+T3-0453,무력증,무력증,both,39,A04,A04,A04,agreed,A04
+T3-0454,무월경,무월경,both,39,X05,X05,X05,agreed,X05
+T3-0455,상복부 불편감,상복부 불편감; 상복부불편감,both,39,D02,D02,D02,agreed,D02
+T3-0456,시력이 감소,시력이 감소,claude_read,39,F05,F05,F05,agreed,F05
+T3-0457,운동 제한,운동 제한,both,39,L20,L20,L20,agreed,L20
+T3-0458,움직일 수 없는,움직일 수 없는,claude_read,39,N18,N18,N18,agreed,N18
+T3-0459,졸림,졸림,both,39,A29,A29,A29,agreed,A29
+T3-0460,질 내에 덩어리,질 내에 덩어리,both,39,X15,X15,X15,agreed,X15
+T3-0461,감각 손실,감각 손실,both,38,N06,N06,N06,agreed,N06
+T3-0462,기억력 감소,기억력 감소,both,38,P20,P20,P20,agreed,P20
+T3-0463,소변의 양 감소,소변의 양 감소,both,38,U05,U05,U05,agreed,U05
+T3-0464,손떨림,손떨림,both,38,N08,N08,N08,agreed,N08
+T3-0465,시야 손실,시야 손실,both,38,F05,F05,F05,agreed,F05
+T3-0466,시야가 흐려지는,시야가 흐려지는,claude_read,38,F05,F05,F05,agreed,F05
+T3-0467,신체 변화,신체 변화,both,38,NONE,A29,,disagree,
+T3-0468,야간 발한,야간 발한,both,38,A09,A09,A09,agreed,A09
+T3-0469,운동 능력 저하,운동 능력 저하; 운동능력 저하,both,38,A04,A04,A04,agreed,A04
+T3-0470,의도하지 않은 체중 감소,의도하지 않은 체중 감소,both,38,T08,T08,T08,agreed,T08
+T3-0471,전신 피로감,전신 피로감,both,38,A04,A04,A04,agreed,A04
+T3-0472,흥분 상태,흥분 상태,both,38,P04,P04,P04,agreed,P04
+T3-0473,감각 변화,감각 변화,both,37,N06,N06,N06,agreed,N06
+T3-0474,근력 감소,근력 감소; 근력감소,both,37,L19,L19,L19,agreed,L19
+T3-0475,무기력증,무기력증,both,37,A04,A04,A04,agreed,A04
+T3-0476,불안한,불안한,claude_read,37,P01,P01,P01,agreed,P01
+T3-0477,붉게 변할,붉게 변할,claude_read,37,S06,S06,S06,agreed,S06
+T3-0478,시야가 좁아지고,시야가 좁아지고,claude_read,37,F05,F05,F05,agreed,F05
+T3-0479,심한 불안,심한 불안,both,37,P01,P01,P01,agreed,P01
+T3-0480,주의력 부족,주의력 부족,both,37,P20,P20,P20,agreed,P20
+T3-0481,행동 변화,행동 변화,both,37,P29,P29,P29,agreed,P29
+T3-0482,후각 감퇴,후각 감퇴; 후각감퇴,both,37,N16,N16,N16,agreed,N16
+T3-0483,흉부 압박감,흉부 압박감,both,37,AMBIGUOUS,R29,R29,agreed_partial,R29
+T3-0484,근육의 경련,근육의 경련,both,36,L18,L18,L18,agreed,L18
+T3-0485,농포,농포,both,36,S04,S04,S04,agreed,S04
+T3-0486,답답한 느낌,답답한 느낌,claude_read,36,R29,R02,,disagree,
+T3-0487,생리 불규칙,생리 불규칙,both,36,X07,X07,X07,agreed,X07
+T3-0488,소양감,소양감,both,36,S02,X15,,disagree,
+T3-0489,손발의 떨림,손발의 떨림,both,36,N08,N08,N08,agreed,N08
+T3-0490,시야가 흐려지고,시야가 흐려지고,claude_read,36,F05,F05,F05,agreed,F05
+T3-0491,조이는 느낌,조이는 느낌,both,36,AMBIGUOUS,R21,R21,agreed_partial,R21
+T3-0492,체온 변화,체온 변화,both,36,A03,A29,,disagree,
+T3-0493,초조함,초조함,both,36,P01,P04,,disagree,
+T3-0494,탈진,탈진,both,36,A04,A04,A04,agreed,A04
+T3-0495,과도한 땀,과도한 땀,both,35,A09,A09,A09,agreed,A09
+T3-0496,구내염,구내염,both,35,D20-02,NONE,,disagree,
+T3-0497,림프절의 비대,림프절의 비대,both,35,B02,B02,B02,agreed,B02
+T3-0498,반복적인 움직임,반복적인 움직임,both,35,N08,N08,N08,agreed,N08
+T3-0499,발의 저림,발의 저림,both,35,N05,N05,N05,agreed,N05
+T3-0500,손의 떨림,손의 떨림,both,35,N08,N08,N08,agreed,N08
+T3-0501,안정떨림,안정떨림,both,35,N08,N08,N08,agreed,N08
+T3-0502,의식이 저하,의식이 저하,claude_read,35,A07,N29,,disagree,
+T3-0503,전신적인 피로,전신적인 피로,both,35,A04,A04,A04,agreed,A04
+T3-0504,피부에 가려움증,피부에 가려움증,both,35,S02,S02,S02,agreed,S02
+T3-0505,갈라짐,갈라짐,both,34,S22,S22,S22,agreed,S22
+T3-0506,기침 소리,기침 소리,both,34,R05,R05,R05,agreed,R05
+T3-0507,눈이 건조하고,눈이 건조하고,claude_read,34,F13,F13,F13,agreed,F13
+T3-0508,머리통,머리통,both,34,N01,N01,N01,agreed,N01
+T3-0509,반복적인 행동,반복적인 행동,both,34,P29,P22,,disagree,
+T3-0510,안면통,안면통,both,34,N03,N03,N03,agreed,N03
+T3-0511,음식이나 물이 새어나오는,음식이나 물이 새어나오는,claude_read,34,D20-02,D20-02,D20-02,agreed,D20-02
+T3-0512,인지 기능의 저하,인지 기능의 저하,both,34,P20,P20,P20,agreed,P20
+T3-0513,조루,조루,both,34,P08,P08,P08,agreed,P08
+T3-0514,집중력이 저하,집중력이 저하,claude_read,34,P20,P20,P20,agreed,P20
+T3-0515,환청,환청,both,34,P29,P29,P29,agreed,P29
+T3-0516,기억력 장애,기억력 장애,both,33,P20,P20,P20,agreed,P20
+T3-0517,따끔거리는 느낌,따끔거리는 느낌,both,33,U01,U01,U01,agreed,U01
+T3-0518,분노,분노,both,33,P04,P04,P04,agreed,P04
+T3-0519,숨이 막히는,숨이 막히는,claude_read,33,R02,R02,R02,agreed,R02
+T3-0520,시력 상실,시력 상실,both,33,F05,F05,F05,agreed,F05
+T3-0521,심장 통증,심장 통증,both,33,K01,K01,K01,agreed,K01
+T3-0522,지능 저하,지능 저하,both,33,P20,P20,P20,agreed,P20
+T3-0523,가슴 쓰림,가슴 쓰림,both,32,D03,D03,D03,agreed,D03
+T3-0524,건조감,건조감,both,32,F13,F13,F13,agreed,F13
+T3-0525,색깔 변화,색깔 변화,both,32,U07,U07,U07,agreed,U07
+T3-0526,시림,시림,both,32,NONE,N06,,disagree,
+T3-0527,저림증,저림증,both,32,N05,N06,,disagree,
+T3-0528,지속적인 두통,지속적인 두통,both,32,N01,N01,N01,agreed,N01
+T3-0529,질 분비물이 증가,질 분비물이 증가,claude_read,32,X14,X14,X14,agreed,X14
+T3-0530,편마비,편마비,both,32,N18,N18,N18,agreed,N18
+T3-0531,흐릿하게 보이는,흐릿하게 보이는,claude_read,32,F05,F05,F05,agreed,F05
+T3-0532,가슴이 두근거리고,가슴이 두근거리고,claude_read,31,K04,K04,K04,agreed,K04
+T3-0533,골반의 비대칭,골반의 비대칭,both,31,L29,L29,L29,agreed,L29
+T3-0534,과도한 호흡,과도한 호흡,both,31,NONE,NONE,,none,
+T3-0535,기면증,기면증,both,31,NONE,NONE,,none,
+T3-0536,색소 변화,색소 변화; 색소변화,both,31,S08,S08,S08,agreed,S08
+T3-0537,소변이 새는,소변이 새는,claude_read,31,U04,U04,U04,agreed,U04
+T3-0538,시력 이상,시력 이상,both,31,F05,F05,F05,agreed,F05
+T3-0539,안면 통증,안면 통증,both,31,N03,R09,,disagree,
+T3-0540,절박성 요실금,절박성 요실금,both,31,U04,U04,U04,agreed,U04
+T3-0541,지속적인 출혈,지속적인 출혈,both,31,A10,NONE,,disagree,
+T3-0542,체력 감소,체력 감소,both,31,A04,A04,A04,agreed,A04
+T3-0543,피부가 붉어지는,피부가 붉어지는,claude_read,31,S08,S08,S08,agreed,S08
+T3-0544,골반 압박,골반 압박,both,30,X17,X17,X17,agreed,X17
+T3-0545,귀의 통증,귀의 통증,both,30,H01,H01,H01,agreed,H01
+T3-0546,목의 뻣뻣함,목의 뻣뻣함,both,30,L01,N29,,disagree,
+T3-0547,뻣뻣한,뻣뻣한,claude_read,30,L19,L19,L19,agreed,L19
+T3-0548,성욕 감소,성욕 감소,both,30,P07,P07,P07,agreed,P07
+T3-0549,심장 박동수 증가,심장 박동수 증가,both,30,K04,K04,K04,agreed,K04
+T3-0550,타는 느낌,타는 느낌,both,30,NONE,A11,,disagree,
+T3-0551,폭식,폭식,both,30,NONE,NONE,,none,
+T3-0552,피가 섞인 변,피가 섞인 변,both,30,D16,D16,D16,agreed,D16
+T3-0553,피부 종양,피부 종양,both,30,S04,NONE,,disagree,
+T3-0554,피부가 붓고,피부가 붓고,both,30,S04,Y04,,disagree,
+T3-0555,피부는 건조,피부는 건조,claude_read,30,S21,S21,S21,agreed,S21
+T3-0556,허탈,허탈,both,30,NONE,NONE,,none,
+T3-0557,호흡이 어려워지며,호흡이 어려워지며,both,30,R02,R02,R02,agreed,R02
+T3-0558,공포증,공포증,both,29,NONE,AMBIGUOUS,,disagree,
+T3-0559,관절이 붓고,관절이 붓고,both,29,L20,L20,L20,agreed,L20
+T3-0560,눈 가려움,눈 가려움,both,29,F13,F13,F13,agreed,F13
+T3-0561,다리의 통증,다리의 통증,both,29,L14,L14,L14,agreed,L14
+T3-0562,땀이 나지 않는,땀이 나지 않는,claude_read,29,A09,A09,A09,agreed,A09
+T3-0563,머리 통증,머리 통증,both,29,N01,N01,N01,agreed,N01
+T3-0564,배란통,배란통,both,29,X03,X03,X03,agreed,X03
+T3-0565,복부종,복부종,both,29,D24,D24,D24,agreed,D24
+T3-0566,성관계 시 통증,성관계 시 통증,both,29,AMBIGUOUS,AMBIGUOUS,P08; X04,agreed_span,P08; X04
+T3-0567,소양증,소양증,both,29,S02,X15,,disagree,
+T3-0568,시리고,시리고,claude_read,29,NONE,L12,,disagree,
+T3-0569,야뇨증,야뇨증,both,29,P12,U04,,disagree,
+T3-0570,운동 기능 저하,운동 기능 저하; 운동기능 저하,both,29,N29,N29,N29,agreed,N29
+T3-0571,운동 시 호흡곤란,운동 시 호흡곤란,both,29,R02,R02,R02,agreed,R02
+T3-0572,저신장증,저신장증,both,29,T10,T10,T10,agreed,T10
+T3-0573,피부 변색,피부 변색,both,29,S08,S08,S08,agreed,S08
+T3-0574,화농성 가래,화농성 가래,both,29,R25,R25,R25,agreed,R25
+T3-0575,근육이 약해지고,근육이 약해지고,claude_read,28,L19,L19,L19,agreed,L19
+T3-0576,다모증,다모증,both,28,S24,S24,S24,agreed,S24
+T3-0577,림프절 부종,림프절 부종,both,28,B02,B02,B02,agreed,B02
+T3-0578,발달의 지연,발달의 지연,both,28,P22,P22,P22,agreed,P22
+T3-0579,불규칙한 월경,불규칙한 월경,both,28,X07,X07,X07,agreed,X07
+T3-0580,뻐근함,뻐근함,both,28,L01,AMBIGUOUS,L01,agreed_partial,L01
+T3-0581,심박수가 증가,심박수가 증가,claude_read,28,K04,K04,K04,agreed,K04
+T3-0582,유루증,유루증,both,28,X21,X21,X21,agreed,X21
+T3-0583,조루증,조루증,claude_read,28,P08,P08,P08,agreed,P08
+T3-0584,코골이,코골이,claude_read,28,R04,R04,R04,agreed,R04
+T3-0585,피부의 발진,피부의 발진,both,28,AMBIGUOUS,S06,S06,agreed_partial,S06
+T3-0586,허약감,허약감,both,28,A04,A04,A04,agreed,A04
+T3-0587,호흡이 곤란,호흡이 곤란,both,28,R02,R02,R02,agreed,R02
+T3-0588,근긴장 저하,근긴장 저하,both,27,L19,L19,L19,agreed,L19
+T3-0589,긴장감,긴장감,both,27,P01,P01,P01,agreed,P01
+T3-0590,배뇨 문제,배뇨 문제,both,27,U05,U05,U05,agreed,U05
+T3-0591,소변에 피가 섞여 나오는,소변에 피가 섞여 나오는,claude_read,27,U06,U06,U06,agreed,U06
+T3-0592,안구 통증,안구 통증,both,27,F01,F01,F01,agreed,F01
+T3-0593,야간뇨,야간뇨,both,27,U02,U02,U02,agreed,U02
+T3-0594,얼굴이 붉어지고,얼굴이 붉어지고,both,27,S08,S08,S08,agreed,S08
+T3-0595,얼굴이 붉어지는,얼굴이 붉어지는,claude_read,27,S08,S08,S08,agreed,S08
+T3-0596,열이 나는,열이 나는,claude_read,27,A03,A03,A03,agreed,A03
+T3-0597,움직임의 제한,움직임의 제한,both,27,L29,L09,,disagree,
+T3-0598,유즙,유즙,both,27,X21,X21,X21,agreed,X21
+T3-0599,피를 토하거나,피를 토하거나,both,27,AMBIGUOUS,AMBIGUOUS,D14; R24,agreed_span,D14; R24
+T3-0600,하지 부종,하지 부종,both,27,K07,K07,K07,agreed,K07
+T3-0601,가슴의 압박감,가슴의 압박감,both,26,AMBIGUOUS,R29,R29,agreed_partial,R29
+T3-0602,감정 변동,감정 변동,both,26,P29,P29,P29,agreed,P29
+T3-0603,기운 없음,기운 없음,both,26,A04,A04,A04,agreed,A04
+T3-0604,떨리고,떨리고,claude_read,26,A02,A02,A02,agreed,A02
+T3-0605,복부의 통증,복부의 통증,both,26,D01,D01,D01,agreed,D01
+T3-0606,손발 저림,손발 저림,both,26,N05,N05,N05,agreed,N05
+T3-0607,수면 패턴 변화,수면 패턴 변화,both,26,P06,P06,P06,agreed,P06
+T3-0608,신체적 불편,신체적 불편,both,26,NONE,A29,,disagree,
+T3-0609,인설,인설,both,26,S21,S21,S21,agreed,S21
+T3-0610,지속적인 피로감,지속적인 피로감,both,26,A04,A04,A04,agreed,A04
+T3-0611,착란,착란,both,26,P20,P20,P20,agreed,P20
+T3-0612,청력 감소,청력 감소,both,26,H02,H02,H02,agreed,H02
+T3-0613,하반신 마비,하반신 마비; 하반신마비,both,26,N18,N18,N18,agreed,N18
+T3-0614,호흡이 어려워지면,호흡이 어려워지면,claude_read,26,R02,R02,R02,agreed,R02
+T3-0615,담도산통,담도산통,both,25,NONE,NONE,,none,
+T3-0616,불쾌한 감각,불쾌한 감각,both,25,NONE,U01,,disagree,
+T3-0617,성장이 지연,성장이 지연,claude_read,25,T10,T10,T10,agreed,T10
+T3-0618,시야가 좁아지는,시야가 좁아지는,claude_read,25,F05,F05,F05,agreed,F05
+T3-0619,우울한 기분,우울한 기분,both,25,P03,P03,P03,agreed,P03
+T3-0620,이상 행동,이상 행동; 이상행동,both,25,P29,P22,,disagree,
+T3-0621,질 건조,질 건조,both,25,X15,X15,X15,agreed,X15
+T3-0622,피부 두드러기,피부 두드러기,both,25,NONE,NONE,,none,
+T3-0623,피부 부종,피부 부종,both,25,A08,S05,,disagree,
+T3-0624,피부에 물집,피부에 물집,both,25,S17,S17,S17,agreed,S17
+T3-0625,호흡이 어려울,호흡이 어려울,claude_read,25,R02,R02,R02,agreed,R02
+T3-0626,가슴의 두근거림,가슴의 두근거림,both,24,K04,K04,K04,agreed,K04
+T3-0627,가피,가피,both,24,S17,S21,,disagree,
+T3-0628,공포감,공포감,both,24,P01,P01,P01,agreed,P01
+T3-0629,구강 궤양,구강 궤양,both,24,D20-02,D20-02,D20-02,agreed,D20-02
+T3-0630,기억 장애,기억 장애,both,24,P20,P20,P20,agreed,P20
+T3-0631,기억력 상실,기억력 상실,both,24,P20,P20,P20,agreed,P20
+T3-0632,눈의 피로감,눈의 피로감,both,24,F05,F05,F05,agreed,F05
+T3-0633,발의 통증,발의 통증,both,24,L17,L17,L17,agreed,L17
+T3-0634,배변 장애,배변 장애,both,24,D18,D18,D18,agreed,D18
+T3-0635,부비동 막힘,부비동 막힘,both,24,R09,R09,R09,agreed,R09
+T3-0636,성기능 저하,성기능 저하,both,24,AMBIGUOUS,AMBIGUOUS,P08; Y08,agreed_span,P08; Y08
+T3-0637,소변을 볼 때 통증,소변을 볼 때 통증,both,24,U01,U01,U01,agreed,U01
+T3-0638,요절박,요절박,both,24,U02,U02,U02,agreed,U02
+T3-0639,운동 능력이 저하,운동 능력이 저하,claude_read,24,N29,N29,N29,agreed,N29
+T3-0640,토할,토할,claude_read,24,D10,AMBIGUOUS,,disagree,
+T3-0641,트림,트림,both,24,D08,D08,D08,agreed,D08
+T3-0642,피가 섞인 가래,피가 섞인 가래,both,24,R24,R24,R24,agreed,R24
+T3-0643,피부가 붉고,피부가 붉고,both,24,S06,S08,,disagree,
+T3-0644,호흡 속도 증가,호흡 속도 증가,both,24,R04,R04,R04,agreed,R04
+T3-0645,구음 장애,구음 장애; 구음장애,both,23,N19,N19,N19,agreed,N19
+T3-0646,기억력 손상,기억력 손상,both,23,P20,P20,P20,agreed,P20
+T3-0647,눈에 이물감,눈에 이물감,both,23,F13,F13,F13,agreed,F13
+T3-0648,배뇨 통증,배뇨 통증,both,23,U01,U01,U01,agreed,U01
+T3-0649,복부의 팽만,복부의 팽만,claude_read,23,D08,D08,D08,agreed,D08
+T3-0650,부어오릅니다,부어오릅니다,claude_read,23,A08,X21,,disagree,
+T3-0651,심각한 호흡곤란,심각한 호흡곤란,both,23,R02,R02,R02,agreed,R02
+T3-0652,안면 비대칭,안면 비대칭,both,23,NONE,L29,,disagree,
+T3-0653,언어 및 운동 장애,언어 및 운동 장애,claude_read,23,AMBIGUOUS,AMBIGUOUS,N19; N29,agreed_span,N19; N29
+T3-0654,이마에 주름,이마에 주름,claude_read,23,NONE,N18,,disagree,
+T3-0655,작은 구진,작은 구진,claude_read,23,S04,S04,S04,agreed,S04
+T3-0656,정신 착란,정신 착란,both,23,P20,P20,P20,agreed,P20
+T3-0657,지방변,지방변,both,23,D18,D18,D18,agreed,D18
+T3-0658,청력 장애,청력 장애,both,23,H02,H02,H02,agreed,H02
+T3-0659,호흡 마비,호흡 마비,both,23,NONE,R04,,disagree,
+T3-0660,가슴에 통증,가슴에 통증,both,22,A11,A11,A11,agreed,A11
+T3-0661,가슴이 답답하고,가슴이 답답하고,claude_read,22,R29,R29,R29,agreed,R29
+T3-0662,갑작스러운 고열,갑작스러운 고열,both,22,A03,A03,A03,agreed,A03
+T3-0663,결막 충혈,결막 충혈,both,22,F02,F02,F02,agreed,F02
+T3-0664,관절의 변형,관절의 변형,both,22,L20,L12,,disagree,
+T3-0665,두꺼워지며,두꺼워지며,claude_read,22,NONE,B29,,disagree,
+T3-0666,멍이 쉽게 생기거나,멍이 쉽게 생기거나,both,22,S29,S29,S29,agreed,S29
+T3-0667,멍이 쉽게 생길,멍이 쉽게 생길,claude_read,22,S29,S29,S29,agreed,S29
+T3-0668,분비물 증가,분비물 증가,both,22,R25,R25,R25,agreed,R25
+T3-0669,불안정한 상태,불안정한 상태,both,22,P04,P29,,disagree,
+T3-0670,비정상적인 자궁 출혈,비정상적인 자궁 출혈,both,22,X08,W03,,disagree,
+T3-0671,사지의 멍,사지의 멍,both,22,S16,S16,S16,agreed,S16
+T3-0672,성욕 저하,성욕 저하,both,22,P07,P07,P07,agreed,P07
+T3-0673,안통,안통,both,22,NONE,NONE,,none,
+T3-0674,약함,약함,both,22,A04,A04,A04,agreed,A04
+T3-0675,월경이 없는,월경이 없는,claude_read,22,X05,NONE,,disagree,
+T3-0676,위통,위통,both,22,D02,D02,D02,agreed,D02
+T3-0677,음모,음모,both,22,NONE,S24,,disagree,
+T3-0678,의식 손상,의식 손상,both,22,A07,N29,,disagree,
+T3-0679,자극감,자극감,both,22,F13,F13,F13,agreed,F13
+T3-0680,제대 탈장,제대 탈장,both,22,NONE,NONE,,none,
+T3-0681,타박상,타박상,both,22,S16,S16,S16,agreed,S16
+T3-0682,피부가 붉게 변하는,피부가 붉게 변하는,claude_read,22,S06,S06,S06,agreed,S06
+T3-0683,피부는 건조하고,피부는 건조하고,claude_read,22,S21,S21,S21,agreed,S21
+T3-0684,호흡 증가,호흡 증가; 호흡증가,both,22,NONE,NONE,,none,
+T3-0685,호흡수 증가,호흡수 증가; 호흡수증가,both,22,R04,R04,R04,agreed,R04
+T3-0686,광시증,광시증,both,21,F05,F05,F05,agreed,F05
+T3-0687,기분장애,기분장애,both,21,NONE,NONE,,none,
+T3-0688,눈이 피로해지고,눈이 피로해지고,claude_read,21,F05,F05,F05,agreed,F05
+T3-0689,반출혈,반출혈,both,21,S29,S29,S29,agreed,S29
+T3-0690,배변 시 통증,배변 시 통증,both,21,D04,D04,D04,agreed,D04
+T3-0691,벗겨질,벗겨질,claude_read,21,S21,S21,S21,agreed,S21
+T3-0692,보행에 어려움,보행에 어려움,claude_read,21,N29,N29,N29,agreed,N29
+T3-0693,생리 불순,생리 불순; 생리불순,both,21,X07,X07,X07,agreed,X07
+T3-0694,전신적인 피로감,전신적인 피로감,both,21,A04,A04,A04,agreed,A04
+T3-0695,쥐어짜는 듯한 통증,쥐어짜는 듯한 통증,both,21,NONE,A01,,disagree,
+T3-0696,핍뇨,핍뇨,both,21,U05,U05,U05,agreed,U05
+T3-0697,호흡의 어려움,호흡의 어려움,both,21,R02,R02,R02,agreed,R02
+T3-0698,흉부 불편감,흉부 불편감,both,21,A11,R29,,disagree,
+T3-0699,가려울,가려울,claude_read,20,S02,S02,S02,agreed,S02
+T3-0700,과도한 땀 분비,과도한 땀 분비,both,20,A09,A09,A09,agreed,A09
+T3-0701,관절 변형,관절 변형,both,20,L20,L20,L20,agreed,L20
+T3-0702,눈이 충혈되고,눈이 충혈되고,both,20,F02,F02,F02,agreed,F02
+T3-0703,따가운 느낌,따가운 느낌,both,20,U01,U01,U01,agreed,U01
+T3-0704,몸의 경직,몸의 경직,both,20,L19,L19,L19,agreed,L19
+T3-0705,복부가 팽창,복부가 팽창,claude_read,20,D25,D25,D25,agreed,D25
+T3-0706,비강 및 잇몸 출혈,비강 및 잇몸 출혈,claude_read,20,AMBIGUOUS,AMBIGUOUS,D19; R06,agreed_span,D19; R06
+T3-0707,비정상적인 덩어리,비정상적인 덩어리,claude_read,20,A08,A08,A08,agreed,A08
+T3-0708,빨간 반점,빨간 반점,claude_read,20,S06,S06,S06,agreed,S06
+T3-0709,소변의 변화,소변의 변화,both,20,U07,U07,U07,agreed,U07
+T3-0710,시야가 흐려지거나,시야가 흐려지거나,both,20,F05,F05,F05,agreed,F05
+T3-0711,심한 설사,심한 설사,both,20,D11,D11,D11,agreed,D11
+T3-0712,안면 기형,안면 기형,both,20,NONE,NONE,,none,
+T3-0713,운동기능의 저하,운동기능의 저하,claude_read,20,N29,N29,N29,agreed,N29
+T3-0714,의식이 소실,의식이 소실,claude_read,20,A06,A06,A06,agreed,A06
+T3-0715,저린 느낌,저린 느낌,both,20,N05,N05,N05,agreed,N05
+T3-0716,조기 포만감,조기 포만감,both,20,D02,D02,D02,agreed,D02
+T3-0717,집중력 감퇴,집중력 감퇴,both,20,P20,P20,P20,agreed,P20
+T3-0718,청각 장애,청각 장애,both,20,H02,H02,H02,agreed,H02
+T3-0719,체중이 감소하며,체중이 감소하며,both,20,T08,T08,T08,agreed,T08
+T3-0720,피부 발적,피부 발적,both,20,S06,Y05,,disagree,
+T3-0721,호흡이 어렵고,호흡이 어렵고,both,20,R02,R02,R02,agreed,R02
+T3-0722,가슴이 두근거리거나,가슴이 두근거리거나,both,19,K04,K04,K04,agreed,K04
+T3-0723,가슴이 두근거리는 느낌,가슴이 두근거리는 느낌,both,19,K04,K04,K04,agreed,K04
+T3-0724,눈 시림,눈 시림,both,19,F13,F13,F13,agreed,F13
+T3-0725,멍이 쉽게 생기고,멍이 쉽게 생기고,both,19,S29,S29,S29,agreed,S29
+T3-0726,목이 마르고,목이 마르고,both,19,T01,AMBIGUOUS,T01,agreed_partial,T01
+T3-0727,몸이 굳어지고,몸이 굳어지고,both,19,L19,L19,L19,agreed,L19
+T3-0728,복부의 불편감,복부의 불편감,both,19,D01,D01,D01,agreed,D01
+T3-0729,복부의 팽만감,복부의 팽만감,both,19,D08,D08,D08,agreed,D08
+T3-0730,불규칙한 맥박,불규칙한 맥박,both,19,K05,K05,K05,agreed,K05
+T3-0731,불쾌한 냄새,불쾌한 냄새,both,19,NONE,R25,,disagree,
+T3-0732,사지마비,사지마비,both,19,N18,N18,N18,agreed,N18
+T3-0733,손과 다리의 무감각,손과 다리의 무감각,claude_read,19,N06,N06,N06,agreed,N06
+T3-0734,숨이 막히는 느낌,숨이 막히는 느낌,both,19,R02,R02,R02,agreed,R02
+T3-0735,심장 박동 수의 증가,심장 박동 수의 증가,both,19,K04,K04,K04,agreed,K04
+T3-0736,심장의 빠른 박동,심장의 빠른 박동,both,19,K04,K04,K04,agreed,K04
+T3-0737,월경 불규칙,월경 불규칙,both,19,X07,X07,X07,agreed,X07
+T3-0738,정신적인 혼란,정신적인 혼란,both,19,P20,P20,P20,agreed,P20
+T3-0739,집중력 장애,집중력 장애,both,19,P20,P20,P20,agreed,P20
+T3-0740,척추 통증,척추 통증,both,19,L02,L02,L02,agreed,L02
+T3-0741,청력이 저하,청력이 저하,claude_read,19,H02,H02,H02,agreed,H02
+T3-0742,치아 통증,치아 통증; 치아통증,both,19,D19,D19,D19,agreed,D19
+T3-0743,키가 작고,키가 작고,both,19,T10,T10,T10,agreed,T10
+T3-0744,편측 마비,편측 마비; 편측마비,both,19,N18,N18,N18,agreed,N18
+T3-0745,피부의 창백함,피부의 창백함,both,19,S08,S08,S08,agreed,S08
+T3-0746,항문 통증,항문 통증,claude_read,19,D04,D04,D04,agreed,D04
+T3-0747,호흡이 어려워집니다,호흡이 어려워집니다,claude_read,19,R02,R02,R02,agreed,R02
+T3-0748,홍반성 발진,홍반성 발진,both,19,AMBIGUOUS,S06,S06,agreed_partial,S06
+T3-0749,가벼운 통증,가벼운 통증,both,18,A01,A01,A01,agreed,A01
+T3-0750,각질화,각질화,both,18,S21,S21,S21,agreed,S21
+T3-0751,골반 압박감,골반 압박감,both,18,X17,X17,X17,agreed,X17
+T3-0752,목에 혹,목에 혹,both,18,AMBIGUOUS,A08,A08,agreed_partial,A08
+T3-0753,복부의 팽창,복부의 팽창,both,18,D25,D25,D25,agreed,D25
+T3-0754,산만한 행동,산만한 행동,both,18,P20,P20,P20,agreed,P20
+T3-0755,생리 과다,생리 과다,both,18,X06,X06,X06,agreed,X06
+T3-0756,소량의 출혈,소량의 출혈,claude_read,18,A10,A10,A10,agreed,A10
+T3-0757,소화기 장애,소화기 장애,both,18,D29,D29,D29,agreed,D29
+T3-0758,식욕이 증가,식욕이 증가,claude_read,18,T02,T02,T02,agreed,T02
+T3-0759,쌕쌕거리는 소리,쌕쌕거리는 소리,both,18,R03,R03,R03,agreed,R03
+T3-0760,얼굴 통증,얼굴 통증,both,18,N03,R09,,disagree,
+T3-0761,월경 불순,월경 불순,both,18,X07,X07,X07,agreed,X07
+T3-0762,일시적인 의식 상실,일시적인 의식 상실,both,18,A06,A06,A06,agreed,A06
+T3-0763,입술에 물집,입술에 물집,claude_read,18,D20-02,D20-02,D20-02,agreed,D20-02
+T3-0764,저림 현상,저림 현상,both,18,N05,N06,,disagree,
+T3-0765,38도 이상의 고열,38도 이상의 고열,claude_read,17,A03,A03,A03,agreed,A03
+T3-0766,가벼운 두통,가벼운 두통,both,17,N01,N01,N01,agreed,N01
+T3-0767,가슴이 답답하거나,가슴이 답답하거나,claude_read,17,R29,R29,R29,agreed,R29
+T3-0768,갑작스러운 통증,갑작스러운 통증,both,17,A01,A01,A01,agreed,A01
+T3-0769,강박적인 행동,강박적인 행동,both,17,P29,P29,P29,agreed,P29
+T3-0770,관절의 움직임이 제한,관절의 움직임이 제한,claude_read,17,L20,L20,L20,agreed,L20
+T3-0771,근육 긴장 저하,근육 긴장 저하,both,17,L19,L19,L19,agreed,L19
+T3-0772,눈의 가려움,눈의 가려움,both,17,F13,F13,F13,agreed,F13
+T3-0773,눈이 아프고,눈이 아프고,claude_read,17,F01,F01,F01,agreed,F01
+T3-0774,목이 아프고,목이 아프고,both,17,AMBIGUOUS,R21,R21,agreed_partial,R21
+T3-0775,무감동,무감동,both,17,P29,P29,P29,agreed,P29
+T3-0776,방사통,방사통,both,17,A01,L09,,disagree,
+T3-0777,붉은 구진,붉은 구진,both,17,S04,AMBIGUOUS,,disagree,
+T3-0778,빛과 소리에 대한 공포,빛과 소리에 대한 공포,claude_read,17,AMBIGUOUS,AMBIGUOUS,F05; H02,agreed_span,F05; H02
+T3-0779,빛에 대한 과민반응,빛에 대한 과민반응,both,17,F05,F05,F05,agreed,F05
+T3-0780,상복부 불쾌감,상복부 불쾌감,both,17,D02,D02,D02,agreed,D02
+T3-0781,손목 통증,손목 통증,both,17,L11,L11,L11,agreed,L11
+T3-0782,숨이 찰,숨이 찰,claude_read,17,R02,R02,R02,agreed,R02
+T3-0783,시야 이상,시야 이상,both,17,F05,F05,F05,agreed,F05
+T3-0784,신체적인 불편감,신체적인 불편감,both,17,NONE,A29,,disagree,
+T3-0785,심리적인 고통,심리적인 고통,claude_read,17,P02,P29,,disagree,
+T3-0786,약간의 통증,약간의 통증,claude_read,17,A01,A01,A01,agreed,A01
+T3-0787,요주저,요주저,both,17,U05,U05,U05,agreed,U05
+T3-0788,전신 경련,전신 경련,both,17,N07,N07,N07,agreed,N07
+T3-0789,전신 무력감,전신 무력감,both,17,A04,A04,A04,agreed,A04
+T3-0790,주의력 문제,주의력 문제,both,17,P20,P20,P20,agreed,P20
+T3-0791,질투,질투,both,17,P29,P29,P29,agreed,P29
+T3-0792,짙은 검은색 변,짙은 검은색 변,both,17,D15,D15,D15,agreed,D15
+T3-0793,편측성 두통,편측성 두통,both,17,N01,N01,N01,agreed,N01
+T3-0794,하복통,하복통,both,17,D06,D06,D06,agreed,D06
+T3-0795,허리의 통증,허리의 통증,both,17,L03,L03,L03,agreed,L03
+T3-0796,혈담,혈담,both,17,R24,R24,R24,agreed,R24
+T3-0797,흑색변,흑색변,both,17,D15,D15,D15,agreed,D15
+T3-0798,관절의 뻣뻣함,관절의 뻣뻣함,both,16,L20,L20,L20,agreed,L20
+T3-0799,근육의 쇠약,근육의 쇠약,both,16,L19,L19,L19,agreed,L19
+T3-0800,급격한 체온 상승,급격한 체온 상승,claude_read,16,A03,A03,A03,agreed,A03
+T3-0801,급성 복통,급성 복통,both,16,D01,D01,D01,agreed,D01
+T3-0802,급성 설사,급성 설사,both,16,D11,D11,D11,agreed,D11
+T3-0803,기억 손상,기억 손상,both,16,P20,P20,P20,agreed,P20
+T3-0804,눈 가려움증,눈 가려움증; 눈가려움증,both,16,F13,F13,F13,agreed,F13
+T3-0805,눈이 감기지 않는,눈이 감기지 않는,claude_read,16,F16,F16,F16,agreed,F16
+T3-0806,맥박 증가,맥박 증가,both,16,K04,K04,K04,agreed,K04
+T3-0807,목과 어깨 근육의 긴장,목과 어깨 근육의 긴장,claude_read,16,AMBIGUOUS,AMBIGUOUS,L01; L08,agreed_span,L01; L08
+T3-0808,목소리의 변화,목소리의 변화,both,16,R23,R23,R23,agreed,R23
+T3-0809,목의 불편함,목의 불편함,both,16,AMBIGUOUS,R21,R21,agreed_partial,R21
+T3-0810,부적절한 행동,부적절한 행동,claude_read,16,P29,P29,P29,agreed,P29
+T3-0811,분비물의 양이 증가,분비물의 양이 증가,claude_read,16,X14,X14,X14,agreed,X14
+T3-0812,붉은색 반점,붉은색 반점,claude_read,16,S06,S06,S06,agreed,S06
+T3-0813,빠른 맥박,빠른 맥박,both,16,K04,K04,K04,agreed,K04
+T3-0814,손과 발의 저림,손과 발의 저림,claude_read,16,N05,N05,N05,agreed,N05
+T3-0815,수면에 어려움,수면에 어려움,claude_read,16,P06,P06,P06,agreed,P06
+T3-0816,숨 쉬기가 어려워질,숨 쉬기가 어려워질; 숨쉬기가 어려워질,claude_read,16,R02,R02,R02,agreed,R02
+T3-0817,시야가 흐려질,시야가 흐려질,claude_read,16,F05,F05,F05,agreed,F05
+T3-0818,악몽,악몽,both,16,P06,P06,P06,agreed,P06
+T3-0819,안구 운동 장애,안구 운동 장애,both,16,F14,F14,F14,agreed,F14
+T3-0820,저림감,저림감,both,16,N05,N05,N05,agreed,N05
+T3-0821,점액변,점액변,both,16,D18,D18,D18,agreed,D18
+T3-0822,지속적인 콧물,지속적인 콧물,both,16,R07,R07,R07,agreed,R07
+T3-0823,체온 저하,체온 저하,both,16,A29,A29,A29,agreed,A29
+T3-0824,체온이 급격하게 상승,체온이 급격하게 상승,claude_read,16,A03,A03,A03,agreed,A03
+T3-0825,치아의 흔들림,치아의 흔들림,both,16,D19,D19,D19,agreed,D19
+T3-0826,피부 홍조,피부 홍조,both,16,S08,S08,S08,agreed,S08
+T3-0827,혼란스러운,혼란스러운,claude_read,16,P20,P20,P20,agreed,P20
+T3-0828,흐릿하게 보일,흐릿하게 보일,claude_read,16,U07,U07,U07,agreed,U07
+T3-0829,감각 소실,감각 소실,both,15,N06,N06,N06,agreed,N06
+T3-0830,경미한 출혈,경미한 출혈,claude_read,15,A10,A10,A10,agreed,A10
+T3-0831,굳은 살,굳은 살,claude_read,15,S20,S20,S20,agreed,S20
+T3-0832,기분 변동,기분 변동,both,15,P29,NONE,,disagree,
+T3-0833,날카로운 느낌,날카로운 느낌,both,15,NONE,A11,,disagree,
+T3-0834,눈이 붓고,눈이 붓고,both,15,F15,F15,F15,agreed,F15
+T3-0835,다식,다식,both,15,T02,T02,T02,agreed,T02
+T3-0836,단단한 혹,단단한 혹,claude_read,15,A08,S04,,disagree,
+T3-0837,당황,당황,claude_read,15,NONE,P29,,disagree,
+T3-0838,대소변 장애,대소변 장애,both,15,AMBIGUOUS,AMBIGUOUS,D18; U05,agreed_span,D18; U05
+T3-0839,마비감,마비감,both,15,N06,N18,,disagree,
+T3-0840,말하는 데 어려움,말하는 데 어려움,both,15,N19,N19,N19,agreed,N19
+T3-0841,매우 심한 통증,매우 심한 통증,claude_read,15,A01,U14,,disagree,
+T3-0842,발육 지연,발육 지연,both,15,T10,AMBIGUOUS,T10,agreed_partial,T10
+T3-0843,벗겨짐,벗겨짐,both,15,S21,S21,S21,agreed,S21
+T3-0844,복부 부풀림,복부 부풀림,both,15,D08,D08,D08,agreed,D08
+T3-0845,불안 증상,불안 증상,claude_read,15,P01,P01,P01,agreed,P01
+T3-0846,불안정감,불안정감,both,15,AMBIGUOUS,AMBIGUOUS,N17; P01,agreed_span,N17; P01
+T3-0847,비강 분비물,비강 분비물,both,15,R07,R07,R07,agreed,R07
+T3-0848,빈번한 소변,빈번한 소변,both,15,U02,U02,U02,agreed,U02
+T3-0849,사지 부종,사지 부종,both,15,K07,K07,K07,agreed,K07
+T3-0850,소변 감소,소변 감소,both,15,U05,U05,U05,agreed,U05
+T3-0851,소통에 어려움,소통에 어려움,claude_read,15,P29,P29,P29,agreed,P29
+T3-0852,수면 마비,수면 마비,both,15,P06,P06,P06,agreed,P06
+T3-0853,시력 감퇴,시력 감퇴; 시력감퇴,both,15,F05,F05,F05,agreed,F05
+T3-0854,시야 문제,시야 문제,both,15,F05,F05,F05,agreed,F05
+T3-0855,열이 나거나,열이 나거나,claude_read,15,A03,A03,A03,agreed,A03
+T3-0856,예민해지는,예민해지는,claude_read,15,AMBIGUOUS,AMBIGUOUS,F05,agreed_partial,F05
+T3-0857,왼쪽 상부 복부 통증,왼쪽 상부 복부 통증,both,15,D06,D06,D06,agreed,D06
+T3-0858,월경 주기의 변화,월경 주기의 변화,both,15,X07,X07,X07,agreed,X07
+T3-0859,이충만감,이충만감,both,15,H13,H13,H13,agreed,H13
+T3-0860,전신 통증,전신 통증,both,15,A01,A01,A01,agreed,A01
+T3-0861,지각 이상,지각 이상,both,15,N06,N06,N06,agreed,N06
+T3-0862,차가움,차가움,both,15,NONE,AMBIGUOUS,,disagree,
+T3-0863,피부가 건조해지며,피부가 건조해지며,claude_read,15,S21,S21,S21,agreed,S21
+T3-0864,피해 망상,피해 망상,both,15,P29,P29,P29,agreed,P29
+T3-0865,힘이 약해져,힘이 약해져,claude_read,15,L19,L19,L19,agreed,L19
+T3-0866,가려운 느낌,가려운 느낌,claude_read,14,S02,S02,S02,agreed,S02
+T3-0867,가벼운 불쾌감,가벼운 불쾌감,both,14,NONE,R29,,disagree,
+T3-0868,갑작스러운 발열,갑작스러운 발열,both,14,A03,A03,A03,agreed,A03
+T3-0869,결막 부종,결막 부종,both,14,F15,F15,F15,agreed,F15
+T3-0870,고름물집,고름물집,both,14,S04,S17,,disagree,
+T3-0871,구강 내 출혈,구강 내 출혈,both,14,D20-02,D20-02,D20-02,agreed,D20-02
+T3-0872,근력의 약화,근력의 약화,both,14,L19,L19,L19,agreed,L19
+T3-0873,근육 떨림,근육 떨림,both,14,N08,N08,N08,agreed,N08
+T3-0874,급속한 마비,급속한 마비,both,14,N18,N18,N18,agreed,N18
+T3-0875,기억력이 저하,기억력이 저하,claude_read,14,P20,P20,P20,agreed,P20
+T3-0876,기운이 없고,기운이 없고,both,14,A04,A04,A04,agreed,A04
+T3-0877,눈이 노랗게 변하는,눈이 노랗게 변하는,claude_read,14,D13,D13,D13,agreed,D13
+T3-0878,눈이 붉어지고,눈이 붉어지고,claude_read,14,F02,F02,F02,agreed,F02
+T3-0879,다리에 통증,다리에 통증,claude_read,14,L14,L14,L14,agreed,L14
+T3-0880,담관 산통,담관 산통,both,14,NONE,NONE,,none,
+T3-0881,땀을 많이 흘릴,땀을 많이 흘릴,claude_read,14,A09,A09,A09,agreed,A09
+T3-0882,땀이 나고,땀이 나고,both,14,A09,A09,A09,agreed,A09
+T3-0883,목에 이물감,목에 이물감,both,14,R21,R21,R21,agreed,R21
+T3-0884,목이 아프거나,목이 아프거나,both,14,AMBIGUOUS,R21,R21,agreed_partial,R21
+T3-0885,몸이 굳어지는,몸이 굳어지는,claude_read,14,L19,L19,L19,agreed,L19
+T3-0886,발음에 어려움,발음에 어려움,claude_read,14,N19,N19,N19,agreed,N19
+T3-0887,발작적인 기침,발작적인 기침,both,14,R05,R05,R05,agreed,R05
+T3-0888,배 통증,배 통증,both,14,D01,D01,D01,agreed,D01
+T3-0889,백반,백반,both,14,D20-02,NONE,,disagree,
+T3-0890,변형시,변형시,claude_read,14,NONE,L20,,disagree,
+T3-0891,불규칙한 심장 박동,불규칙한 심장 박동,both,14,K05,K05,K05,agreed,K05
+T3-0892,빛과 소리에 대한 과민증상,빛과 소리에 대한 과민증상,claude_read,14,AMBIGUOUS,AMBIGUOUS,F05; H02,agreed_span,F05; H02
+T3-0893,얼굴 홍조,얼굴 홍조,both,14,S08,S08,S08,agreed,S08
+T3-0894,열이 오르고,열이 오르고,claude_read,14,A03,A03,A03,agreed,A03
+T3-0895,오른쪽 상복부의 지속적인 통증,오른쪽 상복부의 지속적인 통증,claude_read,14,D06,D06,D06,agreed,D06
+T3-0896,위액의 역류,위액의 역류,both,14,D03,D03,D03,agreed,D03
+T3-0897,의욕 상실,의욕 상실; 의욕상실,both,14,P03,P03,P03,agreed,P03
+T3-0898,잇몸이 붓고,잇몸이 붓고,claude_read,14,D19,D19,D19,agreed,D19
+T3-0899,작은 돌기,작은 돌기,both,14,S04,X16,,disagree,
+T3-0900,질 분비물의 양이 증가,질 분비물의 양이 증가,claude_read,14,X14,X14,X14,agreed,X14
+T3-0901,체력이 약해,체력이 약해,claude_read,14,A04,A04,A04,agreed,A04
+T3-0902,체온이 비정상적으로 상승,체온이 비정상적으로 상승,claude_read,14,A03,A03,A03,agreed,A03
+T3-0903,코 가려움,코 가려움,both,14,R08,R08,R08,agreed,R08
+T3-0904,코분비,코분비,both,14,R07,R07,R07,agreed,R07
+T3-0905,큰 입,큰 입,both,14,NONE,D20-02,,disagree,
+T3-0906,피부 색소 침착,피부 색소 침착,both,14,S08,S08,S08,agreed,S08
+T3-0907,피부가 부풀어오르고,피부가 부풀어오르고,claude_read,14,S04,S05,,disagree,
+T3-0908,해리성 기억 상실,해리성 기억 상실,both,14,NONE,NONE,,none,
+T3-0909,홍반성 구진,홍반성 구진,both,14,S04,S04,S04,agreed,S04
+T3-0910,가벼운 불편,가벼운 불편,claude_read,13,NONE,A29,,disagree,
+T3-0911,각질 형성,각질 형성,both,13,S21,S24,,disagree,
+T3-0912,거짓말,거짓말,both,13,NONE,NONE,,none,
+T3-0913,고환의 덩어리,고환의 덩어리,claude_read,13,Y05,Y05,Y05,agreed,Y05
+T3-0914,관절의 부종,관절의 부종,both,13,L20,L20,L20,agreed,L20
+T3-0915,관절의 붓기,관절의 붓기,both,13,L20,L20,L20,agreed,L20
+T3-0916,누런 콧물,누런 콧물,both,13,R07,R07,R07,agreed,R07
+T3-0917,대변이나 소변에서 혈액이 나올,대변이나 소변에서 혈액이 나올,claude_read,13,AMBIGUOUS,AMBIGUOUS,D16; U06,agreed_span,D16; U06
+T3-0918,림프절이 커지고,림프절이 커지고,claude_read,13,B02,B02,B02,agreed,B02
+T3-0919,매우 심한 두통,매우 심한 두통,both,13,N01,N01,N01,agreed,N01
+T3-0920,몸이 붓는,몸이 붓는,claude_read,13,K07,K07,K07,agreed,K07
+T3-0921,보챔,보챔,both,13,A16,A16,A16,agreed,A16
+T3-0922,복부에 통증,복부에 통증,claude_read,13,D01,D01,D01,agreed,D01
+T3-0923,부정 자궁 출혈,부정 자궁 출혈,both,13,X08,X08,X08,agreed,X08
+T3-0924,불규칙한 질 출혈,불규칙한 질 출혈,both,13,AMBIGUOUS,X08,X08,agreed_partial,X08
+T3-0925,뼈의 통증,뼈의 통증,both,13,L29,L29,L29,agreed,L29
+T3-0926,뾰루지,뾰루지,both,13,S04,S04,S04,agreed,S04
+T3-0927,생리 주기의 불규칙성,생리 주기의 불규칙성,both,13,X07,X07,X07,agreed,X07
+T3-0928,생리통과 유사한 통증,생리통과 유사한 통증,claude_read,13,X01,X01,X01,agreed,X01
+T3-0929,소변 볼 때 통증,소변 볼 때 통증,both,13,U01,U01,U01,agreed,U01
+T3-0930,쉽게 피로해지고,쉽게 피로해지고,claude_read,13,A04,L19,,disagree,
+T3-0931,시야 변화,시야 변화,both,13,F05,F05,F05,agreed,F05
+T3-0932,심한 월경통,심한 월경통,both,13,X02,X02,X02,agreed,X02
+T3-0933,심한 황달,심한 황달,both,13,D13,D13,D13,agreed,D13
+T3-0934,압력감,압력감,both,13,NONE,NONE,,none,
+T3-0935,어지러움증,어지러움증,both,13,N17,N17,N17,agreed,N17
+T3-0936,운동 능력의 저하,운동 능력의 저하; 운동능력의 저하,both,13,N18,N29,,disagree,
+T3-0937,음식을 삼키는 데 어려움,음식을 삼키는 데 어려움,claude_read,13,D21,D21,D21,agreed,D21
+T3-0938,잦은 기침,잦은 기침,both,13,R05,R05,R05,agreed,R05
+T3-0939,전신적인 쇠약감,전신적인 쇠약감,both,13,A04,A04,A04,agreed,A04
+T3-0940,전신적인 통증,전신적인 통증,both,13,A01,A01,A01,agreed,A01
+T3-0941,집중력이 떨어지고,집중력이 떨어지고,both,13,P20,P20,P20,agreed,P20
+T3-0942,청력이 감소,청력이 감소,claude_read,13,H02,H02,H02,agreed,H02
+T3-0943,탈력 발작,탈력 발작; 탈력발작,both,13,NONE,N29,,disagree,
+T3-0944,폭력적인 행동,폭력적인 행동,both,13,P04,P04,P04,agreed,P04
+T3-0945,피부 건조함,피부 건조함,claude_read,13,S21,S21,S21,agreed,S21
+T3-0946,피부 괴사,피부 괴사,both,13,NONE,S29,,disagree,
+T3-0947,피부가 붉게 변하며,피부가 붉게 변하며,claude_read,13,S06,S06,S06,agreed,S06
+T3-0948,피부가 창백해지고,피부가 창백해지고,claude_read,13,S08,S08,S08,agreed,S08
+T3-0949,하얀 반점,하얀 반점,both,13,D20-01,D20-01,D20-01,agreed,D20-01
+T3-0950,감각 손상,감각 손상,both,12,N06,N06,N06,agreed,N06
+T3-0951,고양이 울음소리,고양이 울음소리,both,12,NONE,R23,,disagree,
+T3-0952,관절 강직,관절 강직,both,12,L20,L20,L20,agreed,L20
+T3-0953,광 과민성,광 과민성,both,12,F05,F05,F05,agreed,F05
+T3-0954,구토감,구토감,both,12,D09,D09,D09,agreed,D09
+T3-0955,근육의 강직,근육의 강직,claude_read,12,L19,L19,L19,agreed,L19
+T3-0956,다리의 부종,다리의 부종,both,12,K07,K07,K07,agreed,K07
+T3-0957,둥근 얼굴,둥근 얼굴,both,12,NONE,NONE,,none,
+T3-0958,딸기 모양의 혀,딸기 모양의 혀,both,12,D20-01,D20-01,D20-01,agreed,D20-01
+T3-0959,림프절 종창,림프절 종창,both,12,B02,B02,B02,agreed,B02
+T3-0960,면포,면포,both,12,NONE,S04,,disagree,
+T3-0961,반사저하,반사저하,both,12,N29,N29,N29,agreed,N29
+T3-0962,발음 문제,발음 문제,both,12,N19,N19,N19,agreed,N19
+T3-0963,배뇨에 어려움,배뇨에 어려움,claude_read,12,U05,U05,U05,agreed,U05
+T3-0964,복부에 덩어리,복부에 덩어리,claude_read,12,D24,D24,D24,agreed,D24
+T3-0965,불규칙한 출혈,불규칙한 출혈,both,12,A10,A10,A10,agreed,A10
+T3-0966,불안정한 호흡,불안정한 호흡,both,12,R04,R04,R04,agreed,R04
+T3-0967,소변의 양이 감소,소변의 양이 감소,claude_read,12,U05,U05,U05,agreed,U05
+T3-0968,쇠약함,쇠약함,both,12,A04,L19,,disagree,
+T3-0969,숨이 차는 느낌,숨이 차는 느낌,both,12,R02,R02,R02,agreed,R02
+T3-0970,시력이 점차 감소,시력이 점차 감소,claude_read,12,F05,F05,F05,agreed,F05
+T3-0971,시야가 흐릿해지는,시야가 흐릿해지는,claude_read,12,F05,F05,F05,agreed,F05
+T3-0972,심박 증가,심박 증가; 심박증가,both,12,K04,K04,K04,agreed,K04
+T3-0973,어지럽고,어지럽고,claude_read,12,N17,N17,N17,agreed,N17
+T3-0974,얼굴 근육의 약화,얼굴 근육의 약화,both,12,N18,L19,,disagree,
+T3-0975,열성경련,열성경련,both,12,N07,N07,N07,agreed,N07
+T3-0976,운동 능력 감소,운동 능력 감소,both,12,A04,A04,A04,agreed,A04
+T3-0977,운동 실조,운동 실조,both,12,N29,N29,N29,agreed,N29
+T3-0978,월경 이상,월경 이상,both,12,AMBIGUOUS,AMBIGUOUS,X05; X07,agreed_span,X05; X07
+T3-0979,월경이 없거나,월경이 없거나,claude_read,12,X05,X05,X05,agreed,X05
+T3-0980,의욕 저하,의욕 저하,both,12,P03,P03,P03,agreed,P03
+T3-0981,작은 고환,작은 고환,claude_read,12,Y05,Y05,Y05,agreed,Y05
+T3-0982,작은 손,작은 손,both,12,NONE,NONE,,none,
+T3-0983,작은 코,작은 코,both,12,NONE,R08,,disagree,
+T3-0984,작은 혈관에서의 출혈,작은 혈관에서의 출혈,both,12,A10,A10,A10,agreed,A10
+T3-0985,잔변감,잔변감,both,12,D18,D18,D18,agreed,D18
+T3-0986,질 분비물 증가,질 분비물 증가,both,12,X14,X14,X14,agreed,X14
+T3-0987,투명한 물집,투명한 물집,claude_read,12,S17,S17,S17,agreed,S17
+T3-0988,판단력 저하,판단력 저하,both,12,P20,P20,P20,agreed,P20
+T3-0989,피부가 가렵고,피부가 가렵고,claude_read,12,S02,S02,S02,agreed,S02
+T3-0990,피부에 붉은 색,피부에 붉은 색,claude_read,12,S08,S08,S08,agreed,S08
+T3-0991,한기,한기,both,12,A02,A02,A02,agreed,A02
+T3-0992,호흡이 불안정,호흡이 불안정,claude_read,12,R04,R04,R04,agreed,R04
+T3-0993,호흡이 힘들어지고,호흡이 힘들어지고,claude_read,12,R02,R02,R02,agreed,R02
+T3-0994,후각 소실,후각 소실,both,12,N16,N16,N16,agreed,N16
+T3-0995,흉부 불쾌감,흉부 불쾌감,both,12,A11,R29,,disagree,
+T3-0996,강박적 행동,강박적 행동,both,11,P29,P29,P29,agreed,P29
+T3-0997,과도한 침 흘림,과도한 침 흘림,both,11,D20-02,D20-02,D20-02,agreed,D20-02
+T3-0998,구역감,구역감,both,11,D09,D09,D09,agreed,D09
+T3-0999,근긴장도 저하,근긴장도 저하,both,11,L19,L19,L19,agreed,L19
+T3-1000,근육의 뻣뻣함,근육의 뻣뻣함,both,11,L19,L19,L19,agreed,L19
+T3-1001,근육의 피로감,근육의 피로감,both,11,L19,L19,L19,agreed,L19
+T3-1002,냉감,냉감,both,11,NONE,L17,,disagree,
+T3-1003,넓은 눈,넓은 눈,both,11,NONE,F15,,disagree,
+T3-1004,눈이 아프거나,눈이 아프거나,claude_read,11,F01,F01,F01,agreed,F01
+T3-1005,느린 움직임,느린 움직임,both,11,N29,N29,N29,agreed,N29
+T3-1006,다리에 불편한 감각,다리에 불편한 감각,claude_read,11,N04,N04,N04,agreed,N04
+T3-1007,대변의 변화,대변의 변화,both,11,D18,D18,D18,agreed,D18
+T3-1008,대하,대하,claude_read,11,X14,X14,X14,agreed,X14
+T3-1009,목소리가 변할,목소리가 변할,claude_read,11,R23,R23,R23,agreed,R23
+T3-1010,방광 통증,방광 통증,both,11,U13,U13,U13,agreed,U13
+T3-1011,불규칙한 생리,불규칙한 생리,both,11,X07,X07,X07,agreed,X07
+T3-1012,불규칙한 자궁 출혈,불규칙한 자궁 출혈,both,11,X08,X08,X08,agreed,X08
+T3-1013,불신,불신,both,11,P29,P29,P29,agreed,P29
+T3-1014,붉은 발적,붉은 발적,both,11,S06,S06,S06,agreed,S06
+T3-1015,뼈의 변형,뼈의 변형,both,11,L29,L29,L29,agreed,L29
+T3-1016,사회적 상호작용에 어려움,사회적 상호작용에 어려움,claude_read,11,P29,P22,,disagree,
+T3-1017,상부 복통,상부 복통,both,11,D02,D02,D02,agreed,D02
+T3-1018,성기능 저하증,성기능 저하증,both,11,NONE,AMBIGUOUS,,disagree,
+T3-1019,소변량이 증가,소변량이 증가,claude_read,11,U02,U02,U02,agreed,U02
+T3-1020,소변을 자주 보는,소변을 자주 보는,claude_read,11,U02,U02,U02,agreed,U02
+T3-1021,속이 쓰림,속이 쓰림,both,11,D03,D03,D03,agreed,D03
+T3-1022,쇼크 증상,쇼크 증상,claude_read,11,A29,NONE,,disagree,
+T3-1023,숨쉬기 곤란,숨쉬기 곤란,both,11,R02,R02,R02,agreed,R02
+T3-1024,쉰 소리,쉰 소리,both,11,R23,R23,R23,agreed,R23
+T3-1025,시각 이상,시각 이상,both,11,F05,F05,F05,agreed,F05
+T3-1026,식욕이 떨어지고,식욕이 떨어지고,claude_read,11,T03,T03,T03,agreed,T03
+T3-1027,심박수 상승,심박수 상승,both,11,K04,K04,K04,agreed,K04
+T3-1028,심장 박동수가 증가,심장 박동수가 증가,claude_read,11,K04,K04,K04,agreed,K04
+T3-1029,심장 박동이 증가,심장 박동이 증가,claude_read,11,K04,K04,K04,agreed,K04
+T3-1030,심한 졸음,심한 졸음,claude_read,11,A29,A29,A29,agreed,A29
+T3-1031,얼굴 부종,얼굴 부종,both,11,A08,S04,,disagree,
+T3-1032,얼얼한 느낌,얼얼한 느낌,both,11,N05,N06,,disagree,
+T3-1033,요독성 출혈,요독성 출혈,both,11,NONE,A10,,disagree,
+T3-1034,월경 불량,월경 불량,both,11,AMBIGUOUS,AMBIGUOUS,X05; X07,agreed_span,X05; X07
+T3-1035,유방 확장,유방 확장,both,11,Y16,Y16,Y16,agreed,Y16
+T3-1036,음식을 삼킬 때 통증,음식을 삼킬 때 통증,claude_read,11,AMBIGUOUS,D21,D21,agreed_partial,D21
+T3-1037,의식 상태 변화,의식 상태 변화,both,11,AMBIGUOUS,N29,,disagree,
+T3-1038,의식이 저하되고,의식이 저하되고,claude_read,11,A07,N29,,disagree,
+T3-1039,의식이 혼미해지거나,의식이 혼미해지거나,claude_read,11,A07,A07,A07,agreed,A07
+T3-1040,입맛 변화,입맛 변화,both,11,N16,N16,N16,agreed,N16
+T3-1041,입술과 혀의 부종,입술과 혀의 부종,claude_read,11,AMBIGUOUS,AMBIGUOUS,D20-01; D20-02,agreed_span,D20-01; D20-02
+T3-1042,입이 삐뚤어져,입이 삐뚤어져,claude_read,11,N18,D20-02,,disagree,
+T3-1043,작은 빨간 반점,작은 빨간 반점,both,11,S06,S06,S06,agreed,S06
+T3-1044,전신권태,전신권태,both,11,A05,A05,A05,agreed,A05
+T3-1045,점액분비 성 설사,점액분비 성 설사,claude_read,11,D11,D11,D11,agreed,D11
+T3-1046,졸음증,졸음증,both,11,A29,A29,A29,agreed,A29
+T3-1047,좌절감,좌절감,claude_read,11,P03,P03,P03,agreed,P03
+T3-1048,피부 색 변화,피부 색 변화,both,11,S08,S08,S08,agreed,S08
+T3-1049,피부가 벗겨지거나,피부가 벗겨지거나,claude_read,11,S21,S21,S21,agreed,S21
+T3-1050,피부가 변색,피부가 변색,claude_read,11,S08,S08,S08,agreed,S08
+T3-1051,학습 부진,학습 부진,both,11,P24,P24,P24,agreed,P24
+T3-1052,한쪽 마비,한쪽 마비,both,11,N18,N18,N18,agreed,N18
+T3-1053,호흡이 빨라지는,호흡이 빨라지는,claude_read,11,R04,R04,R04,agreed,R04
+T3-1054,호흡정지,호흡정지,claude_read,11,R04,R04,R04,agreed,R04
+T3-1055,활력 감소,활력 감소,claude_read,11,A04,A04,A04,agreed,A04
+T3-1056,가슴이 답답한 느낌,가슴이 답답한 느낌,both,10,R29,R29,R29,agreed,R29
+T3-1057,갈라질,갈라질,claude_read,10,S21,S21,S21,agreed,S21
+T3-1058,감정의 변동,감정의 변동,both,10,P29,P29,P29,agreed,P29
+T3-1059,거칠어지는,거칠어지는,claude_read,10,NONE,R04,,disagree,
+T3-1060,고환 부종,고환 부종,both,10,Y05,Y05,Y05,agreed,Y05
+T3-1061,과다한 땀,과다한 땀,both,10,A09,A09,A09,agreed,A09
+T3-1062,과도한 흥분,과도한 흥분,both,10,P04,P04,P04,agreed,P04
+T3-1063,균형을 잃는,균형을 잃는,claude_read,10,N17,NONE,,disagree,
+T3-1064,근육의 움직임이 제한,근육의 움직임이 제한,claude_read,10,L19,L19,L19,agreed,L19
+T3-1065,근육이 약해지거나,근육이 약해지거나,claude_read,10,L19,L19,L19,agreed,L19
+T3-1066,깊은 혼수상태,깊은 혼수상태,claude_read,10,A07,A07,A07,agreed,A07
+T3-1067,누를 때 통증,누를 때 통증,claude_read,10,NONE,A11,,disagree,
+T3-1068,눈이 감기지 않으며,눈이 감기지 않으며,both,10,F16,F16,F16,agreed,F16
+T3-1069,딱딱해지는,딱딱해지는,claude_read,10,NONE,Y05,,disagree,
+T3-1070,땀이 많이 나며,땀이 많이 나며,both,10,A09,A09,A09,agreed,A09
+T3-1071,목의 불편감,목의 불편감,both,10,AMBIGUOUS,R21,R21,agreed_partial,R21
+T3-1072,무산소 발작,무산소 발작,both,10,NONE,R04,,disagree,
+T3-1073,반복적인 동작,반복적인 동작,both,10,N08,N08,N08,agreed,N08
+T3-1074,발이 붓고,발이 붓고,both,10,K07,S04,,disagree,
+T3-1075,배뇨 시의 통증,배뇨 시의 통증,both,10,U01,U01,U01,agreed,U01
+T3-1076,배변감,배변감,both,10,D18,D29,,disagree,
+T3-1077,변의 변화,변의 변화,both,10,D18,D18,D18,agreed,D18
+T3-1078,보행의 어려움,보행의 어려움,both,10,N29,N29,N29,agreed,N29
+T3-1079,보행이 어려울,보행이 어려울,claude_read,10,N29,N29,N29,agreed,N29
+T3-1080,뼈 변형,뼈 변형,both,10,L29,L29,L29,agreed,L29
+T3-1081,삼키기 곤란,삼키기 곤란,both,10,D21,D21,D21,agreed,D21
+T3-1082,삼키기 어려워지는,삼키기 어려워지는,claude_read,10,D21,D21,D21,agreed,D21
+T3-1083,생리 주기가 불규칙해지고,생리 주기가 불규칙해지고,claude_read,10,X07,X07,X07,agreed,X07
+T3-1084,소변 양의 감소,소변 양의 감소,both,10,U05,U05,U05,agreed,U05
+T3-1085,소변이 나오지 않는,소변이 나오지 않는,claude_read,10,AMBIGUOUS,U08,U08,agreed_partial,U08
+T3-1086,소변이 누출되는,소변이 누출되는,claude_read,10,U04,U04,U04,agreed,U04
+T3-1087,소변이 흘러나오는,소변이 흘러나오는,claude_read,10,U04,U04,U04,agreed,U04
+T3-1088,속옷에 오염,속옷에 오염,claude_read,10,D17,D17,D17,agreed,D17
+T3-1089,숨을 쉬기 어려울,숨을 쉬기 어려울,claude_read,10,R02,R02,R02,agreed,R02
+T3-1090,숨이 차다,숨이 차다,claude_read,10,R02,R02,R02,agreed,R02
+T3-1091,안면 창백,안면 창백,both,10,S08,S08,S08,agreed,S08
+T3-1092,어두운 반점,어두운 반점,claude_read,10,S08,S08,S08,agreed,S08
+T3-1093,언어 능력 저하,언어 능력 저하,both,10,N19,N19,N19,agreed,N19
+T3-1094,얼굴 변형,얼굴 변형,claude_read,10,NONE,L29,,disagree,
+T3-1095,오른쪽 상복부 통증,오른쪽 상복부 통증,both,10,D06,D06,D06,agreed,D06
+T3-1096,요의 절박,요의 절박,both,10,U02,U02,U02,agreed,U02
+T3-1097,위장 불편,위장 불편,both,10,D07,D02,,disagree,
+T3-1098,유두 분비물,유두 분비물,both,10,X20,X20,X20,agreed,X20
+T3-1099,유방 확대,유방 확대,both,10,Y16,Y16,Y16,agreed,Y16
+T3-1100,유즙 분비,유즙 분비,claude_read,10,X21,X21,X21,agreed,X21
+T3-1101,음성 변화,음성 변화,both,10,R23,R23,R23,agreed,R23
+T3-1102,이상 출혈,이상 출혈,claude_read,10,A10,NONE,,disagree,
+T3-1103,인두통,인두통,both,10,R21,R21,R21,agreed,R21
+T3-1104,인지 및 운동 장애,인지 및 운동 장애,claude_read,10,AMBIGUOUS,AMBIGUOUS,N29; P20,agreed_span,N29; P20
+T3-1105,자궁의 수축,자궁의 수축,both,10,W29,AMBIGUOUS,W29,agreed_partial,W29
+T3-1106,자반증,자반증,both,10,S29,S29,S29,agreed,S29
+T3-1107,찌르는 통증,찌르는 통증,both,10,NONE,K01,,disagree,
+T3-1108,창백해질,창백해질,claude_read,10,S08,S08,S08,agreed,S08
+T3-1109,청각 과민증,청각 과민증,both,10,H02,H02,H02,agreed,H02
+T3-1110,체모 증가,체모 증가,both,10,S24,S24,S24,agreed,S24
+T3-1111,체온이 높아지고,체온이 높아지고,both,10,A03,A03,A03,agreed,A03
+T3-1112,출혈성 경향,출혈성 경향,both,10,A10,B04,,disagree,
+T3-1113,코가 막히고,코가 막히고,both,10,R07,R07,R07,agreed,R07
+T3-1114,코감기,코감기,both,10,NONE,NONE,,none,
+T3-1115,피부가 붉어지며,피부가 붉어지며,both,10,S06,S06,S06,agreed,S06
+T3-1116,피부가 창백하고,피부가 창백하고,claude_read,10,S08,S08,S08,agreed,S08
+T3-1117,피부에 주름,피부에 주름,claude_read,10,S21,S21,S21,agreed,S21
+T3-1118,하부 허리 통증,하부 허리 통증,both,10,L03,L03,L03,agreed,L03
+T3-1119,함몰 가슴,함몰 가슴,both,10,NONE,R04,,disagree,
+T3-1120,화농성 분비물,화농성 분비물,both,10,AMBIGUOUS,AMBIGUOUS,X29; Y03,agreed_span,X29; Y03
+T3-1121,환시,환시,both,10,P29,P29,P29,agreed,P29
+T3-1122,후각장애,후각장애,both,10,N16,N16,N16,agreed,N16

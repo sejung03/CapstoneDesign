@@ -1,0 +1,35 @@
+# 3단계: AI Hub "증상" 답변에서 사전 매칭된 증상 표현을 문맥으로 버리는 고정 규칙
+# - 2026-11-12 S3-1 표본 점검 뒤 고친 판이다. 최종 확정은 S3-5에서 한다.
+#   S3-1 초안에서 뺀 키워드: 유발, 원인, 때문, 치료 (증상을 나열한 문장까지 버림), 아니 ("~뿐만 아니라"에 걸림)
+# - 매칭 방법(왼쪽 경계 등)은 config/symptom_match.yaml에 있다.
+# - 표현 하나(매칭된 위치 하나)마다 판단한다. 한 답변에서 같은 증상이 여러 번 나오면,
+#   버려지지 않은 위치가 하나라도 있으면 그 증상은 남는다.
+# - type
+#     after_window  : 표현이 끝난 바로 뒤 window 글자 안에 keywords 중 하나가 있으면 버린다
+#     same_sentence : 표현이 들어 있는 문장에 keywords 중 하나가 있으면 버린다
+# - keywords는 부분 문자열로 찾는다. 키워드 안의 공백은 있어도 없어도 맞는 것으로 본다(위험 요인 = 위험요인).
+# - 문장은 sentence_delimiters의 글자에서 끊는다.
+
+sentence_delimiters: [".", "!", "?", "\n"]
+
+rules:
+  - id: negation
+    description: 부정 (증상이 없다는 서술)
+    type: after_window
+    window: 10
+    # 부정 범위(표현 뒤 window 글자)는 아래 글자를 만나면 거기서 끊는다
+    window_stop_chars: [",", "·", "."]
+    # true면 키워드가 사전에 있는 다른 표현의 매칭 범위 안에 있을 때는 무시한다
+    #   예: "피로, 기운 없음" → "기운 없음"의 "없"은 "피로"의 부정으로 보지 않는다
+    ignore_keyword_inside_term: true
+    keywords: ["없", "않", "드물"]
+
+  - id: risk_factor_sentence
+    description: 위험 요인 문장
+    type: same_sentence
+    keywords: ["위험 요인"]
+
+  - id: drug_sentence
+    description: 약 문장
+    type: same_sentence
+    keywords: ["처방", "부작용"]   # "복용"은 2026-11-12에 뺐다

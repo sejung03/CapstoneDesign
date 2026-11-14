@@ -1,0 +1,31 @@
+﻿dept,source,excluded_in_2a,note
+가정의학과,clinic,false,
+결핵과,clinic,false,
+내과,clinic,false,
+마취통증의학과,clinic,false,
+병리과,clinic,true,
+비뇨의학과,clinic,false,
+산부인과,clinic,false,
+성형외과,clinic,false,
+소아청소년과,clinic,false,
+신경과,clinic,false,
+신경외과,clinic,false,
+심장혈관흉부외과,clinic,false,
+안과,clinic,false,
+예방의학과,clinic,true,
+외과,clinic,false,
+이비인후과,clinic,false,
+재활의학과,clinic,false,
+정신건강의학과,clinic,false,
+정형외과,clinic,false,
+직업환경의학과,clinic,true,
+진단검사의학과,clinic,true,
+영상의학과,clinic,true,"의원급 표시과목 '진단방사선과,영상의학과'"
+치과,clinic,false,
+피부과,clinic,false,
+핵의학과,clinic,true,
+응급의학과,extra,false,병원급 통계에만 있음. 2A는 er_share로만 씀
+방사선종양학과,extra,true,병원급 통계에만 있음. 2A 제외 진료과
+의학유전학과,extra,false,심평원 통계에 없음. AI Hub에 나옴
+DROP,special,,진료과가 아님(질환명·물건 등)
+AMBIGUOUS,special,,둘 이상에 걸쳐 애매함(note에 후보를 모두 적는다)

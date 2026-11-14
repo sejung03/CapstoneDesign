@@ -1,0 +1,223 @@
+﻿candidate_id,candidate,status,symptom_id,standard_name,reason
+S001,발열,mapped,SYM016,발열,
+S002,피로,mapped,SYM017,피로,
+S003,식욕부진,mapped,SYM018,식욕부진,
+S004,부기,mapped,SYM021,부기(붓기),
+S005,구토,mapped,SYM032,구역·구토,
+S006,두통,mapped,SYM001,두통,
+S007,체중 감소,mapped,SYM019,체중 감소,
+S008,관절통,mapped,SYM058,관절통,
+S009,발적,mapped,SYM052,피부 붉어짐,
+S010,기침,mapped,SYM025,기침,
+S011,메스꺼움,mapped,SYM032,구역·구토,
+S012,오한,mapped,SYM016,발열,
+S013,가려움,mapped,SYM050,가려움,
+S014,근육통,mapped,SYM059,근육통,
+S015,시력 저하,mapped,SYM062,시력 저하·흐려 보임,
+S016,호흡곤란,mapped,SYM027,숨참(호흡곤란),
+S017,귀 통증,mapped,SYM070,귀 통증,
+S018,발음 장애,mapped,SYM003,말이 어눌함,
+S019,상복부 통증,mapped,SYM031,복통,
+S020,설사,mapped,SYM036,설사,
+S021,얼굴 형태 이상,excluded,,,선천 기형 소견
+S022,저혈압,excluded,,,측정 징후. '어지럼·실신'으로 연결
+S023,질 출혈,mapped,SYM047,비정상 질 출혈,
+S024,청력 저하,mapped,SYM072,청력 저하·귀 먹먹함,
+S025,혹,mapped,SYM055,혹·멍울,
+S026,가래,mapped,SYM026,가래,
+S027,골반 통증,mapped,SYM031,복통,
+S028,권태감,mapped,SYM017,피로,
+S029,기억 상실,mapped,SYM011,기억력·집중력 저하,
+S030,눈 충혈,mapped,SYM066,눈 충혈,
+S031,눈 통증,mapped,SYM065,눈 통증,
+S032,눈부심,mapped,SYM067,눈부심,
+S033,말하기 어려움,mapped,SYM003,말이 어눌함,
+S034,발뒤꿈치 통증,mapped,SYM060,팔다리 통증,
+S035,배뇨통,mapped,SYM040,배뇨통,
+S036,빈맥,mapped,SYM029,두근거림,
+S037,성장 부진,excluded_hold,,,소아
+S038,소화불량,mapped,SYM034,소화불량,
+S039,손 통증,mapped,SYM060,팔다리 통증,
+S040,쇠약감,mapped,SYM017,피로,
+S041,시야 흐림,mapped,SYM062,시력 저하·흐려 보임,
+S042,운동 장애,excluded,,,뜻이 모호
+S043,운동 틱,mapped,SYM015,틱(반복 동작·소리),
+S044,음성 틱,mapped,SYM015,틱(반복 동작·소리),
+S045,의식 혼란,mapped,SYM010,의식 저하·혼란,
+S046,인지 저하,mapped,SYM011,기억력·집중력 저하,
+S047,입 벌리기 어려움,mapped,SYM082,턱 통증·턱 움직임 불편,
+S048,입안 출혈,mapped,SYM081,입안·잇몸 출혈,
+S049,입안 통증,mapped,SYM079,입안 통증,
+S050,출혈 경향,mapped,SYM053,멍·붉은 점(자반),
+S051,턱 통증,mapped,SYM082,턱 통증·턱 움직임 불편,
+S052,피부 융기,mapped,SYM055,혹·멍울,
+S053,혈뇨,mapped,SYM041,혈뇨,
+S054,혼수,mapped,SYM010,의식 저하·혼란,
+S055,환각,mapped,SYM013,환각,
+S056,황달,mapped,SYM039,황달,
+S057,흥분,mapped,SYM012,불안·초조,
+S058,갈증,mapped,SYM020,갈증,
+S059,경련,mapped,SYM008,경련,
+S060,무기력,mapped,SYM017,피로,
+S061,복부 팽만,mapped,SYM035,복부 팽만,
+S062,복수,mapped,SYM035,복부 팽만,
+S063,복통,mapped,SYM031,복통,
+S064,불임,excluded,,,증상이라기보다 결과
+S065,빈뇨,mapped,SYM042,소변을 자주 봄,
+S066,빈호흡,mapped,SYM027,숨참(호흡곤란),
+S067,삼킴 곤란,mapped,SYM038,삼킴 곤란,
+S068,생식기 이상,excluded,,,선천 기형 소견
+S069,성교 시 출혈,mapped,SYM047,비정상 질 출혈,
+S070,소변 색 변화,mapped,SYM045,소변 색·냄새 변화,
+S071,손발톱 이상,mapped,SYM057,손발톱 이상,
+S072,수유 곤란,excluded_hold,,,영아
+S073,시야 결손,mapped,SYM063,시야가 좁아짐,
+S074,씹기 곤란,mapped,SYM082,턱 통증·턱 움직임 불편,
+S075,압통,excluded,,,진찰 소견
+S076,어깨 통증,mapped,SYM058,관절통,
+S077,언어 발달 지연,excluded_hold,,,소아
+S078,열감,mapped,SYM016,발열,
+S079,의식 저하,mapped,SYM010,의식 저하·혼란,
+S080,입 다물기 어려움,mapped,SYM082,턱 통증·턱 움직임 불편,
+S081,입안 궤양,mapped,SYM080,입안 궤양,
+S082,자반,mapped,SYM053,멍·붉은 점(자반),
+S083,절박뇨,mapped,SYM042,소변을 자주 봄,
+S084,정체감 혼란,excluded_hold,,,정신과 범위. 불안·초조와 묶을지 결정
+S085,청각 과민,excluded_hold,,소리에 예민함,
+S086,청색증,mapped,SYM030,입술·피부 파래짐,
+S087,체력 저하,mapped,SYM017,피로,
+S088,턱 소리,mapped,SYM082,턱 통증·턱 움직임 불편,
+S089,하복부 통증,mapped,SYM031,복통,
+S090,가슴 답답함,mapped,SYM027,숨참(호흡곤란),
+S091,감각 저하,mapped,SYM004,저림·감각 저하,
+S092,과호흡,mapped,SYM027,숨참(호흡곤란),
+S093,관절 움직임 불편,mapped,SYM058,관절통,
+S094,귀 먹먹함,mapped,SYM072,청력 저하·귀 먹먹함,
+S095,귀 분비물,mapped,SYM071,귀 분비물,
+S096,근력 약화,mapped,SYM007,힘 빠짐(근력 약화),
+S097,기억력 저하,mapped,SYM011,기억력·집중력 저하,
+S098,눈 깜빡임,mapped,SYM015,틱(반복 동작·소리),
+S099,눈 따가움,mapped,SYM065,눈 통증,
+S100,눈 피로,mapped,SYM065,눈 통증,
+S101,눈꺼풀 처짐,mapped,SYM069,눈꺼풀 처짐,
+S102,다뇨,mapped,SYM042,소변을 자주 봄,
+S103,다리 통증,mapped,SYM060,팔다리 통증,
+S104,등 통증,mapped,SYM061,허리·등 통증,
+S105,림프절 붓기,mapped,SYM024,림프절 붓기(멍울),
+S106,맥박 이상,mapped,SYM029,두근거림,
+S107,머리 흔들기,mapped,SYM015,틱(반복 동작·소리),
+S108,목 이물감,mapped,SYM078,목 이물감,
+S109,목 통증,mapped,SYM077,목 아픔(인후통),
+S110,몸살,mapped,SYM017,피로,
+S111,무력감,mapped,SYM017,피로,
+S112,무릎 통증,mapped,SYM058,관절통,
+S113,발목 통증,mapped,SYM058,관절통,
+S114,발바닥 통증,mapped,SYM060,팔다리 통증,
+S115,발진,mapped,SYM051,발진,
+S116,배뇨 곤란,mapped,SYM043,소변 보기 어려움,
+S117,배뇨 시 화끈거림,mapped,SYM040,배뇨통,
+S118,복부 비만,excluded,,,질환 소견
+S119,복시,mapped,SYM064,겹쳐 보임,
+S120,불안,mapped,SYM012,불안·초조,
+S121,비문증,mapped,SYM068,날파리증(비문증),
+S122,삼킴 통증,mapped,SYM077,목 아픔(인후통),
+S123,상처 치유 지연,excluded,,,증상 아님
+S124,성 발달 지연,excluded_hold,,,소아
+S125,소변 악취,mapped,SYM045,소변 색·냄새 변화,
+S126,소변 혼탁,mapped,SYM045,소변 색·냄새 변화,
+S127,소변량 감소,excluded_hold,,소변량 감소,
+S128,속 불편감,mapped,SYM034,소화불량,
+S129,속쓰림,mapped,SYM033,속쓰림,
+S130,손발 차가움,excluded_hold,,손발 차가움,
+S131,수유 시 코로 역류,excluded,,,질환 특이 증상
+S132,안면 홍조,mapped,SYM052,피부 붉어짐,
+S133,안진,excluded,,,관찰 소견
+S134,어깨 들썩임,mapped,SYM015,틱(반복 동작·소리),
+S135,언어 장애,mapped,SYM003,말이 어눌함,
+S136,여드름,mapped,SYM056,여드름,
+S137,요통,mapped,SYM061,허리·등 통증,
+S138,월경 과다,mapped,SYM047,비정상 질 출혈,
+S139,입 내밀기,mapped,SYM015,틱(반복 동작·소리),
+S140,입마름,mapped,SYM023,입마름,
+S141,입안 과민,mapped,SYM079,입안 통증,
+S142,입안 불편감,mapped,SYM079,입안 통증,
+S143,잇몸 노출,excluded,,,외형
+S144,잔뇨감,mapped,SYM043,소변 보기 어려움,
+S145,저체온,triage_only,,,119-16 위급 진입점. 증상 사전이 아니라 문진 경로로 처리
+S146,졸음,mapped,SYM010,의식 저하·혼란,
+S147,질 분비물,mapped,SYM048,질 분비물,
+S148,질 통증,mapped,SYM049,외음부·질 통증,
+S149,집중력 저하,mapped,SYM011,기억력·집중력 저하,
+S150,창백,mapped,SYM054,창백,
+S151,체중 증가,excluded_hold,,체중 증가,
+S152,치아·턱 흔들림,excluded,,,본문 모호
+S153,코피,mapped,SYM074,코피,
+S154,콧물,mapped,SYM073,콧물,
+S155,킁킁거림,mapped,SYM015,틱(반복 동작·소리),
+S156,턱 근육 경련,mapped,SYM082,턱 통증·턱 움직임 불편,
+S157,턱 뻐근함,mapped,SYM082,턱 통증·턱 움직임 불편,
+S158,피부 따가움,mapped,SYM050,가려움,
+S159,피부 반점,excluded_hold,,피부 반점(색 변화),
+S160,피부 변화,excluded,,,묶음 코드 이름
+S161,헛기침 소리,mapped,SYM015,틱(반복 동작·소리),
+S162,흉통,mapped,SYM028,흉통,
+S163,간·비장 비대,excluded,,,진찰·영상 소견
+S164,걸음걸이 이상,mapped,SYM006,균형·걸음 이상,
+S165,고체온,triage_only,,,119-16 위급 진입점. 증상 사전이 아니라 문진 경로로 처리
+S166,괴저,excluded,,,진단 소견
+S167,구역·구토,mapped,SYM032,구역·구토,
+S168,균형·협조 장애,mapped,SYM006,균형·걸음 이상,
+S169,기도 이물(숨막힘),triage_only,,,119-1 위급 진입점. 증상 사전이 아니라 문진 경로로 처리
+S170,기도출혈,mapped,SYM074,코피,
+S171,기타 비뇨기 증상,excluded,,,묶음 코드 이름
+S172,기타 소화기 증상,excluded,,,묶음 코드 이름. 설사·소화불량의 코드 연결용
+S173,기타 순환·호흡 증상,excluded,,,묶음 코드 이름
+S174,기타 신경·근골격 증상,excluded,,,묶음 코드 이름
+S175,기타 전신 증상,excluded,,,묶음 코드 이름
+S176,난독증,excluded_hold,,,범위 밖일 수 있음
+S177,노쇠,excluded,,,증상 아님
+S178,뇌졸중 의심(한쪽 마비·말 어눌),triage_only,,,119-2 위급 진입점. 증상 사전이 아니라 문진 경로로 처리
+S179,땀 과다,mapped,SYM022,땀 과다,
+S180,떨림·불수의 운동,mapped,SYM005,떨림,
+S181,목·가슴 통증,mapped,SYM028,흉통,
+S182,목소리 변화,mapped,SYM076,목소리 변화,
+S183,변실금,mapped,SYM037,변실금,
+S184,성장·발달 지연,excluded_hold,,,소아 범위를 팀이 정해야 함
+S185,소변 정체,mapped,SYM043,소변 보기 어려움,
+S186,쇼크,excluded,,,진단 상태. 위급 경로는 의식 저하·실신으로
+S187,실신,mapped,SYM009,실신,
+S188,심잡음,excluded,,,청진 소견. 사용자 증상 아님
+S189,심장박동 이상,mapped,SYM029,두근거림,
+S190,심정지·호흡정지,triage_only,,,119-8 위급 진입점. 증상 사전이 아니라 문진 경로로 처리
+S191,악액질,mapped,SYM019,체중 감소,
+S192,알레르기 반응,triage_only,,,119-9 위급 진입점. 증상 사전이 아니라 문진 경로로 처리
+S193,어지럼,mapped,SYM002,어지럼,
+S194,외양·행동 이상,excluded,,,관찰 소견
+S195,요도 분비물,mapped,SYM046,요도 분비물,
+S196,요실금,mapped,SYM044,요실금,
+S197,원인 불명 질환,excluded,,,증상 아님
+S198,자살 생각·이상 행동,mapped,SYM014,자살 생각,
+S199,전신염증반응,excluded,,,진단 기준
+S200,정서 이상,mapped,SYM012,불안·초조,
+S201,출혈,excluded_hold,,,119-7 범주로 처리 (부위별 출혈 증상으로 연결)
+S202,통증(부위 불명),excluded,,,부위 없는 통증은 표준명으로 부적합
+S203,피부 감각 이상,mapped,SYM004,저림·감각 저하,
+S204,혈압 이상,excluded,,,측정 수치
+S205,호흡 이상,mapped,SYM027,숨참(호흡곤란),
+S206,혹·멍울,mapped,SYM055,혹·멍울,
+S207,환각·지각 이상,mapped,SYM013,환각,
+S208,후각·미각 이상,mapped,SYM075,후각·미각 이상,
+S209,감전/낙뢰,triage_only,,,
+S210,교통사고,triage_only,,,
+S211,눈 손상/질환,triage_only,,,
+S212,동물 교상,triage_only,,,
+S213,두부/신경학적 손상,triage_only,,,
+S214,익수,triage_only,,,
+S215,일산화탄소 중독/흡입/HAZMAT,triage_only,,,
+S216,임신 관련,triage_only,,,
+S217,자상/관통상/총상,triage_only,,,
+S218,중독,triage_only,,,
+S219,추락/낙상,triage_only,,,
+S220,출혈/열상,triage_only,,,
+S221,폭행/성폭행,triage_only,,,
+S222,화상,triage_only,,,

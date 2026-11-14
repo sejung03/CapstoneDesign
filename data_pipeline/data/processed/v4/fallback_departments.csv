@@ -1,0 +1,6 @@
+﻿group,rank,dept,n_symptoms
+injury,1,정형외과,5
+injury,2,피부과,2
+pediatric,1,소아청소년과,
+general,1,내과,
+general,2,가정의학과,

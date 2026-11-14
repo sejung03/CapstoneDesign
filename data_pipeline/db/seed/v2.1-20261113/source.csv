@@ -1,0 +1,9 @@
+﻿source_id,name,version,url,license,note,data_version
+S1,AI Hub 초거대AI 사전학습용 헬스케어 질의응답 데이터(71762),VL,https://www.aihub.or.kr,AI Hub 이용약관(원본 재배포 불가),답변 문장은 DB에 넣지 않음. 증상 표현(구절)과 경로 A 계산에만 사용,v2.1-20261113
+S2,건강보험심사평가원 병원급 이상 진료과목별 상병 통계,20251231,https://www.data.go.kr,,경로 B 병원급 순위,v2.1-20261113
+S3,건강보험심사평가원 의원급 표시과목별 상병 통계,20251231,https://www.data.go.kr,,경로 B 의원급 순위,v2.1-20261113
+S4,건강보험심사평가원 상병마스터,20250930,https://www.data.go.kr,,KCD 코드명,v2.1-20261113
+S5,119 구급상황관리센터 상담 매뉴얼,2020,,,주증상 범주 33개(config/triage_119.yaml),v2.1-20261113
+S6,팀 문진 「응급 및 비응급 공통 문진」,,,,1차 적재에서는 쓰지 않음,v2.1-20261113
+S7,"ICPC-2e (International Classification of Primary Care, WONCA)",v7.0,https://www.ehelse.no,배포 전 확인 필요(README TODO),표준 증상 체계와 ICD-10 연결,v2.1-20261113
+S8,프로젝트 정의(두 평가자 라벨링 합의·설정 규칙),,,,"예외 증상(EX), 하위 구분(D20-0x), 직접 추가·보류 표현",v2.1-20261113

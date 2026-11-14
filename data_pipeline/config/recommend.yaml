@@ -1,0 +1,168 @@
+# 증상별 진료과 추천 기준 (pipeline/step2a_department.py)
+# 비율은 0~1 사이 소수. 분모는 순위 제외 과를 뺀 환자수 합계.
+
+# 입력 표준 증상 파일 (v2.1, ICPC-2 기반). symptom_id = ICPC 코드(예: D02), 예외 증상은 EX01…
+#   2026-11-13 2A-2: v2(163개) → v2.1(197개, 새 증상 34개 + 이름 확정)으로 바꿈
+symptoms_file: data/processed/v3/standard_symptoms_v2_1.csv
+symptom_code_column: icd10_3_list      # 심평원 통계와 맞출 3자리 코드. "; "로 나뉜 목록
+symptom_code_separator: "; "
+# 경로 B 결과. 2A-1 결과(data/frozen/symptom_department_v2.csv, v2 163개)는 기록으로 남기고 다시 만들지 않는다.
+output_file: data/processed/v4/symptom_department_path_b.csv
+
+# 최대 추천 개수
+max_recommendations: 3
+
+# 의원급 2순위 과를 추천에 넣을 최소 비율 (초안 20%)
+clinic_second_min_share: 0.20
+
+# ---------- 경로 B 코드 선택: 덜 공유된 코드 우선 (2026-11-12) ----------
+# share_count = 그 3자리 코드를 icd10_3_list에 가진 v2 증상 수 (상위 증상 is_parent=true는 세지 않는다).
+# 증상마다 share_count가 max_share_count 미만인 코드를 모두 쓴다. 그런 코드가 없으면 share_count가 가장 작은 코드들을 쓴다.
+# 고른 코드들의 의원급 환자 합(순위 제외 과를 뺀 수)이 min_clinic_patients 미만이면
+# 남은 코드 중 share_count가 가장 작은 것들을 더 넣고, 넘을 때까지 되풀이한다. 쓴 코드는 codes_used 컬럼에 남긴다.
+# hira_indistinct = 아래 둘 중 하나면 true (어느 쪽인지는 hira_indistinct_reason 컬럼)
+#   (1) same_codes : codes_used 집합이 다른 v2 증상과 완전히 같다
+#   (2) all_shared : codes_used가 모두 share_count ≥ max_share_count
+# chapter_spread = 그 3자리 코드를 icd10_3_list에 가진 v2 증상들의 ICPC 장(chapter) 종류 수
+#   (하위 증상은 상위의 장으로 센다. 상위 증상은 세지 않는다. 코드별 값은 data/interim/v4/code_chapter_spread.csv)
+# (2)에 해당하고 codes_used 중 chapter_spread ≥ await_min_chapter_spread 인 코드가 하나라도 있으면
+# 경로 B 추천을 쓰지 않는다: rec1~3 비움, path_b_used=false, dept_rule=await_path_a.
+#   (2)여도 쓴 코드가 모두 한 장 안에서만 공유되면 경로 B 추천을 그대로 둔다.
+#   전체 순위(clinic_ranking·hospital_ranking)는 참고용으로 남긴다. pediatric_top도 false로 둔다.
+#   단 생식기 고정 규칙·직접 지정이 걸린 증상은 규칙으로 정한 rec1만 남기고 rec2·rec3를 비운다
+#   (dept_rule에 둘 다 적는다. 예: female_genital;await_path_a).
+# 아래 고정 규칙(성별 필터·치과 범위·직접 지정·생식기 규칙)은 이 계산 뒤에 그대로 적용한다.
+code_specificity:
+  enabled: true
+  max_share_count: 4
+  min_clinic_patients: 1000
+  await_min_chapter_spread: 2
+
+# ---------- 2A-1 점검 뒤 정한 규칙 (2026-11-12, reports/2A1_check.md) ----------
+
+# 병원급으로 채우는 rec2·rec3의 최소 비율. 미달이면 채우지 않고 비워 둔다.
+# (clinic_ranking·hospital_ranking 전체 순위에는 적용하지 않는다)
+min_share_hospital_fill: 0.10
+
+# 성별 제한 증상에서 추천·순위에 넣지 않는 과. {sex_restriction 값: [진료과]}
+sex_filter:
+  male: [산부인과]
+
+# 특정 화면 그룹(body_part_ui)의 증상에서만 추천·순위에 넣는 과.
+# 다른 증상에서는 그 과를 빼고 다시 순위를 매긴다(비율도 다시 계산).
+dept_scope:
+  치과:
+    body_part_ui: [입·치아]
+
+# 경로 B를 쓰지 않고 진료과를 직접 정하는 증상. 출력에 path_b_used=false, dept_rule=dept_override로 표시.
+# rec1만 채우고 rec2·rec3는 비운다. 순위 컬럼은 참고용으로 남긴다.
+dept_override:
+  F17: {dept: 안과, reason: "ICD-10 연결이 Z46뿐이고 치과 장치 청구가 섞여 경로 B를 쓸 수 없음"}
+  F18: {dept: 안과, reason: "ICD-10 연결이 Z46뿐이고 치과 장치 청구가 섞여 경로 B를 쓸 수 없음"}
+
+# pediatric_top = 의원급 순위 상위 top_n 안에 dept가 있고 그 비율이 min_share 이상
+pediatric_top:
+  dept: 소아청소년과
+  top_n: 2
+  min_share: 0.20
+
+# 생식기 고정 규칙: 해당 chapter 증상은 rec1을 rec1 과로 고정한다(rec1_level=rule, 비율 칸은 의원급 실제 비율).
+#   fill_rest: true  → rec2·rec3는 그 과를 뺀 데이터 순위(의원급 clinic_second_min_share 이상, 병원급 min_share_hospital_fill 이상)
+#   fill_rest: false → rec2·rec3를 비운다
+#   exclude_symptoms → 규칙을 적용하지 않고 데이터대로 두는 증상
+# 전체 순위 JSON은 그대로 둔다. 출력의 dept_rule에 male_genital / female_genital로 표시.
+male_genital_rule:      # 근거: 비뇨의학과 진료 범위에 남성 생식계통 포함
+  chapters: [Y]
+  rec1: 비뇨의학과
+  fill_rest: false
+female_genital_rule:
+  chapters: [X, W]
+  rec1: 산부인과
+  fill_rest: true
+  exclude_symptoms: [X18, X19, X20, X21, X22]   # 유방 증상은 데이터대로 (현재 v2에는 없음)
+
+# 진료과의 대상 성별. 2A 계산과 DB 값은 바꾸지 않는다.
+# 서비스(런타임)에서 사용자 성별이 맞지 않으면 그 과를 숨기는 데 쓰는 설정이다. 예: 남성 사용자에게 산부인과를 숨김.
+dept_sex:
+  산부인과: female
+
+# 진료과의 대상 나이 (2026-11-13). dept_sex와 같은 방식: 2A 계산과 DB 값은 바꾸지 않는다.
+# 서비스(런타임)에서 사용자 나이가 max_age를 넘으면(성인) 그 과를 추천에서 숨기는 데 쓰는 설정이다.
+# 숨긴 뒤 rec가 모자라면 런타임에서 경로 B 순위 JSON(clinic_ranking → hospital_ranking,
+# data/processed/v4/symptom_department_path_b.csv)에서 숨긴 과·이미 있는 과를 건너뛰며 채운다.
+dept_age:
+  소아청소년과: {max_age: 18}
+
+# 두 통계 모두 데이터가 없을 때 쓰는 기본 추천 (fallback = true)
+fallback_departments:
+  - 가정의학과
+  - 내과
+
+# ---------- 경로 A: AI Hub 증상 답변에서 질환별 증상 (2026-11-12, S3-5) ----------
+# pipeline/03c_match_all.py → data/processed/v3/disease_symptom.csv
+# share = n_answers_mentioned / n_symptom_answers (그 질환의 증상 답변 수). span 표현은 0.5로 센다.
+# kept = share ≥ min_share 그리고 n_answers_mentioned ≥ min(min_answers, n_symptom_answers)
+#   (증상 답변이 min_answers개보다 적은 질환은 답변 수가 기준. 2026-11-12 S3-5 수정)
+path_a:
+  min_share: 0.20
+  min_answers: 3
+  # 경로 A 증상별 진료과(pipeline/04b_path_a.py): 연결된 kept 질환이 이 수 이상이면 path_a_ok
+  min_diseases: 3
+
+# ---------- 2A-2: 경로 A + 경로 B 합치기 (pipeline/step2c_combine.py, 2026-11-13) ----------
+# "경로 B가 후보를 정하고, 경로 A는 순서만 정한다"
+#   B   : path_b_used=true 이고 (hira_indistinct=false
+#         또는 [2026-11-13 결정 1] hira_indistinct=true 이지만 path_a_ok=false 이고 await_path_a가 아님) → 경로 B 그대로
+#   B+A : (hira_indistinct=true 또는 await_path_a) 이고 path_a_ok=true 이고 경로 B 순위가 있음
+#         후보 = 경로 B 의원급 share ≥ candidate_min_clinic_share ∪ 병원급 share ≥ candidate_min_hospital_share
+#         후보를 경로 A 점수 순으로 다시 정렬(A 점수 0인 후보는 B 순서대로 뒤에). B 순서 = 의원급 순위 → 병원급에만 있는 과
+#         rec2·rec3는 경로 B share 기준 최소 비율(의원급 clinic_second_min_share 또는 병원급 min_share_hospital_fill)을
+#         넘는 후보만 쓴다(못 넘는 후보는 건너뛴다).
+#         [2026-11-13 결정 3, 같은 날 좁힘] 경로 A 순서의 1위가 경로 B 의원급 share ≥ rec1_change_min_clinic_share를
+#         넘지 못하면 rec1은 경로 B 1위(의원급 1위, 없으면 병원급 1위)를 유지하고, 경로 A 순서는 rec2·rec3에만 쓴다.
+#         (병원급 조건은 쓰지 않는다)
+#   A   : 경로 B 순위가 없고 path_a_ok=true → 경로 A 단독
+#   none: 그 밖 → 추천 비움, fallback=true
+#   rule: dept_override(직접 지정) 증상. 2A 결과 그대로
+# 생식기 고정 규칙의 rec1은 경로와 관계없이 유지한다.
+combine:
+  path_b_file: data/processed/v4/symptom_department_path_b.csv
+  path_a_file: data/processed/v4/symptom_department_path_a.csv
+  # 보고서 비교용 2A-1 결과(v2 163개, 고정 파일)
+  path_b_2a1_file: data/frozen/symptom_department_v2.csv
+  output: data/processed/v4/symptom_department_final.csv
+  fallback_output: data/processed/v4/fallback_departments.csv
+  report: reports/2A2_build.md
+  stats: data/interim/v4/2a2_stats.json
+  candidate_min_clinic_share: 0.05
+  candidate_min_hospital_share: 0.10
+  rec1_change_min_clinic_share: 0.20
+  # 경로 A 후처리: 제외 진료과·응급의학과·치과 범위·성별 필터를 뺀 뒤 다시 비율을 맞춘다.
+  # 의원급/병원급 구분이 없으므로 rec2·rec3 최소 비율은 이것 하나
+  path_a_min_share: 0.10
+
+# fallback 증상(path_used=none)의 외상 판정과 fallback 진료과
+#   is_injury = injury_triage_categories의 119 범주와 연결 또는 ICPC 코드가 injury_icpc_codes에 있음
+#               (모든 증상에 계산하고 출력에 남긴다)
+#     [2026-11-13 결정 2] 손상 그룹(19~31) 중 21 눈 손상/질환, 24 익수, 25 일산화탄소 중독/흡입, 27 중독은 뺀다
+#   fallback_group (fallback 증상마다, 위에서부터 처음 맞는 것): injury → pediatric → general
+#     injury   : is_injury=true
+#     pediatric: ICPC preferred에 pediatric_preferred_keywords 중 하나가 들어 있음(대소문자 무시) [2026-11-13 추가]
+#     general  : 그 밖
+#   fallback_departments.csv
+#     injury   : is_injury=true이고 path_used가 A·B·B+A인 증상들의 최종 rec1을 세어 많이 나온 순 상위 injury_top_n개.
+#                근거 증상이 injury_min_support개 이상인 과만 남긴다 [2026-11-13 추가]
+#     pediatric: pediatric_departments (고정)
+#     general  : general_departments (고정)
+#   응급의학과는 넣지 않는다(응급은 앱의 응급 신고 버튼이 따로 처리).
+fallback:
+  injury_triage_categories: [19, 20, 22, 23, 26, 28, 29, 30, 31]
+  injury_icpc_codes: [S12, S13, S14, S15, S16, S17, S18, S19]
+  injury_top_n: 3
+  injury_min_support: 2
+  # 판정에 실제로 쓰는 것은 config/pediatric_fallback.yaml의 증상 id(이 키워드로 ICPC 이름을 본 결과를 2026-11-14 고정).
+  # 이 값은 보고서(reports/2A2_build.md) 설명에만 쓴다.
+  pediatric_preferred_keywords: [infant, child]
+  pediatric_departments: [소아청소년과]
+  general_departments: [내과, 가정의학과]
+  never: [응급의학과]

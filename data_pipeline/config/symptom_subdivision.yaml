@@ -1,0 +1,17 @@
+# ICPC 코드 하나를 하위 증상으로 나누는 규칙 (pipeline/01e_merge_labels.py)
+# - 상위 증상(parent)은 standard_symptoms_v2.csv에 그대로 남고 is_parent=true가 된다.
+# - 하위 증상(children)은 상위 바로 아래 행으로 추가된다. parent_id=상위 id, icpc2_code=상위 코드,
+#   icd10_3_list=아래 icd10_3, body_part_ui·sex_restriction·triage_category는 상위 값을 물려받는다.
+# - 상위 증상의 동의어는 keywords로 하위에 배정한다. 표현(공백 제거)에 키워드가 들어 있으면 그 하위로 보낸다.
+#   하위는 위에서부터 순서대로 보고 처음 걸린 곳에 배정한다. 어디에도 안 걸리면 상위에 남긴다.
+# - 진료과 추천(pipeline/step2a_department.py)은 하위 증상 기준으로 만들고 상위는 추천을 비운다.
+# - 한번 준 id는 바꾸지 않는다.
+
+subdivisions:
+  D20:
+    reason: "3자리 코드 4개의 의원급 1위 과가 모두 다름 (reports/2A1_check.md, 2026-11-12)"
+    children:
+      - {id: D20-01, name_ko: 혀 증상, icd10_3: [K14], keywords: [혀]}
+      - {id: D20-02, name_ko: 입술·입안 증상, icd10_3: [K13], keywords: [입술, 입안, 구내]}
+      - {id: D20-03, name_ko: 입냄새, icd10_3: [R19], keywords: [입냄새, 구취]}
+      - {id: D20-04, name_ko: 입마름, icd10_3: [R68], keywords: [입마름, 침, 건조]}
