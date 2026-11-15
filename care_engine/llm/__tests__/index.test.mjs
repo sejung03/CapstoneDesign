@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {classifySymptom, extractProfileUpdates, hasExternalAiConsent} from '../index.mjs';
+import {classifySymptom, extractProfileUpdates, hasExternalAiConsent, resolveConsent} from '../index.mjs';
 import {createMockProvider} from '../providers/mock.mjs';
 import {getConfig} from '../config.mjs';
 import {loadRefData} from '../ref-data.mjs';
@@ -8,7 +8,8 @@ import {buildCandidates} from '../candidates.mjs';
 import {checkFollowUpContract} from '../confirm-question.mjs';
 
 const ref = loadRefData();
-const config = getConfig({});
+// 1차 테스트는 retrieve 동작(후보 0개 → all 재시도 등)을 검사하므로 retrieve로 고정한다(L4 기본값은 all)
+const config = getConfig({LLM_CANDIDATE_MODE: 'retrieve'});
 const consent = {granted: true, provider: 'mock', version: 'test-v1', healthInfo: true};
 // 고유 표지 문자열: 로그 어디에도 나오면 안 된다
 const MARK = '표지QZ7';
@@ -42,7 +43,10 @@ test('classifySymptom: picks → confirm(계약 통과), meta 채움, 로그에 
   assert.equal(r.status, 'confirm');
   assert.equal(checkFollowUpContract(r.followUp).ok, true);
   assert.deepEqual(r.followUp.options.slice(0, 2).map((o) => o.id), [`sym_${ids[1]}`, `sym_${ids[0]}`]);
-  assert.deepEqual(Object.keys(r.meta).sort(), ['attempts', 'candidateCount', 'candidateMode', 'dataVersion', 'error', 'latencyMs', 'model', 'promptId', 'provider', 'schemaId'].sort());
+  assert.deepEqual(Object.keys(r.meta).sort(), ['attempts', 'candidateCount', 'candidateMode', 'dataVersion', 'error', 'latencyMs', 'model', 'promptId', 'provider', 'schemaId',
+    'consentSource', 'modelWarning', 'tokens', 'providerError'].sort());
+  assert.equal(r.meta.consentSource, 'request');
+  assert.deepEqual(r.meta.tokens, {input: 0, cachedInput: 0, output: 0, reasoning: 0});
   assert.equal(r.meta.provider, 'mock');
   assert.equal(r.meta.promptId, 'symptom_v1');
   assert.equal(r.meta.schemaId, 'symptom_pick_v1');
@@ -279,4 +283,71 @@ test('extractProfileUpdates: 틀린 항목만 버린다', async () => {
   ]}});
   const r = await extractProfileUpdates({messages: PMSG, consent}, deps);
   assert.deepEqual(r.items.map((i) => i.field), ['allergies']);
+});
+
+// ── L4 M2: 개발용 동의 ──
+test('resolveConsent: 없음+devConsent → dev 동의, 실제 값이 오면 그대로', () => {
+  assert.deepEqual(resolveConsent(undefined, 'openai', {devConsent: true}),
+    {consent: {granted: true, provider: 'openai', version: 'dev-assumed', healthInfo: true}, source: 'dev'});
+  assert.deepEqual(resolveConsent(null, 'openai', {devConsent: false}), {consent: null, source: null});
+  assert.deepEqual(resolveConsent(true, 'openai', {devConsent: true}), {consent: true, source: 'request'});
+});
+
+test('개발용 동의: devConsent false + consent 없음 → no_consent, 호출 0회', async () => {
+  const {deps, provider} = setup({data: {intent: 'symptom', status: 'matched', picks: [ids[0]]}});
+  const r = await classifySymptom({text: TEXT}, {...deps, config: getConfig({LLM_CANDIDATE_MODE: 'retrieve'})});
+  assert.deepEqual([r.status, r.reason, r.meta.consentSource], ['fallback', 'no_consent', null]);
+  const p = await extractProfileUpdates({messages: ['저는 32살이에요']}, {...deps, config: getConfig({})});
+  assert.deepEqual([p.items, p.meta.error], [[], 'no_consent']);
+  assert.equal(provider.callCount, 0);
+});
+
+test('개발용 동의: devConsent true + consent 없음 → 호출됨, meta.consentSource=dev', async () => {
+  const cfg = getConfig({LLM_CANDIDATE_MODE: 'retrieve', LLM_DEV_CONSENT: 'true'});
+  const {deps, provider, logs} = setup({data: {intent: 'symptom', status: 'matched', picks: [ids[0]]}});
+  const r = await classifySymptom({text: TEXT}, {...deps, config: cfg});
+  assert.equal(r.status, 'confirm');
+  assert.equal(r.meta.consentSource, 'dev');
+  assert.equal(logs[0].consentSource, 'dev');
+  assert.equal(provider.callCount, 1);
+  const msg = '저는 32살이에요';
+  const pp = createMockProvider({profile_extract_v1: {[msg]: {data: {items: [{field: 'age', value: '32', messageIndex: 0, quote: '32살'}]}}}});
+  const p = await extractProfileUpdates({messages: [msg]}, {provider: pp, config: cfg});
+  assert.equal(p.meta.consentSource, 'dev');
+  assert.equal(p.items.length, 1);
+});
+
+test('개발용 동의: 실제 consent 값이 오면 devConsent는 무시하고 엄격하게 검사', async () => {
+  const cfg = getConfig({LLM_CANDIDATE_MODE: 'retrieve', LLM_DEV_CONSENT: 'true'});
+  for (const c of [true, false, {granted: true, provider: 'gemini', version: 'v'}, {granted: false, provider: 'mock', version: 'v'}]) {
+    const {deps, provider} = setup({data: {intent: 'symptom', status: 'matched', picks: [ids[0]]}});
+    const r = await classifySymptom({text: TEXT, consent: c}, {...deps, config: cfg});
+    assert.deepEqual([r.status, r.reason, r.meta.consentSource], ['fallback', 'no_consent', 'request'], JSON.stringify(c));
+    assert.equal(provider.callCount, 0);
+  }
+  const {deps} = setup({data: {intent: 'symptom', status: 'matched', picks: [ids[0]]}});
+  const p = await extractProfileUpdates({messages: ['저는 32살이에요'], consent: {...consent, healthInfo: false}}, {...deps, config: cfg});
+  assert.deepEqual([p.items, p.meta.error, p.meta.consentSource], [[], 'no_consent', 'request']);
+});
+
+test('LLM_DEV_CONSENT는 정확히 "true"일 때만 켜진다', () => {
+  for (const v of [undefined, '', 'TRUE', '1', 'yes', 'false']) assert.equal(getConfig({LLM_DEV_CONSENT: v}).devConsent, false, String(v));
+  assert.equal(getConfig({LLM_DEV_CONSENT: 'true'}).devConsent, true);
+});
+
+test('토큰 합계·providerError가 meta에 남는다(재시도 포함), 본문 없음', async () => {
+  const tok = {inputTokens: 100, cachedInputTokens: 50, outputTokens: 10, reasoningTokens: 0};
+  const p = {name: 'mock', model: 'spy', calls: 0, async generateStructured() {
+    this.calls += 1;
+    if (this.calls === 1) return {ok: false, error: 'server', meta: {...tok, httpStatus: 500, errorCode: 'server_error'}};
+    return {ok: true, data: {intent: 'symptom', status: 'matched', picks: [ids[0]]}, meta: tok};
+  }};
+  const r = await classifySymptom({text: TEXT, consent}, {provider: p, refData: ref, config});
+  assert.equal(r.status, 'confirm');
+  assert.deepEqual(r.meta.tokens, {input: 200, cachedInput: 100, output: 20, reasoning: 0});
+  assert.equal(r.meta.providerError, null);
+  const q = {name: 'mock', model: 'spy', async generateStructured() { return {ok: false, error: 'quota', meta: {httpStatus: 429, errorCode: 'insufficient_quota'}}; }};
+  const r2 = await classifySymptom({text: TEXT, consent}, {provider: q, refData: ref, config});
+  assert.deepEqual([r2.status, r2.reason, r2.meta.attempts], ['fallback', 'quota', 1]);
+  assert.deepEqual(r2.meta.providerError, {httpStatus: 429, code: 'insufficient_quota', param: null});
 });

@@ -19,6 +19,18 @@ test('getProvider: 기본은 mock, 이름으로 고름, 모르는 이름은 오�
   assert.throws(() => getProvider({config: getConfig({LLM_PROVIDER: 'claude'})}), /알 수 없는/);
 });
 
+test('getProvider(openai): 설정(모델·추론 강도·temperature)을 어댑터로 넘긴다, 키 없으면 호출 안 함', async () => {
+  const p = getProvider({config: getConfig({LLM_PROVIDER: 'openai', LLM_REASONING_EFFORT: 'low', LLM_TEMPERATURE: '0'})});
+  assert.equal(p.model, 'gpt-5.4-mini-2026-03-17');
+  const body = p.buildBody({system: 's', user: 'u', schema: {}, schemaName: 'n'});
+  assert.deepEqual(body.reasoning, {effort: 'low'});
+  assert.equal(body.temperature, 0);
+  let called = 0;
+  const p2 = getProvider({config: getConfig({LLM_PROVIDER: 'openai'}), openaiOptions: {apiKey: '', fetchImpl: async () => { called += 1; }}});
+  const r = await p2.generateStructured({system: 's', user: 'u', schema: {}, schemaName: 'n', timeoutMs: 100});
+  assert.deepEqual([r.error, called], ['auth', 0]);
+});
+
 test('gemini 자리: 항상 not_implemented, 예외 없음', async () => {
   for (const p of [createGeminiProvider({model: 'm'})]) {
     const r = await p.generateStructured(req('x'));

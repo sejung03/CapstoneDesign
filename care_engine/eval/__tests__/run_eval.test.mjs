@@ -10,7 +10,8 @@ import {getConfig} from '../../llm/config.mjs';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const cases = readCases(path.join(HERE, '..', 'cases', 'draft_v0.jsonl'));
 const fixtures = JSON.parse(readFileSync(path.join(HERE, '..', 'fixtures', 'mock_v0.json'), 'utf8'));
-const config = getConfig({LLM_PROVIDER: 'mock'});
+// 1차 mock 기대값은 retrieve 기준으로 손으로 계산했다 → 그 테스트는 retrieve로 고정, all 기본값은 따로 검사
+const config = getConfig({LLM_PROVIDER: 'mock', LLM_CANDIDATE_MODE: 'retrieve'});
 
 test('draft_v0: 30개, 구성 개수, 형식', () => {
   assert.equal(cases.length, 30);
@@ -54,6 +55,14 @@ test('runEval(mock): 지표가 fixture 설계대로 나온다', async () => {
   assert.deepEqual([m.repeatAgreement.hit, m.repeatAgreement.n], [30, 30]);
   // confirm = 정답 포함 증상 사례 15 + 정답 없이 다른 증상을 고른 c01·c08·c27 3 (c07은 no_match)
   assert.equal(r.statusCounts.confirm, 18);
+});
+
+test('runEval(mock, all 기본값): 후보를 전부 보내므로 보낸 후보에 정답 22/22, 나머지 지표는 같다', async () => {
+  const r = await runEval({cases, fixtures, providerName: 'mock', repeat: 1, config: getConfig({LLM_PROVIDER: 'mock'})});
+  const m = r.metrics;
+  assert.equal(r.candidateMode, 'all');
+  assert.deepEqual([m.candidateSentRecall.hit, m.candidateSentRecall.n], [22, 22]);
+  assert.deepEqual([m.recallAt10.hit, m.top1.hit, m.noMatchAccuracy.hit, m.intentAccuracy.hit, m.failureRate.hit], [15, 14, 8, 26, 4]);
 });
 
 test('runEval 결과에 사례 원문·profile 값이 없다', async () => {

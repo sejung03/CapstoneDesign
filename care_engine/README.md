@@ -3,7 +3,10 @@
 의료 정보 도우미의 상담 엔진 폴더. 지금은 **LLM 모듈**(`llm/`)만 있다. 문진 엔진 `runCare`와 안전 규칙(위험 표현 사전)은 다음 작업으로 `engine/`에 들어간다.
 설계: [docs/LLM모듈_설계.md](docs/LLM모듈_설계.md). 작업 보고: [docs/reports/](docs/reports/).
 
-> **지금은 `mock` 제공업체로만 동작한다.** 네트워크 호출, API 키, `.env`를 쓰지 않는다. `gemini`·`openai`는 `not_implemented`를 돌려주는 자리만 있다.
+> ⚠️ **운영 전 반드시: `LLM_DEV_CONSENT`를 끄고 팀원 3의 동의 기능과 연결해야 한다.**
+> `LLM_DEV_CONSENT=true`이면 `consent`가 없는 요청을 "동의한 것"으로 간주해 사용자 문장을 OpenAI로 보낸다(MVP 개발용, 가짜 문장만).
+
+> 기본 제공업체는 `mock`(네트워크 없음). `LLM_PROVIDER=openai`이면 OpenAI Responses API를 부른다. `gemini`는 자리만 있다.
 
 ## 폴더 구조
 

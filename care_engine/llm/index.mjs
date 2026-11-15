@@ -26,6 +26,24 @@ export function hasExternalAiConsent(consent, providerName) {
     && consent.provider === providerName && typeof consent.version === 'string' && consent.version.trim() !== '');
 }
 
+/**
+ * 개발용 동의(L4-MVP M2). consent가 아예 없고(undefined·null) LLM_DEV_CONSENT=true일 때만
+ * 현재 업체 이름으로 동의한 것으로 간주한다. 실제 consent 값이 오면 devConsent는 무시하고 엄격하게 검사한다.
+ * ⚠ 운영 전 LLM_DEV_CONSENT를 끄고 실제 동의 기능과 연결해야 한다.
+ * @returns {{consent:object|null, source:'request'|'dev'|null}}
+ */
+export function resolveConsent(consent, providerName, config) {
+  if (consent === undefined || consent === null) {
+    if (config?.devConsent === true) {
+      return {consent: {granted: true, provider: providerName, version: 'dev-assumed', healthInfo: true}, source: 'dev'};
+    }
+    return {consent: null, source: null};
+  }
+  return {consent, source: 'request'};
+}
+
+const emptyTokens = () => ({input: 0, cachedInput: 0, output: 0, reasoning: 0});
+
 function resolveDeps(deps = {}) {
   const config = deps.config ?? getConfig();
   return {
@@ -43,20 +61,29 @@ function resolveDeps(deps = {}) {
  */
 async function callProvider(provider, req, {config, signal, deadline, now}) {
   let attempts = 0;
-  const tokens = {input: 0, output: 0};
+  const tokens = emptyTokens();
+  let providerError = null;
   for (;;) {
-    if (signal?.aborted) return {ok: false, error: 'aborted', attempts, tokens};
+    if (signal?.aborted) return {ok: false, error: 'aborted', attempts, tokens, providerError};
     const remaining = deadline - now();
-    if (remaining <= 0) return {ok: false, error: 'timeout', attempts, tokens};
+    if (remaining <= 0) return {ok: false, error: 'timeout', attempts, tokens, providerError};
     const timeoutMs = Math.min(config.timeoutMs, remaining);
     attempts += 1;
     const res = await callOnce(provider, {...req, timeoutMs}, signal);
     if (Number.isFinite(res.meta?.inputTokens)) tokens.input += res.meta.inputTokens;
+    if (Number.isFinite(res.meta?.cachedInputTokens)) tokens.cachedInput += res.meta.cachedInputTokens;
     if (Number.isFinite(res.meta?.outputTokens)) tokens.output += res.meta.outputTokens;
-    if (res.ok) return {ok: true, data: res.data, attempts, tokens};
+    if (Number.isFinite(res.meta?.reasoningTokens)) tokens.reasoning += res.meta.reasoningTokens;
+    if (res.ok) return {ok: true, data: res.data, attempts, tokens, providerError: null};
+    // 어댑터가 이미 형식 검사한 짧은 code·param·HTTP 상태만(본문 없음)
+    providerError = {
+      httpStatus: Number.isFinite(res.meta?.httpStatus) ? res.meta.httpStatus : null,
+      code: typeof res.meta?.errorCode === 'string' ? res.meta.errorCode : null,
+      param: typeof res.meta?.errorParam === 'string' ? res.meta.errorParam : null,
+    };
     const left = deadline - now();
     if (attempts === 1 && isRetryable(res.error) && left >= config.retryMinRemainingMs && !signal?.aborted) continue;
-    return {ok: false, error: res.error, attempts, tokens};
+    return {ok: false, error: res.error, attempts, tokens, providerError};
   }
 }
 
@@ -113,6 +140,10 @@ export async function classifySymptom({text, sex = null, consent, signal, deadli
     latencyMs: 0,
     attempts: 0,
     error: null,
+    consentSource: null,
+    modelWarning: d.config.modelWarning ?? null,
+    tokens: emptyTokens(),
+    providerError: null,
   };
   let picks = [];
   let intent = null;
@@ -131,14 +162,19 @@ export async function classifySymptom({text, sex = null, consent, signal, deadli
       picks: [...picks], pickStatus, intent, result: result.status,
       fallbackReason: result.status === 'fallback' ? result.reason : null,
       error: meta.error, latencyMs: meta.latencyMs, attempts: meta.attempts,
-      dropped, inputTokens: tokens?.input ?? null, outputTokens: tokens?.output ?? null,
+      dropped, consentSource: meta.consentSource, modelWarning: meta.modelWarning,
+      inputTokens: tokens?.input ?? null, cachedInputTokens: tokens?.cachedInput ?? null,
+      outputTokens: tokens?.output ?? null, reasoningTokens: tokens?.reasoning ?? null,
+      providerError: meta.providerError,
     });
     return out;
   };
   const fallback = (why, error = why) => { meta.error = error; return finish({status: 'fallback', reason: why}); };
 
-  // 1. 동의
-  if (!hasExternalAiConsent(consent, d.provider.name)) return fallback('no_consent');
+  // 1. 동의(개발용 동의 포함)
+  const c = resolveConsent(consent, d.provider.name, d.config);
+  meta.consentSource = c.source;
+  if (!hasExternalAiConsent(c.consent, d.provider.name)) return fallback('no_consent');
   if (signal?.aborted) return fallback('aborted');
 
   // 2. PII 가리기 + 500자
@@ -171,6 +207,8 @@ export async function classifySymptom({text, sex = null, consent, signal, deadli
   const res = await callProvider(d.provider, req, {config: d.config, signal, deadline: deadlineFrom(start, d.config, deadlineAt), now: d.now});
   meta.attempts = res.attempts;
   tokens = res.tokens;
+  meta.tokens = {...res.tokens};
+  meta.providerError = res.providerError ?? null;
   if (!res.ok) return fallback(res.error);
 
   // 6. 검사
@@ -209,6 +247,10 @@ export async function extractProfileUpdates({messages, consent, signal, deadline
     latencyMs: 0,
     attempts: 0,
     error: null,
+    consentSource: null,
+    modelWarning: d.config.modelWarning ?? null,
+    tokens: emptyTokens(),
+    providerError: null,
   };
   let dropped = null;
   let sentCount = 0;
@@ -223,13 +265,18 @@ export async function extractProfileUpdates({messages, consent, signal, deadline
       messageCount: list.length, sentMessageCount: sentCount,
       itemCount: items.length, fields: items.map((i) => i.field),
       dropped, error: meta.error, latencyMs: meta.latencyMs, attempts: meta.attempts,
-      inputTokens: tokens?.input ?? null, outputTokens: tokens?.output ?? null,
+      consentSource: meta.consentSource, modelWarning: meta.modelWarning,
+      inputTokens: tokens?.input ?? null, cachedInputTokens: tokens?.cachedInput ?? null,
+      outputTokens: tokens?.output ?? null, reasoningTokens: tokens?.reasoning ?? null,
+      providerError: meta.providerError,
     });
     return {items, meta};
   };
 
-  // 외부 AI 동의 + 건강정보 처리 동의
-  if (!hasExternalAiConsent(consent, d.provider.name) || consent.healthInfo !== true) {
+  // 외부 AI 동의 + 건강정보 처리 동의(개발용 동의 포함)
+  const c = resolveConsent(consent, d.provider.name, d.config);
+  meta.consentSource = c.source;
+  if (!hasExternalAiConsent(c.consent, d.provider.name) || c.consent.healthInfo !== true) {
     meta.error = 'no_consent';
     return finish([]);
   }
@@ -255,6 +302,8 @@ export async function extractProfileUpdates({messages, consent, signal, deadline
   const res = await callProvider(d.provider, req, {config: d.config, signal, deadline: deadlineFrom(start, d.config, deadlineAt), now: d.now});
   meta.attempts = res.attempts;
   tokens = res.tokens;
+  meta.tokens = {...res.tokens};
+  meta.providerError = res.providerError ?? null;
   if (!res.ok) { meta.error = res.error; return finish([]); }
 
   // 보내지 않은 메시지를 가리키는 항목은 범위 밖으로 처리해 버린다
