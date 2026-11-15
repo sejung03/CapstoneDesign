@@ -2,6 +2,7 @@
 
 > 2026-11-15 작성. 담당: 팀원 1. 상태: **초안**. 제공업체(Gemini·OpenAI)가 정해지기 전에도 만들 수 있게 썼다.
 > **제공업체 API를 부르는 파일 2개(`providers/gemini.mjs`, `providers/openai.mjs`)만 빼고 나머지는 지금 바로 구현·테스트할 수 있다.** 그 전까지는 `providers/mock.mjs`로 돌린다.
+> *(11/15 L4 반영)* **업체 OpenAI 확정**(팀 결정 11/15). Responses API, 모델 `gpt-5.4-mini-2026-03-17`(날짜 고정 스냅샷), 추론 강도 `none`, `store: false`. `providers/openai.mjs` 연결 완료, `gemini.mjs`는 자리만 남긴다.
 > 맞춘 계약: `frontend/docs/BACKEND.md`(requestAssistant 요청·응답, followUp 0.20.0, profileUpdates 0.18.0, 외부 AI 업체 기준). DB: `ref.symptom`, `ref.symptom_synonym`, `ref.data_version`.
 
 ---
@@ -114,7 +115,7 @@ care_engine/
  * @typedef {Object} StructuredResult
  * @property {boolean} ok
  * @property {object=} data           파싱된 JSON (ok=true일 때)
- * @property {('timeout'|'rate_limit'|'server'|'network'|'blocked'|'bad_json'|'aborted')=} error
+ * @property {('timeout'|'rate_limit'|'server'|'network'|'blocked'|'bad_json'|'aborted'|'quota'|'auth'|'bad_request')=} error
  * @property {{provider:string, model:string, latencyMs:number, inputTokens?:number, outputTokens?:number}} meta
  */
 
@@ -123,10 +124,10 @@ export function getProvider() { /* LLM_PROVIDER = gemini | openai | mock */ }
 ```
 
 각 어댑터가 할 일은 이것뿐이다:
-1. 공통 스키마를 업체 형식으로 넘긴다. Gemini는 `responseMimeType: application/json` + 스키마, OpenAI는 `response_format: json_schema` + `strict: true`.
-2. `temperature: 0`, 모델 **버전명**을 고정한다(별칭 금지).
-3. 업체 오류를 위 `error` 값으로 바꾼다. 예외를 밖으로 던지지 않는다.
-4. 응답 원문과 입력을 **로그에 남기지 않는다.**
+1. 공통 스키마를 업체 형식으로 넘긴다. Gemini는 `responseMimeType: application/json` + 스키마, OpenAI는 ~~`response_format: json_schema`~~ **Responses API `text.format: {type:'json_schema', name, schema, strict: true}`** *(11/15 L4 반영)*.
+2. ~~`temperature: 0`~~ 모델 **버전명**을 고정한다(별칭 금지). *(11/15 L4 반영)* OpenAI는 `reasoning.effort: none`, `max_output_tokens: 400`, `store: false`. `temperature`는 기본으로 보내지 않는다(`LLM_TEMPERATURE`로 켤 수 있음, 스모크에서 0을 받는 것은 확인).
+3. 업체 오류를 위 `error` 값으로 바꾼다. 예외를 밖으로 던지지 않는다. *(11/15 L4 반영)* 추가: 429 `insufficient_quota` → `quota`, 401·403·키 없음 → `auth`, 400·404·422 → `bad_request`(셋 다 재시도 안 함). 거절(refusal) → `blocked`, `status: incomplete` → `bad_json`.
+4. 응답 원문과 입력을 **로그에 남기지 않는다.** 오류는 짧은 code 문자열만 남긴다.
 
 ### 공통 스키마 규칙 (두 업체 모두 통과하는 부분집합)
 - `type`, `properties`, `required`, `enum`(문자열), `items`, `additionalProperties:false`만 쓴다.
@@ -141,15 +142,19 @@ export function getProvider() { /* LLM_PROVIDER = gemini | openai | mock */ }
 ### 5-1. 입력 범위
 - 보내는 것: **사전 매칭에 실패한 사용자 메시지 텍스트만.** `profile`, `intake`, `previousReport`, 위치는 보내지 않는다.
 - 보내기 전 조건: 외부 AI 이용 동의가 **업체명이 들어간 버전으로** 유효할 것(BACKEND.md 465행).
+  - *(11/15 L4 반영)* 동의 객체 형식: `{granted: true, provider: '<업체명>', version: '<동의문 버전>', healthInfo: true}`. `true` 같은 포괄 동의는 거절한다.
+  - *(11/15 L4 반영)* **개발용 동의(MVP)**: `consent`가 아예 없고 `LLM_DEV_CONSENT=true`이면 `{granted:true, provider:<현재 업체>, version:'dev-assumed', healthInfo:true}`로 간주하고 meta에 `consentSource:'dev'`를 남긴다. 실제 consent 값이 오면 개발용 동의는 무시하고 엄격하게 검사한다. **운영 전 `LLM_DEV_CONSENT`를 끄고 팀원 3의 동의 기능과 연결해야 한다.**
 - `pii.mjs`가 전화번호·이메일·주민번호 패턴을 `[번호]` 등으로 바꾼다(정규식, 결정적).
 - 길이 상한 500자. 넘으면 마지막 500자.
 
 ### 5-2. 후보 생성 (`candidates.mjs`, LLM 없음)
-1. 정규화: 공백 제거, 영문 소문자, 반복 문장부호 제거(사전 `term_norm`과 같은 규칙).
+1. 정규화: 공백 제거, 영문 소문자(사전 `term_norm`과 같은 규칙). *(11/15 L4 반영)* "반복 문장부호 제거"는 지웠다 — 파이프라인 규칙(NFKC → 소문자 → 공백 제거)이 기준이고, 사전 1,173행 모두 이 규칙과 일치한다.
 2. 입력과 각 동의어의 **문자 2-gram Dice 계수**를 계산하고, 동의어가 입력 안에 부분 문자열로 있으면 1.0.
 3. symptom_id별 최고 점수로 모은 뒤, 점수 내림차순 → 같으면 symptom_id 오름차순.
 4. 상위 `K`개(기본 40)를 쓴다. fallback 증상 ID는 후보에 넣지 않는다(fallback은 엔진이 처리).
 5. 성별을 이미 알면(T2 답) `ref.symptom.sex_restriction`이 맞지 않는 후보를 뺀다. 모르면 빼지 않는다.
+
+*(11/15 L4 반영)* **기본값 `all`**: 초안 평가에서 `retrieve`가 바꿔 말한 표현 6/22를 후보에 넣지 못했다(OpenAI 실제 평가에서도 Recall@10 21/22 vs 16/22). `retrieve`는 `LLM_CANDIDATE_MODE=retrieve`로 남긴다. all에서 실제로 보내는 후보는 185개다(197개 − fallback 12 − 상위 증상 D20, 성별을 알면 더 준다). 아래 비교는 정식 평가셋으로 다시 한다.
 
 **비교 실험(평가로 결정)**: `CANDIDATE_MODE = retrieve`(위 방식, K=40) vs `all`(197개 전부). 197개 전부는 표현을 바꿔 말한 경우("속이 뒤집힐 것 같아")를 덜 놓치지만 enum이 길어진다(Gemini 문서도 enum 값 수를 줄이라고 권함). `retrieve`는 후보에 정답이 없으면 끝이다. 둘 다 돌려 **Recall@10**과 실패율로 정한다.
 
@@ -246,7 +251,12 @@ fallback = 증상을 fallback으로 두고 F1~F3(`engine_condition: symptom_is_f
 
 ### 6-1. 언제 부르나
 - reason=message이고 건강정보 처리 동의가 유효할 때만.
-- 메시지에 신호어(살, 세, 나이, 약, 복용, 먹고 있, 알레르기, 앓, 진단, 수술, 병력 등, `config`에 목록)가 있을 때만 부른다. 없으면 LLM 호출 0회.
+- ~~메시지에 신호어(살, 세, 나이, 약, 복용, 먹고 있, 알레르기, 앓, 진단, 수술, 병력 등, `config`에 목록)가 있을 때만 부른다.~~ *(11/15 L4 반영)* 메시지 원문(NFKC)이 아래 정규식 중 하나에 맞을 때만 부른다(`config.PROFILE_SIGNAL_PATTERNS`). "안녕하세요", "약국", "세상", "약속", "수술실"은 맞지 않는다. 없으면 LLM 호출 0회.
+  - 나이: `\d{1,3}\s*(살|세)`, `만\s*\d{1,3}\s*세`, `나이`
+  - 약: `약\s*(을|은|를)?\s*(먹|복용|처방)`, `복용`, `먹고\s*있`, `\S+약\s*(먹|복용)`
+  - 알레르기: `알레르기`, `알러지`
+  - 병력: `앓`, `진단\s*(받|을)`, `수술\s*(받|했)`, `병력`, `기저\s*질환`
+  - 알려진 빈틈: "수술을 받았고"처럼 `수술` 뒤에 조사가 오면 맞지 않는다(초안 사례 c29). 넓힐지 팀 결정.
 - 증상 분류와 **다른 호출**로 둔다(스키마가 작아지고 실패 원인을 나눠 볼 수 있음).
 
 ### 6-2. 출력 스키마 (`profile_extract_v1`)
@@ -282,7 +292,7 @@ fallback = 증상을 fallback으로 두고 F1~F3(`engine_condition: symptom_is_f
 | 검사 | 실패 시 |
 |---|---|
 | `messageIndex`가 messages 범위 안 | 항목 버림 |
-| `quote`가 그 메시지의 부분 문자열(정규화 후) | 항목 버림 |
+| `quote`가 그 메시지의 부분 문자열 — *(11/15 L4 반영)* **원문에 그대로 포함**(프론트가 `includes`로 검사하고 하나라도 틀리면 전체를 거절하므로. 1차 구현에서 정규화 후 포함 + 원문 포함 둘 다 요구) | 항목 버림 |
 | `value`(정규화)가 `quote` 안에 있음. age는 quote 안 숫자와 같음 | 항목 버림 |
 | age: 0~120 정수 문자열 | 항목 버림 |
 | value 1~500자, 공백만 불가 | 항목 버림 |
@@ -295,7 +305,7 @@ fallback = 증상을 fallback으로 두고 F1~F3(`engine_condition: symptom_is_f
 
 ## 7. 결정성·버전·로그
 
-- 고정값: `temperature 0`, 모델 버전명, 프롬프트 버전, 스키마 버전, `data_version`, 후보 순서(점수 → ID).
+- 고정값: ~~`temperature 0`~~, 모델 버전명, 프롬프트 버전, 스키마 버전, `data_version`, 후보 순서(점수 → ID). *(11/15 L4 반영)* OpenAI는 추론 강도 `none`, temperature는 기본으로 보내지 않음. 초안 평가 반복 일치율 29/30.
 - 결정성 범위(확정사항 그대로): **"같은 정규화 답 + 같은 데이터 버전 → 같은 결과"**는 엔진에서 보장한다. LLM 단계는 완전 결정적이지 않을 수 있으므로 평가에서 **반복 일치율**을 잰다. 원문·원문 해시는 캐시하지 않는다.
 - 로그에 남기는 것: 요청 ID, reason, provider·model·prompt 버전, data_version, 후보 개수, picks ID, status, intent, 오류 종류, 지연 시간, 토큰 수.
 - **남기지 않는 것**: 메시지 원문, quote, value, 업체 응답 원문.
@@ -311,9 +321,13 @@ fallback = 증상을 fallback으로 두고 F1~F3(`engine_condition: symptom_is_f
 | `GEMINI_API_KEY` / `OPENAI_API_KEY` | | 서버에서만 |
 | `LLM_TIMEOUT_MS` | 4000 | |
 | `LLM_BUDGET_MS` | 7000 | |
-| `LLM_CANDIDATE_MODE` | `retrieve` / `all` | |
-| `LLM_CANDIDATE_K` | 40 | |
-| `LLM_MAX_CONCURRENCY` | 2 | 무료 등급 속도 제한 대비 |
+| `LLM_CANDIDATE_MODE` | `all`(기본, *(11/15 L4 반영)*) / `retrieve` | |
+| `LLM_CANDIDATE_K` | 40 | retrieve일 때만 |
+| `LLM_MAX_CONCURRENCY` | 2 | 무료 등급 속도 제한 대비(값만 읽음) |
+| `LLM_REASONING_EFFORT` | `none`(기본) / `low` / `medium` / `high` | *(11/15 L4 반영)* |
+| `LLM_TEMPERATURE` | 빈 값(기본, 보내지 않음) / `0` | *(11/15 L4 반영)* |
+| `LLM_DEV_CONSENT` | `true`일 때만 켜짐 | *(11/15 L4 반영)* 개발용 동의. **운영 전 끈다** |
+| `LLM_EVAL_BUDGET_USD` | 2 | *(11/15 L4 반영)* 평가 1회 비용 상한 |
 
 ---
 
@@ -358,6 +372,18 @@ fallback = 증상을 fallback으로 두고 F1~F3(`engine_condition: symptom_is_f
 
 ## 11. 정해야 할 것
 
+*(11/15 L4 반영)* **결정됨**: 업체 OpenAI(Responses API), 모델 `gpt-5.4-mini-2026-03-17`, 추론 강도 `none`, `store:false`, 후보 기본값 `all`, 신호어는 정규식 패턴(6-1), quote는 원문 포함(6-4), 동의 객체 형식과 개발용 동의(5-1).
+
+*(11/15 L4 반영)* **남은 것**:
+- 정식 평가셋(2인 독립 라벨)으로 다시 재기 — 초안 30개는 혼자 단 라벨이라 참고값이다.
+- `retrieve` vs `all` 최종 비교(정식 평가셋으로).
+- 모델 비교(다른 스냅샷·추론 강도), temperature 0을 기본으로 할지.
+- 실제 동의 기능 연결(팀원 3) 후 `LLM_DEV_CONSENT` 끄기.
+- 동의어가 하나도 없는 후보 가능 증상 19개(retrieve에서는 후보에 못 오름; all에서는 이름으로 보임).
+- 신호어 패턴 빈틈("수술을 받았고") 넓힐지.
+
+아래는 1차 때 목록(1번 업체 결정은 위로 정리됨):
+
 1. **제공업체 결정 전에 약관 확인(팀).** 확인한 Gemini API 추가 약관(2025년판, 현재판 재확인 필요)에는 ① 무료 등급(Unpaid) 입력·출력을 Google이 제품 개선에 쓰며 민감·개인정보를 넣지 말라는 조항, ② 18세 미만이 이용할 가능성이 있는 서비스에 쓰지 말라는 조항, ③ 임상 진료·의료 조언 제공에 쓰지 말라는 조항이 있다. 우리는 만 14세 이상이 이용하므로 ②가 걸린다. 무료 키는 가짜 사례 평가에만 쓰고(11/14 결정과 같음), 실사용 연결 전에 OpenAI 약관도 같은 항목으로 비교한다. 업체가 정해져야 동의문(위탁·국외이전)도 쓸 수 있다.
 2. 서버 코드 위치(팀원 3).
 3. `CANDIDATE_MODE`(평가 후).
@@ -372,7 +398,7 @@ fallback = 증상을 fallback으로 두고 F1~F3(`engine_condition: symptom_is_f
 2. `schemas` · `prompts` · `validate` · `confirm-question` + 테스트
 3. `provider` 인터페이스 + `mock` → `classifySymptom`, `extractProfileUpdates` 완성
 4. `eval/` 틀과 사례 20개로 mock 실행
-5. (업체 정해지면) 어댑터 1개 연결 → 같은 평가 실행
+5. (업체 정해지면) 어댑터 1개 연결 → 같은 평가 실행 — *(11/15 L4 반영)* OpenAI 연결·초안 평가 완료(`docs/reports/llm_L4.md`)
 
 ## 참고
 - ALTA 2025 Medical Normalization: https://preview.aclanthology.org/ingest-alta/2025.alta-main.18.pdf
