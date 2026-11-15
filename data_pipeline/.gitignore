@@ -28,3 +28,8 @@ reports/code_chapter_spread.csv
 
 # 팀 내부 문서(확정사항 및 방법론): 저장소에 넣지 않는다
 docs/확정사항_및_방법론.md
+
+# 작업 지시서·과정 문서·인계 문서: 로컬에만 둔다(저장소에는 README와 설계 문서만)
+docs/prompts/
+docs/정리_마무리_프롬프트.md
+docs/행동온톨로지_인계.md
