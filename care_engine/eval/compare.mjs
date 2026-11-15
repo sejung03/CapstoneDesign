@@ -23,6 +23,10 @@ export function compareRows(a, b) {
     ['profile 재현율', ma.profileRecall, mb.profileRecall],
     ['실패 사유', ma.failuresByReason, mb.failuresByReason],
     ['반복 일치율', ma.repeatAgreement, mb.repeatAgreement],
+    ['실제 보낸 후보에 정답', ma.candidateSentRecall, mb.candidateSentRecall],
+    ['총비용(USD)', a.costUsd?.total, b.costUsd?.total],
+    ['사례당 비용(USD)', a.costUsd?.perCase, b.costUsd?.perCase],
+    ['캐시 입력 비율', a.cacheInputRatio, b.cacheInputRatio],
     ...Object.keys(ma.candidateRecall ?? {}).map((k) => [`후보 ${k}`, ma.candidateRecall[k], mb.candidateRecall?.[k]]),
   ];
   return rows.map(([name, x, y]) => ({지표: name, A: fmt(x), B: fmt(y)}));
@@ -33,7 +37,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   if (!fa || !fb) throw new Error('사용: node eval/compare.mjs a.json b.json');
   const a = JSON.parse(readFileSync(fa, 'utf8'));
   const b = JSON.parse(readFileSync(fb, 'utf8'));
-  const head = (x, f) => `${path.basename(f)} — ${x.providerName}/${x.model}, ${x.versions?.promptSymptom}, ${x.dataVersion}, 사례 ${x.caseCount}`;
+  const head = (x, f) => `${path.basename(f)} — ${x.providerName}/${x.model}, effort=${x.reasoningEffort ?? '-'}, mode=${x.candidateMode}, ${x.versions?.promptSymptom}, ${x.dataVersion}, 사례 ${x.caseCount}, 반복 ${x.repeat}`;
   console.log(`A: ${head(a, fa)}`);
   console.log(`B: ${head(b, fb)}`);
   if (a.casesFile !== b.casesFile) console.log('주의: 두 결과의 사례 파일이 다르다');
