@@ -47,8 +47,11 @@ test('runEval(mock): 지표가 fixture 설계대로 나온다', async () => {
   assert.deepEqual([m.top1.hit, m.top1.n], [14, 22]);
   assert.deepEqual([m.noMatchAccuracy.hit, m.noMatchAccuracy.n], [8, 8]);
   assert.deepEqual([m.intentAccuracy.hit, m.intentAccuracy.n], [26, 30]);
-  assert.deepEqual([m.profilePrecision.hit, m.profilePrecision.n], [4, 5]);
-  assert.deepEqual([m.profileRecall.hit, m.profileRecall.n], [4, 4]);
+  // L4 M3(신호어 패턴): c30(다른 사람 이야기)은 더는 보내지 않아 잘못 뽑힌 1개가 사라짐(1차 4/5 → 3/3),
+  // c29('수술을 받았고')는 지시서 패턴 '수술\s*(받|했)'에 조사가 없어 보내지 않음(1차 4/4 → 3/4)
+  assert.deepEqual([m.profilePrecision.hit, m.profilePrecision.n], [3, 3]);
+  assert.deepEqual([m.profileRecall.hit, m.profileRecall.n], [3, 4]);
+  assert.equal(m.profileCalls, 2);
   assert.deepEqual([m.candidateSentRecall.hit, m.candidateSentRecall.n], [16, 22]);
   assert.deepEqual([m.candidateRecall['R@40'].hit, m.candidateRecall['R@40'].n], [15, 22]);
   assert.equal(m.emergencyMissRate.value, '미측정');

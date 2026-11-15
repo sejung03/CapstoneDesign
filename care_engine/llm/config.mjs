@@ -3,12 +3,15 @@
 import {SYMPTOM_SCHEMA_NAME, PROFILE_SCHEMA_NAME} from './schemas.mjs';
 
 /**
- * 건강정보 추출 신호어(설계 6-1). 메시지(normalizeTerm 후)에 하나라도 있으면 추출 호출.
- * 설계 목록 그대로이며 "등"으로 열린 부분은 넣지 않았다(팀 검토 대상, 설계 11-4).
+ * 건강정보 추출 신호어 패턴(설계 6-1, L4-MVP M3에서 단어 → 정규식으로 좁힘).
+ * 원문(NFKC만, 공백 유지)에 하나라도 맞으면 추출 호출. 목적: "안녕하세요"·"약국"·"세상" 같은 문장이 외부로 나가지 않게.
  */
-export const PROFILE_SIGNAL_WORDS = Object.freeze([
-  '살', '세', '나이', '약', '복용', '먹고 있', '알레르기', '앓', '진단', '수술', '병력',
-]);
+export const PROFILE_SIGNAL_PATTERNS = Object.freeze({
+  age: Object.freeze([/\d{1,3}\s*(살|세)/u, /만\s*\d{1,3}\s*세/u, /나이/u]),
+  medication: Object.freeze([/약\s*(을|은|를)?\s*(먹|복용|처방)/u, /복용/u, /먹고\s*있/u, /\S+약\s*(먹|복용)/u]),
+  allergy: Object.freeze([/알레르기/u, /알러지/u]),
+  history: Object.freeze([/앓/u, /진단\s*(받|을)/u, /수술\s*(받|했)/u, /병력/u, /기저\s*질환/u]),
+});
 
 export const MAX_PICKS = 10;
 export const PROFILE_MAX_ITEMS = 4;
