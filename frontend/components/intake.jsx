@@ -1,3 +1,4 @@
+import {phrase,expandLocales} from '../i18n.mjs';
 import {intakeLabel,intakeSelection} from '../intake-data.mjs';
 import {Icon,Textarea,Input} from './shared.jsx';
 export function Intake({state,t}){
@@ -18,6 +19,6 @@ export function Intake({state,t}){
      <div><dt>{t('regionShort')}</dt><dd>{d.region||t('intakeCurrentLocation')}</dd></div></dl><p className="wizard-profile-note"><Icon name="document" />{t('intakeReportHelp')}</p>
    </>}
   </div><p key={'error:'+step+':'+(chosen?.id||'')} id="intake-error" className="field-error" role="alert" hidden /><div className="wizard-actions">{step>0&&<button id="intake-back" type="button" className="secondary-button"><Icon name="back" />{t('intakeBack')}</button>}<button type="submit" className="primary-button">{t(step===reviewStep?'intakeSend':'intakeNext')}<Icon name="arrow" /></button></div></form>
-  {step===reviewStep&&<button id="intake-report" className="text-button wizard-report">{t('intakeViewReport')}<Icon name="document" /></button>}{canSkip&&<button id="skip" className="skip-button" data-view="explore">{state.locale==='ko'?'여기까지 답하고 찾기':'Find care with these answers'}<Icon name="arrow" /></button>}
+  {step===reviewStep&&<button id="intake-report" className="text-button wizard-report">{t('intakeViewReport')}<Icon name="document" /></button>}{canSkip&&<button id="skip" className="skip-button" data-view="explore">{phrase(state.locale,"Find care with these answers")}<Icon name="arrow" /></button>}
  </div>;
 }

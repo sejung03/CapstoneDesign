@@ -65,19 +65,15 @@ test('React components preserve intake, search, maps, chat, report and privacy',
    click('composer-attach');await delay(0);click('start-report-import');await delay(0);assert.ok(el('health-consent-card'));assert.equal(el('chat-consent-dialog'),null);assert.equal(el('previous-report-file'),null);assert.equal(el('composer-attachment-menu'),null);
    click('health-consent-close');assert.equal(el('health-consent-card'),null);assert.equal(el('intake-wizard'),null);
   });
-  await t.test('service consent clauses use compact controls, separate optional storage and never fake signup',async()=>{
-   assert.equal(d.querySelector('.header-actions #account-open'),null);d.querySelector('.header-nav [data-view=profile]').click();assert.ok(el('account-open'));click('account-open');await waitFor(()=>el('account-dialog')?.open);assert.equal(d.querySelector('.kakao-login-button').disabled,true);
-   await waitFor(()=>el('signup-consent-form'));assert.equal(el('signup-consent-open'),null);assert.equal(d.querySelectorAll('.kakao-login-button').length,1);
-   assert.equal(el('account-heading').textContent,'로그인·회원가입');assert.doesNotMatch(el('signup-consent-form').textContent,/검토용|초안|미리보기/);
-   const controlStyle=w.getComputedStyle(el('signup-terms'));assert.equal(controlStyle.width,'18px');assert.equal(controlStyle.height,'18px');assert.equal(controlStyle.minHeight,'18px');assert.equal(w.getComputedStyle(el('signup-terms').parentElement).display,'grid');
-   assert.equal(el('signup-continue').disabled,true);assert.equal(el('signup-healthStorage').disabled,true);assert.equal(el('signup-reportStorage').checked,false);
-   click('signup-terms');click('signup-account');await delay(0);assert.equal(el('signup-continue').disabled,true);
-   click('signup-healthProcessing');await delay(0);click('signup-healthStorage');click('signup-reportStorage');await delay(0);
-   click('signup-healthProcessing');await delay(0);assert.equal(el('signup-healthStorage').checked,false);assert.equal(el('signup-reportStorage').checked,false);
-   submit('signup-consent-form');await delay(0);assert.equal(el('signup-selection-result'),null);assert.doesNotMatch(el('account-dialog').textContent,/가입.*완료|저장.*완료/);
+  await t.test('login starts OAuth while signup consent is handled after verified authentication',async()=>{
+   assert.equal(d.querySelector('.header-actions #account-open'),null);d.querySelector('.header-nav [data-view=profile]').click();assert.ok(el('account-open'));click('account-open');await waitFor(()=>el('account-dialog')?.open);
+   assert.equal(d.querySelectorAll('.kakao-login-button').length,1);assert.equal(el('signup-continue').disabled,false);
+   assert.equal(el('signup-terms'),null);assert.equal(el('signup-account'),null);
+   assert.equal(el('account-heading').textContent,'로그인·회원가입');
+   assert.equal(el('signup-selection-result'),null);assert.doesNotMatch(el('account-dialog').textContent,/가입.*완료|저장.*완료/);
    assert.equal(el('composer-input').readOnly,true);assert.ok(!Object.values({...w.localStorage}).some(value=>value.includes('signup-policy')));
    click('account-close');await waitFor(()=>!el('account-dialog'));assert.equal(d.activeElement,el('account-open'));
-   click('account-open');await waitFor(()=>el('account-dialog')?.open);await waitFor(()=>el('signup-consent-form'));assert.equal(el('signup-terms').checked,false);
+   click('account-open');await waitFor(()=>el('account-dialog')?.open);assert.equal(el('signup-continue').disabled,false);
    el('account-dialog').dispatchEvent(new w.Event('cancel',{bubbles:false,cancelable:true}));await waitFor(()=>!el('account-dialog'));click('workspace-close');
   });
   await t.test('guests enter health consent from My information; unsaved changes can be cancelled, discarded or explicitly saved',async()=>{

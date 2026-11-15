@@ -1,5 +1,6 @@
+import {phrase,expandLocales,completeLocales} from './i18n.mjs';
 // Product copy. Keep Korean and English keys aligned.
-export const copy={
+export const copy=expandLocales({
   "ko": {
     "hospitalHoursHint": "등록된 진료시간이에요. 공휴일 진료와 접수 마감은 방문 전에 직접 확인해 주세요.",
     "pharmacyHoursHint": "등록된 영업시간이에요. 공휴일 영업과 휴무는 방문 전에 직접 확인해 주세요.",
@@ -872,8 +873,9 @@ export const copy={
     "intakeEditAnswer": "Edit answer",
     "intakeEditNote": "Edit other information"
   }
-};
+});
 
 Object.assign(copy.ko,{"conversationTitle": "대화로 병원과 약국 찾기", "conversationIntro": "불편한 점이나 찾고 싶은 조건을 적어주세요.", "conversationChatTitle": "의료 안내", "conversationNew": "새 대화", "conversationBack": "대화로 돌아가기", "conversationExpand": "크게 보기", "conversationRestore": "나란히 보기", "conversationStartIntake": "문진으로 시작하기", "conversationQuestions": "선택 문진", "conversationResults": "검색 결과", "conversationAllResults": "결과 모두 보기", "conversationMap": "지도에서 보기", "conversationReport": "진료 전에 보여줄 내용", "conversationReportHint": "내용을 확인하고 고치거나 PDF로 저장할 수 있어요.", "conversationReview": "내용 확인", "conversationNewConfirm": "현재 대화와 문진, 분석서를 지우고 새로 시작할까요?"});
 
 Object.assign(copy.en,{"conversationTitle": "Find care through conversation", "conversationIntro": "Describe what is bothering you or what you are looking for.", "conversationChatTitle": "Medical guide", "conversationNew": "New conversation", "conversationBack": "Back to conversation", "conversationExpand": "Expand workspace", "conversationRestore": "Show side by side", "conversationStartIntake": "Start with questions", "conversationQuestions": "Intake questions", "conversationResults": "Search results", "conversationAllResults": "View all results", "conversationMap": "View on map", "conversationReport": "Pre-visit notes", "conversationReportHint": "Review, edit or save your notes as a PDF.", "conversationReview": "Review notes", "conversationNewConfirm": "Clear this conversation, intake and report and start again?"});
+completeLocales(copy);

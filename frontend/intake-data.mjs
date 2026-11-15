@@ -1,14 +1,13 @@
+import {phrase,expandLocales,localizedLabels,localizedText,locales} from './i18n.mjs';
 // UI fixtures only. Question wording and medical rules belong to the questionnaire team.
 export function intakeLabel(label,locale='ko'){
- return label?.[locale]||label?.ko||'';
+ return localizedText(label,locale);
 }
 export function normalizeIntakeQuestionnaire(raw){
  const fail=()=>{throw new TypeError('Invalid intake questionnaire');};
  const id=value=>typeof value==='string'&&/^[a-zA-Z0-9_-]{1,80}$/.test(value)?value:fail();
  const label=value=>{
-  if(!value||typeof value.ko!=='string'||!value.ko.trim()||value.ko.length>300)return fail();
-  if(value.en!==undefined&&(typeof value.en!=='string'||value.en.length>300))return fail();
-  return {ko:value.ko,...(value.en?{en:value.en}:{})};
+  try{return localizedLabels(value,300);}catch{return fail();}
  };
  if(!raw||!Array.isArray(raw.questions)||raw.questions.length<1||raw.questions.length>5)return fail();
  const questions=raw.questions.map(question=>{
@@ -23,11 +22,11 @@ export function normalizeIntakeQuestionnaire(raw){
 }
 export const mockIntakeQuestionnaire=normalizeIntakeQuestionnaire({
  id:'intake-preview',version:'mock-2',questions:[1,2].map(number=>({
-  id:'question-'+number,type:'singleChoice',label:{ko:'문진 '+number,en:'Question '+number},required:true,
+  id:'question-'+number,type:'singleChoice',label:Object.fromEntries(locales.map(locale=>[locale,phrase(locale,'Question {0}',[number])])),required:true,
   options:[
-   {id:'option-1',label:{ko:'선지 1',en:'Option 1'}},
-   {id:'option-2',label:{ko:'선지 2',en:'Option 2'}},
-   {id:'unknown',label:{ko:'잘 모르겠어요',en:'Not sure'}}
+   {id:'option-1',label:expandLocales({ko:'선지 1',en:'Option 1'})},
+   {id:'option-2',label:expandLocales({ko:'선지 2',en:'Option 2'})},
+   {id:'unknown',label:expandLocales({ko:'잘 모르겠어요',en:'Not sure'})}
   ]
  }))
 });

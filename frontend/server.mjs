@@ -6,7 +6,7 @@ import {readFile} from 'node:fs/promises';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import path from 'node:path';
 const root=fileURLToPath(new URL('.',import.meta.url));
-try{process.loadEnvFile(path.join(root,'.env'));}catch(error){if(error.code!=='ENOENT')throw error;}
+try{process.loadEnvFile(path.join(root,'.env.local'));}catch(error){if(error.code!=='ENOENT')throw error;}
 export {publicConfig} from './lib/public-config.mjs';
 import {publicConfig} from './lib/public-config.mjs';
 const allowed=new Set(['index.html','account-session.mjs','favorites.mjs','health-updates.mjs','signup-consent.mjs','report-import.mjs','health-consent.mjs','workspace-model.mjs','recommendations.mjs','emergency.mjs','emergency-picker.mjs','emergency-resources.mjs','legacy-entry.mjs','departments.mjs','copy.mjs','ui-icons.mjs','facility-art.mjs','ui.css','fonts/SUIT-Variable.woff2','fonts/SUITE-Variable.woff2','fonts/SUIT-LICENSE.txt','fonts/SUITE-LICENSE.txt','styles.css','app.js','flow.mjs','facilities.mjs','facilities-view.mjs','chat-model.mjs','chat-view.mjs','intake-view.mjs','intake-data.mjs','assistant.mjs','discovery.mjs','favicon.svg','routing.mjs','report.mjs','profile.mjs','care-context.mjs','clinic-demo.png','live-data.mjs','kakao-client.mjs','public-hours.mjs']);
