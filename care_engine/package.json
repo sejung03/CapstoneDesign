@@ -1,0 +1,9 @@
+{
+  "name": "medical-helper-care-engine",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "eval": "node eval/run_eval.mjs"
+  }
+}
