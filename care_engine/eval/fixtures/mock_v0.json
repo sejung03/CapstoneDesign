@@ -1,0 +1,51 @@
+{
+  "about": "draft_v0.jsonl 사례별 mock 응답. LLM 성능이 아니라 파이프라인이 지표를 맞게 계산하고 실패를 맞게 처리하는지 확인용. 구성: correct 20, no_correct 4, format_violation 2, timeout 2, wrong_id 2. mock 응답은 실제 업체처럼 그 요청의 후보 enum 안에서만 고른다(wrong_id 제외).",
+  "defaults": {
+    "profile_extract_v1": {"data": {"items": []}}
+  },
+  "cases": {
+    "c01": {"design": "no_correct", "note": "정답 D09가 retrieve 후보에 없음", "symptom": {"data": {"intent": "symptom", "status": "matched", "picks": ["D03"]}}},
+    "c02": {"design": "correct", "symptom": {"data": {"intent": "symptom", "status": "matched", "picks": ["N01"]}}},
+    "c03": {"design": "correct", "symptom": {"data": {"intent": "symptom", "status": "matched", "picks": ["R21"]}}},
+    "c04": {"design": "correct", "symptom": {"data": {"intent": "symptom", "status": "matched", "picks": ["F13", "F02"]}}},
+    "c05": {"design": "timeout", "symptom": {"error": "timeout"}},
+    "c06": {"design": "correct", "symptom": {"data": {"intent": "symptom", "status": "matched", "picks": ["L14"]}}},
+    "c07": {"design": "no_correct", "note": "정답 A02가 retrieve 후보에 없음 → no_match", "symptom": {"data": {"intent": "symptom", "status": "no_match", "picks": []}}},
+    "c08": {"design": "no_correct", "note": "정답 D12가 retrieve 후보에 없음", "symptom": {"data": {"intent": "symptom", "status": "matched", "picks": ["D07"]}}},
+    "c09": {"design": "wrong_id", "symptom": {"data": {"intent": "symptom", "status": "matched", "picks": ["H99", "Z01"]}}},
+    "c10": {"design": "correct", "symptom": {"data": {"intent": "symptom", "status": "matched", "picks": ["L03"]}}},
+    "c11": {"design": "format_violation", "note": "JSON이 중간에 끊김", "symptom": {"text": "{\"intent\":\"symptom\",\"status\":\"matched\",\"picks\":[\"F02\""}},
+    "c12": {"design": "correct", "note": "정답이 2순위(Top-1 실패, Recall@10 성공)", "symptom": {"data": {"intent": "symptom", "status": "matched", "picks": ["S06", "S02"]}}},
+    "c13": {"design": "correct", "symptom": {"data": {"intent": "symptom", "status": "matched", "picks": ["R05"]}}},
+    "c14": {"design": "correct", "symptom": {"data": {"intent": "symptom", "status": "matched", "picks": ["D11"]}}},
+    "c15": {"design": "correct", "symptom": {"data": {"intent": "symptom", "status": "matched", "picks": ["R07"]}}},
+    "c16": {"design": "correct", "symptom": {"data": {"intent": "facility_search", "status": "no_match", "picks": []}}},
+    "c17": {"design": "correct", "symptom": {"data": {"intent": "facility_search", "status": "no_match", "picks": []}}},
+    "c18": {"design": "timeout", "symptom": {"error": "timeout"}},
+    "c19": {"design": "correct", "symptom": {"data": {"intent": "facility_search", "status": "no_match", "picks": []}}},
+    "c20": {"design": "wrong_id", "note": "의도는 맞고 picks만 엉뚱함 → route", "symptom": {"data": {"intent": "medication_question", "status": "matched", "picks": ["M01"]}}},
+    "c21": {"design": "correct", "symptom": {"data": {"intent": "medication_question", "status": "no_match", "picks": []}}},
+    "c22": {"design": "format_violation", "note": "status 값이 스키마 밖", "symptom": {"data": {"intent": "other", "status": "none", "picks": []}}},
+    "c23": {"design": "correct", "symptom": {"data": {"intent": "other", "status": "no_match", "picks": []}}},
+    "c24": {"design": "correct", "symptom": {"data": {"intent": "symptom", "status": "matched", "picks": ["A11", "A09"]}}},
+    "c25": {"design": "correct", "symptom": {"data": {"intent": "symptom", "status": "matched", "picks": ["N19", "N18"]}}},
+    "c26": {"design": "correct", "symptom": {"data": {"intent": "symptom", "status": "matched", "picks": ["R02"]}}},
+    "c27": {"design": "no_correct", "note": "정답 N05가 retrieve 후보에 없음", "symptom": {"data": {"intent": "symptom", "status": "matched", "picks": ["F05"]}},
+      "profile": {"data": {"items": [
+        {"field": "age", "value": "45", "messageIndex": 0, "quote": "45살"},
+        {"field": "medications", "value": "당뇨약", "messageIndex": 0, "quote": "당뇨약을 먹고 있어요"}
+      ]}}},
+    "c28": {"design": "correct", "symptom": {"data": {"intent": "symptom", "status": "matched", "picks": ["R21"]}},
+      "profile": {"data": {"items": [
+        {"field": "allergies", "value": "페니실린", "messageIndex": 0, "quote": "페니실린 알레르기가 있는데"}
+      ]}}},
+    "c29": {"design": "correct", "note": "retrieve 후보 0개 → all 모드", "symptom": {"data": {"intent": "symptom", "status": "matched", "picks": ["D01", "D06"]}},
+      "profile": {"data": {"items": [
+        {"field": "history", "value": "맹장 수술", "messageIndex": 0, "quote": "맹장 수술을 받았고"}
+      ]}}},
+    "c30": {"design": "correct", "note": "profile은 일부러 틀림(다른 사람의 약) → 정밀도 확인용", "symptom": {"data": {"intent": "symptom", "status": "matched", "picks": ["N17"]}},
+      "profile": {"data": {"items": [
+        {"field": "medications", "value": "혈압약", "messageIndex": 0, "quote": "혈압약을 드시는데"}
+      ]}}}
+  }
+}
