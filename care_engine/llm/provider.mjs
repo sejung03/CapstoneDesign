@@ -17,7 +17,7 @@
 import {createMockProvider} from './providers/mock.mjs';
 import {createGeminiProvider} from './providers/gemini.mjs';
 import {createOpenAiProvider} from './providers/openai.mjs';
-import {getConfig} from './config.mjs';
+import {getConfig, OPENAI_MAX_OUTPUT_TOKENS} from './config.mjs';
 
 export const PROVIDER_NAMES = Object.freeze(['mock', 'gemini', 'openai']);
 
@@ -34,6 +34,7 @@ export function getProvider({config = getConfig(), fixtures = {}, mockOptions = 
       model: config.model,
       reasoningEffort: config.reasoningEffort ?? 'none',
       temperature: config.temperature ?? null,
+      maxOutputTokens: OPENAI_MAX_OUTPUT_TOKENS,
       ...openaiOptions,           // 테스트에서 fetchImpl·apiKey 주입용
     });
     default: throw new Error(`getProvider: 알 수 없는 LLM_PROVIDER '${config.provider}'`);

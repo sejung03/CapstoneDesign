@@ -1,7 +1,10 @@
 // 평가 실행(설계 9-2). 결과 파일에는 사례 원문·quote·value를 넣지 않고 case id와 ID·숫자만 남긴다.
 //
 // 사용: node eval/run_eval.mjs --cases eval/cases/draft_v0.jsonl --provider mock --fixtures eval/fixtures/mock_v0.json [--repeat 3]
-//   --provider gemini|openai 는 지금 not_implemented라 모든 사례가 실패로 나온다(네트워크 호출 없음).
+//   --provider openai 는 실제 API를 부른다(npm run eval:openai, .env 필요). gemini는 not_implemented.
+// 비용 안전장치(L4 M4): openai는 실행 전 예상 최대 비용이 LLM_EVAL_BUDGET_USD(기본 2)를 넘으면 실행하지 않고,
+//   실행 중 누적 비용이 예산을 넘으면 남은 사례를 실행하지 않는다(stoppedByBudget).
+//   auth·quota·bad_request가 나면 그 자리에서 멈춘다(stoppedByError, 재시도 없음).
 import {readFileSync, mkdirSync, writeFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
@@ -12,6 +15,11 @@ import {loadRefData} from '../llm/ref-data.mjs';
 import {buildCandidates} from '../llm/candidates.mjs';
 import {maskPii} from '../llm/pii.mjs';
 import {normalizeTerm, tailChars, INPUT_MAX_CHARS} from '../llm/normalize.mjs';
+import {estimateCostUsd, estimateMaxCostUsd} from '../llm/cost.mjs';
+import {STOP_ERRORS} from '../llm/errors.mjs';
+
+/** 평가에서 그 자리에서 멈추는 오류: 인증·잔액(진짜 멈춤) + 요청 형식 오류(계속 불러도 같은 결과) */
+export const EVAL_STOP_ERRORS = Object.freeze([...STOP_ERRORS, 'bad_request']);
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KS = [10, 20, 40, 60];
@@ -45,20 +53,42 @@ function percentile(values, p) {
 
 const ratio = (hit, n) => ({hit, n, value: n === 0 ? null : Math.round((hit / n) * 10000) / 10000});
 
+const addTokens = (a, b) => ({
+  input: a.input + (b?.input ?? 0), cachedInput: a.cachedInput + (b?.cachedInput ?? 0),
+  output: a.output + (b?.output ?? 0), reasoning: a.reasoning + (b?.reasoning ?? 0),
+});
+const zeroTokens = () => ({input: 0, cachedInput: 0, output: 0, reasoning: 0});
+const round6 = (v) => (v === null ? null : Math.round(v * 1e6) / 1e6);
+
 /**
- * @param {{cases:object[], fixtures?:object, providerName?:string, repeat?:number, config?:object, refData?:object}} opts
+ * @param {{cases:object[], fixtures?:object, providerName?:string, repeat?:number, config?:object, refData?:object,
+ *          budgetUsd?:number, prices?:object, providerFactory?:Function}} opts
+ *   providerFactory: 테스트용(기본 getProvider). 반복마다 새로 만든다.
  */
-export async function runEval({cases, fixtures = {}, providerName = 'mock', repeat = 1, config: baseConfig, refData = loadRefData()}) {
+export async function runEval({cases, fixtures = {}, providerName = 'mock', repeat = 1, config: baseConfig, refData = loadRefData(),
+  budgetUsd, prices, providerFactory}) {
   const config = baseConfig ?? getConfig({...process.env, LLM_PROVIDER: providerName});
-  const consentFor = (name) => ({granted: true, provider: name, version: 'eval-only', healthInfo: true});
+  const budget = Number.isFinite(budgetUsd) ? budgetUsd : config.evalBudgetUsd;
+  // LLM_DEV_CONSENT=true면 consent를 넘기지 않아 개발용 동의 경로를 쓴다. 아니면 평가 전용 동의 객체.
+  const consentFor = (name) => (config.devConsent ? undefined : {granted: true, provider: name, version: 'eval-only', healthInfo: true});
+  const makeProvider = providerFactory
+    ?? (() => getProvider({config, fixtures: fixturesToMockMap(cases, fixtures), mockOptions: {defaults: fixtures.defaults ?? {}}}));
+  const costOf = (meta) => estimateCostUsd(meta, prices);
   const runs = Math.max(1, Number(repeat) || 1);
   const perCase = [];
+  let costTotal = 0;
+  let costKnown = true;
+  let stoppedByBudget = false;
+  let stoppedByError = null;
 
   for (const c of cases) {
+    if (stoppedByBudget || stoppedByError) break;
     const runResults = [];
+    let caseCost = 0;
+    let caseTokens = zeroTokens();
     for (let r = 0; r < runs; r += 1) {
       // 반복마다 새 provider(배열 응답 순서를 처음부터)
-      const provider = getProvider({config, fixtures: fixturesToMockMap(cases, fixtures), mockOptions: {defaults: fixtures.defaults ?? {}}});
+      const provider = makeProvider();
       const logs = [];
       const deps = {provider, refData, config, log: (e) => logs.push(e)};
       const consent = consentFor(provider.name);
@@ -69,6 +99,13 @@ export async function runEval({cases, fixtures = {}, providerName = 'mock', repe
         : [];
       const prof = await extractProfileUpdates({messages: [c.text], consent, requestId: `${c.id}#${r + 1}`, reason: 'eval'}, deps);
       runResults.push({res, ev, picks, prof});
+      for (const m of [res.meta, prof.meta]) {
+        caseTokens = addTokens(caseTokens, m.tokens);
+        const cost = costOf(m);
+        if (cost === null) costKnown = false; else caseCost += cost;
+      }
+      const stopErr = [res.meta.error, prof.meta.error].find((e) => EVAL_STOP_ERRORS.includes(e));
+      if (stopErr) { stoppedByError = stopErr; break; }
     }
 
     const first = runResults[0];
@@ -110,6 +147,11 @@ export async function runEval({cases, fixtures = {}, providerName = 'mock', repe
       latencyMs: runResults.map((x) => x.res.meta.latencyMs),
       attempts: first.res.meta.attempts,
       repeatConsistent: runResults.every((x) => sig(x) === sig(first)),
+      runs: runResults.length,
+      consentSource: first.res.meta.consentSource ?? null,
+      costUsd: costKnown ? round6(caseCost) : null,
+      tokens: caseTokens,
+      providerError: first.res.meta.providerError ?? null,
       profile: {
         called: first.prof.meta.attempts > 0,
         error: first.prof.meta.error,
@@ -119,11 +161,29 @@ export async function runEval({cases, fixtures = {}, providerName = 'mock', repe
         gold: goldProfile.length,
       },
     });
+    costTotal += caseCost;
+    if (costKnown && costTotal > budget) stoppedByBudget = true;
   }
 
+  const tokens = perCase.reduce((a, c) => addTokens(a, c.tokens), zeroTokens());
+  const sources = [...new Set(perCase.map((c) => c.consentSource))];
   return {
     createdAt: new Date().toISOString(),
     ...summarize(perCase, {config, refData, runs, fixtures}),
+    reasoningEffort: config.provider === 'openai' ? config.reasoningEffort : null,
+    temperature: config.provider === 'openai' ? config.temperature : null,
+    consentSource: sources.length === 1 ? sources[0] : sources,
+    casesPlanned: cases.length,
+    budgetUsd: budget,
+    stoppedByBudget,
+    stoppedByError,
+    costUsd: {
+      total: costKnown ? round6(costTotal) : null,
+      perCase: costKnown && perCase.length ? round6(costTotal / perCase.length) : null,
+      note: costKnown ? '반복 포함, 증상 분류+건강정보 추출 합계' : '가격표에 없는 모델 — 비용 미계산',
+    },
+    tokens,
+    cacheInputRatio: tokens.input > 0 ? Math.round((tokens.cachedInput / tokens.input) * 10000) / 10000 : null,
     cases: perCase,
   };
 }
@@ -215,8 +275,13 @@ export function printSummary(result) {
     '실패 사유': JSON.stringify(m.failuresByReason),
     '지연 p50/p95(ms)': `${m.latencyMs.p50} / ${m.latencyMs.p95}`,
     '반복 일치율': fmt(m.repeatAgreement),
+    '총비용(USD)': result.costUsd?.total ?? 'null',
+    '사례당 비용(USD)': result.costUsd?.perCase ?? 'null',
+    '캐시 입력 비율': result.cacheInputRatio ?? 'null',
   };
-  console.log(`provider=${result.providerName} model=${result.model} data=${result.dataVersion} mode=${result.candidateMode} K=${result.candidateK} 사례=${result.caseCount} 반복=${result.repeat}`);
+  console.log(`provider=${result.providerName} model=${result.model} effort=${result.reasoningEffort} data=${result.dataVersion} mode=${result.candidateMode} K=${result.candidateK} 사례=${result.caseCount}/${result.casesPlanned} 반복=${result.repeat} 동의=${JSON.stringify(result.consentSource)}`);
+  if (result.stoppedByBudget) console.log(`⚠ 예산 $${result.budgetUsd} 초과로 남은 사례를 실행하지 않음`);
+  if (result.stoppedByError) console.log(`⚠ ${result.stoppedByError} 오류로 멈춤(재시도 안 함)`);
   if (result.fixtureDesign) console.log('fixture 구성:', JSON.stringify(result.fixtureDesign));
   console.table(Object.fromEntries(Object.entries(rows).map(([k, v]) => [k, {값: v}])));
 }
@@ -227,7 +292,17 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const cases = readCases(args.cases);
   const fixtures = args.fixtures ? JSON.parse(readFileSync(args.fixtures, 'utf8')) : {};
   const config = getConfig({...process.env, LLM_PROVIDER: args.provider});
+  let maxCostEstimateUsd = null;
+  if (config.provider === 'openai') {
+    maxCostEstimateUsd = estimateMaxCostUsd({cases, config, refData: loadRefData(), repeat: args.repeat});
+    console.log(`예상 최대 비용: ${maxCostEstimateUsd === null ? '계산 불가(가격표에 없는 모델)' : `$${maxCostEstimateUsd.toFixed(4)}`} / 예산 $${config.evalBudgetUsd}`);
+    if (maxCostEstimateUsd === null || maxCostEstimateUsd > config.evalBudgetUsd) {
+      console.log('실행하지 않음: 예상 최대 비용을 알 수 없거나 예산을 넘는다.');
+      process.exit(2);
+    }
+  }
   const result = await runEval({cases, fixtures, providerName: args.provider, repeat: args.repeat, config});
+  result.maxCostEstimateUsd = maxCostEstimateUsd === null ? null : round6(maxCostEstimateUsd);
   result.casesFile = path.basename(args.cases);
   result.fixturesFile = args.fixtures ? path.basename(args.fixtures) : null;
   const outDir = args.out ?? path.join(HERE, 'out');
@@ -237,4 +312,5 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   writeFileSync(file, JSON.stringify(result, null, 2) + '\n', 'utf8');
   printSummary(result);
   console.log(`결과: ${path.relative(process.cwd(), file)}`);
+  if (result.stoppedByError) process.exitCode = 3;
 }

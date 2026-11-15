@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
-import {runEval, readCases, fixturesToMockMap} from '../run_eval.mjs';
+import {runEval, readCases, fixturesToMockMap, EVAL_STOP_ERRORS} from '../run_eval.mjs';
 import {compareRows} from '../compare.mjs';
 import {getConfig} from '../../llm/config.mjs';
 
@@ -85,4 +85,75 @@ test('compareRows: 두 결과를 나란히', async () => {
   const rows = compareRows(a, a);
   assert.equal(rows[0].지표, '응급 놓친 비율');
   assert.ok(rows.every((row) => row.A === row.B));
+});
+
+// ── L4 M4: 비용·예산·멈춤 ──
+const PRICES = {'spy-model': {input: 1, cachedInput: 0.1, output: 2}};
+/** 호출마다 토큰을 돌려주는 가짜 provider(네트워크 없음). 1회 = 입력 100,000 → $0.1 */
+function spyFactory({error = null} = {}) {
+  let calls = 0;
+  const factory = () => ({
+    name: 'mock', model: 'spy-model',
+    async generateStructured(req) {
+      calls += 1;
+      const meta = {inputTokens: 100_000, cachedInputTokens: 0, outputTokens: 0, reasoningTokens: 0};
+      if (error) return {ok: false, error, meta: {...meta, httpStatus: 429, errorCode: 'insufficient_quota'}};
+      if (req.schemaName === 'profile_extract_v1') return {ok: true, data: {items: []}, meta};
+      return {ok: true, data: {intent: 'symptom', status: 'no_match', picks: []}, meta};
+    },
+  });
+  factory.calls = () => calls;
+  return factory;
+}
+
+test('runEval: 사례별 비용·토큰·캐시 비율·설정 값을 결과에 남긴다', async () => {
+  const f = spyFactory();
+  const sub = cases.filter((c) => ['c01', 'c02'].includes(c.id));
+  const r = await runEval({cases: sub, providerName: 'mock', repeat: 2, config, prices: PRICES, providerFactory: f, budgetUsd: 100});
+  // 사례당 증상 분류 1회 × 반복 2 (신호어 없음) = $0.2
+  assert.deepEqual(r.cases.map((c) => c.costUsd), [0.2, 0.2]);
+  assert.equal(r.costUsd.total, 0.4);
+  assert.equal(r.costUsd.perCase, 0.2);
+  assert.deepEqual(r.tokens, {input: 400_000, cachedInput: 0, output: 0, reasoning: 0});
+  assert.equal(r.cacheInputRatio, 0);
+  assert.equal(r.candidateMode, 'retrieve');
+  assert.equal(r.model, config.model);
+  assert.equal(r.consentSource, 'request');
+  assert.deepEqual([r.stoppedByBudget, r.stoppedByError], [false, null]);
+});
+
+test('runEval: 누적 비용이 예산을 넘으면 남은 사례를 실행하지 않는다', async () => {
+  const f = spyFactory();
+  const r = await runEval({cases: cases.slice(0, 10), providerName: 'mock', repeat: 1, config, prices: PRICES, providerFactory: f, budgetUsd: 0.25});
+  // 사례당 $0.1(c01~c10은 신호어 없음) → 3번째 사례 뒤 $0.3 > $0.25
+  assert.equal(r.stoppedByBudget, true);
+  assert.equal(r.caseCount, 3);
+  assert.equal(r.casesPlanned, 10);
+  assert.equal(f.calls(), 3);
+});
+
+test('runEval: 가격을 모르면 비용 null(예산으로 멈추지 않음)', async () => {
+  const r = await runEval({cases: cases.slice(0, 2), fixtures, providerName: 'mock', repeat: 1, config, budgetUsd: 0});
+  assert.equal(r.costUsd.total, null);
+  assert.equal(r.stoppedByBudget, false);
+  assert.equal(r.caseCount, 2);
+});
+
+test('runEval: quota·auth·bad_request가 나면 그 자리에서 멈춘다(재시도 없음)', async () => {
+  assert.deepEqual([...EVAL_STOP_ERRORS], ['auth', 'quota', 'bad_request']);
+  const f = spyFactory({error: 'quota'});
+  const r = await runEval({cases: cases.slice(0, 5), providerName: 'mock', repeat: 2, config, prices: PRICES, providerFactory: f, budgetUsd: 100});
+  assert.equal(r.stoppedByError, 'quota');
+  assert.equal(r.caseCount, 1);
+  assert.equal(r.cases[0].runs, 1);
+  assert.equal(f.calls(), 1);
+  assert.deepEqual(r.cases[0].providerError, {httpStatus: 429, code: 'insufficient_quota', param: null});
+});
+
+test('runEval: LLM_DEV_CONSENT=true면 consent 없이 개발용 동의 경로', async () => {
+  const f = spyFactory();
+  const cfg = getConfig({LLM_PROVIDER: 'mock', LLM_DEV_CONSENT: 'true'});
+  const r = await runEval({cases: cases.slice(0, 1), providerName: 'mock', repeat: 1, config: cfg, prices: PRICES, providerFactory: f, budgetUsd: 100});
+  assert.equal(r.consentSource, 'dev');
+  assert.equal(f.calls(), 1);
 });
