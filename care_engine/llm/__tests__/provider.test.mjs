@@ -7,7 +7,6 @@ import {getProvider} from '../provider.mjs';
 import {getConfig} from '../config.mjs';
 import {createMockProvider} from '../providers/mock.mjs';
 import {createGeminiProvider} from '../providers/gemini.mjs';
-import {createOpenAiProvider} from '../providers/openai.mjs';
 import {LLM_ERRORS, RETRYABLE_ERRORS} from '../errors.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -20,8 +19,8 @@ test('getProvider: 기본은 mock, 이름으로 고름, 모르는 이름은 오�
   assert.throws(() => getProvider({config: getConfig({LLM_PROVIDER: 'claude'})}), /알 수 없는/);
 });
 
-test('gemini·openai 자리: 항상 not_implemented, 예외 없음', async () => {
-  for (const p of [createGeminiProvider({model: 'm'}), createOpenAiProvider({model: 'm'})]) {
+test('gemini 자리: 항상 not_implemented, 예외 없음', async () => {
+  for (const p of [createGeminiProvider({model: 'm'})]) {
     const r = await p.generateStructured(req('x'));
     assert.equal(r.ok, false);
     assert.equal(r.error, 'not_implemented');
@@ -29,8 +28,8 @@ test('gemini·openai 자리: 항상 not_implemented, 예외 없음', async () =>
   }
 });
 
-test('gemini·openai 자리: 네트워크 코드(import·fetch 등)가 없다', () => {
-  for (const f of ['gemini.mjs', 'openai.mjs']) {
+test('gemini 자리: 네트워크 코드(import·fetch 등)가 없다', () => {
+  for (const f of ['gemini.mjs']) {
     const src = readFileSync(path.join(HERE, '..', 'providers', f), 'utf8');
     const code = src.split('\n').filter((l) => !l.trim().startsWith('//')).join('\n');
     assert.doesNotMatch(code, /\bimport\b|\bfetch\b|\brequire\b|http|process\.env/, f);
