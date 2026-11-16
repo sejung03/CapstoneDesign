@@ -8,7 +8,7 @@ import {loadFreeTextRules} from './free-text.mjs';
 import {nextQuestion, itemToFollowUp} from './flow.mjs';
 import {applyMappings} from './slots.mjs';
 import {matchSymptoms as defaultMatchSymptoms} from './dictionary-match.mjs';
-import {checkFacilityKeywords, loadFacilityKeywords} from './facility-keywords.mjs';
+import {evaluateFacilityKeywords, loadFacilityKeywords} from './facility-keywords.mjs';
 import {identify, resolveFromAnswers, userMessages} from './identify.mjs';
 import {recommend} from './recommend.mjs';
 import {buildSummary, buildEmergencySummary, buildMedInfoSummary} from './summary.mjs';
@@ -68,6 +68,7 @@ function newTrace(reason) {
     facilityKeywordsVersion: null,
     reason: SUPPORTED_REASONS.includes(reason) ? reason : 'unsupported',
     phase: null,
+    facilityKeyword: null, // 11/17 EF: 키워드 지름길을 본 경우 사유 코드(search·blocked_risk 등), 보지 않았으면 null
     ruleHits: [],
     terminal: false,
     nextQuestionId: null,
@@ -228,14 +229,15 @@ async function core(payload, ctx, deps, trace, now, log) {
     else trace.warnings.push(`invalid_answer:${ENGINE_Q.MED_CHOICE}`);
   }
 
-  // 3. 키워드 기관 찾기(첫 요청 흐름, LLM 없음)
+  // 3. 키워드 기관 찾기(첫 요청 흐름, LLM 없음). 11/17 EF: 약국 찾기 문장만, 위험 단서가 있으면 막는다(사유 코드만 trace)
   const hasAnyAnswer = codes.size > 0 || engine.size > 0;
   if (!hasAnyAnswer && messages.length > 0) {
     const matcher = typeof deps.matchSymptoms === 'function' ? deps.matchSymptoms : defaultMatchSymptoms;
     let dict = [];
     try { dict = matcher(messages.join('\n'), data.refData, {sex: null}) ?? []; } catch { dict = []; }
-    const kw = checkFacilityKeywords({messages, hasAnyAnswer, dictMatches: dict, data, rules: facilityKeywords});
-    if (kw) return finish(withEmergency({search: kw.search}), 'facility_keyword');
+    const kw = evaluateFacilityKeywords({messages, hasAnyAnswer, dictMatches: dict, data, rules: facilityKeywords});
+    trace.facilityKeyword = kw.reason;
+    if (kw.search) return finish(withEmergency({search: kw.search}), 'facility_keyword');
   }
 
   // 증상 상태(답만으로, LLM 없음)
