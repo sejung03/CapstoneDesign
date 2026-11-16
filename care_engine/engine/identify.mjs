@@ -20,16 +20,20 @@ export function sexFromCodes(codes, data) {
 
 /**
  * LLM 없이 답만으로 정해지는 증상 상태(표 a~c).
+ * 11/17 EF(I1): 답이 있는 엔진 질문을 **나중에 나오는 순서**로 본다 — SYM_CONFIRM → SYM_NOT_FOUND → SYM_DICT_CONFIRM.
+ * (sym_other → LLM 실패 → SYM_NOT_FOUND 답이 있는데 sym_other를 먼저 보면 같은 질문·LLM 호출이 반복된다.)
  * @returns {{kind:'symptom', symptomId, source} | {kind:'unknown', source} | {kind:'needLlm'} | null}
  */
 export function resolveFromAnswers(engineAnswers, refData) {
-  // a. SYM_CONFIRM(LLM 후보 확인)이 있으면 그것이 우선
+  // a. SYM_CONFIRM(LLM 후보 확인): 가장 나중에 나오는 질문. 그 결과(증상 또는 모름), LLM 다시 안 부름
   if (engineAnswers.has(ENGINE_Q.SYM_CONFIRM)) {
     const r = parseSymptomConfirm([{questionId: ENGINE_Q.SYM_CONFIRM, value: engineAnswers.get(ENGINE_Q.SYM_CONFIRM)}], refData);
     if (r.status === 'confirmed') return {kind: 'symptom', symptomId: r.symptomId, source: 'llm_confirm'};
     return {kind: 'unknown', source: 'llm_confirm'};
   }
-  // b. SYM_DICT_CONFIRM(사전 후보 확인)
+  // c. SYM_NOT_FOUND(LLM 실패 뒤 질문): 증상 모름 확정, LLM 다시 안 부름(sym_other 답이 있어도)
+  if (engineAnswers.has(ENGINE_Q.SYM_NOT_FOUND)) return {kind: 'unknown', source: 'not_found'};
+  // b. SYM_DICT_CONFIRM(사전 후보 확인): sym_other만 LLM 1번
   if (engineAnswers.has(ENGINE_Q.SYM_DICT_CONFIRM)) {
     const v = engineAnswers.get(ENGINE_Q.SYM_DICT_CONFIRM);
     if (v === OPT.symOther) return {kind: 'needLlm'};
@@ -39,8 +43,6 @@ export function resolveFromAnswers(engineAnswers, refData) {
     }
     return {kind: 'unknown', source: 'dict_confirm'}; // sym_unsure·이상한 값
   }
-  // c. SYM_NOT_FOUND
-  if (engineAnswers.has(ENGINE_Q.SYM_NOT_FOUND)) return {kind: 'unknown', source: 'not_found'};
   return null;
 }
 
