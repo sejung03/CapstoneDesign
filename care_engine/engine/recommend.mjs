@@ -1,5 +1,17 @@
 // 진료과 추천(설계 §8-1). 시드 CSV의 symptom_department_variant에서 고른다(DB 함수 ref.recommend_departments와 같은 결과).
 // never_recommend(응급의학과)를 한 번 더 거르고, search_key가 없는 과는 뺀다.
+// 11/17 EF(I2): 확정 증상의 성별 제한과 filter.sex가 어긋나면 runCare가 증상 모름으로 바꾼 뒤 이 함수를 부른다
+// (symptomSexMismatch). 그 경우만 DB 함수와 결과가 다르다(DB 함수는 남성 variant 행을 그대로 돌려줌).
+
+/**
+ * 11/17 EF(I2): 증상의 성별 제한(sexRestriction)과 filter.sex(female/male)가 서로 다른가.
+ * 성별을 모르거나(unknown) 제한이 없으면 false.
+ */
+export function symptomSexMismatch(symptom, sex) {
+  if (!symptom || !symptom.sexRestriction) return false;
+  if (sex !== 'female' && sex !== 'male') return false;
+  return symptom.sexRestriction !== sex;
+}
 
 function usable(deptId, data, never, {sex, ageBand}) {
   if (never.has(deptId)) return null;

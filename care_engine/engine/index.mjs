@@ -3,25 +3,25 @@
 import {classifySymptom, extractProfileUpdates} from '../llm/index.mjs';
 import {loadIntakeData} from './intake-data.mjs';
 import {normalizeAnswers, visibleCodes} from './answers.mjs';
-import {evaluateSafety} from './rules.mjs';
+import {evaluateSafety, safetyCheckItemIds} from './rules.mjs';
 import {loadFreeTextRules} from './free-text.mjs';
 import {nextQuestion, itemToFollowUp} from './flow.mjs';
 import {applyMappings} from './slots.mjs';
 import {matchSymptoms as defaultMatchSymptoms} from './dictionary-match.mjs';
-import {evaluateFacilityKeywords, loadFacilityKeywords} from './facility-keywords.mjs';
+import {evaluateFacilityKeywords, loadFacilityKeywords, messageCues} from './facility-keywords.mjs';
 import {identify, resolveFromAnswers, userMessages} from './identify.mjs';
-import {recommend} from './recommend.mjs';
+import {recommend, symptomSexMismatch} from './recommend.mjs';
 import {buildSummary, buildEmergencySummary, buildMedInfoSummary} from './summary.mjs';
 import {emergencyNotice, ENGINE_Q, OPT, TEMPLATE_VERSION} from './templates.mjs';
 import {checkResponseContract} from './contract.mjs';
+import {TARGET_ITEM_ID, TARGET_SELF, INJURY_ITEM_ID, INJURY_YES} from './constants.mjs';
 
 export const ENGINE_VERSION = 'care-engine-v1';
 export const ENGINE_BUDGET_MS = 7000;
 export const SUPPORTED_REASONS = Object.freeze(['message', 'followup', 'skip', 'previousReport', 'intake']);
-/** 상담 대상(T1)·다쳐서 생긴 증상(F2). 결과 매핑 slot이 없어 ID로 읽는 예외(설계 §0 1번, §8-1·§8-3). */
-const TARGET_ITEM_ID = 'T1';
-const INJURY_ITEM_ID = 'F2';
-const SAFETY_FLOWS = new Set(['start', 'safety']);
+/** 11/17 EF warning 코드(값 없이 코드만). */
+export const WARNING_SYMPTOM_SEX_MISMATCH = 'symptom_sex_mismatch';
+export const WARNING_START_CHOICE_OVERRIDDEN = 'start_choice_overridden';
 export const ERROR_CODES = Object.freeze(['unsupported_reason', 'aborted', 'data', 'contract', 'internal']);
 
 const noop = () => {};
@@ -214,36 +214,69 @@ async function core(payload, ctx, deps, trace, now, log) {
   }
   const withEmergency = (response) => (carryEmergency ? {...response, emergency: carryEmergency} : response);
 
+  // 메시지 사전 매칭(성별 거르기 없이, 키워드·시작 선택 고정 해제에 씀). 매칭 함수가 던져도 0개로 본다.
+  let dictCache = null;
+  const dictMatches = () => {
+    if (dictCache) return dictCache;
+    const matcher = typeof deps.matchSymptoms === 'function' ? deps.matchSymptoms : defaultMatchSymptoms;
+    try { dictCache = messages.length > 0 ? (matcher(messages.join('\n'), data.refData, {sex: null}) ?? []) : []; } catch { dictCache = []; }
+    if (!Array.isArray(dictCache)) dictCache = [];
+    return dictCache;
+  };
+
   // 2. 시작 선택(엔진 질문 ASK_START·MED_CHOICE)의 답 — 사용자가 명시적으로 고른 것
+  //    11/17 EF(G3): 메시지에 사전 증상 매칭·증상 단서·위험 단서가 하나라도 있으면 검색 답(find_*, med_pharmacy, med_info)을
+  //    무시하고 정상 흐름(이 경우 증상 확인에서 LLM을 부르지 않는다). med_symptom은 기존대로.
+  let startOverridden = false;
+  const overrideStart = () => {
+    const cues = messageCues(messages, data, facilityKeywords);
+    if (dictMatches().length > 0 || cues.symptomCue || cues.riskCue) {
+      if (!startOverridden) trace.warnings.push(WARNING_START_CHOICE_OVERRIDDEN);
+      startOverridden = true;
+      return true;
+    }
+    return false;
+  };
   if (engine.has(ENGINE_Q.ASK_START)) {
     const v = engine.get(ENGINE_Q.ASK_START);
-    if (v === OPT.findHospital) return finish(withEmergency({search: {type: 'hospital'}}), 'start_choice');
-    if (v === OPT.findPharmacy) return finish(withEmergency({search: {...PHARMACY_SEARCH}}), 'start_choice');
-    trace.warnings.push(`invalid_answer:${ENGINE_Q.ASK_START}`);
+    if (v === OPT.findHospital || v === OPT.findPharmacy) {
+      if (!overrideStart()) {
+        return finish(withEmergency({search: v === OPT.findHospital ? {type: 'hospital'} : {...PHARMACY_SEARCH}}), 'start_choice');
+      }
+    } else trace.warnings.push(`invalid_answer:${ENGINE_Q.ASK_START}`);
   }
   if (engine.has(ENGINE_Q.MED_CHOICE)) {
     const v = engine.get(ENGINE_Q.MED_CHOICE);
-    if (v === OPT.medPharmacy) return finish(withEmergency({search: {...PHARMACY_SEARCH}}), 'start_choice');
-    if (v === OPT.medInfo) return finish(withEmergency({summary: {ko: buildMedInfoSummary()}, search: {...PHARMACY_SEARCH}}), 'start_choice');
-    if (v === OPT.medSymptom) symptom = {kind: 'unknown', source: 'med_symptom'};
+    if (v === OPT.medPharmacy || v === OPT.medInfo) {
+      if (!overrideStart()) {
+        if (v === OPT.medPharmacy) return finish(withEmergency({search: {...PHARMACY_SEARCH}}), 'start_choice');
+        return finish(withEmergency({summary: {ko: buildMedInfoSummary()}, search: {...PHARMACY_SEARCH}}), 'start_choice');
+      }
+    } else if (v === OPT.medSymptom) symptom = {kind: 'unknown', source: 'med_symptom'};
     else trace.warnings.push(`invalid_answer:${ENGINE_Q.MED_CHOICE}`);
   }
 
   // 3. 키워드 기관 찾기(첫 요청 흐름, LLM 없음). 11/17 EF: 약국 찾기 문장만, 위험 단서가 있으면 막는다(사유 코드만 trace)
   const hasAnyAnswer = codes.size > 0 || engine.size > 0;
   if (!hasAnyAnswer && messages.length > 0) {
-    const matcher = typeof deps.matchSymptoms === 'function' ? deps.matchSymptoms : defaultMatchSymptoms;
-    let dict = [];
-    try { dict = matcher(messages.join('\n'), data.refData, {sex: null}) ?? []; } catch { dict = []; }
-    const kw = evaluateFacilityKeywords({messages, hasAnyAnswer, dictMatches: dict, data, rules: facilityKeywords});
+    const kw = evaluateFacilityKeywords({messages, hasAnyAnswer, dictMatches: dictMatches(), data, rules: facilityKeywords});
     trace.facilityKeyword = kw.reason;
     if (kw.search) return finish(withEmergency({search: kw.search}), 'facility_keyword');
   }
 
+  // 11/17 EF(I2): 확정 증상의 성별 제한과 filter.sex(보이는 T2 답)가 어긋나면 증상 모름 + warning(값 없이 코드만)
+  const sexFilter = applyMappings({codes: vis, data}).filter.sex.value;
+  const guardSex = (sym) => {
+    if (sym?.kind !== 'symptom') return sym;
+    if (!symptomSexMismatch(data.refData.symptoms.get(sym.symptomId), sexFilter)) return sym;
+    if (!trace.warnings.includes(WARNING_SYMPTOM_SEX_MISMATCH)) trace.warnings.push(WARNING_SYMPTOM_SEX_MISMATCH);
+    return {kind: 'unknown', source: 'sex_mismatch'};
+  };
+
   // 증상 상태(답만으로, LLM 없음)
   if (!symptom) {
     const r = resolveFromAnswers(engine, data.refData);
-    if (r && r.kind !== 'needLlm') symptom = r;
+    if (r && r.kind !== 'needLlm') symptom = guardSex(r);
   }
   const stateOf = () => {
     if (!symptom) return 'pending';
@@ -256,16 +289,17 @@ async function core(payload, ctx, deps, trace, now, log) {
     let nq = nextQuestion({codes, data, mode: 'normal', symptomState: stateOf()});
     if (nq.kind === 'identify') {
       const r = await identify({
-        engineAnswers: engine, messages, codes, data,
+        engineAnswers: engine, messages, codes: vis, data, // 11/17 EF(G4): 성별은 보이는 답에서만
         deps: {llm, matchSymptoms: deps.matchSymptoms, facilityKeywords},
         ctx: {consent: ctx.consent, signal, deadlineAt, requestId: ctx.requestId ?? null, reason, now},
+        noLlm: startOverridden,
       });
       if (signal?.aborted) return fail('aborted');
       if (r.llmMeta) { trace.llm.classify = r.llmMeta; llmUsed = true; }
       if (r.kind === 'ask') return finish(withEmergency({followUp: r.followUp}), 'identify');
       if (r.kind === 'search') return finish(withEmergency({search: r.search}), 'identify');
       if (r.kind === 'medInfo') return finish(withEmergency({summary: {ko: buildMedInfoSummary()}, search: {...PHARMACY_SEARCH}}), 'identify');
-      symptom = r.kind === 'symptom' ? r : {kind: 'unknown', source: r.source ?? 'unknown'};
+      symptom = r.kind === 'symptom' ? guardSex(r) : {kind: 'unknown', source: r.source ?? 'unknown'};
       nq = nextQuestion({codes, data, mode: 'normal', symptomState: stateOf()});
     }
     trace.skippedItems = nq.skippedItems;
@@ -276,19 +310,22 @@ async function core(payload, ctx, deps, trace, now, log) {
 
   // 7. 완료: 추천·요약·검색·건강정보 후보
   const symptomObj = setSlots();
+  // 11/17 EF(G5): F2 답은 F2가 묻는 상태(증상 fallback·모름)일 때만 쓴다. 증상이 확정돼 F2가 숨겨지면 무시.
+  const injuryAsked = ['fallback', 'unknown'].includes(stateOf());
   const rec = recommend({
     symptom: symptomObj,
     filter: {sex: trace.slots.filter.sex.value, ageBand: trace.slots.filter.age_band.value},
-    injuryAnswer: vis.get(INJURY_ITEM_ID) === 'yes',
+    injuryAnswer: injuryAsked && vis.get(INJURY_ITEM_ID) === INJURY_YES,
     data,
   });
   trace.symptom.fallbackGroup = rec.group;
-  const safetyUnanswered = data.items.some((it) => SAFETY_FLOWS.has(it.flow) && !vis.has(it.linkId));
+  // 11/17 EF(G6): 안전 미응답 판단 문항은 답 규칙이 가리키는 문항 전체(데이터에서 만듦)
+  const safetyUnanswered = safetyCheckItemIds(data).some((id) => !vis.has(id));
   const summary = buildSummary({slots: trace.slots, codes: vis, symptom: symptomObj, departments: rec.departments, data, safetyUnanswered});
   const response = withEmergency({summary: {ko: summary}, search: rec.search});
 
   // 건강정보 후보: 상담 대상이 본인일 때만, 요청당 LLM 1번(이미 증상 분류를 불렀으면 건너뜀)
-  if (vis.get(TARGET_ITEM_ID) === 'self') {
+  if (vis.get(TARGET_ITEM_ID) === TARGET_SELF) {
     if (llmUsed) {
       trace.llm.profile = {called: false, skipped: 'llm_once_per_request'};
     } else {

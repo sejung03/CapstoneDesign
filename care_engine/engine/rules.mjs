@@ -32,6 +32,17 @@ export function evaluateSafety({codes, messages = [], data, freeTextRules = null
   return {hits, top: hits[0] ?? null};
 }
 
+/**
+ * 11/17 EF(G6): 안전 미응답 판단에 쓰는 문항 = 답 규칙 조건(`safety_rule_condition`)이 가리키는 문항 전체(order 순).
+ * 코드에 박지 않고 데이터에서 만든다. 시드 v2.1-20261113에서는 Q0·N1·N2·N3(테스트로 확인).
+ * @returns {string[]}
+ */
+export function safetyCheckItemIds(data) {
+  const ids = new Set();
+  for (const rule of data.rules) for (const c of rule.conditions) ids.add(c.question);
+  return data.items.filter((it) => ids.has(it.linkId)).map((it) => it.linkId);
+}
+
 function pick(r, source) {
   return {
     ruleId: r.ruleId,

@@ -119,7 +119,11 @@ async function runLlm({messages, codes, data, deps, ctx}) {
 }
 
 /**
- * @param {{engineAnswers:Map, messages:string[], codes:Map, data:object, deps:object, ctx:{consent, signal, deadlineAt, requestId, reason, now}}} input
+ * @param {{engineAnswers:Map, messages:string[], codes:Map, data:object, deps:object, ctx:{consent, signal, deadlineAt, requestId, reason, now},
+ *          noLlm?:boolean}} input
+ *   codes: **보이는 답만**(visibleCodes, 11/17 EF G4 — 성별 필터를 숨겨진 답에서 읽지 않게).
+ *   noLlm: 11/17 EF G3 — 시작 선택(검색 답)을 무시하고 정상 흐름으로 온 경우. LLM을 부르지 않고(이미 한 번 불렸거나
+ *          부르면 같은 시작 질문이 다시 나올 수 있다) 사전 확인 질문 또는 증상 모름(source 'start_choice')으로 간다.
  * @returns {Promise<
  *   {kind:'symptom', symptomId:string, source:'dict_confirm'|'llm_confirm'} |
  *   {kind:'unknown', source:string, llmMeta?:object} |
@@ -128,13 +132,14 @@ async function runLlm({messages, codes, data, deps, ctx}) {
  *   {kind:'medInfo'}>}
  *   medInfo는 runCare가 MED_CHOICE 답(med_info)을 먼저 처리하므로 여기서는 나오지 않는다(자리만).
  */
-export async function identify({engineAnswers, messages, codes, data, deps = {}, ctx = {}}) {
+export async function identify({engineAnswers, messages, codes, data, deps = {}, ctx = {}, noLlm = false}) {
   const msgs = userMessages(messages);
   const fromAnswers = resolveFromAnswers(engineAnswers, data.refData);
   if (fromAnswers && fromAnswers.kind !== 'needLlm') return fromAnswers;
   if (fromAnswers?.kind === 'needLlm') {
     // b. sym_other: 사전이 일부만 맞은 경우. 메시지가 없으면 LLM을 부를 수 없으므로 증상 모름.
     if (msgs.length === 0) return {kind: 'unknown', source: 'dict_confirm'};
+    if (noLlm) return {kind: 'unknown', source: 'start_choice'};
     return runLlm({messages: msgs, codes, data, deps, ctx});
   }
   // d. 메시지 없음 → 시작 질문
@@ -149,6 +154,7 @@ export async function identify({engineAnswers, messages, codes, data, deps = {},
     .filter((s, i, arr) => arr.findIndex((x) => x.id === s.id) === i)
     .slice(0, 5);
   if (symptoms.length > 0) return {kind: 'ask', followUp: symDictConfirmQuestion(symptoms)};
-  // f. LLM
+  // f. LLM (시작 선택을 무시하고 온 경우는 부르지 않고 증상 모름)
+  if (noLlm) return {kind: 'unknown', source: 'start_choice'};
   return runLlm({messages: msgs, codes, data, deps, ctx});
 }

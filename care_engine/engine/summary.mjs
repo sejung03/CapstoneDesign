@@ -1,10 +1,10 @@
 // 요약(설계 §8-2·§8-4). 표시 문구(선택지 문구·증상 이름·템플릿)만 조합한다. 사용자 원문·질환명 없음.
 import {SUMMARY, COURSE_SLOT_LABELS, CARD_SLOT_LABELS, DERIVED_VALUE_LABELS} from './templates.mjs';
 import {slotEntries} from './slots.mjs';
+import {TARGET_ITEM_ID} from './constants.mjs';
 
+export {TARGET_ITEM_ID}; // 11/17 EF(G6): 상수는 constants.mjs 한 곳에(이전 import 경로 유지용 재수출)
 export const SUMMARY_MAX = 2000;
-/** 상담 대상 문항. 결과 매핑 slot이 없어서 ID로 읽는 유일한 예외(설계 §0 1번). */
-export const TARGET_ITEM_ID = 'T1';
 
 /** slot 값(답 code 또는 매핑 value) → 원래 문항의 선택지 표시 문구. */
 export function displayOf(entry, data) {
