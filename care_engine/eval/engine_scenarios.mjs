@@ -29,6 +29,8 @@ export const TEXT = Object.freeze({
   facilityMiss: '근처에 갈 만한 곳이 궁금해요',
   symptomFacility: '배가 아픈데 문 연 병원 있나요',
   other: '그냥 이야기하고 싶어요',
+  hospital: '정형외과 어디 있어요',
+  riskHospital: '숨을 못 쉬겠어요 병원 어디',
 });
 
 // 답 표: 안전·대상은 "안전" 쪽, 상세는 최소(조건부 문항이 안 열림) 또는 최대(모두 열림)
@@ -146,6 +148,10 @@ export function scenarios() {
     s('male', {messages: ['오한이 들어요'], answers: {...SAFE, T2: 'male', SYM_DICT_CONFIRM: 'sym_A02', ...DETAIL_MIN}, expect: [19, 24], note: '남성(산부인과 없음)'}),
     s('skip_after_q0', {messages: [TEXT.dict], answers: {Q0: 'no'}, skipAt: 'N1', expect: null, note: 'Q0만 답하고 skip → 안전 미응답 문구'}),
     s('skip_after_t1', {messages: [TEXT.dict], answers: {...SAFE}, skipAt: 'T2', expect: null, note: 'T1까지 답하고 skip'}),
+    // 11/17 EF: S1·I1 회귀(시뮬레이터 경로)
+    s('hospital_keyword', {messages: [TEXT.hospital], answers: {...SAFE}, llm: makeLlm({classify: {status: 'route', intent: 'facility_search', meta: {}}}), expect: [7, 7], note: 'EF S1: 병원 찾기 문장 → Q0부터 → LLM 의도 facility_search'}),
+    s('risk_hospital_keyword', {messages: [TEXT.riskHospital], answers: {Q0: 'no', N1: 'yes', N2: 'no'}, expect: null, note: 'EF S1: 위험 단서 + 병원 → Q0부터 → N2(숨쉬기 어려움) → 긴급 안내'}),
+    s('i1_other_llm_fail', {messages: [TEXT.c24], answers: {...SAFE, SYM_DICT_CONFIRM: 'sym_other', ...DETAIL_MIN}, llm: makeLlm({classify: {status: 'fallback', reason: 'timeout', meta: {error: 'timeout'}}}), expect: null, note: 'EF I1: sym_other → LLM 실패 → SYM_NOT_FOUND 답 → N5…(반복 없음)'}),
   ];
 }
 

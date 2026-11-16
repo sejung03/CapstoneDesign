@@ -25,7 +25,8 @@ care_engine/
     flow.mjs              다음 문항, 문항 → followUp
     slots.mjs             결과 매핑(card·filter·detail·report·flow)
     dictionary-match.mjs  사전 증상 매칭 기본 구현(팀원 2 모듈 자리, deps.matchSymptoms로 교체)
-    facility-keywords.mjs 키워드 기관 찾기(LLM 없음)
+    facility-keywords.mjs 키워드 기관 찾기(LLM 없음, 11/17 EF: 약국 찾기만, 위험 단서로 막음)
+    constants.mjs         ID로 읽는 데이터 문항 상수(T1·F2, 11/17 EF)
     identify.mjs          증상 확인(사전 → LLM → 확인 질문)
     recommend.mjs         진료과 추천(variant·fallback)
     summary.mjs           요약·119 정리 요약·약 정보 안내
@@ -33,7 +34,8 @@ care_engine/
     contract.mjs          응답 계약 검사(프론트 normalizeAssistantResponse 규칙)
     rules/
       free_text_v1.json         자유 입력 위험 표현 규칙(지금은 rules: [])
-      facility_keywords_v1.json 키워드 기관 찾기 단서(초안)
+      facility_keywords_v2.json 키워드 기관 찾기 단서(초안, 11/17 EF: 엔진이 읽는 파일, riskCues 포함)
+      facility_keywords_v1.json 이전 판(기록용, 엔진이 읽지 않음)
     __tests__/            node:test(네트워크 없음)
   llm/
     index.mjs             공개 함수 classifySymptom(), extractProfileUpdates()
@@ -134,7 +136,11 @@ else { respond(out.response); saveTrace(out.trace); }
 
 - `response`: 프론트 계약 객체만(`followUp` | `summary` | `search` | `emergency` | `profileUpdates`). 엔진의 계약 검사(`engine/contract.mjs`)를 통과한 것만 나간다. 질문은 매 응답 하나(`followUp`, singleChoice).
 - `trace`(서버 저장·카드용, **사용자 원문 없음**): `engineVersion`, `templateVersion`, `dataVersion`, `questionnaireVersion`, `freeTextVersion`, `facilityKeywordsVersion`, `reason`, `phase`(`question`·`identify`·`emergency`·`start_choice`·`facility_keyword`·`complete`·`error`), `ruleHits`, `terminal`, `nextQuestionId`, `symptom{id, source, fallback, fallbackGroup}`, `slots{card, filter, detail, report, flow}`(각 값 `{value, question}`, 여러 값이면 배열), `skippedItems`, `llm{classify, profile}`, `warnings`. 119 신고 요약 카드는 `trace.slots.card`.
-- 오류 코드(`out.error`, 이때 `response`는 null): `unsupported_reason`, `aborted`, `data`(시드·규칙 파일 로드·검사 실패), `contract`(응답이 계약을 못 지킴 — 버그), `internal`. 예외를 던지지 않는다.
+  - *(11/17 EF 반영)* `facilityKeyword`: 첫 요청에서 키워드 지름길을 본 결과 사유 코드 — `search`(약국 검색으로 보냄), `blocked_risk`(위험 단서), `no_pharmacy`(약국 표현 없음, 병원 찾기 문장 포함), `blocked_dict`·`blocked_symptom`·`blocked_medication`·`blocked_place`, `answered`·`no_message`. 보지 않은 요청은 `null`. 원문·걸린 단서는 남기지 않는다.
+  - *(11/17 EF 반영)* `symptom.source`에 `sex_mismatch`(확정 증상의 성별 제한과 T2가 다름 → 증상 모름), `start_choice`(시작 선택을 무시하고 정상 흐름, LLM 없이 증상 모름)가 더해졌다.
+  - *(11/17 EF 반영)* `warnings`(값 없이 코드만): `symptom_sex_mismatch`, `start_choice_overridden`(시작 선택의 검색 답이 있었지만 메시지에 사전 증상 매칭·증상 단서·위험 단서가 있어 정상 문진으로 감). 기존: `unknown_question:<id>`, `invalid_answer:<id>`, `unknown_message_key:<rule>`, `contract:…`, `profile_updates_invalid`, `data_load_failed`, `internal_exception`.
+- 오류 코드(`out.error`, 이때 `response`는 null): `unsupported_reason`, `aborted`, `data`(시드·규칙 파일 로드·검사 실패), `contract`(응답이 계약을 못 지킴 — 버그), `internal`. 예외를 던지지 않는다. *(11/17 EF 반영)* `deps.now`·`deps.log`가 던져도 예외가 나가지 않는다(now 실패 → `Date.now()`, log 실패 무시).
+- *(11/17 EF 반영)* **바로 search로 가는 첫 문장은 약국 찾기뿐이다.** 병원·의원·진료과 찾기 문장, 위험 표현(쓰러짐·호흡·응급·자해 등)이 든 문장은 Q0부터 묻는다. 병원 찾기는 안전·대상 질문 7개 뒤 LLM 의도 `facility_search`로 search가 나간다(동의가 없거나 LLM이 실패하면 일반 문진으로 간다).
 - 시간: LLM은 요청당 최대 1번, 안전·대상 질문(Q0~T3) 동안 0번. LLM이 마감 뒤에 끝나면 기다리지 않고 "증상을 찾지 못했어요" 질문으로 간다.
 - 응급: 안전 규칙(답 + 자유 입력)은 매 요청 맨 먼저 돈다. 걸리면 `emergency`(+ 119 정리용 E 문항 또는 정리 요약)만 나가고 진료과·search는 나가지 않는다. 응급 콘텐츠(`topicId`·영상)는 엔진이 넣지 않는다(팀원 3).
 - 같은 입력이면 같은 응답·trace(상태 없음). 프론트가 매번 전체 메시지·답을 보내야 한다.
@@ -142,7 +148,7 @@ else { respond(out.response); saveTrace(out.trace); }
 
 **규칙 파일 자리**
 - 자유 입력 위험 표현 규칙: `engine/rules/free_text_v1.json` (`{"version", "rules":[{rule_id:"FT-…", priority:1~9, patterns:[정규식], result, terminal, message_key, evidence, review_status}]}`). 패턴은 NFKC → 소문자 → 공백 제거한 메시지에 적용. v1은 비어 있다(위험 표현 사전은 다음 작업). 형식이 틀리면 `error:'data'`.
-- 키워드 기관 찾기 단서: `engine/rules/facility_keywords_v1.json`(초안, 평가셋으로 고칠 것).
+- 키워드 기관 찾기 단서: `engine/rules/facility_keywords_v2.json`(초안, 평가셋으로 고칠 것). *(11/17 EF 반영)* `riskCues`가 없으면 로드를 거부한다(`error:'data'`). v1 파일은 기록용.
 - 엔진 문구: `engine/templates.mjs`(팀·교수님 검토 전 초안).
 
 **이용 조건**
