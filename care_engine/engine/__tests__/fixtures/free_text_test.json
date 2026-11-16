@@ -1,0 +1,26 @@
+{
+  "version": "free-text-test",
+  "rules": [
+    {
+      "rule_id": "FT-TEST-STOP",
+      "priority": 5,
+      "patterns": ["테스트위험표현"],
+      "result": "EMERGENCY_STOP",
+      "terminal": true,
+      "triage_category_id": null,
+      "message_key": "emergency_call_119",
+      "evidence": {"source": "test_only", "page": 0, "note": "배관 확인용 지어낸 단어. 실제 위험 표현 아님"},
+      "review_status": "test"
+    },
+    {
+      "rule_id": "FT-TEST-NOTICE",
+      "priority": 7,
+      "patterns": ["테스트주의표현"],
+      "result": "URGENT_NOTICE",
+      "terminal": true,
+      "message_key": "test_unknown_key",
+      "evidence": {"source": "test_only"},
+      "review_status": "test"
+    }
+  ]
+}
