@@ -58,7 +58,8 @@ const URGENT_TAIL = '지금 119에 연락하거나 가까운 응급실로 가세
 export const EMERGENCY_TEXT = Object.freeze({
   emergency_call_119: {
     title: '지금 119에 연락하세요',
-    message: '응급 상황이라고 답하셨어요. 바로 119에 전화하세요. 아래 질문은 119에 알릴 내용을 정리하는 데만 쓰여요. 답하지 않아도 괜찮아요.',
+    // 11/17 EF(G2): 끝에 "이 서비스는 진단을 하지 않아요." (URGENT 문구와 같게)
+    message: '응급 상황이라고 답하셨어요. 바로 119에 전화하세요. 아래 질문은 119에 알릴 내용을 정리하는 데만 쓰여요. 답하지 않아도 괜찮아요. 이 서비스는 진단을 하지 않아요.',
   },
   urgent_notice_consciousness: {title: URGENT_TITLE, message: `의식이 또렷하지 않거나 잘 모르겠다고 답하셨어요. ${URGENT_TAIL}`},
   urgent_notice_breathing: {title: URGENT_TITLE, message: `숨쉬기가 힘들거나 잘 모르겠다고 답하셨어요. ${URGENT_TAIL}`},

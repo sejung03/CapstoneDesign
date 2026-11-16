@@ -87,25 +87,64 @@ function newTrace(reason) {
  *          freeTextRules?:object, facilityKeywords?:object, log?:Function, now?:Function}} [deps]
  * @returns {Promise<{response:object, trace:object} | {response:null, error:string, trace:object}>}
  */
+/** 11/17 EF(G1): 주입한 now가 던지거나 숫자가 아니면 Date.now()로 대신한다. */
+function safeNowOf(fn) {
+  if (typeof fn !== 'function') return Date.now;
+  return () => {
+    try {
+      const t = fn();
+      return Number.isFinite(t) ? t : Date.now();
+    } catch {
+      return Date.now();
+    }
+  };
+}
+
+/** 11/17 EF(G1): 주입한 log가 던져도 무시한다(LLM 모듈에 넘기는 log도 이것). */
+function safeLogOf(fn) {
+  if (typeof fn !== 'function') return noop;
+  return (event) => safeLog(fn, event);
+}
+
+/** deps·ctx 필드를 읽다가 getter가 던져도 undefined로 본다. */
+function readField(obj, key) {
+  try { return obj?.[key]; } catch { return undefined; }
+}
+
+const DEP_FIELDS = Object.freeze(['refStore', 'matchSymptoms', 'llm', 'freeTextRules', 'facilityKeywords']);
+function readAll(d) {
+  const out = {};
+  for (const k of DEP_FIELDS) {
+    const v = readField(d, k);
+    if (v !== undefined) out[k] = v;
+  }
+  return out;
+}
+
 export async function runCare(payload, ctx = {}, deps = {}) {
-  const d = deps && typeof deps === 'object' ? deps : {};
-  const now = typeof d.now === 'function' ? d.now : Date.now;
-  const log = typeof d.log === 'function' ? d.log : noop;
-  const c = ctx && typeof ctx === 'object' ? ctx : {};
+  // 11/17 EF(G1): 주입 함수(now·log 등) 실패로 예외가 밖으로 나가지 않게 모두 감싼다.
+  let d = {};
+  let c = {};
+  try { if (deps && typeof deps === 'object') d = deps; } catch { d = {}; }
+  try { if (ctx && typeof ctx === 'object') c = ctx; } catch { c = {}; }
+  const now = safeNowOf(readField(d, 'now'));
+  const log = safeLogOf(readField(d, 'log'));
   const start = now();
-  const reason = payload && typeof payload === 'object' ? payload.reason : undefined;
+  const reason = readField(payload, 'reason');
   const trace = newTrace(reason);
   let out;
   try {
-    out = await core(payload, c, d, trace, now, log);
+    out = await core(payload, c, {...readAll(d), now, log}, trace, now, log);
   } catch {
     trace.phase = 'error';
     trace.warnings.push('internal_exception');
     out = {response: null, error: 'internal'};
   }
+  let requestId = null;
+  try { requestId = typeof c.requestId === 'string' ? c.requestId : null; } catch { requestId = null; }
   safeLog(log, {
     event: 'engine.run',
-    requestId: typeof c.requestId === 'string' ? c.requestId : null,
+    requestId,
     reason: trace.reason,
     phase: trace.phase,
     ruleHits: [...trace.ruleHits],
