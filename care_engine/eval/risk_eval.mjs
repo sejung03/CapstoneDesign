@@ -12,9 +12,9 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const DEFAULT_RISK_CASES = path.join(HERE, 'cases', 'risk_v1.jsonl');
 // 11/17 R6: 독립 검토자가 지은 문장(검토 뒤 규칙 보완에 썼으므로 hold-out이 아니라 회귀셋). 기대값은 설계 판단으로 일부 조정(note).
 export const REVIEW_RISK_CASES = path.join(HERE, 'cases', 'risk_review_v1.jsonl');
-export const GROUPS = Object.freeze(['positive', 'nonemergency', 'metaphor', 'negation', 'other_person', 'past', 'facility', 'review_emergency', 'review_collision', 'review_neutral']);
+export const GROUPS = Object.freeze(['positive', 'nonemergency', 'metaphor', 'negation', 'other_person', 'past', 'facility', 'mixed_context', 'review_emergency', 'review_collision', 'review_neutral']);
 const NONE_GROUPS = new Set(['nonemergency', 'metaphor', 'facility', 'review_collision', 'review_neutral']);
-const MUST_MATCH_GROUPS = new Set(['positive', 'review_emergency', 'review_collision', 'review_neutral']);
+const MUST_MATCH_GROUPS = new Set(['positive', 'mixed_context', 'review_emergency', 'review_collision', 'review_neutral']);
 
 export function loadRiskCases(file = DEFAULT_RISK_CASES) {
   return readFileSync(file, 'utf8').split(/\r?\n/).filter((l) => l.trim()).map((l) => JSON.parse(l));

@@ -182,3 +182,25 @@
 {"id":"mv012","text":"스토킹 처벌법이 궁금해요","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
 {"id":"mv013","text":"형이랑 베개 싸움하다 맞았어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
 {"id":"mv014","text":"가정폭력 예방 포스터를 만들었어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mx001","text":"축구 보다가 아이가 경기를 일으켰어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-17"}
+{"id":"mx002","text":"게임하다가 친구가 쓰러졌어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-16"}
+{"id":"mx003","text":"시험 공부하다 갑자기 한쪽 눈이 안 보여요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-32"}
+{"id":"mx004","text":"운동하다가 가슴이 쥐어짜듯 아파요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-13"}
+{"id":"mx005","text":"마스크 쓰고 있었는데 아이 입술이 파래요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-02"}
+{"id":"mx006","text":"주식 보다가 아빠가 쓰러지셨어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-16"}
+{"id":"mx007","text":"카톡 하다가 엄마가 의식이 없어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-01"}
+{"id":"mx008","text":"드라마 보다가 할머니가 숨을 안 쉬어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-02"}
+{"id":"mx009","text":"술 마시고 친구가 깨워도 반응이 없어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-01"}
+{"id":"mx010","text":"헤어지고 나서 가슴이 쥐어짜듯 아파요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-13"}
+{"id":"mx011","text":"시험 공부하다 아이가 경련을 해요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-07"}
+{"id":"mx012","text":"모니터 보다가 갑자기 한쪽 팔에 힘이 없어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-14"}
+{"id":"mx013","text":"게임 중에 동생이 발작하고 있어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-07"}
+{"id":"mx014","text":"발표하다가 갑자기 말이 어눌해졌어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-14"}
+{"id":"mx015","text":"축구하다 친구가 머리를 부딪쳤는데 계속 토해요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-18"}
+{"id":"mx016","text":"학교 가야 하는데 아이가 불러도 반응이 없어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-01"}
+{"id":"mx017","text":"롤 하다가 친구가 갑자기 쓰러졌어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-16"}
+{"id":"mx018","text":"빨래 널다가 엄마가 베란다에서 떨어졌어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-30"}
+{"id":"mx019","text":"미세먼지 심한 날 갑자기 숨이 막혀서 말을 못 해요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-12"}
+{"id":"mx020","text":"정전기 얘기하다가 아빠가 감전됐어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-35"}
+{"id":"mx021","text":"야구 중계 보다가 할아버지가 숨이 멎었어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-02"}
+{"id":"mx022","text":"게임하다가 아이가 경기를 해요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-07"}
