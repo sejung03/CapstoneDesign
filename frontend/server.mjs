@@ -11,6 +11,7 @@ export {publicConfig} from './lib/public-config.mjs';
 import {publicConfig} from './lib/public-config.mjs';
 const allowed=new Set(['index.html','account-session.mjs','favorites.mjs','health-updates.mjs','signup-consent.mjs','report-import.mjs','health-consent.mjs','workspace-model.mjs','recommendations.mjs','emergency.mjs','emergency-picker.mjs','emergency-resources.mjs','legacy-entry.mjs','departments.mjs','copy.mjs','ui-icons.mjs','facility-art.mjs','ui.css','fonts/SUIT-Variable.woff2','fonts/SUITE-Variable.woff2','fonts/SUIT-LICENSE.txt','fonts/SUITE-LICENSE.txt','styles.css','app.js','flow.mjs','facilities.mjs','facilities-view.mjs','chat-model.mjs','chat-view.mjs','intake-view.mjs','intake-data.mjs','assistant.mjs','discovery.mjs','favicon.svg','routing.mjs','report.mjs','profile.mjs','care-context.mjs','clinic-demo.png','live-data.mjs','kakao-client.mjs','public-hours.mjs']);
 const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.woff2':'font/woff2','.txt':'text/plain; charset=utf-8'};
+allowed.add('health-storage.mjs');
 
 export function startServer({port=Number(process.env.PORT||3080),log=console.log,env=process.env,fetcher=globalThis.fetch}={}){
  if(!Number.isInteger(port)||port<0||port>65535)throw new Error('PORT는 0~65535 범위의 정수여야 합니다.');

@@ -24,13 +24,13 @@ export default function Signup(){
   }catch(e){setError('signup_failed');setBusy(false);}
  };
  return <main style={{maxWidth:760,margin:'64px auto',padding:24}}>
-  <label>{text('Language')} <select value={locale} onChange={e=>setLocale(e.target.value)}>{locales.map(code=><option key={code} value={code}>{languageNames[code]}</option>)}</select></label>
+  {pending!==true&&<label>{text('Language')} <select value={locale} onChange={e=>setLocale(e.target.value)}>{locales.map(code=><option key={code} value={code}>{languageNames[code]}</option>)}</select></label>}
   <h1>{text('Sign up')}</h1>
   {pending===null&&<p>{text('Verifying Kakao authentication…')}</p>}
   {pending===false&&<><p>{text('Kakao authentication has expired. Please sign in again.')}</p><a href="/api/auth/kakao">{text('Restart Kakao authentication')}</a></>}
   {pending===true&&<><p>{text('Review the terms and consent items to complete signup.')}</p>
    {error&&<p role="alert" style={{color:'#b91c1c'}}>{text('Could not complete signup. Please try again.')}</p>}
-   <AccountDialog locale={locale} needsSignupConsent={true} onContinue={submit} onDismiss={()=>location.assign('/')} />
+   <AccountDialog key={locale} locale={locale} onLocaleChange={setLocale} needsSignupConsent={true} onContinue={submit} onDismiss={()=>location.assign('/')} />
    {busy&&<p>{text('Saving your signup information…')}</p>}</>}
  </main>;
 }

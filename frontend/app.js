@@ -1,4 +1,5 @@
 import {phrase,expandLocales,localizedObject} from './i18n.mjs';
+import {emptyHealth,validateStoredHealth,healthStorageMessage} from './health-storage.mjs';
 import {createAccountSession,normalizeAccountSession} from './account-session.mjs';
 import {createFavorites,favoriteRecord,normalizeFavorites,FAVORITES_LIMIT} from './favorites.mjs';
 import {createHealthUpdates,normalizeHealthUpdates,validateHealthUpdateEvidence,applyHealthUpdateSelection,healthUpdateFields} from './health-updates.mjs';
@@ -193,13 +194,49 @@ function syncRecommendations(){
  })();
 }
 let accountAdapter=null,accountController=null,accountSequence=0;
+let healthStorageController=null,healthStorageSequence=0;
+function resetHealthStorage(){healthStorageController?.abort();healthStorageSequence++;state.healthStorage={phase:'ready',consented:false,grant:false,error:''};}
+async function loadAccountHealth(){
+ const id=state.account.accountId,adapter=accountAdapter?.healthProfile;
+ if(!id||!adapter)return;
+ healthStorageController?.abort();const controller=new AbortController();healthStorageController=controller;const token=++healthStorageSequence;
+ const current=()=>appMounted&&token===healthStorageSequence&&state.account.accountId===id&&!controller.signal.aborted;
+ state.healthStorage={phase:'loading',consented:false,grant:false,error:''};render();
+ const timer=setTimeout(()=>controller.abort(),10000);
+ try{const data=await adapter.get({signal:controller.signal});if(!current())return;const profile=validateStoredHealth(data.profile);state.profile={...state.profile,...profile};state.profileDraft={...state.profile};state.profileConfirmedAt=data.confirmedAt||null;state.healthStorage={phase:'ready',consented:data.storageConsent===true,grant:false,error:''};}
+ catch{if(token===healthStorageSequence&&state.account.accountId===id)state.healthStorage={phase:'error',consented:false,grant:false,error:'loadError'};}
+ finally{clearTimeout(timer);if(token===healthStorageSequence)render();}
+}
+async function persistAccountHealth(remove=false){
+ const id=state.account.accountId,adapter=accountAdapter?.healthProfile,storage=state.healthStorage;
+ if(!id||!adapter||['loading','saving','deleting'].includes(storage?.phase))return false;
+ if(!remove&&storage?.error==='loadError')return false;
+ if(!remove&&!hasHealthConsent(state))return false;
+ saveInputs();let profile;
+ if(!remove){try{profile=validateStoredHealth(Object.fromEntries(['age','allergies','medications','history'].map(k=>[k,state.profileDraft[k]||''])));}catch{state.profileError=true;render();return false;}}
+ const grant=!!document.getElementById('profile-storage-consent')?.checked||storage?.grant===true;
+ if(!remove&&!storage?.consented&&!grant){state.healthStorage={...storage,error:'consentRequired'};render();return false;}
+ healthStorageController?.abort();const controller=new AbortController();healthStorageController=controller;const token=++healthStorageSequence;
+ const current=()=>appMounted&&token===healthStorageSequence&&state.account.accountId===id&&!controller.signal.aborted;
+ state.healthStorage={...storage,phase:remove?'deleting':'saving',error:''};render();const timer=setTimeout(()=>controller.abort(),10000);
+ try{
+  const data=remove?await adapter.remove({signal:controller.signal}):await adapter.save(profile,{grant,signal:controller.signal});
+  if(!current())return false;
+  const saved=remove?emptyHealth():validateStoredHealth(data.profile);
+  state.profile={...state.profile,...saved};state.profileDraft={...state.profile};state.profileConfirmedAt=remove?null:data.confirmedAt;state.profileError=false;
+  state.healthStorage={phase:'ready',consented:!remove&&data.storageConsent===true,grant:false,error:''};render();toast(healthStorageMessage(state.locale,remove?'deleted':'saved'));return true;
+ }catch{if(token===healthStorageSequence&&state.account.accountId===id){state.healthStorage={...storage,phase:'error',error:remove?'deleteError':'saveError'};render();}return false;}
+ finally{clearTimeout(timer);}
+}
 async function applyAccountSession(session,token){
  if(token!==accountSequence)return;
  const changed=state.account.accountId!==session.accountId;state.account=session;
  if(changed){
+  resetHealthStorage();
   if(!viewRenderer)clearHealthAccess();
   void setFavoritesAdapter(session.accountId?accountAdapter?.favorites||null:null,{scope:session.accountId?'account:'+session.accountId:'guest'});
  }
+ if(session.accountId&&accountAdapter?.healthProfile&&(changed||!state.healthStorage||state.healthStorage.error==='loadError'))await loadAccountHealth();
  if(token===accountSequence)render();
 }
 async function abortableAccountCall(work,signal){
@@ -943,6 +980,8 @@ function commitProfile(){
  state.profile=cleanProfile(state.profileDraft);state.profileDraft={...state.profile};state.profileError=false;state.profileConfirmedAt=new Date().toISOString();return true;
 }
 function bindProfile(){
+ listen(document.getElementById('profile-storage-retry'),'click',()=>void loadAccountHealth());
+ listen(document.getElementById('profile-storage-consent'),'change',event=>{state.healthStorage={...state.healthStorage,grant:event.target.checked};});
  listen(document.getElementById('behavior-save'),'click',()=>void updateBehaviorDemo('save'));
  listen(document.getElementById('behavior-toggle'),'click',()=>void updateBehaviorDemo('toggle'));
  listen(document.getElementById('behavior-switch'),'click',()=>void updateBehaviorDemo('switch'));
@@ -957,14 +996,14 @@ function bindProfile(){
  listen(document.getElementById('account-logout'),'click',()=>{if(window.confirm(phrase(state.locale,"Log out? Unsaved entries and this conversation will be cleared.")))void logoutAccount();});
  listen(document.getElementById('profile-pdf'),'click',function exportProfilePdf(){if(requestProfileExit(exportProfilePdf))return;window.print();});
  listen(document.getElementById('profile-health-start'),'click',()=>{requestHealthAccess('profile');});
- for(const choice of ['save','discard','cancel'])listen(document.getElementById('profile-leave-'+choice),'click',()=>{
-  const action=pendingProfileExit;if(choice==='save'&&!commitProfile())return;
+ for(const choice of ['save','discard','cancel'])listen(document.getElementById('profile-leave-'+choice),'click',async()=>{
+  const action=pendingProfileExit;if(choice==='save'){if(state.account.accountId){if(!await persistAccountHealth())return;}else if(!commitProfile())return;}
   if(choice==='discard'){state.profileDraft={...state.profile};state.profileError=false;}
   state.profileExit=false;pendingProfileExit=null;render();
   if(choice!=='cancel')action?.();
  });
- listen(document.getElementById('profile-form'),'submit',event=>{
-  event.preventDefault();if(viewRenderer){if(commitProfile()){render();toast(phrase(state.locale,"Health information saved for this page."));}return;}
+ listen(document.getElementById('profile-form'),'submit',async event=>{
+  event.preventDefault();if(viewRenderer){if(state.account.accountId){await persistAccountHealth();}else if(commitProfile()){render();toast(phrase(state.locale,"Health information saved for this page."));}return;}
   saveInputs();state.profile=cleanProfile(state.profileDraft);
   const stored=persistProfile(profileStorage(),state.profile,state.profileRemember);
   if(stored)state.profileStorageNotice=false;
@@ -975,9 +1014,10 @@ function bindProfile(){
   if(state.suggestion)state.suggestion=buildSuggestion('',state.profile,{...state.suggestion,region:state.draft.region,priority:state.profile.preference});
   render();toast(t(!stored?'profileStorageError':state.profileRemember?'profileSaved':'profileSession'));
  });
- listen(document.getElementById('profile-delete'),'click',()=>{
-  const question=viewRenderer?(phrase(state.locale,"Clear health information? Edited consultation notes will be kept.")):t('profileDeleteConfirm');
+ listen(document.getElementById('profile-delete'),'click',async()=>{
+  const question=viewRenderer&&state.account.accountId?healthStorageMessage(state.locale,'deleteConfirm'):viewRenderer?(phrase(state.locale,"Clear health information? Edited consultation notes will be kept.")):t('profileDeleteConfirm');
   if(!window.confirm(question))return;
+  if(viewRenderer&&state.account.accountId){await persistAccountHealth(true);return;}
   if(viewRenderer){const cleared={age:'',allergies:'',medications:'',history:''};state.profile={...state.profile,...cleared};state.profileDraft={...state.profile};state.profileError=false;state.profileConfirmedAt=null;render();toast(t('profileDeleted'));return;}
   const oldRegion=state.profile.region;const removed=persistProfile(profileStorage(),emptyProfile(),false);
   state.profile=emptyProfile();state.profileDraft=emptyProfile();state.profileRemember=false;state.profileStorageNotice=!removed;state.suggestion=null;
@@ -1140,6 +1180,7 @@ export function mountMedicalApp({renderView=null}={}){
   if(disposed)return;saveInputs();disposed=true;appMounted=false;appGeneration++;
   behaviorDemoSequence++;behaviorDemoAdapter=null;
   accountController?.abort();accountSequence++;
+  healthStorageController?.abort();healthStorageSequence++;
   favoritesController?.abort();favoritesSequence++;state.favorites.pendingId='';
   emergencyLocationController?.abort();emergencyLocationSequence++;
   configSequence++;configController?.abort();assistantController?.abort();assistantSequence++;recommendationController?.abort();recommendationSequence++;state.recommendations=createRecommendations();
