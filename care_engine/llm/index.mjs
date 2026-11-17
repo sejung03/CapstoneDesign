@@ -1,6 +1,6 @@
 // LLM 모듈 공개 함수: classifySymptom(), extractProfileUpdates().
 // 원문·quote·value·업체 응답 원문은 로그(log)와 meta에 넣지 않는다(설계 7절).
-import {getConfig} from './config.mjs';
+import {getConfig, RISK_MAX_OUTPUT_TOKENS} from './config.mjs';
 import {getProvider} from './provider.mjs';
 import {loadRefData} from './ref-data.mjs';
 import {maskPii} from './pii.mjs';
@@ -267,7 +267,7 @@ export async function detectRiskSignal({text, consent, signal, deadlineAt, reque
   if (!llmText) { meta.error = 'no_match'; return finish('none'); }
   const res = await callProvider(d.provider, {
     system: riskPrompt.system, user: riskPrompt.buildUser({text: llmText}),
-    schema: riskSignalSchema(), schemaName: meta.schemaId,
+    schema: riskSignalSchema(), schemaName: meta.schemaId, maxOutputTokens: RISK_MAX_OUTPUT_TOKENS,
   }, {config: d.config, signal, deadline: deadlineFrom(start, d.config, deadlineAt), now: d.now});
   meta.attempts = res.attempts;
   meta.tokens = {...res.tokens};

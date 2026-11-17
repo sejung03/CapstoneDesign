@@ -16,6 +16,8 @@ export const PROFILE_SIGNAL_PATTERNS = Object.freeze({
 export const MAX_PICKS = 10;
 /** OpenAI max_output_tokens(지시서 M1). 증상 picks 최대 10개·건강정보 4개에 충분하다. */
 export const OPENAI_MAX_OUTPUT_TOKENS = 400;
+/** risk_signal 한 필드 전용 호출은 출력 상한을 작게 둔다. */
+export const RISK_MAX_OUTPUT_TOKENS = 40;
 export const PROFILE_MAX_ITEMS = 4;
 export const PROFILE_VALUE_MAX = 500;
 export const PROFILE_QUOTE_MAX = 500;

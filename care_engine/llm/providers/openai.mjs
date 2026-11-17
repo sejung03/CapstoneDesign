@@ -64,7 +64,9 @@ export function createOpenAiProvider({
       input: req.user,
       text: {format: {type: 'json_schema', name: req.schemaName, schema: req.schema, strict: true}},
       reasoning: {effort: reasoningEffort},
-      max_output_tokens: maxOutputTokens,
+      max_output_tokens: Number.isFinite(req.maxOutputTokens)
+        ? Math.max(1, Math.min(maxOutputTokens, Math.floor(req.maxOutputTokens)))
+        : maxOutputTokens,
       store: false,
     };
     if (temperature !== null && temperature !== undefined && Number.isFinite(temperature)) body.temperature = temperature;
