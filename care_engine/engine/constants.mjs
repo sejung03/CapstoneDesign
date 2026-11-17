@@ -14,3 +14,16 @@ export const TARGET_SELF = 'self';
 export const INJURY_ITEM_ID = 'F2';
 /** F2에서 '예'를 뜻하는 code. */
 export const INJURY_YES = 'yes';
+
+// ---- 11/17 RF2: 위험 표현 확인 질문(RISK_CONFIRM) ----
+/**
+ * 확인 질문 ID는 `RISK_CONFIRM_<n>`이다. n은 질문을 낼 때까지의 사용자 메시지 수(엔진의 userMessages 기준).
+ * 엔진은 상태가 없으므로 "어느 메시지까지 확인했는가"를 이 ID로 다시 계산한다(답은 followUpAnswers에 질문 ID별로 남는다).
+ */
+export const RISK_CONFIRM_PREFIX = 'RISK_CONFIRM_';
+export const RISK_CONFIRM_ID_RE = /^RISK_CONFIRM_(\d{1,4})$/;
+export const RISK_ANSWERS = Object.freeze({yes: 'risk_yes', no: 'risk_no', unsure: 'risk_unsure'});
+/** 같은 범위의 확인 질문을 몇 번까지 내는가(그 뒤에도 답이 없으면 '잘 모르겠어요'로 처리). */
+export const RISK_CONFIRM_MAX_ASKS = 2;
+/** 확인 질문 대상 message_key(EMERGENCY_STOP·민감 안내는 대상이 아님). */
+export const RISK_CONFIRM_KEY = 'freetext_urgent';

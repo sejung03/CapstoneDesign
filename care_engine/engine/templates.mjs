@@ -9,6 +9,7 @@ export const ENGINE_Q = Object.freeze({
   SYM_NOT_FOUND: 'SYM_NOT_FOUND',
   ASK_START: 'ASK_START',
   MED_CHOICE: 'MED_CHOICE',
+  RISK_CONFIRM: 'RISK_CONFIRM', // 11/17 RF2: 실제 질문 ID는 RISK_CONFIRM_<메시지 수>(constants.mjs)
 });
 export const OPT = Object.freeze({
   symPrefix: 'sym_',
@@ -21,6 +22,9 @@ export const OPT = Object.freeze({
   medSymptom: 'med_symptom',
   medPharmacy: 'med_pharmacy',
   medInfo: 'med_info',
+  riskYes: 'risk_yes',
+  riskNo: 'risk_no',
+  riskUnsure: 'risk_unsure',
 });
 
 const q = (id, ko, options) => ({id, type: 'singleChoice', required: true, label: {ko}, options: options.map(([oid, oko]) => ({id: oid, label: {ko: oko}}))});
@@ -42,6 +46,14 @@ export function askStartQuestion() {
   return q(ENGINE_Q.ASK_START, '어디가 어떻게 불편한지 대화창에 적어 주세요. 병원이나 약국만 찾으려면 아래에서 골라 주세요.', [
     [OPT.findHospital, '병원 찾기'],
     [OPT.findPharmacy, '약국 찾기'],
+  ]);
+}
+/** 11/17 RF2: 위험 표현 확인 질문(초안 그대로). @param {string} id RISK_CONFIRM_<n> */
+export function riskConfirmQuestion(id) {
+  return q(id, '방금 말씀하신 일이 지금 실제로 일어나고 있나요? (본인이나 함께 있는 분에게)', [
+    [OPT.riskYes, '예, 지금 그래요'],
+    [OPT.riskNo, '아니요'],
+    [OPT.riskUnsure, '잘 모르겠어요'],
   ]);
 }
 export function medChoiceQuestion() {
@@ -121,6 +133,8 @@ export const SUMMARY = Object.freeze({
   pain: (v) => `통증: ${v}점 (0~10)`,
   departments: '참고할 진료과',
   unchecked: '복용 중인 약, 기존 질환, 함께 있는 다른 증상은 확인하지 않았어요. 해당되면 진료 때 꼭 알려 주세요.',
+  // 11/17 RF2: 확인 질문에 '잘 모르겠어요'(또는 2번 무응답)일 때 요약 첫 줄(risk_unconfirmed, 초안 그대로)
+  riskUnconfirmed: '응급 증상인지 확인하지 못했어요. 증상이 심해지거나 걱정되면 바로 119에 연락하거나 응급실로 가세요.',
   safetyUnanswered: '응급 확인 질문에 답하지 않았어요. 의식이 흐리거나 숨쉬기 힘들거나, 갑작스러운 마비·말하기 어려움·심한 가슴 통증·멈추지 않는 출혈이 있으면 지금 119에 연락하세요.',
   footer: '증상이 갑자기 심해지면 119에 연락하세요.',
   emergencyHeader: '119에 알릴 내용이에요(참고용).',

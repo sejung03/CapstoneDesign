@@ -91,19 +91,27 @@ export function stripNoise(t) {
  * @param {{rules:Array<object>}} ruleSet compileFreeTextRules 결과
  */
 export function matchFreeText(messages, ruleSet) {
-  const base = (Array.isArray(messages) ? messages : []).filter((m) => typeof m === 'string').map((m) => normalizeTerm(m)).filter(Boolean);
-  // 11/17 R6(검토 S6): 구두점·기호·이모지·홀로 쓴 한글 자모(ㅠㅠ 등)가 어간 사이에 끼면 패턴이 끊긴다.
-  // 그것들을 지운 두 번째 문자열도 함께 검사한다(원문은 어디에도 남기지 않는다).
-  const texts = [];
-  for (const t of base) {
-    texts.push(t);
+  const byMsg = matchFreeTextByMessage(messages, ruleSet);
+  const hit = new Set(byMsg.flat());
+  return (ruleSet?.rules ?? []).filter((r) => hit.has(r.ruleId)).map((r) => r.ruleId);
+}
+
+/**
+ * 11/17 RF2: 메시지 위치별로 걸린 규칙(확인 질문 범위 계산용). 결과는 엔진 안에서만 쓰고 trace·로그에 남기지 않는다.
+ * @param {string[]} messages 문자열이 아닌 항목은 빈 목록
+ * @returns {string[][]} messages와 같은 길이, 각 메시지에서 걸린 ruleId(규칙 파일 순서)
+ */
+export function matchFreeTextByMessage(messages, ruleSet) {
+  const list = Array.isArray(messages) ? messages : [];
+  if (!ruleSet?.rules?.length) return list.map(() => []);
+  return list.map((m) => {
+    if (typeof m !== 'string') return [];
+    const t = normalizeTerm(m);
+    if (!t) return [];
+    const texts = [t];
     const stripped = stripNoise(t);
     if (stripped && stripped !== t) texts.push(stripped);
-  }
-  if (texts.length === 0 || !ruleSet?.rules?.length) return [];
-  const hits = [];
-  for (const rule of ruleSet.rules) {
-    if (texts.some((t) => rule.regexes.some((re) => re.test(t)))) hits.push(rule.ruleId);
-  }
-  return hits;
+    return ruleSet.rules.filter((rule) => texts.some((x) => rule.regexes.some((re) => re.test(x)))).map((rule) => rule.ruleId);
+  });
 }
+

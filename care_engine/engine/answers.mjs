@@ -1,5 +1,6 @@
 // 답 정리와 보이는 문항(설계 §4-5, §4-1). FHIR R4 enableWhen 의미를 따른다.
 // 미응답을 'no'로 바꾸지 않는다. 답 값(사용자가 고른 code)은 warning에 남기지 않는다.
+import {RISK_CONFIRM_ID_RE, RISK_ANSWERS} from './constants.mjs';
 
 /** 데이터 문항이 아닌 엔진 질문(설계 §4-4). 답은 engine Map에 넣는다. */
 export const ENGINE_QUESTION_IDS = Object.freeze(['SYM_DICT_CONFIRM', 'SYM_CONFIRM', 'SYM_NOT_FOUND', 'ASK_START', 'MED_CHOICE']);
@@ -21,7 +22,15 @@ export function normalizeAnswers(followUpAnswers, data) {
     if (!a || typeof a !== 'object' || typeof a.questionId !== 'string') continue;
     last.set(a.questionId, a.value); // 같은 questionId는 마지막 것
   }
+  const riskConfirms = []; // 11/17 RF2: [{n, value}] — RISK_CONFIRM_<n> 답(값은 risk_yes·risk_no·risk_unsure만)
   for (const [qid, value] of last) {
+    const rm = RISK_CONFIRM_ID_RE.exec(qid);
+    if (rm) {
+      if (value === null || value === undefined) continue; // 미응답
+      if (Object.values(RISK_ANSWERS).includes(value)) riskConfirms.push({n: Number(rm[1]), value});
+      else warnings.push('invalid_answer:RISK_CONFIRM');
+      continue;
+    }
     const known = data.itemById.has(qid);
     if (!known && !ENGINE_SET.has(qid)) {
       // 모르는 ID는 형식이 맞을 때만 ID를 남긴다(값은 남기지 않는다)
@@ -39,7 +48,7 @@ export function normalizeAnswers(followUpAnswers, data) {
       warnings.push(`invalid_answer:${qid}`);
     }
   }
-  return {codes, engine, warnings};
+  return {codes, engine, warnings, riskConfirms};
 }
 
 function conditionTrue(cond, codes, data, depth) {

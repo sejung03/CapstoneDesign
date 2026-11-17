@@ -19,7 +19,8 @@ test('F5 S1 회귀(시뮬레이터): 병원 찾기 문장 7문항 → search, �
   assert.deepEqual(h.final, {search: {type: 'hospital', department: 'orthopedics'}});
   const r = await simulate(scenario('risk_hospital_keyword'));
   // 11/17 R: "숨을 못 쉬겠어요"가 자유 입력 규칙(FT-DYSPNEA-01)에 걸려 질문 없이 첫 응답이 긴급 안내(EF 때는 Q0 → N1 → N2 뒤)
-  assert.deepEqual(r.asked, []);
+  // 11/17 RF2: 첫 응답이 응급 안내 + 확인 질문(RISK_CONFIRM_1), 가짜 사용자가 첫 선택지(예)를 골라 terminal 응급 안내
+  assert.deepEqual(r.asked, ['RISK_CONFIRM_1']);
   assert.deepEqual(r.finalTrace.ruleHits, ['FT-DYSPNEA-01']);
   assert.equal(r.resultKind, 'emergency');
   assert.equal(r.final.search, undefined);

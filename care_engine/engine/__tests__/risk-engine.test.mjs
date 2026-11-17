@@ -66,14 +66,17 @@ test('R5: 평가셋 통과 기준(positive 누락 0, metaphor·nonemergency·fac
   assert.equal(r.groups.positive.n, POSITIVE.length);
 });
 
-test('R5: 첫 메시지가 positive 표현 → 첫 응답은 emergency만(search·진료과·질문 없음, LLM 0)', async () => {
+test('R5(+RF2): 첫 메시지가 positive 표현 → 첫 응답은 emergency(+ freetext_urgent면 확인 질문), search·진료과 없음, LLM 0', async () => {
+  // 11/17 RF2: freetext_urgent는 확인 질문(RISK_CONFIRM_1)이 함께 나가고 아직 terminal이 아니다('예'일 때만 terminal)
   for (const c of POSITIVE) {
     const llm = fakeLlm();
     const {out, calls} = await call({messages: [c.text], llm});
-    assert.deepEqual(Object.keys(out.response), ['emergency'], c.id);
+    const urgent = c.expect_key === 'freetext_urgent';
+    assert.deepEqual(Object.keys(out.response).sort(), urgent ? ['emergency', 'followUp'] : ['emergency'], c.id);
+    if (urgent) assert.equal(out.response.followUp.id, 'RISK_CONFIRM_1', c.id);
     assert.equal(out.response.emergency.active, true, c.id);
     assert.equal(out.response.emergency.message.ko, EMERGENCY_TEXT[c.expect_key].message, c.id);
-    assert.equal(out.trace.terminal, true, c.id);
+    assert.equal(out.trace.terminal, !urgent, c.id);
     assert.equal(calls.classify.length + calls.profile.length, 0, c.id);
   }
 });
@@ -95,15 +98,23 @@ test('R5: 약국 시작 문장 + 위험 표현 → 약국 지름길이 아니라
   assert.deepEqual(out.trace.ruleHits, ['FT-GIBLEED-01']);
 });
 
-test('R5: 위험 표현 뒤 Q0=아니요로 답해도(안전 답 SAFE 전부여도) 메시지가 남아 있으므로 다음 요청에서도 응급 안내 유지', async () => {
+test('R5(+RF2): 위험 표현 뒤 Q0=아니요·안전 답 SAFE로는 응급 안내가 풀리지 않는다 — RISK_CONFIRM 답으로만 풀린다', async () => {
+  // 11/17 RF2로 바꾼 이유: 예전에는 한 번 걸리면 대화 끝까지 응급 안내만 나갔다(검토 I7). 이제 freetext_urgent는
+  // 확인 질문 답(예/아니요/잘 모르겠어요)으로만 처리가 바뀌고, Q0·N1~N3 같은 안전 답으로는 풀리지 않는다.
   const m = byId('r025').text; // 가슴 쥐어짜는 통증
   for (const answers of [{Q0: 'no'}, {...SAFE_BASE}]) {
     const {out} = await call({reason: 'followup', messages: [m], answers});
-    assert.deepEqual(Object.keys(out.response), ['emergency']);
+    assert.equal(out.response.emergency.active, true);
+    assert.equal(out.response.followUp.id, 'RISK_CONFIRM_1');
     assert.ok(out.trace.ruleHits.includes('FT-CHEST-01'));
   }
+  // 확인 전 skip → '예'로 본다(보수적): 응급 안내만
   const skip = await call({reason: 'skip', messages: [m], answers: {Q0: 'no'}});
   assert.deepEqual(Object.keys(skip.out.response), ['emergency']);
+  // RISK_CONFIRM_1 = 아니요 → 안내 해제(active:false) + 문진 계속
+  const no = await call({reason: 'followup', messages: [m], answers: {Q0: 'no', RISK_CONFIRM_1: 'risk_no'}});
+  assert.equal(no.out.response.emergency.active, false);
+  assert.equal(no.out.response.followUp.id, 'N1');
 });
 
 test('R5: 자해·자살 생각 → crisis_notice_109 문구의 emergency, 진료과·search 없음', async () => {
@@ -125,13 +136,14 @@ test('R5: 우선순위 — EMERGENCY_STOP 표현 + 자해 생각 표현이 함�
   assert.ok(out.response.emergency.message.ko.includes('109'));
   assert.ok(out.response.emergency.message.ko.endsWith('이 서비스는 진단을 하지 않아요.'));
   assert.deepEqual(out.trace.ruleHits, ['FT-SELFHARM-ACT-01', 'FT-SELFHARM-THINK-01']);
-  // URGENT + 109 → URGENT(119·응급실 문구, priority 4 < 8) + 109 한 문장
+  // 11/17 RF2: URGENT(확인 전) + 109 → 109 안내(확인 질문 없음). 확인 전 urgent는 top 후보에서 빠진다
   const u = await call({messages: [byId('r078').text, byId('r023').text]});
-  assert.ok(u.out.response.emergency.message.ko.startsWith('응급 진료가 필요할 수 있는 증상으로 보여요.'));
-  assert.ok(u.out.response.emergency.message.ko.includes(CRISIS_109_ADDON));
-  // 109가 함께 걸리지 않으면 덧붙이지 않는다
-  const plain = await call({messages: [byId('r023').text]});
+  assert.equal(u.out.response.emergency.message.ko, EMERGENCY_TEXT.crisis_notice_109.message);
+  assert.equal(u.out.response.followUp, undefined);
+  // 109가 함께 걸리지 않으면 덧붙이지 않는다('예'로 확인한 urgent)
+  const plain = await call({reason: 'followup', messages: [byId('r023').text], answers: {RISK_CONFIRM_1: 'risk_yes'}});
   assert.equal(plain.out.response.emergency.message.ko, EMERGENCY_TEXT.freetext_urgent.message);
+  assert.ok(CRISIS_109_ADDON.length > 0);
   // 답 규칙(priority 10 이상)보다 자유 입력 규칙(1~9)이 먼저
   const a = await call({reason: 'followup', messages: [byId('r003').text], answers: {Q0: 'no', N1: 'no'}});
   assert.equal(a.out.trace.ruleHits[0], 'FT-APNEA-01');

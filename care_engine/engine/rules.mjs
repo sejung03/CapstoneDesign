@@ -1,6 +1,6 @@
 // 안전 규칙 평가(설계 §4-1). 결정표 + priority hit policy(OMG DMN).
 // 자유 입력 규칙(메시지)과 답 규칙(보이는 답)을 같은 표에서 priority로 고른다.
-import {matchFreeText} from './free-text.mjs';
+import {matchFreeTextByMessage} from './free-text.mjs';
 
 function conditionHolds(cond, codes) {
   if (!codes.has(cond.question)) return false; // 답이 없으면 거짓(미응답은 규칙에 걸리지 않는다)
@@ -18,9 +18,11 @@ function conditionHolds(cond, codes) {
 export function evaluateSafety({codes, messages = [], data, freeTextRules = null}) {
   const hits = [];
   if (freeTextRules) {
-    const ids = new Set(matchFreeText(messages, freeTextRules));
+    // 11/17 RF2: 메시지 위치도 함께(확인 질문 범위 계산용, trace·로그에는 남기지 않음)
+    const byMsg = matchFreeTextByMessage(messages, freeTextRules);
     for (const r of freeTextRules.rules) {
-      if (ids.has(r.ruleId)) hits.push(pick(r, 'free_text'));
+      const idx = byMsg.flatMap((ids, i) => (ids.includes(r.ruleId) ? [i] : []));
+      if (idx.length > 0) hits.push({...pick(r, 'free_text'), messageIndexes: idx});
     }
   }
   for (const rule of data.rules) {

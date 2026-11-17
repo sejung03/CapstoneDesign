@@ -26,8 +26,9 @@ function clip(lines) {
  * @param {{slots:object, codes:Map, symptom:object|null, departments:Array<{nameKo}>, data:object, safetyUnanswered:boolean}} input
  * @returns {string}
  */
-export function buildSummary({slots, codes, symptom, departments = [], data, safetyUnanswered = false}) {
+export function buildSummary({slots, codes, symptom, departments = [], data, safetyUnanswered = false, riskUnconfirmed = false}) {
   const lines = [];
+  if (riskUnconfirmed) lines.push(SUMMARY.riskUnconfirmed); // 11/17 RF2: 확인 질문 '잘 모르겠어요'(또는 2번 무응답)면 첫 줄
   if (safetyUnanswered) lines.push(SUMMARY.safetyUnanswered);
   lines.push(SUMMARY.header);
   const target = displayOf(codes.has(TARGET_ITEM_ID) ? {value: codes.get(TARGET_ITEM_ID), question: TARGET_ITEM_ID} : null, data);

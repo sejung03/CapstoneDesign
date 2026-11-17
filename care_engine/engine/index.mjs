@@ -12,7 +12,9 @@ import {evaluateFacilityKeywords, loadFacilityKeywords, messageCues} from './fac
 import {identify, resolveFromAnswers, userMessages} from './identify.mjs';
 import {recommend, symptomSexMismatch} from './recommend.mjs';
 import {buildSummary, buildEmergencySummary, buildMedInfoSummary} from './summary.mjs';
-import {emergencyNotice, withCrisis109, ENGINE_Q, OPT, TEMPLATE_VERSION} from './templates.mjs';
+import {emergencyNotice, withCrisis109, riskConfirmQuestion, ENGINE_Q, OPT, TEMPLATE_VERSION} from './templates.mjs';
+import {resolveRiskConfirm} from './risk-confirm.mjs';
+import {RISK_CONFIRM_KEY} from './constants.mjs';
 
 const CRISIS_KEY = 'crisis_notice_109';
 import {checkResponseContract} from './contract.mjs';
@@ -198,14 +200,18 @@ async function core(payload, ctx, deps, trace, now, log) {
 
   // 0. 입력 정리 (previousReport·intake·profile·search 내용은 v1에서 쓰지 않는다)
   const messages = userMessages(payload.messages);
-  const {codes, engine, warnings} = normalizeAnswers(payload.followUpAnswers, data);
+  const {codes, engine, warnings, riskConfirms} = normalizeAnswers(payload.followUpAnswers, data);
   trace.warnings.push(...warnings);
   const vis = visibleCodes(codes, data);
 
   // 1. 안전 규칙(자유 입력 + 답) — 매 요청 맨 먼저
   const safety = evaluateSafety({codes: vis, messages, data, freeTextRules});
   trace.ruleHits = safety.hits.map((h) => h.ruleId);
-  const top = safety.top;
+  // 11/17 RF2: freetext_urgent hit는 확인 질문(RISK_CONFIRM_<n>)의 답으로 거른다. '예'일 때만 지금처럼 terminal
+  const risk = resolveRiskConfirm({hits: safety.hits, riskConfirms, messageCount: messages.length, reason});
+  if (risk.state !== 'none') trace.riskConfirm = {state: risk.state, asks: risk.asks};
+  const isUrgentFree = (h) => h.source === 'free_text' && h.messageKey === RISK_CONFIRM_KEY;
+  const top = safety.hits.find((h) => !isUrgentFree(h) || risk.state === 'yes') ?? null;
 
   let symptom = null; // {kind:'symptom'|'unknown', symptomId?, source}
   let llmUsed = false;
@@ -255,6 +261,13 @@ async function core(payload, ctx, deps, trace, now, log) {
     }
     carryEmergency = notice.emergency; // terminal: false인 URGENT_NOTICE(지금 데이터에는 없음): 안내 + 문진 계속
   }
+  // 11/17 RF2: 확인 질문(대상: freetext_urgent). 확인 전이면 응급 안내(문진 계속형) + 확인 질문, 진료과·search 없음
+  if (risk.state === 'pending') {
+    const notice = emergencyNotice(RISK_CONFIRM_KEY);
+    return finish({emergency: carryEmergency ?? notice.emergency, followUp: riskConfirmQuestion(risk.askId)}, 'risk_confirm');
+  }
+  if (risk.state === 'unsure') carryEmergency ??= emergencyNotice(RISK_CONFIRM_KEY).emergency; // 이후 모든 응답에 안내를 붙이고 문진 계속
+  if (risk.state === 'no') carryEmergency ??= {active: false}; // 앞서 보낸 응급 안내를 프론트에서 해제(BACKEND.md 0.11.0)
   const withEmergency = (response) => (carryEmergency ? {...response, emergency: carryEmergency} : response);
 
   // 메시지 사전 매칭(성별 거르기 없이, 키워드·시작 선택 고정 해제에 씀). 매칭 함수가 던져도 0개로 본다.
@@ -300,7 +313,7 @@ async function core(payload, ctx, deps, trace, now, log) {
   }
 
   // 3. 키워드 기관 찾기(첫 요청 흐름, LLM 없음). 11/17 EF: 약국 찾기 문장만, 위험 단서가 있으면 막는다(사유 코드만 trace)
-  const hasAnyAnswer = codes.size > 0 || engine.size > 0;
+  const hasAnyAnswer = codes.size > 0 || engine.size > 0 || riskConfirms.length > 0;
   if (!hasAnyAnswer && messages.length > 0) {
     const kw = evaluateFacilityKeywords({messages, hasAnyAnswer, dictMatches: dictMatches(), data, rules: facilityKeywords});
     trace.facilityKeyword = kw.reason;
@@ -364,7 +377,7 @@ async function core(payload, ctx, deps, trace, now, log) {
   trace.symptom.fallbackGroup = rec.group;
   // 11/17 EF(G6): 안전 미응답 판단 문항은 답 규칙이 가리키는 문항 전체(데이터에서 만듦)
   const safetyUnanswered = safetyCheckItemIds(data).some((id) => !vis.has(id));
-  const summary = buildSummary({slots: trace.slots, codes: vis, symptom: symptomObj, departments: rec.departments, data, safetyUnanswered});
+  const summary = buildSummary({slots: trace.slots, codes: vis, symptom: symptomObj, departments: rec.departments, data, safetyUnanswered, riskUnconfirmed: risk.state === 'unsure'});
   const response = withEmergency({summary: {ko: summary}, search: rec.search});
 
   // 건강정보 후보: 상담 대상이 본인일 때만, 요청당 LLM 1번(이미 증상 분류를 불렀으면 건너뜀)
