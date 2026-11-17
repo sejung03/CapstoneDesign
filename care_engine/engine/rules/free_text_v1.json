@@ -391,7 +391,7 @@
       "rule_id": "FT-VISION-01", "priority": 7, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 21,
       "message_key": "freetext_urgent",
       "patterns": ["^(?!.*(망해|시험|돈|미래|앞날|인생|화면|모니터|tv|티비|불이꺼|정전)).*갑자기(눈|앞|시야|한쪽눈|양쪽눈|눈앞)(이|가)?.{0,4}(안보|보이지않|깜깜|까매|흐려지)", "(한쪽|양쪽)?눈(이|앞이)?갑자기.{0,4}(안보|보이지않|깜깜|까매)", "시력을(갑자기)?잃", "실명(했|됐|될것같|위기|이에요|인것같|했어)"],
-      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 안과적 '급성 시력소실' / 매뉴얼 범주 21 PDF p.33 '심각한 눈 손상'", "criteria_id": "C-32", "manual_119": {"category": 21, "page": 33, "level": "긴급"}},
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 안과적 '급성 시력 손실' / 매뉴얼 범주 21 PDF p.33 '심각한 눈 손상'", "criteria_id": "C-32", "manual_119": {"category": 21, "page": 33, "level": "긴급"}},
       "review_status": "draft"
     },
     {
