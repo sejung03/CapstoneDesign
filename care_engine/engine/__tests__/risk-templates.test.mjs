@@ -8,7 +8,7 @@ import {loadFreeTextRules} from '../free-text.mjs';
 const KEYS = ['freetext_emergency_119', 'freetext_urgent', 'crisis_notice_109'];
 
 test('R3: 문구 3개 — title ≤ 120자, message ≤ 1000자, 계약 통과, 진단 아님 문장', () => {
-  assert.equal(TEMPLATE_VERSION, 'templates-v5');
+  assert.equal(TEMPLATE_VERSION, 'templates-v6');
   for (const k of KEYS) {
     const t = EMERGENCY_TEXT[k];
     assert.ok(t, k);

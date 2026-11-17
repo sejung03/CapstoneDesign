@@ -12,11 +12,10 @@ import {evaluateFacilityKeywords, loadFacilityKeywords, messageCues} from './fac
 import {identify, resolveFromAnswers, userMessages} from './identify.mjs';
 import {recommend, symptomSexMismatch} from './recommend.mjs';
 import {buildSummary, buildEmergencySummary, buildMedInfoSummary} from './summary.mjs';
-import {emergencyNotice, withAddon, REFERRAL_ADDONS, riskConfirmQuestion, ENGINE_Q, OPT, TEMPLATE_VERSION} from './templates.mjs';
+import {emergencyNotice, withAddon, REFERRAL_ADDONS, riskConfirmQuestion, sensitiveChoiceQuestion, ENGINE_Q, OPT, TEMPLATE_VERSION} from './templates.mjs';
 import {resolveRiskConfirm} from './risk-confirm.mjs';
-import {RISK_CONFIRM_KEY, SENSITIVE_KEYS, SENSITIVE_CUE_RE} from './constants.mjs';
-import {normalizeTerm} from '../llm/normalize.mjs';
-import {stripNoise} from './free-text.mjs';
+import {RISK_CONFIRM_KEY, SENSITIVE_KEYS} from './constants.mjs';
+import {collectSensitiveEvents, resolveSensitiveChoice} from './sensitive-choice.mjs';
 
 const CRISIS_KEY = 'crisis_notice_109';
 import {checkResponseContract} from './contract.mjs';
@@ -202,7 +201,7 @@ async function core(payload, ctx, deps, trace, now, log) {
 
   // 0. 입력 정리 (previousReport·intake·profile·search 내용은 v1에서 쓰지 않는다)
   const messages = userMessages(payload.messages);
-  const {codes, engine, warnings, riskConfirms} = normalizeAnswers(payload.followUpAnswers, data);
+  const {codes, engine, warnings, riskConfirms, sensitiveChoices} = normalizeAnswers(payload.followUpAnswers, data);
   trace.warnings.push(...warnings);
   const vis = visibleCodes(codes, data);
 
@@ -219,8 +218,12 @@ async function core(payload, ctx, deps, trace, now, log) {
   // 11/17 RF6(검토 I4): 답 기반 EMERGENCY_STOP(Q0=예 등)은 민감 안내보다 먼저(지시서: EMERGENCY_STOP이 가장 먼저)
   const answerStop = safety.hits.find((h) => h.source === 'answer' && h.result === 'EMERGENCY_STOP');
   if (top && isSensitive(top) && answerStop) top = answerStop;
-  // 11/17 RF6(검토 S2): 민감 단서가 있으면(규칙이 놓친 경우 포함) 이 요청에서 LLM을 부르지 않는다
-  const sensitiveCue = messages.some((m) => { const t = normalizeTerm(m); return SENSITIVE_CUE_RE.test(t) || SENSITIVE_CUE_RE.test(stripNoise(t)); });
+  const sensitiveEvents = collectSensitiveEvents({hits: safety.hits, messages});
+  const sensitive = resolveSensitiveChoice({events: sensitiveEvents, choices: sensitiveChoices, messageCount: messages.length, reason});
+  const sensitiveConversation = sensitiveEvents.length > 0 || sensitiveChoices.length > 0;
+  if (sensitive.state === 'continue' && top && isSensitive(top)) {
+    top = safety.hits.find((h) => !isSensitive(h) && (!isUrgentFree(h) || risk.state === 'yes')) ?? null;
+  }
 
   let symptom = null; // {kind:'symptom'|'unknown', symptomId?, source}
   let llmUsed = false;
@@ -248,17 +251,17 @@ async function core(payload, ctx, deps, trace, now, log) {
 
   // 응급(설계 §6): EMERGENCY_STOP, 또는 terminal URGENT_NOTICE → 진료과·search 없음
   let carryEmergency = null;
-  // 11/17 RF3: 민감 안내가 가장 앞서면 기관 안내만 내고 끝낸다. 질문·진료과·search·summary·profileUpdates 없음, LLM 호출 없음.
-  // trace에는 {kind:'sensitive_referral'}만 남긴다(rule_id·message_key·메시지 위치·패턴·다른 hit 목록 없음).
-  if (top && isSensitive(top)) {
-    const response = {emergency: emergencyNotice(top.messageKey).emergency};
+  // LC1: 민감 규칙 또는 넓은 단서이면 기관 안내와 선택을 먼저 낸다. 종류·원문·규칙은 trace에 남기지 않는다.
+  if (top?.result !== 'EMERGENCY_STOP' && (sensitive.state === 'pending' || sensitive.state === 'end')) {
+    const response = {emergency: emergencyNotice(sensitive.messageKey).emergency};
+    if (sensitive.state === 'pending') response.followUp = sensitiveChoiceQuestion(sensitive.askId);
     const check = checkResponseContract(response);
     if (!check.ok) return fail('contract');
     if (signal?.aborted) return fail('aborted');
     for (const k of ['ruleHits', 'warnings', 'skippedItems']) trace[k] = [];
     delete trace.riskConfirm;
     trace.slots = null;
-    trace.terminal = true;
+    trace.terminal = sensitive.state === 'end';
     trace.sensitive = {kind: 'sensitive_referral'};
     trace.phase = 'sensitive_referral';
     return {response};
@@ -339,7 +342,7 @@ async function core(payload, ctx, deps, trace, now, log) {
   }
 
   // 3. 키워드 기관 찾기(첫 요청 흐름, LLM 없음). 11/17 EF: 약국 찾기 문장만, 위험 단서가 있으면 막는다(사유 코드만 trace)
-  const hasAnyAnswer = codes.size > 0 || engine.size > 0 || riskConfirms.length > 0;
+  const hasAnyAnswer = codes.size > 0 || engine.size > 0 || riskConfirms.length > 0 || sensitiveChoices.length > 0;
   if (!hasAnyAnswer && messages.length > 0) {
     const kw = evaluateFacilityKeywords({messages, hasAnyAnswer, dictMatches: dictMatches(), data, rules: facilityKeywords});
     trace.facilityKeyword = kw.reason;
@@ -374,7 +377,7 @@ async function core(payload, ctx, deps, trace, now, log) {
         engineAnswers: engine, messages, codes: vis, data, // 11/17 EF(G4): 성별은 보이는 답에서만
         deps: {llm, matchSymptoms: deps.matchSymptoms, facilityKeywords},
         ctx: {consent: ctx.consent, signal, deadlineAt, requestId: ctx.requestId ?? null, reason, now},
-        noLlm: startOverridden ? 'start_choice' : (sensitiveCue ? 'no_llm' : false),
+        noLlm: startOverridden ? 'start_choice' : (sensitiveConversation ? 'no_llm' : false),
       });
       if (signal?.aborted) return fail('aborted');
       if (r.llmMeta) { trace.llm.classify = r.llmMeta; llmUsed = true; }
@@ -408,7 +411,7 @@ async function core(payload, ctx, deps, trace, now, log) {
 
   // 건강정보 후보: 상담 대상이 본인일 때만, 요청당 LLM 1번(이미 증상 분류를 불렀으면 건너뜀)
   if (vis.get(TARGET_ITEM_ID) === TARGET_SELF) {
-    if (sensitiveCue) {
+    if (sensitiveConversation) {
       trace.llm.profile = {called: false, skipped: 'no_llm'}; // 11/17 RF6(검토 S2): 민감 단서가 있으면 건강정보 추출도 하지 않는다
     } else if (llmUsed) {
       trace.llm.profile = {called: false, skipped: 'llm_once_per_request'};

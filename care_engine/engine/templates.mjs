@@ -1,6 +1,6 @@
 // 사용자에게 보이는 엔진 문구(템플릿). 지시서 "문구 초안" 그대로 — 팀 검토 전 draft.
 // LLM을 쓰지 않는다. 사용자 원문·질환명·진단 표현을 넣지 않는다.
-export const TEMPLATE_VERSION = 'templates-v5'; // 11/17 R·RF·RG(위험 표현 문구), 요약 말투: 최종 안내 '~습니다'체와 진료과 순위
+export const TEMPLATE_VERSION = 'templates-v6'; // LC1: 민감 안내 선택 추가
 
 // ---- 엔진 질문(설계 §4-4) ----
 export const ENGINE_Q = Object.freeze({
@@ -25,6 +25,8 @@ export const OPT = Object.freeze({
   riskYes: 'risk_yes',
   riskNo: 'risk_no',
   riskUnsure: 'risk_unsure',
+  sensEnd: 'sens_end',
+  sensContinue: 'sens_continue',
 });
 
 const q = (id, ko, options) => ({id, type: 'singleChoice', required: true, label: {ko}, options: options.map(([oid, oko]) => ({id: oid, label: {ko: oko}}))});
@@ -54,6 +56,12 @@ export function riskConfirmQuestion(id) {
     [OPT.riskYes, '예, 오늘 있었어요'],
     [OPT.riskNo, '아니요 (예전 일이거나 실제 일이 아니에요)'],
     [OPT.riskUnsure, '잘 모르겠어요'],
+  ]);
+}
+export function sensitiveChoiceQuestion(id) {
+  return q(id, '안내를 확인해 주세요. 증상 상담이 필요하시면 계속할 수 있습니다.', [
+    [OPT.sensEnd, '안내만 보고 마치겠습니다'],
+    [OPT.sensContinue, '증상 상담을 계속하겠습니다'],
   ]);
 }
 export function medChoiceQuestion() {
