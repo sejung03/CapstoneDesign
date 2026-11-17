@@ -13,8 +13,8 @@ import {hasProfileSignal} from './profile-trigger.mjs';
 import {isRetryable} from './errors.mjs';
 import symptomPrompt from './prompts/symptom_v1.mjs';
 import profilePrompt from './prompts/profile_v1.mjs';
-import riskPrompt from './prompts/risk_v1.mjs';
-import symptomRiskPrompt from './prompts/symptom_risk_v1.mjs';
+import riskPrompt from './prompts/risk_v2.mjs';
+import symptomRiskPrompt from './prompts/symptom_risk_v2.mjs';
 
 const noop = () => {};
 

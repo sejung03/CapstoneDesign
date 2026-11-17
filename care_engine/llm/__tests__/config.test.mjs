@@ -25,7 +25,7 @@ test('getConfig: 환경변수가 없으면 설계 8절 기본값(+L4: 후보 기
   assert.deepEqual({...c.versions}, {
     promptSymptom: 'symptom_v1', promptProfile: 'profile_v1',
     schemaSymptom: 'symptom_pick_v1', schemaProfile: 'profile_extract_v1',
-    promptRisk: 'risk_v1', promptSymptomRisk: 'symptom_risk_v1',
+    promptRisk: 'risk_v2', promptSymptomRisk: 'symptom_risk_v2',
     schemaRisk: 'risk_signal_v1', schemaSymptomRisk: 'symptom_risk_v1',
   });
 });

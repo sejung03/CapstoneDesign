@@ -27,8 +27,8 @@ export const VERSIONS = Object.freeze({
   promptProfile: 'profile_v1',
   schemaSymptom: SYMPTOM_SCHEMA_NAME,
   schemaProfile: PROFILE_SCHEMA_NAME,
-  promptRisk: 'risk_v1',
-  promptSymptomRisk: 'symptom_risk_v1',
+  promptRisk: 'risk_v2',
+  promptSymptomRisk: 'symptom_risk_v2',
   schemaRisk: RISK_SCHEMA_NAME,
   schemaSymptomRisk: SYMPTOM_RISK_SCHEMA_NAME,
 });

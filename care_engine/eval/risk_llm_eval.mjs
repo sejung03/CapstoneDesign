@@ -7,7 +7,7 @@ import {getConfig, MODEL_PRICES_USD_PER_1M, RISK_MAX_OUTPUT_TOKENS} from '../llm
 import {getProvider} from '../llm/provider.mjs';
 import {estimateCostUsd} from '../llm/cost.mjs';
 import {riskSignalSchema} from '../llm/schemas.mjs';
-import riskPrompt from '../llm/prompts/risk_v1.mjs';
+import riskPrompt from '../llm/prompts/risk_v2.mjs';
 import {loadFreeTextRules} from '../engine/free-text.mjs';
 import {evaluateSafety} from '../engine/rules.mjs';
 import {loadIntakeData} from '../engine/intake-data.mjs';
