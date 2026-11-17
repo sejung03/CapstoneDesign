@@ -1,5 +1,5 @@
 // LLM 출력 검사. 설계 5-6(증상 선택), 6-4(건강정보).
-import {INTENTS, PICK_STATUSES, PROFILE_FIELDS} from './schemas.mjs';
+import {INTENTS, PICK_STATUSES, PROFILE_FIELDS, RISK_SIGNALS} from './schemas.mjs';
 import {MAX_PICKS, PROFILE_MAX_ITEMS, PROFILE_VALUE_MAX, PROFILE_QUOTE_MAX} from './config.mjs';
 import {normalizeTerm} from './normalize.mjs';
 
@@ -48,6 +48,28 @@ export function validateSymptomPick(raw, candidateIds, refData) {
   // no_match·unclear면 picks를 쓰지 않는다(설계 5-8: fallback). 보수적 처리.
   const finalPicks = status === 'matched' ? picks : [];
   return {ok: true, intent: o.intent, status, picks: finalPicks, dropped};
+}
+
+export function validateRiskSignal(raw) {
+  const parsed = parseMaybeJson(raw);
+  if (!parsed.ok || !isPlainObject(parsed.value) || !hasExactKeys(parsed.value, ['risk_signal'])) {
+    return {ok: false, signal: 'none', error: 'bad_json'};
+  }
+  if (!RISK_SIGNALS.includes(parsed.value.risk_signal)) return {ok: false, signal: 'none', error: 'invalid_risk_signal'};
+  return {ok: true, signal: parsed.value.risk_signal, error: null};
+}
+
+export function validateSymptomRisk(raw, candidateIds, refData) {
+  const parsed = parseMaybeJson(raw);
+  if (!parsed.ok || !isPlainObject(parsed.value)
+    || !hasExactKeys(parsed.value, ['intent', 'status', 'picks', 'risk_signal'])) {
+    return {...validateSymptomPick(null, candidateIds, refData), riskSignal: 'none', riskError: 'bad_json'};
+  }
+  const symptom = validateSymptomPick({intent: parsed.value.intent, status: parsed.value.status, picks: parsed.value.picks}, candidateIds, refData);
+  const risk = RISK_SIGNALS.includes(parsed.value.risk_signal)
+    ? {signal: parsed.value.risk_signal, error: null}
+    : {signal: 'none', error: 'invalid_risk_signal'};
+  return {...symptom, riskSignal: risk.signal, riskError: risk.error};
 }
 
 const DROP_REASONS = [

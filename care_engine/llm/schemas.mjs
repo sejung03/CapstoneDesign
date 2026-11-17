@@ -5,10 +5,13 @@
 
 export const SYMPTOM_SCHEMA_NAME = 'symptom_pick_v1';
 export const PROFILE_SCHEMA_NAME = 'profile_extract_v1';
+export const RISK_SCHEMA_NAME = 'risk_signal_v1';
+export const SYMPTOM_RISK_SCHEMA_NAME = 'symptom_risk_v1';
 
 export const INTENTS = ['symptom', 'facility_search', 'medication_question', 'other'];
 export const PICK_STATUSES = ['matched', 'no_match', 'unclear'];
 export const PROFILE_FIELDS = ['age', 'allergies', 'medications', 'history'];
+export const RISK_SIGNALS = ['none', 'emergency', 'self_harm', 'threat', 'violence'];
 
 const ALLOWED_KEYWORDS = new Set(['type', 'properties', 'required', 'enum', 'items', 'additionalProperties']);
 const ALLOWED_TYPES = new Set(['object', 'array', 'string', 'integer', 'number', 'boolean']);
@@ -26,6 +29,28 @@ export function symptomPickSchema(candidateIds) {
     },
     required: ['intent', 'status', 'picks'],
     additionalProperties: false,
+  };
+  assertPortableSchema(schema);
+  return schema;
+}
+
+export function riskSignalSchema() {
+  const schema = {
+    type: 'object',
+    properties: {risk_signal: {type: 'string', enum: [...RISK_SIGNALS]}},
+    required: ['risk_signal'],
+    additionalProperties: false,
+  };
+  assertPortableSchema(schema);
+  return schema;
+}
+
+export function symptomRiskSchema(candidateIds) {
+  const base = symptomPickSchema(candidateIds);
+  const schema = {
+    ...base,
+    properties: {...base.properties, risk_signal: {type: 'string', enum: [...RISK_SIGNALS]}},
+    required: [...base.required, 'risk_signal'],
   };
   assertPortableSchema(schema);
   return schema;

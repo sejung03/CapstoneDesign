@@ -1,6 +1,6 @@
 // 설정. 설계 8절 값들 + L4-MVP(11/15). 환경변수가 없거나 잘못되면 기본값.
 // API 키(OPENAI_API_KEY)는 여기서 읽지 않는다. 어댑터(providers/openai.mjs)가 process.env에서 직접 읽는다.
-import {SYMPTOM_SCHEMA_NAME, PROFILE_SCHEMA_NAME} from './schemas.mjs';
+import {SYMPTOM_SCHEMA_NAME, PROFILE_SCHEMA_NAME, RISK_SCHEMA_NAME, SYMPTOM_RISK_SCHEMA_NAME} from './schemas.mjs';
 
 /**
  * 건강정보 추출 신호어 패턴(설계 6-1, L4-MVP M3에서 단어 → 정규식으로 좁힘).
@@ -25,6 +25,10 @@ export const VERSIONS = Object.freeze({
   promptProfile: 'profile_v1',
   schemaSymptom: SYMPTOM_SCHEMA_NAME,
   schemaProfile: PROFILE_SCHEMA_NAME,
+  promptRisk: 'risk_v1',
+  promptSymptomRisk: 'symptom_risk_v1',
+  schemaRisk: RISK_SCHEMA_NAME,
+  schemaSymptomRisk: SYMPTOM_RISK_SCHEMA_NAME,
 });
 
 export const DEFAULTS = Object.freeze({

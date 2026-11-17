@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {symptomPickSchema, profileExtractSchema, assertPortableSchema, INTENTS} from '../schemas.mjs';
+import {symptomPickSchema, profileExtractSchema, riskSignalSchema, symptomRiskSchema, assertPortableSchema, INTENTS} from '../schemas.mjs';
 
 test('symptomPickSchema: picks.items.enum = 후보 ID(순서 유지·중복 제거), 공통 규칙 통과', () => {
   const s = symptomPickSchema(['D09', 'A01', 'D09']);
@@ -29,6 +29,11 @@ test('profileExtractSchema: 설계 6-2 모양, 공통 규칙 통과', () => {
   assert.deepEqual(item.required, ['field', 'value', 'messageIndex', 'quote']);
   assert.deepEqual(item.properties.field.enum, ['age', 'allergies', 'medications', 'history']);
   assert.equal(item.properties.messageIndex.type, 'integer');
+});
+
+test('risk schemas: 공통 strict 부분집합 통과', () => {
+  assert.equal(assertPortableSchema(riskSignalSchema()), true);
+  assert.equal(assertPortableSchema(symptomRiskSchema(['A01'])), true);
 });
 
 const base = () => ({

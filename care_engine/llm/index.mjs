@@ -6,13 +6,15 @@ import {loadRefData} from './ref-data.mjs';
 import {maskPii} from './pii.mjs';
 import {tailChars, INPUT_MAX_CHARS} from './normalize.mjs';
 import {buildCandidates, formatCandidatesForPrompt} from './candidates.mjs';
-import {symptomPickSchema, profileExtractSchema} from './schemas.mjs';
-import {validateSymptomPick, validateProfileItems} from './validate.mjs';
+import {symptomPickSchema, symptomRiskSchema, riskSignalSchema, profileExtractSchema} from './schemas.mjs';
+import {validateSymptomPick, validateSymptomRisk, validateRiskSignal, validateProfileItems} from './validate.mjs';
 import {buildSymptomConfirm} from './confirm-question.mjs';
 import {hasProfileSignal} from './profile-trigger.mjs';
 import {isRetryable} from './errors.mjs';
 import symptomPrompt from './prompts/symptom_v1.mjs';
 import profilePrompt from './prompts/profile_v1.mjs';
+import riskPrompt from './prompts/risk_v1.mjs';
+import symptomRiskPrompt from './prompts/symptom_risk_v1.mjs';
 
 const noop = () => {};
 
@@ -125,15 +127,23 @@ function deadlineFrom(start, config, deadlineAt) {
  * @param {{provider?:object, refData?:object, config?:object, log?:Function, now?:Function}} [deps]
  * @returns {Promise<{status:'confirm', followUp:object, meta:object} | {status:'fallback', reason:string, meta:object} | {status:'route', intent:string, meta:object}>}
  */
-export async function classifySymptom({text, sex = null, consent, signal, deadlineAt, requestId = null, reason = null} = {}, deps = {}) {
+export async function classifySymptom(input = {}, deps = {}) {
+  return classifySymptomInternal(input, deps, false);
+}
+
+export async function classifySymptomWithRisk(input = {}, deps = {}) {
+  return classifySymptomInternal(input, deps, true);
+}
+
+async function classifySymptomInternal({text, sex = null, consent, signal, deadlineAt, requestId = null, reason = null} = {}, deps = {}, includeRisk = false) {
   const d = resolveDeps(deps);
   const refData = d.refData ?? loadRefData();
   const start = d.now();
   const meta = {
     provider: d.provider.name,
     model: d.provider.model ?? null,
-    promptId: symptomPrompt.id,
-    schemaId: d.config.versions.schemaSymptom,
+    promptId: includeRisk ? symptomRiskPrompt.id : symptomPrompt.id,
+    schemaId: includeRisk ? d.config.versions.schemaSymptomRisk : d.config.versions.schemaSymptom,
     dataVersion: refData.dataVersion,
     candidateCount: 0,
     candidateMode: null,
@@ -150,10 +160,11 @@ export async function classifySymptom({text, sex = null, consent, signal, deadli
   let pickStatus = null;
   let dropped = null;
   let tokens = null;
+  let riskSignal = 'none';
 
   const finish = (result) => {
     meta.latencyMs = d.now() - start;
-    const out = {...result, meta};
+    const out = includeRisk ? {...result, riskSignal, meta} : {...result, meta};
     safeLog(d.log, {
       event: 'llm.classify_symptom',
       requestId, reason,
@@ -195,10 +206,11 @@ export async function classifySymptom({text, sex = null, consent, signal, deadli
   const candidateIds = candidates.map((c) => c.symptomId);
 
   // 4. 스키마·프롬프트
-  const schema = symptomPickSchema(candidateIds);
+  const prompt = includeRisk ? symptomRiskPrompt : symptomPrompt;
+  const schema = includeRisk ? symptomRiskSchema(candidateIds) : symptomPickSchema(candidateIds);
   const req = {
-    system: symptomPrompt.system,
-    user: symptomPrompt.buildUser({text: llmText, candidatesText: formatCandidatesForPrompt(candidates, refData)}),
+    system: prompt.system,
+    user: prompt.buildUser({text: llmText, candidatesText: formatCandidatesForPrompt(candidates, refData)}),
     schema,
     schemaName: meta.schemaId,
   };
@@ -212,7 +224,11 @@ export async function classifySymptom({text, sex = null, consent, signal, deadli
   if (!res.ok) return fallback(res.error);
 
   // 6. 검사
-  const v = validateSymptomPick(res.data, candidateIds, refData);
+  const v = includeRisk ? validateSymptomRisk(res.data, candidateIds, refData) : validateSymptomPick(res.data, candidateIds, refData);
+  if (includeRisk) {
+    riskSignal = v.riskSignal;
+    meta.riskError = v.riskError;
+  }
   dropped = v.dropped;
   if (!v.ok) return fallback('bad_json');
   intent = v.intent;
@@ -225,6 +241,41 @@ export async function classifySymptom({text, sex = null, consent, signal, deadli
   const followUp = buildSymptomConfirm(v.picks, refData, 'ko');
   if (!followUp) return fallback('no_match', null);
   return finish({status: 'confirm', followUp});
+}
+
+/** 위험 신호만 받는 작은 호출. 실패·동의 없음·형식 위반은 signal:none이다. */
+export async function detectRiskSignal({text, consent, signal, deadlineAt, requestId = null, reason = null} = {}, deps = {}) {
+  const d = resolveDeps(deps);
+  const start = d.now();
+  const meta = {
+    provider: d.provider.name, model: d.provider.model ?? null, promptId: riskPrompt.id,
+    schemaId: d.config.versions.schemaRisk, latencyMs: 0, attempts: 0, error: null,
+    consentSource: null, modelWarning: d.config.modelWarning ?? null, tokens: emptyTokens(), providerError: null,
+  };
+  const finish = (riskSignal) => {
+    meta.latencyMs = d.now() - start;
+    safeLog(d.log, {event: 'llm.detect_risk', requestId, reason, provider: meta.provider, model: meta.model,
+      promptId: meta.promptId, schemaId: meta.schemaId, signal: riskSignal, error: meta.error,
+      latencyMs: meta.latencyMs, attempts: meta.attempts, consentSource: meta.consentSource});
+    return {riskSignal, meta};
+  };
+  const c = resolveConsent(consent, d.provider.name, d.config);
+  meta.consentSource = c.source;
+  if (!hasExternalAiConsent(c.consent, d.provider.name)) { meta.error = 'no_consent'; return finish('none'); }
+  if (signal?.aborted) { meta.error = 'aborted'; return finish('none'); }
+  const llmText = tailChars(maskPii(String(text ?? '')).text.trim(), INPUT_MAX_CHARS);
+  if (!llmText) { meta.error = 'no_match'; return finish('none'); }
+  const res = await callProvider(d.provider, {
+    system: riskPrompt.system, user: riskPrompt.buildUser({text: llmText}),
+    schema: riskSignalSchema(), schemaName: meta.schemaId,
+  }, {config: d.config, signal, deadline: deadlineFrom(start, d.config, deadlineAt), now: d.now});
+  meta.attempts = res.attempts;
+  meta.tokens = {...res.tokens};
+  meta.providerError = res.providerError ?? null;
+  if (!res.ok) { meta.error = res.error; return finish('none'); }
+  const v = validateRiskSignal(res.data);
+  if (!v.ok) meta.error = v.error;
+  return finish(v.signal);
 }
 
 /**
