@@ -1,6 +1,6 @@
 // 사용자에게 보이는 엔진 문구(템플릿). 지시서 "문구 초안" 그대로 — 팀 검토 전 draft.
 // LLM을 쓰지 않는다. 사용자 원문·질환명·진단 표현을 넣지 않는다.
-export const TEMPLATE_VERSION = 'templates-v1';
+export const TEMPLATE_VERSION = 'templates-v2'; // 11/17 R: 자유 입력 위험 표현 문구 3개 추가
 
 // ---- 엔진 질문(설계 §4-4) ----
 export const ENGINE_Q = Object.freeze({
@@ -66,6 +66,19 @@ export const EMERGENCY_TEXT = Object.freeze({
   urgent_notice_red_flags: {
     title: URGENT_TITLE,
     message: `갑작스러운 마비, 말하기 어려움, 심한 가슴 통증, 멈추지 않는 출혈 중 하나가 있거나 잘 모르겠다고 답하셨어요. ${URGENT_TAIL}`,
+  },
+  // 11/17 R: 자유 입력 위험 표현 규칙(engine/rules/free_text_v1.json)의 message_key. 지시서 R3 초안 그대로(draft).
+  freetext_emergency_119: {
+    title: '지금 119에 연락하세요',
+    message: '생명이 위험할 수 있는 상황으로 보여요. 바로 119에 전화하세요. 이 서비스는 진단을 하지 않아요.',
+  },
+  freetext_urgent: {
+    title: URGENT_TITLE,
+    message: '응급 진료가 필요할 수 있는 증상으로 보여요. 119에 연락하거나 가까운 응급실로 가세요. 이 서비스는 진단을 하지 않아요.',
+  },
+  crisis_notice_109: {
+    title: '혼자 견디지 않아도 돼요',
+    message: '지금 많이 힘드신 것 같아요. 자살예방 상담전화 109에서 24시간 이야기를 들어 드려요. 지금 위험한 상황이라면 바로 119에 연락하세요. 이 서비스는 진단을 하지 않아요.',
   },
 });
 const EMERGENCY_UNKNOWN = Object.freeze({title: URGENT_TITLE, message: '지금 119에 연락하거나 가까운 응급실로 가세요.'});
