@@ -203,7 +203,7 @@ async function core(payload, ctx, deps, trace, now, log) {
 
   // 0. 입력 정리 (previousReport·intake·profile·search 내용은 v1에서 쓰지 않는다)
   const messages = userMessages(payload.messages);
-  const {codes, engine, warnings, riskConfirms, sensitiveChoices} = normalizeAnswers(payload.followUpAnswers, data);
+  const {codes, engine, warnings, riskConfirms, sensitiveChoices, pendingRisks, pendingSensitive} = normalizeAnswers(payload.followUpAnswers, data);
   trace.warnings.push(...warnings);
   const vis = visibleCodes(codes, data);
 
@@ -213,7 +213,10 @@ async function core(payload, ctx, deps, trace, now, log) {
   const isSensitive = (h) => SENSITIVE_KEYS.includes(h.messageKey);
   trace.ruleHits = safety.hits.filter((h) => !isSensitive(h)).map((h) => h.ruleId);
   // 11/17 RF2: freetext_urgent hit는 확인 질문(RISK_CONFIRM_<n>)의 답으로 거른다. '예'일 때만 지금처럼 terminal
-  const risk = resolveRiskConfirm({hits: safety.hits, riskConfirms, messageCount: messages.length, reason});
+  // 미응답 질문 ID만 보존한다. LLM 신호·원문·민감 종류를 저장하지 않는다.
+  const validPending = (ns) => ns.filter((n) => Number.isInteger(n) && n >= 1 && n <= messages.length);
+  const pendingRiskHits = validPending(pendingRisks).map((n) => ({source: 'free_text', messageKey: RISK_CONFIRM_KEY, messageIndexes: [n - 1]}));
+  const risk = resolveRiskConfirm({hits: [...safety.hits, ...pendingRiskHits], riskConfirms, messageCount: messages.length, reason});
   const isUrgentFree = (h) => h.source === 'free_text' && h.messageKey === RISK_CONFIRM_KEY;
   if (risk.state !== 'none' && (safety.hits.some(isUrgentFree) || safety.hits.length === 0)) {
     trace.riskConfirm = {state: risk.state, asks: risk.asks};
@@ -226,6 +229,10 @@ async function core(payload, ctx, deps, trace, now, log) {
   const answerStop = safety.hits.find((h) => h.source === 'answer' && h.result === 'EMERGENCY_STOP');
   if (top && isSensitive(top) && answerStop) top = answerStop;
   const sensitiveEvents = collectSensitiveEvents({hits: safety.hits, messages});
+  for (const n of validPending(pendingSensitive)) {
+    if (!sensitiveEvents.some((e) => e.messageIndex === n - 1)) sensitiveEvents.push({messageIndex: n - 1, messageKey: null});
+  }
+  sensitiveEvents.sort((a, b) => a.messageIndex - b.messageIndex);
   const sensitive = resolveSensitiveChoice({events: sensitiveEvents, choices: sensitiveChoices, messageCount: messages.length, reason});
   const sensitiveConversation = sensitiveEvents.length > 0 || sensitiveChoices.length > 0;
   if (sensitive.state === 'continue' && top && isSensitive(top)) {
@@ -344,7 +351,8 @@ async function core(payload, ctx, deps, trace, now, log) {
       {signal, deadlineAt, now}, fallback);
     if (signal?.aborted) return fail('aborted');
     const value = rr.value ?? fallback;
-    if (combine) { combinedResult = value; llmUsed = true; }
+    llmUsed = true;
+    if (combine) combinedResult = value;
     const riskSignal = value.riskSignal ?? 'none';
     const riskError = rr.why ?? value.meta?.error ?? value.meta?.riskError ?? null;
     const attempts = Number.isFinite(value.meta?.attempts) ? value.meta.attempts : 0;
@@ -436,7 +444,7 @@ async function core(payload, ctx, deps, trace, now, log) {
         engineAnswers: engine, messages, codes: vis, data, // 11/17 EF(G4): 성별은 보이는 답에서만
         deps: {llm, matchSymptoms: deps.matchSymptoms, facilityKeywords},
         ctx: {consent: ctx.consent, signal, deadlineAt, requestId: ctx.requestId ?? null, reason, now},
-        noLlm: startOverridden ? 'start_choice' : (sensitiveConversation ? 'no_llm' : false),
+        noLlm: startOverridden ? 'start_choice' : (sensitiveConversation || (llmUsed && !combinedResult) ? 'no_llm' : false),
         preclassified: combinedResult,
       });
       if (signal?.aborted) return fail('aborted');

@@ -13,6 +13,21 @@ function providerFor(data) {
   return {name: 'mock', model: 'mock-v0', calls: 0, async generateStructured() { this.calls += 1; return {ok: true, data, meta: {}}; }};
 }
 
+test('LC5: 단독·결합 민감 신호 로그는 종류와 증상 후보를 남기지 않는다', async () => {
+  const refData = loadRefData();
+  const id = [...refData.symptoms.values()].find((s) => s.isCandidate).id;
+  for (const risk_signal of ['self_harm', 'threat', 'violence']) {
+    for (const combined of [false, true]) {
+      const logs = [];
+      const provider = providerFor(combined ? {intent: 'symptom', status: 'matched', picks: [id], risk_signal} : {risk_signal});
+      const fn = combined ? classifySymptomWithRisk : detectRiskSignal;
+      const r = await fn({text, consent}, {provider, config, refData, log: (e) => logs.push(e)});
+      assert.equal(r.riskSignal, risk_signal);
+      assert.deepEqual(logs, [{kind: 'sensitive_referral'}]);
+    }
+  }
+});
+
 test('LC2: 위험 신호 작은 스키마와 결합 스키마는 허용 값만 받는다', () => {
   assert.deepEqual(riskSignalSchema().properties.risk_signal.enum, RISK_SIGNALS);
   const combined = symptomRiskSchema(['A01']);

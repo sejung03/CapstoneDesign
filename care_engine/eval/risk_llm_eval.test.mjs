@@ -46,3 +46,23 @@ test('LCR1 평가: --no-llm은 provider를 만들지 않고 규칙+강한 단서
   assert.equal(r.cueFalsePositive, 1);
   assert.equal(r.ruleCue.falsePositiveEscape, 1);
 });
+
+test('LC5 평가: ambiguous·라벨 미상 사례는 본 표에서 빼고 따로 센다', async () => {
+  const cases = [
+    {id: 'a1', text: '백신 맞았어요', expect: 'none'},
+    {id: 'a2', text: '회사에서 추행이 있었어요', expect_key: 'none', category: 'ambiguous'},
+    {id: 'a3', text: '목이 조금 불편해요', expect_key: '알수없음'},
+  ];
+  const r = await runRiskLlmEval({cases, noLlm: true});
+  assert.equal(r.ambiguous, 1);
+  assert.equal(r.unknownLabel, 1);
+  assert.equal(r.ruleCue.total, 1);
+  assert.equal(r.ambiguousFlagged.ruleCue, 1);
+  assert.equal(r.ambiguousFlagged.ruleOnly, 0);
+});
+
+test('LC5 평가: 대안 정답이 쉼표로 이어진 문자열이어도 나눠 읽는다', async () => {
+  const r = await runRiskLlmEval({cases: [{id: 'b1', text: '목이 조금 불편해요', expect_key: 'threat_notice_112', expect_key_alt: 'threat_notice_112,violence_notice_1366'}], noLlm: true});
+  assert.deepEqual(r.rows[0].expected.sort(), ['threat', 'violence']);
+  assert.equal(r.unknownLabel, 0);
+});

@@ -24,17 +24,21 @@ export function normalizeAnswers(followUpAnswers, data) {
   }
   const riskConfirms = []; // 11/17 RF2: [{n, value}] — RISK_CONFIRM_<n> 답(값은 risk_yes·risk_no·risk_unsure만)
   const sensitiveChoices = [];
+  const pendingRisks = [];
+  const pendingSensitive = [];
   for (const [qid, value] of last) {
     const rm = RISK_CONFIRM_ID_RE.exec(qid);
     if (rm) {
-      if (value === null || value === undefined) continue; // 미응답
+      if (value === null) { pendingRisks.push(Number(rm[1])); continue; }
+      if (value === undefined) continue;
       if (Object.values(RISK_ANSWERS).includes(value)) riskConfirms.push({n: Number(rm[1]), value});
       else warnings.push('invalid_answer:RISK_CONFIRM');
       continue;
     }
     const sm = SENSITIVE_CHOICE_ID_RE.exec(qid);
     if (sm) {
-      if (value === null || value === undefined) continue;
+      if (value === null) { pendingSensitive.push(Number(sm[1])); continue; }
+      if (value === undefined) continue;
       if (Object.values(SENSITIVE_ANSWERS).includes(value)) sensitiveChoices.push({n: Number(sm[1]), value});
       else warnings.push('invalid_answer:SENSITIVE_CHOICE');
       continue;
@@ -56,7 +60,7 @@ export function normalizeAnswers(followUpAnswers, data) {
       warnings.push(`invalid_answer:${qid}`);
     }
   }
-  return {codes, engine, warnings, riskConfirms, sensitiveChoices};
+  return {codes, engine, warnings, riskConfirms, sensitiveChoices, pendingRisks, pendingSensitive};
 }
 
 function conditionTrue(cond, codes, data, depth) {

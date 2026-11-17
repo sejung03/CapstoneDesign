@@ -40,7 +40,21 @@ export function normalizeRiskKey(value) {
 
 function expectedKeys(c) {
   const primary = c.expect_key ?? c.gold_key ?? c.label ?? (c.expect === 'none' ? 'none' : c.expect);
-  return new Set([primary, c.expect_key_alt, ...(Array.isArray(c.accept_keys) ? c.accept_keys : [])].filter((v) => v != null).map(normalizeRiskKey));
+  // 11/17 LC5: 대안 정답이 'a,b' 한 문자열로 오는 경우(holdout B-45)를 나눠 읽는다
+  const split = (v) => (typeof v === 'string' ? v.split(/[,|]/).map((x) => x.trim()).filter(Boolean) : [v]);
+  return new Set([primary, c.expect_key_alt, ...(Array.isArray(c.accept_keys) ? c.accept_keys : [])].filter((v) => v != null).flatMap(split).map(normalizeRiskKey));
+}
+
+const KNOWN_KEYS = new Set(['none', 'emergency_stop', 'emergency', 'self_harm', 'threat', 'violence']);
+
+/**
+ * 11/17 LC5: holdout 형식을 열어 보지 않고 돌리므로 ambiguous 표시를 여러 필드에서 찾는다.
+ * ambiguous 사례는 본 표에서 빼고 따로 센다(지시서 LC5 1번).
+ */
+export function isAmbiguousCase(c) {
+  if (c.ambiguous === true) return true;
+  return [c.category, c.group, c.type, c.kind, c.tag, c.expect, c.expect_key, c.gold_key, c.label]
+    .some((v) => typeof v === 'string' && ['ambiguous', '애매', '모호'].includes(v.trim().toLowerCase()));
 }
 
 function ruleOutcome(top) {
@@ -123,11 +137,16 @@ export async function runRiskLlmEval({cases, config: inputConfig, providerFactor
       if (totalCost > budgetUsd) stoppedBy = 'budget';
     }
     const expected = [...expectedKeys(c)];
+    const ambiguous = isAmbiguousCase(c);
+    // 정답 라벨을 읽지 못하면 맞다·틀리다로 세지 않고 따로 센다(추측하지 않음)
+    const unknownLabel = !ambiguous && (expected.length === 0 || expected.some((k) => !KNOWN_KEYS.has(k)));
     rows.push({id: c.id, expected, ruleOnly, ruleCue, combined,
       ruleOnlyEscape: ruleOnly !== 'none' && ruleOnly !== 'emergency_stop', ruleCueEscape, combinedEscape,
       cueOnly: ruleOnly === 'none' && cues.length > 0,
-      ambiguous: c.ambiguous === true, called, error, latencyMs, costUsd: Number(cost.toFixed(6))});
+      ambiguous, unknownLabel, called, error, latencyMs, costUsd: Number(cost.toFixed(6))});
   }
+  const scored = rows.filter((r) => !r.ambiguous && !r.unknownLabel);
+  const amb = rows.filter((r) => r.ambiguous);
   const latencies = rows.filter((r) => r.called && Number.isFinite(r.latencyMs)).map((r) => r.latencyMs);
   return {
     createdAt: new Date().toISOString(), noLlm, model: config.model, promptId: riskPrompt.id,
@@ -135,7 +154,12 @@ export async function runRiskLlmEval({cases, config: inputConfig, providerFactor
     budgetUsd, costUsd: Number(totalCost.toFixed(6)), stoppedBy,
     latencyMs: {p50: percentile(latencies, 50), p95: percentile(latencies, 95)},
     ambiguous: rows.filter((r) => r.ambiguous).length,
-    ruleOnly: summarize(rows, 'ruleOnly'), ruleCue: summarize(rows, 'ruleCue'), combined: summarize(rows, 'combined'),
+    unknownLabel: rows.filter((r) => r.unknownLabel).length,
+    // 본 표: ambiguous·라벨 미상 제외
+    ruleOnly: summarize(scored, 'ruleOnly'), ruleCue: summarize(scored, 'ruleCue'), combined: summarize(scored, 'combined'),
+    // ambiguous 사례: 각 방식이 안내(none 아님)를 낸 수
+    ambiguousFlagged: {ruleOnly: amb.filter((r) => r.ruleOnly !== 'none').length, ruleCue: amb.filter((r) => r.ruleCue !== 'none').length,
+      combined: amb.filter((r) => r.combined !== 'none').length},
     // 강한 단서 경로 오탐: 정답 none인데 규칙은 못 잡고 강한 단서만으로 민감 안내가 뜬 수(LCR1 목표 10건 이하)
     cueFalsePositive: rows.filter((r) => r.cueOnly && r.expected.includes('none')).length,
     rows,
@@ -163,7 +187,7 @@ async function main() {
   console.log(`규칙만: ${JSON.stringify(result.ruleOnly)}`);
   console.log(`규칙+단서: ${JSON.stringify(result.ruleCue)} (강한 단서 오탐 ${result.cueFalsePositive})`);
   console.log(`규칙+단서+LLM${noLlm ? '(LLM 끔)' : ''}: ${JSON.stringify(result.combined)}`);
-  console.log(`지연 p50=${result.latencyMs.p50 ?? '-'}ms p95=${result.latencyMs.p95 ?? '-'}ms, ambiguous=${result.ambiguous}, 중단=${result.stoppedBy ?? '없음'}`);
+  console.log(`지연 p50=${result.latencyMs.p50 ?? '-'}ms p95=${result.latencyMs.p95 ?? '-'}ms, ambiguous=${result.ambiguous}(안내 규칙만 ${result.ambiguousFlagged.ruleOnly}/규칙+단서 ${result.ambiguousFlagged.ruleCue}/+LLM ${result.ambiguousFlagged.combined}), 라벨 미상=${result.unknownLabel}, 중단=${result.stoppedBy ?? '없음'}`);
   for (const r of result.rows) console.log(`${r.id}\t${r.expected.join('|')}\t${r.ruleOnly}\t${r.ruleCue}\t${r.combined}\t${r.error ?? '-'}`);
   const outDir = path.join(HERE, 'out');
   mkdirSync(outDir, {recursive: true});

@@ -303,6 +303,16 @@ fallback = 증상을 fallback으로 두고 F1~F3(`engine_condition: symptom_is_f
 
 ---
 
+### 6-5. 위험 신호 `risk_signal` *(11/17 LC 추가)*
+
+- **원칙**: LLM은 판정하지 않는다. 확인 질문을 띄울지만 제안한다. 경보를 올리기만 하고 규칙 경보를 끄거나 낮추지 못하며 EMERGENCY_STOP을 만들지 못한다. 실패·시간 초과·동의 없음·허용 밖 값 → `none`(규칙만 동작).
+- **호출 조건**(모두): `reason=message` / 그 요청에 위험 규칙 hit 없음 / 강한 민감 단서(`engine/constants.mjs` `SENSITIVE_NOTICE_CUE_RE`, 쓰임 제외 적용) 없음 / 그 대화에 민감 안내 선택 답 없음 / 동의·키·남은 시간. 대상은 **가장 최근 사용자 메시지 하나**. 넓은 단어(맞았·때리·위협·해치)만 있는 문장은 LLM으로 간다.
+- **요청당 1번**: 같은 요청에 증상 분류도 필요하면 결합 스키마 `symptom_risk_v1`(증상 선택 + `risk_signal`) 한 번, 위험만 필요하면 `risk_signal_v1`(`{risk_signal}` 한 필드, 출력 상한 40토큰).
+- **값**: `none`, `emergency`(별표 1 응급증상이 오늘 본인·함께 있는 사람에게), `self_harm`, `threat`, `violence`. 근거·이유는 받지 않는다.
+- **프롬프트**: `prompts/risk_v2.mjs`, 결합은 `prompts/symptom_risk_v2.mjs`(11/17 LC4 dev 조정 1회: 게임·농담·사소한 이유 과장, 장난·놀이, 업무 압박, 가볍거나 일부러 한 일을 none 예시로). 애매하면 해당 신호(사용자 확인이 거른다). v1은 기록용.
+- **엔진 처리**: emergency → `RISK_CONFIRM_<n>`, 민감 → `SENSITIVE_CHOICE_<n>`(`문진엔진_설계.md` §4-4). trace에 원문·민감 종류를 남기지 않는다.
+- **평가**: `npm run eval:risk-llm`(`eval/risk_llm_eval.mjs`, `--cases`, `--no-llm` 규칙+단서만, `--no-text`), 비용 한도 $1, 첫 network·auth·quota 오류에서 멈춤. 결과: `docs/reports/risk_LC.md`.
+
 ## 7. 결정성·버전·로그
 
 - 고정값: ~~`temperature 0`~~, 모델 버전명, 프롬프트 버전, 스키마 버전, `data_version`, 후보 순서(점수 → ID). *(11/15 L4 반영)* OpenAI는 추론 강도 `none`, temperature는 기본으로 보내지 않음. 초안 평가 반복 일치율 29/30.

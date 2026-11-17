@@ -6,6 +6,45 @@ const PLAIN = '오늘 갑자기 몸이 이상해요';
 const RULE_HIT = '아기가 숨을 안 쉬어요';
 const CUE = '누군가 저를 협박해요';
 
+test('LC5: 위험 전용 호출 뒤 완료해도 건강정보 LLM을 다시 부르지 않는다', async () => {
+  const llm = fakeLlm();
+  const answers = {...SAFE_BASE, SYM_DICT_CONFIRM: 'sym_R05', N5: 'no', 'N5-1': 'onset_1_3d', N6: 'yes', P0: 'no'};
+  for (let i = 7; i <= 13; i += 1) answers[`N${i}`] = 'no';
+  const {out} = await call({messages: ['기침이 나요'], answers, llm});
+  assert.equal(out.trace.phase, 'complete');
+  assert.equal(llm.calls.risk.length, 1);
+  assert.equal(llm.calls.profile.length + llm.calls.classify.length + llm.calls.combined.length, 0);
+});
+
+test('LC5: 미응답 질문 ID로 LLM 위험 확인을 유지하고 skip·두 번 무응답을 처리한다', async () => {
+  const answers = {...SAFE_BASE, RISK_CONFIRM_1: null};
+  const pending = await call({reason: 'followup', messages: [PLAIN], answers});
+  assert.equal(pending.out.response.followUp.id, 'RISK_CONFIRM_1');
+  const skip = await call({reason: 'skip', messages: [PLAIN], answers});
+  assert.equal(skip.out.response.emergency.active, true);
+  assert.equal(skip.out.trace.terminal, false);
+  const timeout = await call({reason: 'skip', messages: [PLAIN, '그대로예요', '잘 모르겠어요'], answers});
+  assert.equal(timeout.out.response.emergency.active, true);
+  assert.equal(timeout.out.response.followUp, undefined);
+});
+
+test('LC5: 미응답 민감 질문 ID는 종류 저장 없이 안내를 유지하고 skip·무응답이면 종료한다', async () => {
+  const answers = {...SAFE_BASE, SENSITIVE_CHOICE_1: null};
+  const llm = fakeLlm();
+  const pending = await call({reason: 'followup', messages: [PLAIN], answers, llm});
+  assert.equal(pending.out.response.followUp.id, 'SENSITIVE_CHOICE_1');
+  assert.deepEqual(pending.out.response.emergency, {active: true});
+  for (const input of [{reason: 'skip', messages: [PLAIN]}, {reason: 'message', messages: [PLAIN, '그대로예요', '잘 모르겠어요']}]) {
+    const {out} = await call({...input, answers, llm});
+    assert.equal(out.trace.terminal, true);
+    assert.deepEqual(out.response, {emergency: {active: true}});
+  }
+  assert.equal(Object.values(llm.calls).flat().length, 0);
+  const continued = await call({reason: 'skip', messages: [PLAIN], answers: {...answers, SENSITIVE_CHOICE_1: 'sens_continue'}, llm});
+  assert.equal(continued.out.trace.terminal, false);
+  assert.equal(continued.out.response.emergency, undefined);
+});
+
 test('LC3: LLM emergency는 EMERGENCY_STOP이 아니라 RISK_CONFIRM 뒤 사용자 답으로 처리한다', async () => {
   const llm = fakeLlm({risk: {riskSignal: 'emergency', meta: {attempts: 1}}});
   const first = await call({messages: [PLAIN], llm});

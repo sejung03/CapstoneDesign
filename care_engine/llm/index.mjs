@@ -165,6 +165,10 @@ async function classifySymptomInternal({text, riskText = null, sex = null, conse
   const finish = (result) => {
     meta.latencyMs = d.now() - start;
     const out = includeRisk ? {...result, riskSignal, meta} : {...result, meta};
+    if (includeRisk && ['self_harm', 'threat', 'violence'].includes(riskSignal)) {
+      safeLog(d.log, {kind: 'sensitive_referral'});
+      return out;
+    }
     safeLog(d.log, {
       event: 'llm.classify_symptom',
       requestId, reason,
@@ -254,6 +258,10 @@ export async function detectRiskSignal({text, consent, signal, deadlineAt, reque
   };
   const finish = (riskSignal) => {
     meta.latencyMs = d.now() - start;
+    if (['self_harm', 'threat', 'violence'].includes(riskSignal)) {
+      safeLog(d.log, {kind: 'sensitive_referral'});
+      return {riskSignal, meta};
+    }
     safeLog(d.log, {event: 'llm.detect_risk', requestId, reason, provider: meta.provider, model: meta.model,
       promptId: meta.promptId, schemaId: meta.schemaId, signal: riskSignal, error: meta.error,
       latencyMs: meta.latencyMs, attempts: meta.attempts, consentSource: meta.consentSource});
