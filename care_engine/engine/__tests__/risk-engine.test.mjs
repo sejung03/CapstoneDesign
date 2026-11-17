@@ -1,0 +1,154 @@
+// 11/17 R5: 위험 표현 사전(free_text_v1.json)과 runCare 연결. 문장은 모두 지어낸 짧은 문장(평가셋 risk_v1.jsonl)이다.
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {fileURLToPath} from 'node:url';
+import path from 'node:path';
+import {loadFreeTextRules, compileFreeTextRules, DEFAULT_FREE_TEXT_PATH} from '../free-text.mjs';
+import {EMERGENCY_TEXT} from '../templates.mjs';
+import {call, fakeLlm, SAFE_BASE} from './helpers.mjs';
+import {loadRiskCases, runRiskEval} from '../../eval/risk_eval.mjs';
+import {pharmacyStarterText} from '../../eval/engine_scenarios.mjs';
+
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const RAW = JSON.parse(readFileSync(DEFAULT_FREE_TEXT_PATH, 'utf8'));
+const CRITERIA_DOC = readFileSync(path.resolve(HERE, '../../docs/위험표현_기준표.md'), 'utf8');
+const CASES = loadRiskCases();
+const POSITIVE = CASES.filter((c) => c.group === 'positive');
+const byId = (id) => CASES.find((c) => c.id === id);
+
+/** 기준표 §3(결과 있음) 표의 행: 기준ID → {result, ruleId} */
+function criteriaRows() {
+  const sec = CRITERIA_DOC.split('## 3.')[1].split('## 4.')[0];
+  const rows = new Map();
+  for (const line of sec.split(/\r?\n/)) {
+    const cells = line.split('|').map((s) => s.trim());
+    if (/^C-\d{2}$/.test(cells[1] ?? '')) rows.set(cells[1], {result: cells[4], ruleId: cells[6]});
+  }
+  return rows;
+}
+
+test('R5: free_text_v1.json — 기존 로더 형식 검사 통과, 규칙 40개, 모두 draft·terminal, priority 범위(ES 1~3, UN 4~7, 109 8)', () => {
+  const rules = loadFreeTextRules();
+  assert.equal(rules.rules.length, 40);
+  assert.doesNotThrow(() => compileFreeTextRules(RAW));
+  for (const r of RAW.rules) {
+    assert.equal(r.review_status, 'draft', r.rule_id);
+    assert.equal(r.terminal, true, r.rule_id);
+    assert.ok(r.patterns.length <= 20, `${r.rule_id}: 패턴 20개 초과`);
+    if (r.result === 'EMERGENCY_STOP') { assert.ok(r.priority >= 1 && r.priority <= 3, r.rule_id); assert.equal(r.message_key, 'freetext_emergency_119'); }
+    else if (r.message_key === 'crisis_notice_109') assert.equal(r.priority, 8, r.rule_id);
+    else { assert.ok(r.priority >= 4 && r.priority <= 7, r.rule_id); assert.equal(r.message_key, 'freetext_urgent'); }
+    for (const p of r.patterns) assert.ok(!/\s/.test(p), `${r.rule_id}: 패턴에 공백`);
+  }
+});
+
+test('R5: 모든 규칙의 evidence.criteria_id가 기준표(결과 있음)에 있고, 결과·규칙 ID가 서로 맞는다', () => {
+  const rows = criteriaRows();
+  assert.equal(rows.size, 40);
+  const short = {EMERGENCY_STOP: 'ES', URGENT_NOTICE: 'UN'};
+  for (const r of RAW.rules) {
+    const row = rows.get(r.evidence?.criteria_id);
+    assert.ok(row, `${r.rule_id}: 기준표에 ${r.evidence?.criteria_id} 없음`);
+    assert.equal(row.ruleId, r.rule_id, r.evidence.criteria_id);
+    const expect = r.message_key === 'crisis_notice_109' ? 'UN+109' : short[r.result];
+    assert.equal(row.result, expect, r.rule_id);
+    assert.ok(['emergency_act_rule_annex1', 'manual_119'].includes(r.evidence.source), r.rule_id);
+    assert.ok(typeof r.evidence.ref === 'string' && r.evidence.ref.length > 0, r.rule_id);
+  }
+  // 기준표의 결과 있는 기준은 모두 규칙이 있다
+  assert.deepEqual([...rows.keys()].sort(), RAW.rules.map((r) => r.evidence.criteria_id).sort());
+});
+
+test('R5: 평가셋 통과 기준(positive 누락 0, metaphor·nonemergency·facility 오탐 0)', () => {
+  const r = runRiskEval();
+  assert.equal(r.pass, true, JSON.stringify({fp: r.falsePositives, miss: r.misses, key: r.keyMismatches}));
+  assert.equal(r.groups.positive.n, POSITIVE.length);
+});
+
+test('R5: 첫 메시지가 positive 표현 → 첫 응답은 emergency만(search·진료과·질문 없음, LLM 0)', async () => {
+  for (const c of POSITIVE) {
+    const llm = fakeLlm();
+    const {out, calls} = await call({messages: [c.text], llm});
+    assert.deepEqual(Object.keys(out.response), ['emergency'], c.id);
+    assert.equal(out.response.emergency.active, true, c.id);
+    assert.equal(out.response.emergency.message.ko, EMERGENCY_TEXT[c.expect_key].message, c.id);
+    assert.equal(out.trace.terminal, true, c.id);
+    assert.equal(calls.classify.length + calls.profile.length, 0, c.id);
+  }
+});
+
+test('R5: EMERGENCY_STOP 표현은 Q0=예일 때만 E 문항(119 정리)이 이어진다. URGENT는 Q0=예여도 답 규칙(EMERGENCY_STOP)이 먼저', async () => {
+  const es = byId('r003'); // 숨을 안 쉼
+  const yes = await call({reason: 'followup', messages: [es.text], answers: {Q0: 'yes'}});
+  assert.equal(yes.out.response.emergency.active, true);
+  assert.equal(yes.out.response.followUp?.id, 'E1');
+  const no = await call({reason: 'followup', messages: [es.text], answers: {Q0: 'no'}});
+  assert.deepEqual(Object.keys(no.out.response), ['emergency']);
+});
+
+test('R5: 약국 시작 문장 + 위험 표현 → 약국 지름길이 아니라 응급 안내(안전 규칙이 먼저)', async () => {
+  const {out} = await call({messages: [pharmacyStarterText(), byId('r041').text]});
+  assert.equal(out.response.search, undefined);
+  assert.equal(out.response.emergency.active, true);
+  assert.equal(out.trace.facilityKeyword, null);
+  assert.deepEqual(out.trace.ruleHits, ['FT-GIBLEED-01']);
+});
+
+test('R5: 위험 표현 뒤 Q0=아니요로 답해도(안전 답 SAFE 전부여도) 메시지가 남아 있으므로 다음 요청에서도 응급 안내 유지', async () => {
+  const m = byId('r025').text; // 가슴 쥐어짜는 통증
+  for (const answers of [{Q0: 'no'}, {...SAFE_BASE}]) {
+    const {out} = await call({reason: 'followup', messages: [m], answers});
+    assert.deepEqual(Object.keys(out.response), ['emergency']);
+    assert.ok(out.trace.ruleHits.includes('FT-CHEST-01'));
+  }
+  const skip = await call({reason: 'skip', messages: [m], answers: {Q0: 'no'}});
+  assert.deepEqual(Object.keys(skip.out.response), ['emergency']);
+});
+
+test('R5: 자해·자살 생각 → crisis_notice_109 문구의 emergency, 진료과·search 없음', async () => {
+  for (const id of ['r077', 'r078', 'r079', 'r080', 'o007']) {
+    const {out} = await call({messages: [byId(id).text]});
+    assert.deepEqual(Object.keys(out.response), ['emergency'], id);
+    assert.equal(out.response.emergency.title.ko, EMERGENCY_TEXT.crisis_notice_109.title, id);
+    assert.equal(out.response.emergency.message.ko, EMERGENCY_TEXT.crisis_notice_109.message, id);
+    assert.deepEqual(out.trace.ruleHits, ['FT-SELFHARM-THINK-01'], id);
+  }
+});
+
+test('R5: 우선순위 — EMERGENCY_STOP 표현 + 자해 생각 표현이 함께 있으면 EMERGENCY_STOP(119 문구), 걸린 규칙은 모두 trace', async () => {
+  const {out} = await call({messages: [byId('r077').text, byId('r019').text]});
+  assert.equal(out.response.emergency.message.ko, EMERGENCY_TEXT.freetext_emergency_119.message);
+  assert.deepEqual(out.trace.ruleHits, ['FT-SELFHARM-ACT-01', 'FT-SELFHARM-THINK-01']);
+  // URGENT + 109 → URGENT(119·응급실 문구, priority 4 < 8)
+  const u = await call({messages: [byId('r078').text, byId('r023').text]});
+  assert.equal(u.out.response.emergency.message.ko, EMERGENCY_TEXT.freetext_urgent.message);
+  // 답 규칙(priority 10 이상)보다 자유 입력 규칙(1~9)이 먼저
+  const a = await call({reason: 'followup', messages: [byId('r003').text], answers: {Q0: 'no', N1: 'no'}});
+  assert.equal(a.out.trace.ruleHits[0], 'FT-APNEA-01');
+  assert.equal(a.out.response.emergency.message.ko, EMERGENCY_TEXT.freetext_emergency_119.message);
+});
+
+test('R5: trace.ruleHits에는 rule_id만 — 원문·패턴이 trace·로그에 없다(표식 문자열)', async () => {
+  const MARK = 'LEAK_SENTINEL_r5';
+  const patterns = RAW.rules.flatMap((r) => r.patterns);
+  for (const c of [...POSITIVE.slice(0, 20), byId('r077'), byId('r019')]) {
+    const text = `${c.text} ${MARK}`;
+    const {out, logs} = await call({messages: [text]});
+    const seen = JSON.stringify({trace: out.trace, logs});
+    assert.ok(!seen.includes(MARK), c.id);
+    assert.ok(!seen.includes(c.text), c.id);
+    for (const id of out.trace.ruleHits) assert.match(id, /^FT-[A-Z0-9-]+$/);
+    for (const p of patterns.filter((x) => x.length >= 6)) assert.ok(!seen.includes(p), `${c.id}: 패턴이 trace·로그에`);
+    assert.ok(!JSON.stringify(out.response).includes(MARK), c.id);
+  }
+});
+
+test('R5: 위험 표현이 없는 평가 문장(nonemergency·metaphor·facility)은 응급 안내 없이 기존 흐름(Q0 또는 약국 지름길)', async () => {
+  for (const c of CASES.filter((x) => ['nonemergency', 'metaphor', 'facility'].includes(x.group))) {
+    const {out} = await call({messages: [c.text]});
+    assert.equal(out.response.emergency, undefined, c.id);
+    assert.deepEqual(out.trace.ruleHits, [], c.id);
+    assert.ok(out.response.followUp?.id === 'Q0' || out.response.search?.type === 'pharmacy', c.id);
+  }
+});
