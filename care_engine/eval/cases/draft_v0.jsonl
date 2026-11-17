@@ -1,0 +1,30 @@
+{"id":"c01","text":"속이 울렁거리고 뭔가 올라올 것 같아요","gold_symptoms":["D09"],"gold_intent":"symptom","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"paraphrase"}
+{"id":"c02","text":"머리가 깨질 것처럼 지끈거려요","gold_symptoms":["N01"],"gold_intent":"symptom","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"paraphrase"}
+{"id":"c03","text":"목구멍이 칼로 긁는 것처럼 따끔해요","gold_symptoms":["R21"],"gold_intent":"symptom","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"paraphrase"}
+{"id":"c04","text":"눈이 모래 들어간 것처럼 뻑뻑해요","gold_symptoms":["F13"],"gold_intent":"symptom","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"paraphrase"}
+{"id":"c05","text":"계단만 올라가도 숨이 턱까지 차요","gold_symptoms":["R02"],"gold_intent":"symptom","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"paraphrase"}
+{"id":"c06","text":"밤마다 종아리에 쥐가 나서 깨요","gold_symptoms":["L14"],"gold_intent":"symptom","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"paraphrase"}
+{"id":"c07","text":"온몸이 으슬으슬 춥고 덜덜 떨려요","gold_symptoms":["A02"],"gold_intent":"symptom","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"paraphrase"}
+{"id":"c08","text":"화장실을 며칠째 못 가서 배가 빵빵해요","gold_symptoms":["D12"],"gold_intent":"symptom","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"paraphrase"}
+{"id":"c09","text":"귀에서 삐 하는 소리가 계속 들려요","gold_symptoms":["H03"],"gold_intent":"symptom","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"paraphrase"}
+{"id":"c10","text":"허리가 끊어질 것같이 쑤셔요","gold_symptoms":["L03"],"gold_intent":"symptom","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"paraphrase"}
+{"id":"c11","text":"누워도 새벽까지 눈이 말똥말똥해요","gold_symptoms":["P06"],"gold_intent":"symptom","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"paraphrase"}
+{"id":"c12","text":"피부가 오돌토돌 올라오고 근질근질해요","gold_symptoms":["S02"],"gold_intent":"symptom","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"paraphrase"}
+{"id":"c13","text":"기침이 나요","gold_symptoms":["R05"],"gold_intent":"symptom","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"dictionary"}
+{"id":"c14","text":"설사를 해요","gold_symptoms":["D11"],"gold_intent":"symptom","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"dictionary"}
+{"id":"c15","text":"콧물이 나요","gold_symptoms":["R07"],"gold_intent":"symptom","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"dictionary"}
+{"id":"c16","text":"지금 문 연 약국 어디 있어요?","gold_symptoms":[],"gold_intent":"facility_search","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"facility"}
+{"id":"c17","text":"근처 소아과 찾아 주세요","gold_symptoms":[],"gold_intent":"facility_search","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"facility"}
+{"id":"c18","text":"주말에 진료하는 치과 알려 줘","gold_symptoms":[],"gold_intent":"facility_search","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"facility"}
+{"id":"c19","text":"밤에 여는 병원 있나요?","gold_symptoms":[],"gold_intent":"facility_search","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"facility"}
+{"id":"c20","text":"해열제랑 감기약 같이 먹어도 되나요?","gold_symptoms":[],"gold_intent":"medication_question","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"medication"}
+{"id":"c21","text":"항생제는 밥 먹고 먹어야 하나요?","gold_symptoms":[],"gold_intent":"medication_question","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"medication"}
+{"id":"c22","text":"안녕하세요 반가워요","gold_symptoms":[],"gold_intent":"other","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"chitchat"}
+{"id":"c23","text":"오늘 날씨 어때요?","gold_symptoms":[],"gold_intent":"other","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"chitchat"}
+{"id":"c24","text":"가슴이 쥐어짜듯 아프고 식은땀이 흘러요","gold_symptoms":["A11"],"gold_intent":"symptom","gold_emergency":true,"gold_profile":[],"label_status":"draft_single","group":"emergency"}
+{"id":"c25","text":"갑자기 한쪽 팔다리에 힘이 빠지고 말이 어눌해졌어요","gold_symptoms":["N18","N19"],"gold_intent":"symptom","gold_emergency":true,"gold_profile":[],"label_status":"draft_single","group":"emergency"}
+{"id":"c26","text":"숨을 못 쉬겠고 입술이 파래져요","gold_symptoms":["R02"],"gold_intent":"symptom","gold_emergency":true,"gold_profile":[],"label_status":"draft_single","group":"emergency"}
+{"id":"c27","text":"저는 45살이고 당뇨약을 먹고 있어요. 요즘 발이 저려요","gold_symptoms":["N05"],"gold_intent":"symptom","gold_emergency":false,"gold_profile":[{"field":"age","value":"45"},{"field":"medications","value":"당뇨약"}],"label_status":"draft_single","group":"profile"}
+{"id":"c28","text":"페니실린 알레르기가 있는데 목이 너무 아파요","gold_symptoms":["R21"],"gold_intent":"symptom","gold_emergency":false,"gold_profile":[{"field":"allergies","value":"페니실린"}],"label_status":"draft_single","group":"profile"}
+{"id":"c29","text":"작년에 맹장 수술을 받았고 배가 콕콕 쑤셔요","gold_symptoms":["D01"],"gold_intent":"symptom","gold_emergency":false,"gold_profile":[{"field":"history","value":"맹장 수술"}],"label_status":"draft_single","group":"profile"}
+{"id":"c30","text":"엄마가 혈압약을 드시는데 자꾸 어지럽다고 하세요","gold_symptoms":["N17"],"gold_intent":"symptom","gold_emergency":false,"gold_profile":[],"label_status":"draft_single","group":"other_person"}

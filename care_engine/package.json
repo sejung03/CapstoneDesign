@@ -1,0 +1,14 @@
+{
+  "name": "medical-helper-care-engine",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "eval": "node eval/run_eval.mjs",
+    "eval:smoke": "node --env-file=.env eval/smoke_openai.mjs",
+    "eval:openai": "node --env-file=.env eval/run_eval.mjs --cases eval/cases/draft_v0.jsonl --provider openai",
+    "eval:paths": "node eval/engine_paths.mjs",
+    "eval:risk": "node eval/risk_eval.mjs",
+    "eval:risk-llm": "node --env-file=.env eval/risk_llm_eval.mjs"
+  }
+}

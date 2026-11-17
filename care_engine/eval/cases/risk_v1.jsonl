@@ -1,0 +1,218 @@
+{"id":"r001","text":"할아버지가 의식이 없어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-01"}
+{"id":"r002","text":"불러도 아무 반응이 없어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-01"}
+{"id":"r003","text":"아기가 숨을 안 쉬어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-02"}
+{"id":"r004","text":"남편이 갑자기 숨이 멎었어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-02"}
+{"id":"r005","text":"아빠 심장이 멈췄어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-03"}
+{"id":"r006","text":"맥박이 없어서 심폐소생술 하고 있어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-03"}
+{"id":"r007","text":"떡이 목에 걸려서 숨을 못 쉬어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-04"}
+{"id":"r008","text":"아이가 사탕을 먹다 기도가 막혔어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-04"}
+{"id":"r009","text":"누가 목을 졸라서 숨이 이상해요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-05"}
+{"id":"r010","text":"동생이 목이 졸렸어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-05"}
+{"id":"r011","text":"아이가 물에 빠졌어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-06"}
+{"id":"r012","text":"친구가 계곡 물에 빠져서 안 나와요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-06"}
+{"id":"r013","text":"아이가 지금 경련하고 있어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-07"}
+{"id":"r014","text":"엄마가 발작 중이에요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-07"}
+{"id":"r015","text":"다리에서 피가 철철 나요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-08"}
+{"id":"r016","text":"사고로 피를 많이 흘렸어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-08"}
+{"id":"r017","text":"아이가 세제를 마셨어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-09"}
+{"id":"r018","text":"약을 한꺼번에 많이 먹었어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-09"}
+{"id":"r019","text":"친구가 자해를 했어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-10"}
+{"id":"r020","text":"동생이 자살 시도를 했어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-10"}
+{"id":"r021","text":"여러 명이 크게 다쳤어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-11"}
+{"id":"r022","text":"사람들이 많이 쓰러졌어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"positive","criteria_id":"C-11"}
+{"id":"r023","text":"숨을 못 쉬겠어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-12"}
+{"id":"r024","text":"숨이 차서 말을 못 하겠어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-12"}
+{"id":"r025","text":"가슴이 쥐어짜듯이 아파요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-13"}
+{"id":"r026","text":"가슴이 아프고 식은땀이 나요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-13"}
+{"id":"r027","text":"갑자기 한쪽 팔에 힘이 없어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-14"}
+{"id":"r028","text":"아빠 말이 어눌해졌어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-14"}
+{"id":"r029","text":"할머니가 사람을 못 알아봐요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-15"}
+{"id":"r030","text":"갑자기 횡설수설해요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-15"}
+{"id":"r031","text":"엄마가 길에서 쓰러졌어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-16"}
+{"id":"r032","text":"아까 잠깐 실신했어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-16"}
+{"id":"r033","text":"아이가 경기를 했어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-17"}
+{"id":"r034","text":"아까 경련을 했는데 지금은 멈췄어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-17"}
+{"id":"r035","text":"머리를 부딪쳤는데 계속 토해요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-18"}
+{"id":"r036","text":"넘어져서 머리를 다쳤는데 정신이 없어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-18"}
+{"id":"r037","text":"심장이 너무 빨리 뛰고 어지러워요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-19"}
+{"id":"r038","text":"식은땀이 나고 얼굴이 창백해요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-19"}
+{"id":"r039","text":"코피가 안 멈춰요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-20"}
+{"id":"r040","text":"눌러도 피가 계속 나요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-20"}
+{"id":"r041","text":"피를 토했어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-21"}
+{"id":"r042","text":"검은 변이 나왔어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-21"}
+{"id":"r043","text":"기침할 때 피가 나와요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-22"}
+{"id":"r044","text":"각혈을 했어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-22"}
+{"id":"r045","text":"아이가 탈수가 심해요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-23"}
+{"id":"r046","text":"물도 못 마시고 소변이 안 나와요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-23"}
+{"id":"r047","text":"저혈당으로 쓰러졌어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-24"}
+{"id":"r048","text":"당뇨가 있는데 정신이 흐려요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-24"}
+{"id":"r049","text":"배가 찢어질 듯이 아파요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-25"}
+{"id":"r050","text":"배가 너무 아파서 움직일 수가 없어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-25"}
+{"id":"r051","text":"온몸에 화상을 입었어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-26"}
+{"id":"r052","text":"끓는 물에 넓게 데었어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-26"}
+{"id":"r053","text":"칼에 찔렸어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-27"}
+{"id":"r054","text":"배를 찔렸어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-27"}
+{"id":"r055","text":"넘어져서 뼈가 밖으로 나왔어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-28"}
+{"id":"r056","text":"허벅지뼈가 부러진 것 같아요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-28"}
+{"id":"r057","text":"기계에 손가락이 잘렸어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-29"}
+{"id":"r058","text":"사고로 다리가 절단됐어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-29"}
+{"id":"r059","text":"아빠가 차에 치였어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-30"}
+{"id":"r060","text":"사다리에서 떨어졌어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-30"}
+{"id":"r061","text":"눈에 락스가 들어갔어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-31"}
+{"id":"r062","text":"눈에 쇳조각이 박혔어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-31"}
+{"id":"r063","text":"갑자기 한쪽 눈이 안 보여요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-32"}
+{"id":"r064","text":"눈이 갑자기 안 보여요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-32"}
+{"id":"r065","text":"새우를 먹고 입술이 부었어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-33"}
+{"id":"r066","text":"목이 부어서 숨쉬기 힘들어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-33"}
+{"id":"r067","text":"산에서 뱀에 물렸어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-34"}
+{"id":"r068","text":"큰 개한테 얼굴을 물렸어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-34"}
+{"id":"r069","text":"공사장에서 감전됐어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-35"}
+{"id":"r070","text":"벼락을 맞았어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-35"}
+{"id":"r071","text":"연탄가스를 마신 것 같아요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-36"}
+{"id":"r072","text":"일산화탄소 중독이 의심돼요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-36"}
+{"id":"r073","text":"할아버지가 열사병으로 힘들어하세요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-37"}
+{"id":"r074","text":"저체온증으로 몸을 떨어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-37"}
+{"id":"r075","text":"양수가 터졌어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-38"}
+{"id":"r076","text":"아기가 나올 것 같아요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-38"}
+{"id":"r077","text":"요즘 죽고 싶어요","expect":"URGENT_NOTICE","expect_key":"crisis_notice_109","group":"positive","criteria_id":"C-39"}
+{"id":"r078","text":"그냥 사라지고 싶어요","expect":"URGENT_NOTICE","expect_key":"crisis_notice_109","group":"positive","criteria_id":"C-39"}
+{"id":"r079","text":"자살하고 싶다는 생각이 들어요","expect":"URGENT_NOTICE","expect_key":"crisis_notice_109","group":"positive","criteria_id":"C-39"}
+{"id":"r080","text":"창피해서 죽고 싶어요","expect":"URGENT_NOTICE","expect_key":"crisis_notice_109","group":"positive","criteria_id":"C-39","note":"과장 표현도 v1은 안내(놓치지 않는 쪽 우선)"}
+{"id":"r081","text":"태어나서 처음으로 이렇게 머리가 아파요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-40"}
+{"id":"r082","text":"갑자기 머리가 깨질 듯이 아파요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"positive","criteria_id":"C-40"}
+{"id":"n001","text":"숨이 좀 차요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"n002","text":"머리가 지끈해요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"n003","text":"이가 아파요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"n004","text":"감기 기운이 있어요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"n005","text":"콧물이 계속 나요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"n006","text":"목이 칼칼해요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"n007","text":"배가 살살 아파요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"n008","text":"가슴이 답답해요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"n009","text":"어제부터 기침이 나요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"n010","text":"무릎에 멍이 들었어요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"n011","text":"손가락을 살짝 베였어요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"n012","text":"변비가 있어요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"n013","text":"속이 더부룩해요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"n014","text":"눈이 충혈됐어요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"n015","text":"다리에 쥐가 났어요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"n016","text":"허리가 뻐근해요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"n017","text":"피부에 두드러기가 났어요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"n018","text":"열이 조금 있어요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"n019","text":"가끔 어지러울 때가 있어요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"n020","text":"잠을 잘 못 자요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"n021","text":"가슴이 가끔 두근거려요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"n022","text":"햇볕에 얼굴이 살짝 탔어요","expect":"none","expect_key":null,"group":"nonemergency","criteria_id":null}
+{"id":"m001","text":"배고파 죽겠다","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"m002","text":"더워서 숨 막혀","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"m003","text":"웃겨 죽겠어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"m004","text":"웃겨서 숨을 못 쉬겠어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"m005","text":"피곤해서 쓰러질 것 같아","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"m006","text":"시험 때문에 머리가 터질 것 같아","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"m007","text":"심심해 죽겠어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"m008","text":"추워서 얼어 죽겠다","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"m009","text":"너무 귀여워서 심장이 멈출 것 같아","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"m010","text":"웃다가 쓰러졌어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"m011","text":"놀라서 기절할 뻔했어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"m012","text":"숙제가 많아서 숨이 막혀","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"m013","text":"배불러서 배가 터질 것 같아","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"m014","text":"목 빠지게 기다렸어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"m015","text":"설레서 가슴이 터질 것 같아","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"m016","text":"졸려 죽겠어요","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"m017","text":"화나서 피가 거꾸로 솟았어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"g001","text":"가슴 통증이 심하지는 않아요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"negation","criteria_id":"C-13"}
+{"id":"g002","text":"숨을 못 쉬는 건 아니에요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"negation","criteria_id":"C-12"}
+{"id":"g003","text":"의식이 없지는 않았어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"negation","criteria_id":"C-01"}
+{"id":"g004","text":"피가 안 멈추는 건 아니에요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"negation","criteria_id":"C-20"}
+{"id":"g005","text":"경련을 한 적은 없어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"negation","criteria_id":"C-17"}
+{"id":"g006","text":"검은 변은 아니었어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"negation","criteria_id":"C-21"}
+{"id":"g007","text":"죽고 싶은 생각은 없어요","expect":"URGENT_NOTICE","expect_key":"crisis_notice_109","group":"negation","criteria_id":"C-39"}
+{"id":"g008","text":"한쪽 팔이 마비된 건 아니에요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"negation","criteria_id":"C-14"}
+{"id":"g009","text":"칼에 찔린 건 아니에요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"negation","criteria_id":"C-27"}
+{"id":"g010","text":"양수가 터진 건 아닌 것 같아요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"negation","criteria_id":"C-38"}
+{"id":"g011","text":"숨이 안 쉬어지진 않아요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"negation","criteria_id":"C-12"}
+{"id":"o001","text":"엄마가 쓰러졌어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"other_person","criteria_id":"C-16"}
+{"id":"o002","text":"친구가 예전에 쓰러진 적 있어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"other_person","criteria_id":"C-16"}
+{"id":"o003","text":"옆집 아이가 물에 빠졌어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"other_person","criteria_id":"C-06"}
+{"id":"o004","text":"아빠가 가슴이 쥐어짜듯 아프대요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"other_person","criteria_id":"C-13"}
+{"id":"o005","text":"할머니가 의식이 없어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"other_person","criteria_id":"C-01"}
+{"id":"o006","text":"동생이 칼에 찔렸어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"other_person","criteria_id":"C-27"}
+{"id":"o007","text":"친구가 죽고 싶대요","expect":"URGENT_NOTICE","expect_key":"crisis_notice_109","group":"other_person","criteria_id":"C-39"}
+{"id":"o008","text":"남편이 숨을 안 쉬어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"other_person","criteria_id":"C-02"}
+{"id":"o009","text":"삼촌이 예전에 피를 토한 적 있어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"other_person","criteria_id":"C-21"}
+{"id":"o010","text":"언니가 경련을 했었어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"other_person","criteria_id":"C-17"}
+{"id":"p001","text":"작년에 경련한 적 있어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"past","criteria_id":"C-17"}
+{"id":"p002","text":"어릴 때 제가 물에 빠진 적이 있어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"past","criteria_id":"C-06"}
+{"id":"p003","text":"예전에 실신한 적이 있어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"past","criteria_id":"C-16"}
+{"id":"p004","text":"몇 년 전에 각혈을 했어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"past","criteria_id":"C-22"}
+{"id":"p005","text":"전에 자살 시도를 한 적이 있어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"past","criteria_id":"C-10"}
+{"id":"f001","text":"지금 문 연 약국을 찾고 싶어요","expect":"none","expect_key":null,"group":"facility","criteria_id":null}
+{"id":"f002","text":"근처 약국 어디예요","expect":"none","expect_key":null,"group":"facility","criteria_id":null}
+{"id":"f003","text":"정형외과 추천해 주세요","expect":"none","expect_key":null,"group":"facility","criteria_id":null}
+{"id":"f004","text":"지금 여는 병원 있나요","expect":"none","expect_key":null,"group":"facility","criteria_id":null}
+{"id":"f005","text":"소아과 어디 있어요","expect":"none","expect_key":null,"group":"facility","criteria_id":null}
+{"id":"f006","text":"응급실 있는 병원 찾아줘","expect":"none","expect_key":null,"group":"facility","criteria_id":null}
+{"id":"th001","text":"남편이 저를 죽이겠다고 해요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"positive","criteria_id":"C-51"}
+{"id":"th002","text":"흉기로 위협을 당하고 있어요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"positive","criteria_id":"C-51"}
+{"id":"th003","text":"전남친이 죽여버리겠다고 협박해요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"positive","criteria_id":"C-51"}
+{"id":"th004","text":"누가 계속 쫓아와요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"positive","criteria_id":"C-51"}
+{"id":"th005","text":"옆집 사람을 해치고 싶어요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"positive","criteria_id":"C-51"}
+{"id":"th006","text":"모르는 사람이 칼을 들고 찾아왔어요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"positive","criteria_id":"C-51"}
+{"id":"th007","text":"협박을 당하고 있어요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"positive","criteria_id":"C-51"}
+{"id":"vi001","text":"성폭행을 당했어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"positive","criteria_id":"C-52"}
+{"id":"vi002","text":"회사 상사에게 성추행을 당했어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"positive","criteria_id":"C-52"}
+{"id":"vi003","text":"남편이 저를 때려요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"positive","criteria_id":"C-52"}
+{"id":"vi004","text":"남자친구한테 맞았어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"positive","criteria_id":"C-52"}
+{"id":"vi005","text":"가정폭력을 당하고 있어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"positive","criteria_id":"C-52"}
+{"id":"vi006","text":"데이트폭력 피해를 입었어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"positive","criteria_id":"C-52"}
+{"id":"vi007","text":"스토킹을 당하고 있어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"positive","criteria_id":"C-52"}
+{"id":"vi008","text":"전남친이 스토커가 됐어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"positive","criteria_id":"C-52"}
+{"id":"vi009","text":"아빠가 자꾸 때려요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"positive","criteria_id":"C-52"}
+{"id":"vi010","text":"몰래카메라에 찍혔어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"positive","criteria_id":"C-52"}
+{"id":"mv001","text":"게임에서 다 죽여버리고 싶다","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv002","text":"공에 맞았어요","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv003","text":"모기 때려잡았어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv004","text":"동생이랑 장난치다 맞았어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv005","text":"엄마가 숙제 안 하면 죽여버린다고 했어 ㅋㅋ","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv006","text":"친구가 게임에서 날 죽였어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv007","text":"이 문제 진짜 죽이고 싶다","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv008","text":"드라마에서 남편이 아내를 때려서 화났어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv009","text":"성폭력 예방 교육을 들었어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv010","text":"고양이가 나를 따라와요","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv011","text":"친구가 나를 죽이겠대 게임에서","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv012","text":"스토킹 처벌법이 궁금해요","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv013","text":"형이랑 베개 싸움하다 맞았어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv014","text":"가정폭력 예방 포스터를 만들었어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mx001","text":"축구 보다가 아이가 경기를 일으켰어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-17"}
+{"id":"mx002","text":"게임하다가 친구가 쓰러졌어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-16"}
+{"id":"mx003","text":"시험 공부하다 갑자기 한쪽 눈이 안 보여요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-32"}
+{"id":"mx004","text":"운동하다가 가슴이 쥐어짜듯 아파요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-13"}
+{"id":"mx005","text":"마스크 쓰고 있었는데 아이 입술이 파래요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-02"}
+{"id":"mx006","text":"주식 보다가 아빠가 쓰러지셨어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-16"}
+{"id":"mx007","text":"카톡 하다가 엄마가 의식이 없어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-01"}
+{"id":"mx008","text":"드라마 보다가 할머니가 숨을 안 쉬어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-02"}
+{"id":"mx009","text":"술 마시고 친구가 깨워도 반응이 없어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-01"}
+{"id":"mx010","text":"헤어지고 나서 가슴이 쥐어짜듯 아파요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-13"}
+{"id":"mx011","text":"시험 공부하다 아이가 경련을 해요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-07"}
+{"id":"mx012","text":"모니터 보다가 갑자기 한쪽 팔에 힘이 없어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-14"}
+{"id":"mx013","text":"게임 중에 동생이 발작하고 있어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-07"}
+{"id":"mx014","text":"발표하다가 갑자기 말이 어눌해졌어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-14"}
+{"id":"mx015","text":"축구하다 친구가 머리를 부딪쳤는데 계속 토해요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-18"}
+{"id":"mx016","text":"학교 가야 하는데 아이가 불러도 반응이 없어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-01"}
+{"id":"mx017","text":"롤 하다가 친구가 갑자기 쓰러졌어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-16"}
+{"id":"mx018","text":"빨래 널다가 엄마가 베란다에서 떨어졌어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-30"}
+{"id":"mx019","text":"미세먼지 심한 날 갑자기 숨이 막혀서 말을 못 해요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-12"}
+{"id":"mx020","text":"정전기 얘기하다가 아빠가 감전됐어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-35"}
+{"id":"mx021","text":"야구 중계 보다가 할아버지가 숨이 멎었어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-02"}
+{"id":"mx022","text":"게임하다가 아이가 경기를 해요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-07"}
+{"id":"mx023","text":"모니터 보다가 갑자기 눈앞이 깜깜해졌어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-32","note":"RG3 검토 G8"}
+{"id":"mx024","text":"tv 보다가 갑자기 한쪽 눈이 안 보여요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-32","note":"RG3 검토 G8"}
+{"id":"mx025","text":"미세먼지 심한 날인데 숨쉬기가 너무 힘들어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-12","note":"RG3 검토 G8"}
+{"id":"mx026","text":"이별하고 나서 가슴이 너무 아파요 식은땀도 나요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-13","note":"RG3 검토 G8"}
+{"id":"mx027","text":"웃다가 쓰러졌는데 안 일어나요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-16","note":"RG3 검토 G8"}
+{"id":"mx028","text":"침대에 쓰러져서 안 일어나요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-16","note":"RG3 검토 G8"}
+{"id":"mx029","text":"놀라서 기절했어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-16","note":"RG3 검토 G8"}
+{"id":"mx030","text":"시험 공부하다 횡설수설해요 동생이","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-15","note":"RG3 검토 G8"}
+{"id":"mx031","text":"스트레스 받는데 갑자기 머리가 깨질 듯 아파요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-40","note":"RG3 검토 G8"}
+{"id":"mx032","text":"코피가 너무 많이 나고 안 멈춰요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-20","note":"RG3 검토 G8"}
+{"id":"mx033","text":"생리 중인데 피가 너무 많이 나서 어지러워요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-08","note":"RG3 검토 G8 — 검토 기대는 URGENT, ES로 더 높게 걸림(안전 쪽)"}
+{"id":"mx034","text":"술 마시고 친구가 깨워도 안 깨요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-01","note":"RG3 검토 G8 단계 차이 — 검토 기대는 URGENT, ES로 더 높게 걸림(안전 쪽)"}

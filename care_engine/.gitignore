@@ -1,0 +1,10 @@
+# 평가 실행 결과(로컬 전용)
+eval/out/
+# 비밀 값은 저장소에 넣지 않는다
+.env
+.env.*
+node_modules/
+
+# 작업 지시서·보고서·작업기록: 로컬에만 둔다(저장소에는 README와 설계 문서만)
+docs/prompts/
+docs/reports/
