@@ -48,11 +48,11 @@ export function askStartQuestion() {
     [OPT.findPharmacy, '약국 찾기'],
   ]);
 }
-/** 11/17 RF2: 위험 표현 확인 질문(초안 그대로). @param {string} id RISK_CONFIRM_<n> */
+/** 11/17 RF2 → RG1: 위험 표현 확인 질문. 기준을 '지금'에서 '오늘'로(멎은 경련·끝난 토혈은 예, 작년 일은 아니요). @param {string} id RISK_CONFIRM_<n> */
 export function riskConfirmQuestion(id) {
-  return q(id, '방금 말씀하신 일이 지금 실제로 일어나고 있나요? (본인이나 함께 있는 분에게)', [
-    [OPT.riskYes, '예, 지금 그래요'],
-    [OPT.riskNo, '아니요'],
+  return q(id, '앞에서 말씀하신 일이 오늘 실제로 있었던 일인가요? (본인이나 함께 있는 분에게, 지금은 괜찮아졌어도)', [
+    [OPT.riskYes, '예, 오늘 있었어요'],
+    [OPT.riskNo, '아니요 (예전 일이거나 실제 일이 아니에요)'],
     [OPT.riskUnsure, '잘 모르겠어요'],
   ]);
 }
@@ -158,7 +158,7 @@ export const SUMMARY = Object.freeze({
   pain: (v) => `통증: ${v}점 (0~10)`,
   departments: '참고할 진료과',
   unchecked: '복용 중인 약, 기존 질환, 함께 있는 다른 증상은 확인하지 않았어요. 해당되면 진료 때 꼭 알려 주세요.',
-  // 11/17 RF2: 확인 질문에 '잘 모르겠어요'(또는 2번 무응답)일 때 요약 첫 줄(risk_unconfirmed, 초안 그대로)
+  // 11/17 RF2·RG1: 확인 질문에 '잘 모르겠어요'(또는 2번 무응답, 확인 전 skip)일 때 요약 첫 줄(risk_unconfirmed)
   riskUnconfirmed: '응급 증상인지 확인하지 못했어요. 증상이 심해지거나 걱정되면 바로 119에 연락하거나 응급실로 가세요.',
   safetyUnanswered: '응급 확인 질문에 답하지 않았어요. 의식이 흐리거나 숨쉬기 힘들거나, 갑작스러운 마비·말하기 어려움·심한 가슴 통증·멈추지 않는 출혈이 있으면 지금 119에 연락하세요.',
   footer: '증상이 갑자기 심해지면 119에 연락하세요.',

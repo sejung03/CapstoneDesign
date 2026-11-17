@@ -108,9 +108,10 @@ test('R5(+RF2): 위험 표현 뒤 Q0=아니요·안전 답 SAFE로는 응급 안
     assert.equal(out.response.followUp.id, 'RISK_CONFIRM_1');
     assert.ok(out.trace.ruleHits.includes('FT-CHEST-01'));
   }
-  // 확인 전 skip → '예'로 본다(보수적): 응급 안내만
+  // 11/17 RG1: 확인 전 skip → '잘 모르겠어요'로 본다: 응급 안내를 유지한 채 추천(요약 첫 줄 경고)
   const skip = await call({reason: 'skip', messages: [m], answers: {Q0: 'no'}});
-  assert.deepEqual(Object.keys(skip.out.response), ['emergency']);
+  assert.equal(skip.out.response.emergency.active, true);
+  assert.equal(skip.out.response.search.type, 'hospital');
   // RISK_CONFIRM_1 = 아니요 → 안내 해제(active:false) + 문진 계속
   const no = await call({reason: 'followup', messages: [m], answers: {Q0: 'no', RISK_CONFIRM_1: 'risk_no'}});
   assert.equal(no.out.response.emergency.active, false);

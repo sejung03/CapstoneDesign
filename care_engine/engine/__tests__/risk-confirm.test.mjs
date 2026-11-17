@@ -45,8 +45,8 @@ test('RF2: 첫 걸림 → 응급 안내(문진 계속형) + RISK_CONFIRM_1, 진�
   assert.equal(r.response.emergency.message.ko, EMERGENCY_TEXT.freetext_urgent.message);
   assert.equal(r.response.followUp.id, 'RISK_CONFIRM_1');
   assert.deepEqual(r.response.followUp.options.map((o) => o.id), ['risk_yes', 'risk_no', 'risk_unsure']);
-  assert.deepEqual(r.response.followUp.options.map((o) => o.label.ko), ['예, 지금 그래요', '아니요', '잘 모르겠어요']);
-  assert.equal(r.response.followUp.label.ko, '방금 말씀하신 일이 지금 실제로 일어나고 있나요? (본인이나 함께 있는 분에게)');
+  assert.deepEqual(r.response.followUp.options.map((o) => o.label.ko), ['예, 오늘 있었어요', '아니요 (예전 일이거나 실제 일이 아니에요)', '잘 모르겠어요']);
+  assert.equal(r.response.followUp.label.ko, '앞에서 말씀하신 일이 오늘 실제로 있었던 일인가요? (본인이나 함께 있는 분에게, 지금은 괜찮아졌어도)');
   assert.equal(r.trace.terminal, false);
   assert.deepEqual(r.trace.riskConfirm, {state: 'pending', asks: 1});
   assert.equal(r.calls.classify.length + r.calls.profile.length, 0);
@@ -121,9 +121,15 @@ test('RF2: 검토 I7 재현 — 부정 표현 + 배 아픔, 오탐 + 두통이 "
   }
 });
 
-test('RF2: 확인 전 skip → 예로 봄(응급 안내만), 잘 모르겠어요 + skip → 안내 붙은 추천', async () => {
+test('RG1: 확인 전 skip → 잘 모르겠어요로 봄(응급 안내 유지 + 추천, 요약 첫 줄 경고). 잘 모르겠어요 + skip도 같음', async () => {
+  // 11/17 RG1: RF 판단 #2(확인 전 skip = 예)를 바꿈 — 답하지 않은 것은 '잘 모르겠어요'(두 번 무응답과 같은 처리)
   const s = await run([URGENT], {Q0: 'no'}, 'skip');
-  assert.deepEqual(Object.keys(s.response), ['emergency']);
+  assert.equal(s.response.emergency.active, true);
+  assert.equal(s.response.emergency.message.ko, EMERGENCY_TEXT.freetext_urgent.message);
+  assert.equal(s.response.search.type, 'hospital');
+  assert.equal(s.response.summary.ko.split('\n')[0], SUMMARY.riskUnconfirmed);
+  assert.equal(s.trace.terminal, false);
+  assert.equal(s.trace.riskConfirm.state, 'unsure');
   const u = await run([URGENT], {Q0: 'no', RISK_CONFIRM_1: 'risk_unsure'}, 'skip');
   assert.equal(u.response.emergency.active, true);
   assert.ok(u.response.summary.ko.startsWith(SUMMARY.riskUnconfirmed));
@@ -150,13 +156,14 @@ test('RF6(검토 I3): 무응답으로 잘 모르겠어요가 된 뒤 새 urgent 
   assert.equal(no.response.followUp.id, 'N1');
 });
 
-test('RF6(검토 S3): 이미 지나간 사건 규칙(경련·실신·토혈 등)은 아니요여도 요약 첫 줄에 경고', async () => {
-  for (const m of ['아이가 경기를 일으켰어요', '아침에 피를 토했어요', '아까 엄마가 쓰러졌어요']) {
+test('RG1: 지나간 사건 규칙(경련·실신·토혈)에 아니요 → 경고 없이 추천(RF 판단 #11 삭제), 예 → terminal 그대로', async () => {
+  // 11/17 RG1: 질문 기준이 '오늘'이 되어 오늘 있었던 일은 '예'로 온다. 그래서 '아니요'(예전 일)에 경고를 붙이지 않는다
+  for (const m of ['작년에 아이가 경기를 일으켰어요', '예전에 피를 토했어요', '몇 달 전에 엄마가 쓰러졌어요']) {
     const p = await path([m], {riskPick: 'risk_no'});
     assert.ok(p.final.search?.type === 'hospital', m);
-    assert.equal(p.final.summary.ko.split('\n')[0], SUMMARY.riskUnconfirmed, m);
+    assert.ok(!p.final.summary.ko.includes(SUMMARY.riskUnconfirmed), m);
+    const yes = await run([m], {RISK_CONFIRM_1: 'risk_yes'});
+    assert.deepEqual(Object.keys(yes.response), ['emergency'], m);
+    assert.equal(yes.trace.terminal, true, m);
   }
-  // 지나간 사건 규칙이 아니면 경고 없음
-  const chest = await path([URGENT], {riskPick: 'risk_no'});
-  assert.notEqual(chest.final.summary.ko.split('\n')[0], SUMMARY.riskUnconfirmed);
 });

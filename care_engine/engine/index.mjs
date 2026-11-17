@@ -14,7 +14,7 @@ import {recommend, symptomSexMismatch} from './recommend.mjs';
 import {buildSummary, buildEmergencySummary, buildMedInfoSummary} from './summary.mjs';
 import {emergencyNotice, withAddon, REFERRAL_ADDONS, riskConfirmQuestion, ENGINE_Q, OPT, TEMPLATE_VERSION} from './templates.mjs';
 import {resolveRiskConfirm} from './risk-confirm.mjs';
-import {RISK_CONFIRM_KEY, SENSITIVE_KEYS, SENSITIVE_CUE_RE, PAST_EVENT_RULES} from './constants.mjs';
+import {RISK_CONFIRM_KEY, SENSITIVE_KEYS, SENSITIVE_CUE_RE} from './constants.mjs';
 import {normalizeTerm} from '../llm/normalize.mjs';
 import {stripNoise} from './free-text.mjs';
 
@@ -403,9 +403,7 @@ async function core(payload, ctx, deps, trace, now, log) {
   trace.symptom.fallbackGroup = rec.group;
   // 11/17 EF(G6): 안전 미응답 판단 문항은 답 규칙이 가리키는 문항 전체(데이터에서 만듦)
   const safetyUnanswered = safetyCheckItemIds(data).some((id) => !vis.has(id));
-  // 11/17 RF6(검토 S3): 이미 지나간 사건 규칙(경련·실신·토혈·각혈·두부손상)은 '아니요'여도 요약 첫 줄 경고를 남긴다
-  const pastEventNo = risk.state === 'no' && safety.hits.some((h) => isUrgentFree(h) && PAST_EVENT_RULES.includes(h.ruleId));
-  const summary = buildSummary({slots: trace.slots, codes: vis, symptom: symptomObj, departments: rec.departments, data, safetyUnanswered, riskUnconfirmed: risk.state === 'unsure' || pastEventNo});
+  const summary = buildSummary({slots: trace.slots, codes: vis, symptom: symptomObj, departments: rec.departments, data, safetyUnanswered, riskUnconfirmed: risk.state === 'unsure'}); // 11/17 RG1: RF 판단 #11(지나간 사건 '아니요' 경고) 삭제 — 질문 기준이 '오늘'이 되어 필요 없음
   const response = withEmergency({summary: {ko: summary}, search: rec.search});
 
   // 건강정보 후보: 상담 대상이 본인일 때만, 요청당 LLM 1번(이미 증상 분류를 불렀으면 건너뜀)
