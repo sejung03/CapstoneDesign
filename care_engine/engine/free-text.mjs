@@ -75,12 +75,31 @@ export function loadFreeTextRules(file = DEFAULT_FREE_TEXT_PATH) {
 }
 
 /**
+ * 정규화한 문자열에서 글자·숫자가 아닌 것과 홀로 쓴 한글 자모를 지운다.
+ * NFKC가 호환 자모(ㅠ U+3160 등)를 첫가끝 자모(U+1100~U+11FF)로 바꾸므로 두 범위와 확장 자모를 모두 지운다.
+ * 완성형 음절(가~힣)은 NFKC 뒤에도 그대로라 지워지지 않는다.
+ */
+export function stripNoise(t) {
+  return String(t ?? '')
+    .replace(/[^\p{L}\p{N}]/gu, '')
+    .replace(/[ᄀ-ᇿㄱ-ㆎꥠ-꥿ힰ-퟿]/g, '');
+}
+
+/**
  * 메시지마다 정규화한 뒤 패턴 검사. 걸린 규칙의 ruleId 목록(중복 없음, 규칙 파일 순서).
  * @param {string[]} messages
  * @param {{rules:Array<object>}} ruleSet compileFreeTextRules 결과
  */
 export function matchFreeText(messages, ruleSet) {
-  const texts = (Array.isArray(messages) ? messages : []).filter((m) => typeof m === 'string').map((m) => normalizeTerm(m)).filter(Boolean);
+  const base = (Array.isArray(messages) ? messages : []).filter((m) => typeof m === 'string').map((m) => normalizeTerm(m)).filter(Boolean);
+  // 11/17 R6(검토 S6): 구두점·기호·이모지·홀로 쓴 한글 자모(ㅠㅠ 등)가 어간 사이에 끼면 패턴이 끊긴다.
+  // 그것들을 지운 두 번째 문자열도 함께 검사한다(원문은 어디에도 남기지 않는다).
+  const texts = [];
+  for (const t of base) {
+    texts.push(t);
+    const stripped = stripNoise(t);
+    if (stripped && stripped !== t) texts.push(stripped);
+  }
   if (texts.length === 0 || !ruleSet?.rules?.length) return [];
   const hits = [];
   for (const rule of ruleSet.rules) {

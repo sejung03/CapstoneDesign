@@ -21,7 +21,7 @@ care_engine/
     intake-data.mjs       문진·규칙·매핑·진료과 시드 CSV 읽기 + 로드 때 검사(IntakeDataError)
     answers.mjs           답 정리(followUpAnswers), enableWhen(보이는 문항)
     rules.mjs             안전 규칙 결정표(priority hit policy)
-    free-text.mjs         자유 입력 위험 표현 규칙(형식 검사·평가 자리, v1 규칙 0개)
+    free-text.mjs         자유 입력 위험 표현 규칙(형식 검사·평가, 구두점·자모를 지운 두 번째 문자열도 검사)
     flow.mjs              다음 문항, 문항 → followUp
     slots.mjs             결과 매핑(card·filter·detail·report·flow)
     dictionary-match.mjs  사전 증상 매칭 기본 구현(팀원 2 모듈 자리, deps.matchSymptoms로 교체)
@@ -33,7 +33,7 @@ care_engine/
     templates.mjs         엔진 질문·응급 안내·요약 문구(templates-v1, 팀 검토 전 초안)
     contract.mjs          응답 계약 검사(프론트 normalizeAssistantResponse 규칙)
     rules/
-      free_text_v1.json         자유 입력 위험 표현 규칙(지금은 rules: [])
+      free_text_v1.json         자유 입력 위험 표현 사전 v1(규칙 40개, draft, 11/17 R)
       facility_keywords_v2.json 키워드 기관 찾기 단서(초안, 11/17 EF: 엔진이 읽는 파일, riskCues 포함)
       facility_keywords_v1.json 이전 판(기록용, 엔진이 읽지 않음)
     __tests__/            node:test(네트워크 없음)
@@ -67,6 +67,7 @@ care_engine/
     candidate_loo.mjs     후보 생성 leave-one-out(LLM 없음)
     engine_scenarios.mjs  문진 엔진 경로 시나리오 + 가짜 사용자 simulate()(테스트와 eval:paths가 같이 씀)
     engine_paths.mjs      경로별 질문 수 표(네트워크 없음)
+    risk_eval.mjs         위험 표현 사전 평가(npm run eval:risk, 사례 id·rule_id만 출력)
     out/                  결과(.gitignore) — 사례 원문 없음
   docs/                   설계·지시서·보고서
 ```
@@ -79,6 +80,7 @@ care_engine/
 cd care_engine
 npm test                                  # 단위 테스트 전부(네트워크 없음)
 npm run eval:paths                        # 문진 엔진 경로별 질문 수 표 + eval/out/engine_paths_*.json (네트워크 없음)
+npm run eval:risk                         # 위험 표현 사전 평가(risk_v1 153건 + 검토 회귀셋 199건), 통과 기준 못 맞추면 종료 코드 1
 npm run eval:smoke                        # OpenAI 실제 호출 10건 + temperature 시험 1건 (.env 필요)
 npm run eval:openai -- --repeat 2         # OpenAI로 draft_v0 30개 평가 (기본 all 모드)
 LLM_CANDIDATE_MODE=retrieve npm run eval:openai -- --repeat 2   # retrieve 비교용
@@ -147,7 +149,7 @@ else { respond(out.response); saveTrace(out.trace); }
 - 데이터는 `../data_pipeline/db/seed/v2.1-20261113/` CSV(읽기만, 시작 후 캐시). Supabase 로더는 같은 형식으로 나중에(`deps.refStore`).
 
 **규칙 파일 자리**
-- 자유 입력 위험 표현 규칙: `engine/rules/free_text_v1.json` (`{"version", "rules":[{rule_id:"FT-…", priority:1~9, patterns:[정규식], result, terminal, message_key, evidence, review_status}]}`). 패턴은 NFKC → 소문자 → 공백 제거한 메시지에 적용. v1은 비어 있다(위험 표현 사전은 다음 작업). 형식이 틀리면 `error:'data'`.
+- 자유 입력 위험 표현 규칙: `engine/rules/free_text_v1.json` (`{"version", "rules":[{rule_id:"FT-…", priority:1~9, patterns:[정규식], result, terminal, message_key, evidence, review_status}]}`). 패턴은 NFKC → 소문자 → 공백 제거한 메시지(와 거기서 구두점·이모지·홀로 쓴 자모를 지운 문자열)에 메시지마다 적용. *(11/17 R 반영)* 위험 표현 사전 v1: 규칙 40개(EMERGENCY_STOP 11 → 지금 119 문구, URGENT_NOTICE 28 → 119·응급실 문구, 자해·자살 생각 1 → 109 문구), 모두 `review_status: draft`. 근거는 `docs/위험표현_기준표.md`(응급의료법 시행규칙 별표1·119 상담 매뉴얼). 한 번 걸리면 메시지가 남아 있는 동안 매 요청 응급 안내만 나간다(상태 없음). trace·로그에는 rule_id만(원문·패턴 없음). 형식이 틀리면 `error:'data'`.
 - 키워드 기관 찾기 단서: `engine/rules/facility_keywords_v2.json`(초안, 평가셋으로 고칠 것). *(11/17 EF 반영)* `riskCues`가 없으면 로드를 거부한다(`error:'data'`). v1 파일은 기록용.
 - 엔진 문구: `engine/templates.mjs`(팀·교수님 검토 전 초안).
 

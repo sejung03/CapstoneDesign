@@ -1,0 +1,199 @@
+{"id":"v001","text":"할머니가 쓰러지셨어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_emergency","criteria_id":null,"note":"쓰러짐은 C-16(UN) — 쓰러졌어요와 같은 수준"}
+{"id":"v002","text":"아빠가 깨워도 안 일어나요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v003","text":"아이가 축 늘어져서 반응이 없어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v004","text":"아이가 아무 반응이 없어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v005","text":"엄마가 눈을 안 떠요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v006","text":"아빠가 정신을 못 차려요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v007","text":"불러도 반응이 업어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v008","text":"의식이 엄서요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v009","text":"심장이 멎었어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v010","text":"숨을...안 쉬어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v011","text":"숨을 ㅠㅠ 안쉬어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v012","text":"아빠가 쓰러져서 숨을 이상하게 쉬어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v013","text":"피가 너무 많이 나요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v014","text":"피가 억수로 나요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v015","text":"아이가 경기 해요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v016","text":"경련을 해요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v017","text":"엄마가 발작해요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v018","text":"아이가 열이 나면서 경기를 일으켜요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v019","text":"아이가 몸을 부들부들 떨면서 눈이 돌아가요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v020","text":"엄마가 농약을 드셨어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v021","text":"할아버지가 약을 한꺼번에 드셨어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v022","text":"아이가 엄마 혈압약을 여러 알 삼켰어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v023","text":"약을 너무 많이 먹은 거 같아요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v024","text":"아이가 수영장에서 빠졌어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v025","text":"떡이 목에 걸렸는데 얼굴이 파래져요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v026","text":"아기 입술이 파래요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v027","text":"할아버지가 기절하셨어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_emergency","criteria_id":null}
+{"id":"v028","text":"엄마가 실신하셨어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_emergency","criteria_id":null}
+{"id":"v029","text":"숨쉬기 힘들어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_emergency","criteria_id":null}
+{"id":"v030","text":"갑자기 숨이 막혀요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_emergency","criteria_id":null}
+{"id":"v031","text":"숨을 몬 쉬겠어예","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_emergency","criteria_id":null}
+{"id":"v032","text":"피가 멈추지를 않아요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_emergency","criteria_id":null}
+{"id":"v033","text":"피가 안 그쳐요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_emergency","criteria_id":null}
+{"id":"v034","text":"가슴이 많이 아파요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_emergency","criteria_id":null}
+{"id":"v035","text":"가슴이 찢어질 것 같이 아파요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_emergency","criteria_id":null}
+{"id":"v036","text":"가슴이 너무 아프시대요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_emergency","criteria_id":null}
+{"id":"v037","text":"갑자기 말이 안 나와요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_emergency","criteria_id":null}
+{"id":"v038","text":"혀가 꼬이고 말이 이상해요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_emergency","criteria_id":null}
+{"id":"v039","text":"높은 데서 떨어졌어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_emergency","criteria_id":null}
+{"id":"v040","text":"아이가 뜨거운 물을 뒤집어썼어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_emergency","criteria_id":null}
+{"id":"v041","text":"죽을까 생각 중이에요","expect":"URGENT_NOTICE","expect_key":"crisis_notice_109","group":"review_emergency","criteria_id":null}
+{"id":"v042","text":"다 끝내고 싶어요","expect":"URGENT_NOTICE","expect_key":"crisis_notice_109","group":"review_emergency","criteria_id":null}
+{"id":"v043","text":"더 이상 살 이유가 없어요","expect":"URGENT_NOTICE","expect_key":"crisis_notice_109","group":"review_emergency","criteria_id":null}
+{"id":"v044","text":"죽는 게 나을 것 같아요","expect":"URGENT_NOTICE","expect_key":"crisis_notice_109","group":"review_emergency","criteria_id":null}
+{"id":"v045","text":"죽고십다","expect":"URGENT_NOTICE","expect_key":"crisis_notice_109","group":"review_emergency","criteria_id":null}
+{"id":"v046","text":"뒤지고 싶다","expect":"URGENT_NOTICE","expect_key":"crisis_notice_109","group":"review_emergency","criteria_id":null}
+{"id":"v047","text":"내가 없어지면 다들 편할 텐데","expect":"URGENT_NOTICE","expect_key":"crisis_notice_109","group":"review_emergency","criteria_id":null}
+{"id":"v048","text":"방금 제 몸에 상처를 냈어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v049","text":"숨을 안쉬는거 같아요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v050","text":"숨을 못쉬겟어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_emergency","criteria_id":null}
+{"id":"v051","text":"왼쪽 팔다리가 저리고 힘이 안 들어가요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_emergency","criteria_id":null}
+{"id":"v052","text":"입이 한쪽으로 돌아갔어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_emergency","criteria_id":null}
+{"id":"v053","text":"땅콩 먹고 목이 부어올라요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_emergency","criteria_id":null}
+{"id":"v054","text":"벌에 쏘였는데 숨이 차요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_emergency","criteria_id":null}
+{"id":"v055","text":"엄마가 쓰러졌는데 깨워도 반응이 없어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null}
+{"id":"v056","text":"피를 토하셨어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_emergency","criteria_id":null}
+{"id":"v057","text":"더워서 죽고 싶다","expect":"URGENT_NOTICE","expect_key":"crisis_notice_109","group":"review_collision","criteria_id":null,"note":"과장 표현도 109 안내(설계 원칙 1, r080)"}
+{"id":"v058","text":"시험 망해서 죽고싶다 ㅋㅋ","expect":"URGENT_NOTICE","expect_key":"crisis_notice_109","group":"review_collision","criteria_id":null,"note":"과장 표현도 109 안내"}
+{"id":"v059","text":"이 동네 살기 싫어 이사 가고 싶다","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v060","text":"오늘은 술 먹고 죽어야겠다","expect":"URGENT_NOTICE","expect_key":"crisis_notice_109","group":"review_collision","criteria_id":null,"note":"과장 표현도 109 안내"}
+{"id":"v061","text":"피곤해서 집 오자마자 침대에 쓰러졌어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v062","text":"야근하고 소파에 쓰러져서 잤어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v063","text":"태풍 때문에 나무가 쓰러졌어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v064","text":"가격 보고 기절했어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v065","text":"놀라서 까무러칠 뻔했어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v066","text":"너무 예뻐서 숨이 멎었어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v067","text":"그 영화 보고 심장이 멈췄어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v068","text":"아이돌 사진 보고 심장마비 걸렸어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v069","text":"이제 남친을 봐도 심장이 안 뛰어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v070","text":"남자친구가 카톡으로 불러도 대답이 없어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v071","text":"여자친구가 갑자기 말을 안 해요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v072","text":"헤어져서 가슴이 너무 아파","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v073","text":"그 말이 가슴에 박혔어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v074","text":"그 노래가 머리에 박혔어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v075","text":"쇼핑하다가 그 옷이 눈에 꽂혔어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v076","text":"친구가 자꾸 헛소리를 해","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v077","text":"발표 때 긴장해서 횡설수설했어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v078","text":"화장하니까 사람을 못 알아보겠어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v079","text":"바빠서 정신이 왔다갔다 해","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v080","text":"공부하다 정신을 잃고 잠들었어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v081","text":"축구 경기에서 팀원들이 호흡을 안 맞춰서 졌어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v082","text":"우리 아이가 지금 축구 경기를 하고 있어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v083","text":"아이가 경기 해요 응원 가야 돼요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v084","text":"달리기 하고 나서 숨을 헐떡였어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v085","text":"마스크 때문에 숨을 못 쉬겠어","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_collision","criteria_id":null,"note":"숨을 못 쉼은 맥락과 상관없이 안내(경계 사례, 검토자도 경계로 봄)"}
+{"id":"v086","text":"미세먼지 때문에 숨쉬기가 너무 힘들어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v087","text":"게임에서 총에 맞았어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v088","text":"롤 하다가 화나서 쓰러졌어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v089","text":"익사이팅한 주말 보냈어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v090","text":"비 맞아서 내가 물에 빠진 생쥐 같아","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v091","text":"아이폰에 앱이 깔렸어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v092","text":"인맥이 약해서 취업이 힘들어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v093","text":"주가가 추락해서 아빠가 속상해하셔","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v094","text":"친구가 성적이 추락했대","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v095","text":"베란다에서 빨래가 떨어졌어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v096","text":"의자 다리가 떨어져 나갔어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v097","text":"문 손잡이가 떨어져 나갔어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v098","text":"손톱이 잘렸어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v099","text":"인터넷 케이블이 절단됐어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v100","text":"생선 뼈가 보여요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v101","text":"요리하다 칼에 살짝 찔렸어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v102","text":"친구가 장난으로 옆구리를 찔렸어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v103","text":"세탁기 탈수가 너무 세요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v104","text":"배를 움켜쥐고 웃었어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v105","text":"데굴데굴 구를 정도로 웃겼어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v106","text":"어제 라면 먹고 자서 얼굴이 부었어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v107","text":"술 먹고 자서 얼굴이 퉁퉁 부었어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v108","text":"혀가 부르텄어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v109","text":"독사진 찍어줘","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v110","text":"문 열다가 정전기에 감전됐어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v111","text":"그러다 벼락 맞는다","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v112","text":"낙뢰 주의보 떴어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v113","text":"갑자기 화면이 안 보여요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v114","text":"실명 인증 어떻게 해요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v115","text":"시험 망해서 갑자기 앞이 깜깜해","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v116","text":"모니터 오래 봐서 눈알 터지겠다","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v117","text":"외국인이라 한국말이 어눌해요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v118","text":"제 영어 발음이 이상해요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v119","text":"술 마셔서 발음이 꼬여","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v120","text":"너무 맛있어서 입이 돌아갔어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v121","text":"눈꺼풀이 계속 경련 중이에요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v122","text":"눈 밑이 파르르 경련해서 신경 쓰여","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v123","text":"공황발작을 했어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v124","text":"웃음 발작 했어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v125","text":"생리 출혈이 많아요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v126","text":"잇몸 출혈이 심해요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v127","text":"코피가 펑펑 나요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_collision","criteria_id":null,"note":"검토 I4대로 ES→UN으로 낮춤"}
+{"id":"v128","text":"영화가 완전 피범벅이야","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v129","text":"아침 약을 잘못 먹었어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v130","text":"타이레놀 과다복용하면 어떻게 돼요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v131","text":"카페인 과다복용 증상 알려줘","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v132","text":"뉴스에서 연예인이 극단적 선택을 했대","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v133","text":"오늘 사고로 몇 명이 다쳤어?","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v134","text":"심정지 원인 알려줘","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v135","text":"익사 사고 예방법 알려줘","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v136","text":"질식사고 예방법 알려줘","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v137","text":"의식이 없는 사람 응급처치 알려줘","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_collision","criteria_id":null,"note":"의식 없는 사람에 대한 질문은 지금 상황일 수 있어 119 안내 유지"}
+{"id":"v138","text":"심폐소생술 해야 할 때 순서 알려줘","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v139","text":"열사병 예방법 알려줘","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v140","text":"열사병으로 쓰러지는 이유가 뭐야","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v141","text":"안면마비 한의원 추천해줘","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v142","text":"편마비 재활 병원 추천해 주세요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v143","text":"흑변 원인 알려줘","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v144","text":"초음파에서 아기가 보여요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v145","text":"하혈이 많이 있어요 생리 때문인지","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v146","text":"목에 생선 가시가 박혔어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v147","text":"목감기라 침을 못 삼키겠어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v148","text":"발목을 크게 다쳤어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v149","text":"오른쪽 다리에 힘이 빠져요 운동 너무 했나","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_collision","criteria_id":null,"note":"한쪽 다리 힘 빠짐은 뇌졸중 신호일 수 있어 유지(경계)"}
+{"id":"v150","text":"당뇨 관리 때문에 정신이 없어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v151","text":"열경련 하면 어떻게 해요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v152","text":"동생이 흔들어도 안 일어나요 늦잠 자요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"늦잠이라고 스스로 밝힌 문장은 제외(늦잠·지각·아침마다 제외어). 검토자는 유지 권고 — 판단 차이"}
+{"id":"v153","text":"숨을 안 쉬고 잠수 1분 버텼어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v154","text":"호흡이 멈출 듯한 긴장감이었어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v155","text":"스마트워치에 맥박이 안 잡혀요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v156","text":"회사에서 잘렸어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v157","text":"비 와서 날씨가 우중충해","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v158","text":"쿠폰 어디서 받아요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v159","text":"오늘 점심 뭐 먹지","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v160","text":"내일 시험인데 공부가 하나도 안 돼","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v161","text":"과제 마감이 오늘이라 정신이 없어요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v162","text":"팀장님이 보고서를 다시 쓰래요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v163","text":"월급날 언제 오나","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v164","text":"오늘 저녁은 김치찌개 끓일 거야","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v165","text":"고기 굽다가 연기가 너무 많이 났어","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v166","text":"양파 썰다가 눈물 났어","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v167","text":"택배가 아직 안 왔어요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v168","text":"이 신발 사이즈 교환되나요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v169","text":"앱이 자꾸 꺼져요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v170","text":"폰 배터리가 금방 닳아요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v171","text":"와이파이 비밀번호 알려줘","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v172","text":"비가 너무 많이 와서 우산 써도 다 젖었어","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v173","text":"오늘 미세먼지 나쁨이래","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v174","text":"내일 눈 온대","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v175","text":"축구 보다가 소리 질렀어","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v176","text":"야구 9회말 역전했어","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v177","text":"게임 랭크 떨어졌어","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v178","text":"친구랑 싸워서 속상해","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v179","text":"고백했는데 차였어","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v180","text":"썸 타는 사람이 답장을 안 해","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v181","text":"목이 좀 아프고 기침이 나요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v182","text":"어제부터 열이 37.8도예요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v183","text":"배탈 나서 설사해요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v184","text":"허리가 아파서 오래 못 앉아 있어요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v185","text":"손목이 시큰거려요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v186","text":"어깨가 결려요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v187","text":"두통이 좀 있어요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v188","text":"눈이 뻑뻑해요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v189","text":"알레르기 비염 약 추천해 주세요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v190","text":"독감 예방접종 어디서 맞아요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v191","text":"혈압약 먹는 시간 알려줘","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v192","text":"너무 피곤해서 쓰러질 것 같아","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v193","text":"웃겨서 배 아파","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v194","text":"배불러 죽겠다","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v195","text":"심장이 두근두근 설레","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v196","text":"머리 아파 죽겠어","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v197","text":"손 베여서 피가 조금 났어요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v198","text":"모기 물려서 부었어요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"v199","text":"넘어져서 무릎이 까졌어요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}

@@ -5,7 +5,7 @@ import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 import {loadFreeTextRules, compileFreeTextRules, DEFAULT_FREE_TEXT_PATH} from '../free-text.mjs';
-import {EMERGENCY_TEXT} from '../templates.mjs';
+import {EMERGENCY_TEXT, withCrisis109, CRISIS_109_ADDON} from '../templates.mjs';
 import {call, fakeLlm, SAFE_BASE} from './helpers.mjs';
 import {loadRiskCases, runRiskEval} from '../../eval/risk_eval.mjs';
 import {pharmacyStarterText} from '../../eval/engine_scenarios.mjs';
@@ -117,12 +117,21 @@ test('R5: 자해·자살 생각 → crisis_notice_109 문구의 emergency, 진�
 });
 
 test('R5: 우선순위 — EMERGENCY_STOP 표현 + 자해 생각 표현이 함께 있으면 EMERGENCY_STOP(119 문구), 걸린 규칙은 모두 trace', async () => {
+  // 11/17 R6(검토 I5): 앞선 규칙 문구에 109 한 문장이 덧붙는다(109가 사라지지 않게)
   const {out} = await call({messages: [byId('r077').text, byId('r019').text]});
-  assert.equal(out.response.emergency.message.ko, EMERGENCY_TEXT.freetext_emergency_119.message);
+  assert.equal(out.response.emergency.title.ko, EMERGENCY_TEXT.freetext_emergency_119.title);
+  assert.equal(out.response.emergency.message.ko, withCrisis109({message: {ko: EMERGENCY_TEXT.freetext_emergency_119.message}}).message.ko);
+  assert.ok(out.response.emergency.message.ko.startsWith('생명이 위험할 수 있는 상황으로 보여요. 바로 119에 전화하세요.'));
+  assert.ok(out.response.emergency.message.ko.includes('109'));
+  assert.ok(out.response.emergency.message.ko.endsWith('이 서비스는 진단을 하지 않아요.'));
   assert.deepEqual(out.trace.ruleHits, ['FT-SELFHARM-ACT-01', 'FT-SELFHARM-THINK-01']);
-  // URGENT + 109 → URGENT(119·응급실 문구, priority 4 < 8)
+  // URGENT + 109 → URGENT(119·응급실 문구, priority 4 < 8) + 109 한 문장
   const u = await call({messages: [byId('r078').text, byId('r023').text]});
-  assert.equal(u.out.response.emergency.message.ko, EMERGENCY_TEXT.freetext_urgent.message);
+  assert.ok(u.out.response.emergency.message.ko.startsWith('응급 진료가 필요할 수 있는 증상으로 보여요.'));
+  assert.ok(u.out.response.emergency.message.ko.includes(CRISIS_109_ADDON));
+  // 109가 함께 걸리지 않으면 덧붙이지 않는다
+  const plain = await call({messages: [byId('r023').text]});
+  assert.equal(plain.out.response.emergency.message.ko, EMERGENCY_TEXT.freetext_urgent.message);
   // 답 규칙(priority 10 이상)보다 자유 입력 규칙(1~9)이 먼저
   const a = await call({reason: 'followup', messages: [byId('r003').text], answers: {Q0: 'no', N1: 'no'}});
   assert.equal(a.out.trace.ruleHits[0], 'FT-APNEA-01');
@@ -151,4 +160,15 @@ test('R5: 위험 표현이 없는 평가 문장(nonemergency·metaphor·facility
     assert.deepEqual(out.trace.ruleHits, [], c.id);
     assert.ok(out.response.followUp?.id === 'Q0' || out.response.search?.type === 'pharmacy', c.id);
   }
+});
+
+test('R6(검토 S6): 구두점·이모지·홀로 쓴 자모가 어간 사이에 있어도 걸린다(두 번째 정규화 문자열), 완성형 음절은 지우지 않는다', async () => {
+  const {stripNoise, matchFreeText} = await import('../free-text.mjs');
+  const rules = loadFreeTextRules();
+  assert.equal(stripNoise('숨을...안쉬어요'), '숨을안쉬어요');
+  assert.equal(stripNoise('가나다ㅠㅠ'.normalize('NFKC')), '가나다'); // 자음+모음 자모(ㄱㅠ)는 NFKC가 음절(규)로 합치므로 지워지지 않는다(보고서에 적음)
+  for (const t of ['숨을...안 쉬어요', '숨을 ㅠㅠ 안쉬어요', '의식이, 없어요!!', '피를 🩸 토했어요']) {
+    assert.ok(matchFreeText([t], rules).length > 0, t);
+  }
+  assert.deepEqual(matchFreeText(['오늘 점심 뭐 먹지?? ㅋㅋ'], rules), []);
 });

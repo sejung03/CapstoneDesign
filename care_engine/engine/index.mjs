@@ -12,7 +12,9 @@ import {evaluateFacilityKeywords, loadFacilityKeywords, messageCues} from './fac
 import {identify, resolveFromAnswers, userMessages} from './identify.mjs';
 import {recommend, symptomSexMismatch} from './recommend.mjs';
 import {buildSummary, buildEmergencySummary, buildMedInfoSummary} from './summary.mjs';
-import {emergencyNotice, ENGINE_Q, OPT, TEMPLATE_VERSION} from './templates.mjs';
+import {emergencyNotice, withCrisis109, ENGINE_Q, OPT, TEMPLATE_VERSION} from './templates.mjs';
+
+const CRISIS_KEY = 'crisis_notice_109';
 import {checkResponseContract} from './contract.mjs';
 import {TARGET_ITEM_ID, TARGET_SELF, INJURY_ITEM_ID, INJURY_YES} from './constants.mjs';
 
@@ -234,6 +236,8 @@ async function core(payload, ctx, deps, trace, now, log) {
   if (top) {
     const notice = emergencyNotice(top.messageKey);
     if (notice.warning) trace.warnings.push(`${notice.warning}:${top.ruleId}`);
+    // 11/17 R6(검토 I5): 자해·자살 생각 규칙이 함께 걸렸으면 앞선 규칙의 문구에도 109 한 문장을 덧붙인다
+    if (top.messageKey !== CRISIS_KEY && safety.hits.some((h) => h.messageKey === CRISIS_KEY)) notice.emergency = withCrisis109(notice.emergency);
     if (top.result === 'EMERGENCY_STOP' || top.terminal) {
       trace.terminal = true;
       const response = {emergency: notice.emergency};

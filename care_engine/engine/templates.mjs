@@ -81,6 +81,23 @@ export const EMERGENCY_TEXT = Object.freeze({
     message: '지금 많이 힘드신 것 같아요. 자살예방 상담전화 109에서 24시간 이야기를 들어 드려요. 지금 위험한 상황이라면 바로 119에 연락하세요. 이 서비스는 진단을 하지 않아요.',
   },
 });
+/**
+ * 11/17 R6(검토 I5): 자해·자살 생각 규칙(crisis_notice_109)이 함께 걸렸는데 더 앞선 규칙의 문구가 나갈 때
+ * 109가 사라지지 않게 덧붙이는 한 문장. 진단 아님 문장 앞에 넣는다.
+ */
+export const CRISIS_109_ADDON = '마음이 힘들다면 자살예방 상담전화 109에서도 24시간 이야기를 들어 드려요.';
+const NOT_DIAGNOSIS = '이 서비스는 진단을 하지 않아요.';
+
+/** emergency 객체에 109 한 문장을 덧붙인 새 객체(이미 109가 있으면 그대로). */
+export function withCrisis109(emergency) {
+  const ko = emergency?.message?.ko ?? '';
+  if (ko.includes('109')) return emergency;
+  const msg = ko.endsWith(NOT_DIAGNOSIS)
+    ? `${ko.slice(0, ko.length - NOT_DIAGNOSIS.length)}${CRISIS_109_ADDON} ${NOT_DIAGNOSIS}`
+    : `${ko} ${CRISIS_109_ADDON}`.trim();
+  return {...emergency, message: {...emergency.message, ko: msg.slice(0, 1000)}};
+}
+
 const EMERGENCY_UNKNOWN = Object.freeze({title: URGENT_TITLE, message: '지금 119에 연락하거나 가까운 응급실로 가세요.'});
 
 /** @returns {{emergency:{active:true, title:{ko}, message:{ko}}, warning:string|null}} 모르는 키는 일반 긴급 문구 + warning */
