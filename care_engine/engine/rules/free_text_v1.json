@@ -61,7 +61,7 @@
     {
       "rule_id": "FT-POISON-01", "priority": 2, "result": "EMERGENCY_STOP", "terminal": true, "triage_category_id": 27,
       "message_key": "freetext_emergency_119",
-      "patterns": ["약을(한꺼번에|한번에|왕창|통째로|잔뜩|많이|너무많이)(먹었|삼켰|먹어버|먹었는데)", "과다복용", "과량복용", "(세제|락스|표백제|농약|살충제|제초제|부동액|독극물|쥐약|빙초산|가성소다|세정제|소독약)(를|을)?(마셨|먹었|삼켰|마셔서|먹어서|마신|먹은)", "독(극물)?을먹었", "약을잘못먹"],
+      "patterns": ["약을(한꺼번에|한번에|왕창|통째로|잔뜩|많이|너무)+(먹었|삼켰|먹어버|먹었는데)", "과다복용", "과량복용", "(세제|락스|표백제|농약|살충제|제초제|부동액|독극물|쥐약|빙초산|가성소다|세정제|소독약)(를|을)?(마셨|먹었|삼켰|마셔서|먹어서|마신|먹은)", "독(극물)?을먹었", "약을잘못먹"],
       "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 중독 '약물·알코올 또는 기타 물질의 과다 복용이나 중독' / 매뉴얼 범주 27 PDF p.39 긴급(약물과다, 가정용 세척제, 화학물질 섭취), 범주 12 p.23", "criteria_id": "C-09", "manual_119": {"category": 27, "page": 39, "level": "긴급"}},
       "review_status": "draft"
     },
@@ -75,7 +75,7 @@
     {
       "rule_id": "FT-MASS-01", "priority": 3, "result": "EMERGENCY_STOP", "terminal": true, "triage_category_id": null,
       "message_key": "freetext_emergency_119",
-      "patterns": ["(여러|많은|몇)(명|사람)(이|들이)?(다쳤|쓰러|부상|피를)", "사람들이(많이)?(다쳤|쓰러졌|깔렸)", "다수(의)?(부상자|환자|사상자)", "(사람|사람들|아이|애|누가|가족)(이|가)?.{0,4}깔렸"],
+      "patterns": ["(여러|많은|몇)(명|사람)(이|들이)?.{0,4}(다쳤|쓰러|부상|피를)", "사람들이(많이)?(다쳤|쓰러졌|깔렸)", "다수(의)?(부상자|환자|사상자)", "(사람|사람들|아이|애|누가|가족)(이|가)?.{0,4}깔렸"],
       "evidence": {"source": "manual_119", "ref": "매뉴얼 Ⅱ-1 PDF p.8 조기 긴급출동 '다수 환자 발생'", "criteria_id": "C-11", "manual_119": {"category": null, "page": 8, "level": "조기 긴급출동"}},
       "review_status": "draft"
     },
