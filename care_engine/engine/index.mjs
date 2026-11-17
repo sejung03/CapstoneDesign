@@ -1,6 +1,6 @@
 // 문진 엔진 공개 함수 runCare(설계 §2·§4). 상태 없는 함수: 프론트가 매번 보내는 메시지·답만으로 다시 계산한다.
 // 예외를 밖으로 던지지 않는다. trace·로그에는 사용자 원문을 넣지 않는다.
-import {classifySymptom, extractProfileUpdates} from '../llm/index.mjs';
+import {classifySymptom, classifySymptomWithRisk, detectRiskSignal, extractProfileUpdates} from '../llm/index.mjs';
 import {loadIntakeData} from './intake-data.mjs';
 import {normalizeAnswers, visibleCodes} from './answers.mjs';
 import {evaluateSafety, safetyCheckItemIds} from './rules.mjs';
@@ -80,7 +80,7 @@ function newTrace(reason) {
     symptom: {id: null, source: null, fallback: null, fallbackGroup: null},
     slots: null,
     skippedItems: [],
-    llm: {classify: {called: false}, profile: {called: false}},
+    llm: {risk: {called: false}, classify: {called: false}, profile: {called: false}},
     warnings: [],
   };
 }
@@ -196,6 +196,8 @@ async function core(payload, ctx, deps, trace, now, log) {
 
   const llm = {
     classifySymptom: deps.llm?.classifySymptom ?? ((input) => classifySymptom(input, {log})),
+    classifySymptomWithRisk: deps.llm?.classifySymptomWithRisk ?? ((input) => classifySymptomWithRisk(input, {log})),
+    detectRiskSignal: deps.llm?.detectRiskSignal ?? ((input) => detectRiskSignal(input, {log})),
     extractProfileUpdates: deps.llm?.extractProfileUpdates ?? ((input) => extractProfileUpdates(input, {log})),
   };
 
@@ -212,9 +214,14 @@ async function core(payload, ctx, deps, trace, now, log) {
   trace.ruleHits = safety.hits.filter((h) => !isSensitive(h)).map((h) => h.ruleId);
   // 11/17 RF2: freetext_urgent hit는 확인 질문(RISK_CONFIRM_<n>)의 답으로 거른다. '예'일 때만 지금처럼 terminal
   const risk = resolveRiskConfirm({hits: safety.hits, riskConfirms, messageCount: messages.length, reason});
-  if (risk.state !== 'none') trace.riskConfirm = {state: risk.state, asks: risk.asks};
   const isUrgentFree = (h) => h.source === 'free_text' && h.messageKey === RISK_CONFIRM_KEY;
+  if (risk.state !== 'none' && (safety.hits.some(isUrgentFree) || safety.hits.length === 0)) {
+    trace.riskConfirm = {state: risk.state, asks: risk.asks};
+  }
   let top = safety.hits.find((h) => !isUrgentFree(h) || risk.state === 'yes') ?? null;
+  if (!top && risk.state === 'yes' && riskConfirms.length > 0) {
+    top = {ruleId: null, result: 'URGENT_NOTICE', terminal: true, messageKey: RISK_CONFIRM_KEY, source: 'llm_prior'};
+  }
   // 11/17 RF6(검토 I4): 답 기반 EMERGENCY_STOP(Q0=예 등)은 민감 안내보다 먼저(지시서: EMERGENCY_STOP이 가장 먼저)
   const answerStop = safety.hits.find((h) => h.source === 'answer' && h.result === 'EMERGENCY_STOP');
   if (top && isSensitive(top) && answerStop) top = answerStop;
@@ -253,7 +260,7 @@ async function core(payload, ctx, deps, trace, now, log) {
   let carryEmergency = null;
   // LC1: 민감 규칙 또는 넓은 단서이면 기관 안내와 선택을 먼저 낸다. 종류·원문·규칙은 trace에 남기지 않는다.
   if (top?.result !== 'EMERGENCY_STOP' && (sensitive.state === 'pending' || sensitive.state === 'end')) {
-    const response = {emergency: emergencyNotice(sensitive.messageKey).emergency};
+    const response = {emergency: sensitive.messageKey ? emergencyNotice(sensitive.messageKey).emergency : {active: true}};
     if (sensitive.state === 'pending') response.followUp = sensitiveChoiceQuestion(sensitive.askId);
     const check = checkResponseContract(response);
     if (!check.ok) return fail('contract');
@@ -308,6 +315,58 @@ async function core(payload, ctx, deps, trace, now, log) {
     if (!Array.isArray(dictCache)) dictCache = [];
     return dictCache;
   };
+
+  // LC3: 규칙·민감 단서가 모두 놓친 새 메시지만 LLM 두 번째 그물로 본다.
+  // 증상 분류가 같은 요청에서 필요한 자리면 결합 스키마로 한 번만 부른다.
+  let combinedResult = null;
+  const riskEligible = reason === 'message' && messages.length > 0 && safety.hits.length === 0
+    && sensitiveEvents.length === 0 && sensitiveChoices.length === 0;
+  if (riskEligible) {
+    const fromAnswers = resolveFromAnswers(engine, data.refData);
+    const preliminary = nextQuestion({codes, data, mode: 'normal', symptomState: fromAnswers?.kind === 'unknown' ? 'unknown' : 'pending'});
+    const startRoute = (engine.has(ENGINE_Q.ASK_START) || engine.has(ENGINE_Q.MED_CHOICE));
+    let sexMatches = [];
+    if (!startRoute && preliminary.kind === 'identify' && !fromAnswers && messages.length > 0) {
+      const matcher = typeof deps.matchSymptoms === 'function' ? deps.matchSymptoms : defaultMatchSymptoms;
+      try { sexMatches = matcher(messages.join('\n'), data.refData, {sex: applyMappings({codes: vis, data}).filter.sex.value}) ?? []; } catch { sexMatches = []; }
+    }
+    const combine = !startRoute && preliminary.kind === 'identify'
+      && (fromAnswers?.kind === 'needLlm' || (!fromAnswers && (!Array.isArray(sexMatches) || sexMatches.length === 0)));
+    const input = {
+      text: combine ? messages.join('\n') : messages.at(-1), riskText: messages.at(-1),
+      sex: applyMappings({codes: vis, data}).filter.sex.value,
+      consent: ctx.consent, signal, deadlineAt, requestId: ctx.requestId ?? null, reason,
+    };
+    const fallback = combine
+      ? {status: 'fallback', reason: 'timeout', riskSignal: 'none', meta: {error: 'timeout', attempts: 0}}
+      : {riskSignal: 'none', meta: {error: 'timeout', attempts: 0}};
+    const rr = await withDeadline(combine ? llm.classifySymptomWithRisk : llm.detectRiskSignal, input,
+      {signal, deadlineAt, now}, fallback);
+    if (signal?.aborted) return fail('aborted');
+    const value = rr.value ?? fallback;
+    if (combine) { combinedResult = value; llmUsed = true; }
+    const riskSignal = value.riskSignal ?? 'none';
+    const riskError = rr.why ?? value.meta?.error ?? value.meta?.riskError ?? null;
+    const attempts = Number.isFinite(value.meta?.attempts) ? value.meta.attempts : 0;
+    if (['self_harm', 'threat', 'violence'].includes(riskSignal)) {
+      const key = {self_harm: 'crisis_notice_109', threat: 'threat_notice_112', violence: 'violence_notice_1366'}[riskSignal];
+      const response = {emergency: emergencyNotice(key).emergency, followUp: sensitiveChoiceQuestion(`SENSITIVE_CHOICE_${messages.length}`)};
+      const check = checkResponseContract(response);
+      if (!check.ok) return fail('contract');
+      for (const k of ['ruleHits', 'warnings', 'skippedItems']) trace[k] = [];
+      trace.slots = null;
+      trace.terminal = false;
+      trace.sensitive = {kind: 'sensitive_referral'};
+      trace.llm = {risk: {called: false}, classify: {called: false}, profile: {called: false}};
+      trace.phase = 'sensitive_referral';
+      return {response};
+    }
+    trace.llm.risk = riskError ? {called: attempts > 0, error: riskError} : {called: true, signal: riskSignal};
+    if (riskSignal === 'emergency') {
+      const response = {emergency: emergencyNotice(RISK_CONFIRM_KEY).emergency, followUp: riskConfirmQuestion(`RISK_CONFIRM_${messages.length}`)};
+      return finish(response, 'risk_confirm');
+    }
+  }
 
   // 2. 시작 선택(엔진 질문 ASK_START·MED_CHOICE)의 답 — 사용자가 명시적으로 고른 것
   //    11/17 EF(G3): 메시지에 사전 증상 매칭·증상 단서·위험 단서가 하나라도 있으면 검색 답(find_*, med_pharmacy, med_info)을
@@ -378,6 +437,7 @@ async function core(payload, ctx, deps, trace, now, log) {
         deps: {llm, matchSymptoms: deps.matchSymptoms, facilityKeywords},
         ctx: {consent: ctx.consent, signal, deadlineAt, requestId: ctx.requestId ?? null, reason, now},
         noLlm: startOverridden ? 'start_choice' : (sensitiveConversation ? 'no_llm' : false),
+        preclassified: combinedResult,
       });
       if (signal?.aborted) return fail('aborted');
       if (r.llmMeta) { trace.llm.classify = r.llmMeta; llmUsed = true; }

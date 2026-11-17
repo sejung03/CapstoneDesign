@@ -135,7 +135,7 @@ export async function classifySymptomWithRisk(input = {}, deps = {}) {
   return classifySymptomInternal(input, deps, true);
 }
 
-async function classifySymptomInternal({text, sex = null, consent, signal, deadlineAt, requestId = null, reason = null} = {}, deps = {}, includeRisk = false) {
+async function classifySymptomInternal({text, riskText = null, sex = null, consent, signal, deadlineAt, requestId = null, reason = null} = {}, deps = {}, includeRisk = false) {
   const d = resolveDeps(deps);
   const refData = d.refData ?? loadRefData();
   const start = d.now();
@@ -210,7 +210,7 @@ async function classifySymptomInternal({text, sex = null, consent, signal, deadl
   const schema = includeRisk ? symptomRiskSchema(candidateIds) : symptomPickSchema(candidateIds);
   const req = {
     system: prompt.system,
-    user: prompt.buildUser({text: llmText, candidatesText: formatCandidatesForPrompt(candidates, refData)}),
+    user: prompt.buildUser({text: llmText, riskText: tailChars(maskPii(String(riskText ?? text ?? '')).text.trim(), INPUT_MAX_CHARS), candidatesText: formatCandidatesForPrompt(candidates, refData)}),
     schema,
     schemaName: meta.schemaId,
   };

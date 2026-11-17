@@ -33,8 +33,13 @@ export function collectSensitiveEvents({hits, messages}) {
  * 새 민감 메시지가 생기면 다시 묻고, 무응답 두 번 또는 확인 전 skip은 end로 처리한다.
  */
 export function resolveSensitiveChoice({events, choices = [], messageCount, reason}) {
-  if (events.length === 0) return {state: 'none', askId: null, messageKey: null};
   const valid = choices.filter((a) => Number.isInteger(a.n) && a.n >= 1 && a.n <= messageCount);
+  // LLM 민감 신호는 종류를 저장하지 않는다. 다음 요청에는 선택 답만 남으므로 배너 유지/해제만 처리한다.
+  if (events.length === 0) {
+    if (valid.some((a) => a.value === SENSITIVE_ANSWERS.end)) return {state: 'end', askId: null, messageKey: null};
+    if (valid.some((a) => a.value === SENSITIVE_ANSWERS.continue)) return {state: 'continue', askId: null, messageKey: null};
+    return {state: 'none', askId: null, messageKey: null};
+  }
   const uncovered = events.filter((e) => !valid.some((a) => a.n > e.messageIndex));
   if (uncovered.length > 0) {
     const first = uncovered[0];

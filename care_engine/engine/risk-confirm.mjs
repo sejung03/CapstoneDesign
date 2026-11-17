@@ -23,8 +23,15 @@ export function resolveRiskConfirm({hits, riskConfirms = [], messageCount, reaso
     if (h.source !== 'free_text' || h.messageKey !== RISK_CONFIRM_KEY) continue;
     for (const i of h.messageIndexes ?? []) idx.add(i);
   }
-  if (idx.size === 0) return {state: 'none', askId: null, asks: 0, unconfirmedByTimeout: false};
   const answers = riskConfirms.filter((a) => Number.isInteger(a.n) && a.n >= 1 && a.n <= messageCount);
+  // LLM emergency는 원문·신호를 저장하지 않는다. 다음 요청에는 RISK_CONFIRM 답만 남는다.
+  if (idx.size === 0) {
+    const worstOnly = Math.max(0, ...answers.map((a) => SEVERITY[a.value] ?? 0));
+    if (worstOnly === 3) return {state: 'yes', askId: null, asks: 0, unconfirmedByTimeout: false};
+    if (worstOnly === 2) return {state: 'unsure', askId: null, asks: 0, unconfirmedByTimeout: false};
+    if (worstOnly === 1) return {state: 'no', askId: null, asks: 0, unconfirmedByTimeout: false};
+    return {state: 'none', askId: null, asks: 0, unconfirmedByTimeout: false};
+  }
   let worst = 0;
   const uncovered = [];
   for (const i of idx) {

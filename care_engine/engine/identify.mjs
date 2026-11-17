@@ -87,7 +87,7 @@ function classifyTrace(r) {
   };
 }
 
-async function runLlm({messages, codes, data, deps, ctx}) {
+async function runLlm({messages, codes, data, deps, ctx, preclassified = null}) {
   const fn = deps?.llm?.classifySymptom;
   const input = {
     text: messages.join('\n'),
@@ -98,7 +98,7 @@ async function runLlm({messages, codes, data, deps, ctx}) {
     requestId: ctx.requestId ?? null,
     reason: ctx.reason ?? null,
   };
-  const r = typeof fn === 'function'
+  const r = preclassified && typeof preclassified === 'object' ? preclassified : typeof fn === 'function'
     ? await callClassify(fn, input, {signal: ctx.signal, deadlineAt: ctx.deadlineAt, now: ctx.now})
     : {status: 'fallback', reason: 'no_llm', meta: null};
   const llmMeta = classifyTrace(r);
@@ -132,7 +132,7 @@ async function runLlm({messages, codes, data, deps, ctx}) {
  *   {kind:'medInfo'}>}
  *   medInfo는 runCare가 MED_CHOICE 답(med_info)을 먼저 처리하므로 여기서는 나오지 않는다(자리만).
  */
-export async function identify({engineAnswers, messages, codes, data, deps = {}, ctx = {}, noLlm = false}) {
+export async function identify({engineAnswers, messages, codes, data, deps = {}, ctx = {}, noLlm = false, preclassified = null}) {
   const msgs = userMessages(messages);
   const fromAnswers = resolveFromAnswers(engineAnswers, data.refData);
   if (fromAnswers && fromAnswers.kind !== 'needLlm') return fromAnswers;
@@ -140,7 +140,7 @@ export async function identify({engineAnswers, messages, codes, data, deps = {},
     // b. sym_other: 사전이 일부만 맞은 경우. 메시지가 없으면 LLM을 부를 수 없으므로 증상 모름.
     if (msgs.length === 0) return {kind: 'unknown', source: 'dict_confirm'};
     if (noLlm) return {kind: 'unknown', source: typeof noLlm === 'string' ? noLlm : 'start_choice'};
-    return runLlm({messages: msgs, codes, data, deps, ctx});
+    return runLlm({messages: msgs, codes, data, deps, ctx, preclassified});
   }
   // d. 메시지 없음 → 시작 질문
   if (msgs.length === 0) return {kind: 'ask', followUp: askStartQuestion()};
@@ -156,5 +156,5 @@ export async function identify({engineAnswers, messages, codes, data, deps = {},
   if (symptoms.length > 0) return {kind: 'ask', followUp: symDictConfirmQuestion(symptoms)};
   // f. LLM (시작 선택을 무시하고 온 경우는 부르지 않고 증상 모름)
   if (noLlm) return {kind: 'unknown', source: typeof noLlm === 'string' ? noLlm : 'start_choice'};
-  return runLlm({messages: msgs, codes, data, deps, ctx});
+  return runLlm({messages: msgs, codes, data, deps, ctx, preclassified});
 }

@@ -13,8 +13,10 @@ export const SAFE_BASE = Object.freeze({Q0: 'no', N1: 'yes', N2: 'yes', N3: 'no'
 export const toAnswers = (obj) => Object.entries(obj).map(([questionId, value]) => ({questionId, value}));
 
 /** 가짜 LLM: 호출 기록. classify/profile 결과는 값 또는 함수. */
-export function fakeLlm({classify = {status: 'fallback', reason: 'no_match', meta: {}}, profile = {items: [], meta: {}}, classifyDelayMs = 0} = {}) {
-  const calls = {classify: [], profile: []};
+export function fakeLlm({classify = {status: 'fallback', reason: 'no_match', meta: {}},
+  combined = {status: 'fallback', reason: 'no_match', riskSignal: 'none', meta: {}},
+  risk = {riskSignal: 'none', meta: {}}, profile = {items: [], meta: {}}, classifyDelayMs = 0} = {}) {
+  const calls = {classify: [], combined: [], risk: [], profile: []};
   return {
     calls,
     llm: {
@@ -22,6 +24,14 @@ export function fakeLlm({classify = {status: 'fallback', reason: 'no_match', met
         calls.classify.push(input);
         if (classifyDelayMs) await new Promise((r) => setTimeout(r, classifyDelayMs));
         return typeof classify === 'function' ? classify(input) : classify;
+      },
+      classifySymptomWithRisk: async (input) => {
+        calls.combined.push(input);
+        return typeof combined === 'function' ? combined(input) : combined;
+      },
+      detectRiskSignal: async (input) => {
+        calls.risk.push(input);
+        return typeof risk === 'function' ? risk(input) : risk;
       },
       extractProfileUpdates: async (input) => {
         calls.profile.push(input);
