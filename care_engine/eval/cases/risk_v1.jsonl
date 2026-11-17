@@ -204,3 +204,15 @@
 {"id":"mx020","text":"정전기 얘기하다가 아빠가 감전됐어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-35"}
 {"id":"mx021","text":"야구 중계 보다가 할아버지가 숨이 멎었어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-02"}
 {"id":"mx022","text":"게임하다가 아이가 경기를 해요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-07"}
+{"id":"mx023","text":"모니터 보다가 갑자기 눈앞이 깜깜해졌어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-32","note":"RG3 검토 G8"}
+{"id":"mx024","text":"tv 보다가 갑자기 한쪽 눈이 안 보여요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-32","note":"RG3 검토 G8"}
+{"id":"mx025","text":"미세먼지 심한 날인데 숨쉬기가 너무 힘들어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-12","note":"RG3 검토 G8"}
+{"id":"mx026","text":"이별하고 나서 가슴이 너무 아파요 식은땀도 나요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-13","note":"RG3 검토 G8"}
+{"id":"mx027","text":"웃다가 쓰러졌는데 안 일어나요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-16","note":"RG3 검토 G8"}
+{"id":"mx028","text":"침대에 쓰러져서 안 일어나요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-16","note":"RG3 검토 G8"}
+{"id":"mx029","text":"놀라서 기절했어요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-16","note":"RG3 검토 G8"}
+{"id":"mx030","text":"시험 공부하다 횡설수설해요 동생이","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-15","note":"RG3 검토 G8"}
+{"id":"mx031","text":"스트레스 받는데 갑자기 머리가 깨질 듯 아파요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-40","note":"RG3 검토 G8"}
+{"id":"mx032","text":"코피가 너무 많이 나고 안 멈춰요","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"mixed_context","criteria_id":"C-20","note":"RG3 검토 G8"}
+{"id":"mx033","text":"생리 중인데 피가 너무 많이 나서 어지러워요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-08","note":"RG3 검토 G8 — 검토 기대는 URGENT, ES로 더 높게 걸림(안전 쪽)"}
+{"id":"mx034","text":"술 마시고 친구가 깨워도 안 깨요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"mixed_context","criteria_id":"C-01","note":"RG3 검토 G8 단계 차이 — 검토 기대는 URGENT, ES로 더 높게 걸림(안전 쪽)"}

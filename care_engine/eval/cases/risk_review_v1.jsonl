@@ -83,7 +83,7 @@
 {"id":"v083","text":"아이가 경기 해요 응원 가야 돼요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
 {"id":"v084","text":"달리기 하고 나서 숨을 헐떡였어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
 {"id":"v085","text":"마스크 때문에 숨을 못 쉬겠어","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_collision","criteria_id":null,"note":"숨을 못 쉼은 맥락과 상관없이 안내(경계 사례, 검토자도 경계로 봄)"}
-{"id":"v086","text":"미세먼지 때문에 숨쉬기가 너무 힘들어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
+{"id":"v086","text":"미세먼지 때문에 숨쉬기가 너무 힘들어","expect":"URGENT_NOTICE","expect_key":"freetext_urgent","group":"review_collision","criteria_id":null,"note":"RG3: G8로 미세먼지 제외를 지워 걸림(확인 질문 대상이라 허용, 늘어난 오탐)"}
 {"id":"v087","text":"게임에서 총에 맞았어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
 {"id":"v088","text":"롤 하다가 화나서 쓰러졌어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
 {"id":"v089","text":"익사이팅한 주말 보냈어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null}
