@@ -21,17 +21,28 @@ const RISK_FIRST = [
   '숨이 안 쉬어지는데 약국 어디',
 ];
 // 위험 단서 목록에 없는 병원 찾기 문장: 약국이 아니므로 역시 Q0부터
-const HOSPITAL_FIRST = ['정형외과 어디 있어요', '지금 여는 병원 있나요', '소아과 추천해 주세요', '머리가 깨질 것 같아요 병원 어디', '애가 경기를 해요 소아과 어디'];
+const HOSPITAL_FIRST = ['정형외과 어디 있어요', '지금 여는 병원 있나요', '소아과 추천해 주세요', '머리가 깨질 것 같아요 병원 어디'];
+// 11/17 R: 자유 입력 위험 표현 사전(free_text_v1.json)이 생겨 아래 문장은 Q0보다 먼저 응급 안내를 받는다(안전 규칙이 키워드보다 먼저).
+// 위험 단서(riskCues)만 있고 사전에 없는 문장은 그대로 Q0.
+const FREE_TEXT_HIT = new Set([
+  '아빠가 쓰러졌어요 병원 어디예요', '숨을 못 쉬겠어요 병원 어디', '자살하고 싶어요 정신과 어디', '자해를 했어요 정신과 알려줘',
+  '의식이 없어요 근처 병원 알려줘', '피를 토해요 병원 찾아', '숨이 안 쉬어지는데 약국 어디', '애가 경기를 해요 소아과 어디',
+]);
 
-for (const [label, list, reasons] of [['위험 단서', RISK_FIRST, ['blocked_risk']], ['병원 찾기', HOSPITAL_FIRST, ['no_pharmacy']]]) {
-  test(`F1 S1: ${label} 문장 → 첫 응답은 Q0 followUp(search·LLM 없음)`, async () => {
+for (const [label, list, reasons] of [['위험 단서', [...RISK_FIRST, '애가 경기를 해요 소아과 어디'], ['blocked_risk', 'no_pharmacy']], ['병원 찾기', HOSPITAL_FIRST, ['no_pharmacy']]]) {
+  test(`F1 S1(+R): ${label} 문장 → 첫 응답은 Q0 followUp 또는 (자유 입력 규칙) 응급 안내, search·LLM 없음`, async () => {
     for (const m of list) {
       const llm = fakeLlm();
       const {out, calls} = await call({messages: [m], llm});
-      assert.equal(out.response.followUp?.id, 'Q0', m);
       assert.equal(out.response.search, undefined, m);
       assert.equal(calls.classify.length + calls.profile.length, 0, m);
-      assert.ok(reasons.includes(out.trace.facilityKeyword), `${m}: ${out.trace.facilityKeyword}`);
+      if (FREE_TEXT_HIT.has(m)) {
+        assert.equal(out.response.emergency?.active, true, m);
+        assert.ok(out.trace.ruleHits.length > 0 && out.trace.ruleHits.every((id) => id.startsWith('FT-')), m);
+      } else {
+        assert.equal(out.response.followUp?.id, 'Q0', m);
+        assert.ok(reasons.includes(out.trace.facilityKeyword), `${m}: ${out.trace.facilityKeyword}`);
+      }
       assert.ok(!JSON.stringify(out.trace).includes(m), '원문이 trace에 없음');
     }
   });
@@ -60,10 +71,11 @@ test('F1 S1: 병원 찾기 문장 → Q0 → N1~N3 → T1~T3 → LLM 의도 faci
 });
 
 test('F1 S1: 위험 단서 문장 + Q0=예 → 응급(search 없음). riskCues는 판정에 쓰지 않으므로 Q0=아니요면 문진 계속', async () => {
-  const yes = await call({reason: 'followup', messages: ['아빠가 쓰러졌어요 병원 어디예요'], answers: {Q0: 'yes'}});
+  // 11/17 R: '쓰러졌어요'는 이제 자유 입력 규칙에 걸려 Q0 답과 상관없이 응급 안내 → riskCues만 있는 문장(응급실)으로 바꿈
+  const yes = await call({reason: 'followup', messages: ['응급실 있는 병원 찾아줘'], answers: {Q0: 'yes'}});
   assert.equal(yes.out.response.emergency?.active, true);
   assert.equal(yes.out.response.search, undefined);
-  const no = await call({reason: 'followup', messages: ['아빠가 쓰러졌어요 병원 어디예요'], answers: {Q0: 'no'}});
+  const no = await call({reason: 'followup', messages: ['응급실 있는 병원 찾아줘'], answers: {Q0: 'no'}});
   assert.equal(no.out.response.emergency, undefined);
   assert.equal(no.out.response.followUp.id, 'N1');
 });

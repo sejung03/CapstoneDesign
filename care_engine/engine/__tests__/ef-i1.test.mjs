@@ -27,7 +27,7 @@ const LLMS = {
   medication: {status: 'route', intent: 'medication_question', meta: {}},
   facility: {status: 'route', intent: 'facility_search', meta: {}},
 };
-const MESSAGES = {c24: TEXT.c24, noDict: TEXT.noDict};
+const MESSAGES = {dictPartial: TEXT.dictPartial, noDict: TEXT.noDict}; // 11/17 R: c24 원문은 자유 입력 규칙에 걸리므로 대역 문장
 
 function combos() {
   const out = [];
@@ -96,7 +96,7 @@ test('F2 I1: 엔진 질문 답 조합 전부(5×3×5) × LLM 결과 5종 × 메�
 });
 
 test('F2 I1: 시뮬레이터 — sym_other → LLM 실패 → SYM_NOT_FOUND 답 → 다음 질문 N5 … 끝까지(LLM 1번)', async () => {
-  const r = await simulate({name: 'i1_regression', messages: [TEXT.c24],
+  const r = await simulate({name: 'i1_regression', messages: [TEXT.dictPartial],
     answers: {...BASE, T1: 'self', SYM_DICT_CONFIRM: 'sym_other', ...DETAIL},
     llm: makeLlm({classify: LLMS.fallback})});
   const i = r.asked.indexOf('SYM_NOT_FOUND');

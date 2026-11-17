@@ -120,10 +120,10 @@ test('자유 입력 규칙(테스트 전용): 정규화 후 검사, 답 규칙�
   assert.deepEqual(matchFreeText(['ＴＥＳＴ', '테스트 주의 표현'], testRules), ['FT-TEST-NOTICE']);
 });
 
-test('기본 자유 입력 규칙 파일: 형식 통과, 규칙 0개', () => {
+test('기본 자유 입력 규칙 파일: 형식 통과, 위험 표현 사전 v1(11/17 R: 규칙 40개), 테스트 단어는 걸리지 않음', () => {
   const def = loadFreeTextRules();
   assert.equal(def.version, 'free-text-v1');
-  assert.equal(def.rules.length, 0);
+  assert.equal(def.rules.length, 40);
   assert.deepEqual(matchFreeText(['테스트위험표현'], def), []);
 });
 

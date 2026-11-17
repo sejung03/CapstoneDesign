@@ -24,7 +24,8 @@ export function pharmacyStarterText() {
 export const TEXT = Object.freeze({
   dict: '기침이 나요',
   noDict: '속이 영 이상하고 불편해요',
-  c24: '식은땀이 나고 가슴이 꽉 조이는 느낌이에요',
+  c24: '식은땀이 나고 가슴이 꽉 조이는 느낌이에요', // 11/17 R: 자유 입력 규칙 FT-CHEST-01에 걸림(응급 안내) — 사전 일부 매칭 경로에는 dictPartial을 쓴다
+  dictPartial: '식은땀이 나고 속이 이상해요', // 사전이 부수 증상(A09)만 맞고 위험 표현은 없는 문장(c24 형태의 대역)
   med: '먹는 약 때문에 궁금한 게 있어요',
   facilityMiss: '근처에 갈 만한 곳이 궁금해요',
   symptomFacility: '배가 아픈데 문 연 병원 있나요',
@@ -128,7 +129,7 @@ export function scenarios() {
     s('dict_max', {messages: [TEXT.dict], answers: {...SAFE, SYM_DICT_CONFIRM: 'sym_R05', ...DETAIL_MAX}, expect: [19, 24], note: '사전 경로, 상세 최대'}),
     s('dict_skip_after_identify', {messages: [TEXT.dict], answers: {...SAFE, SYM_DICT_CONFIRM: 'sym_R05'}, skipAt: 'N5', expect: [8, 8], note: '증상 확인 직후 skip'}),
     s('llm_confirm', {messages: [TEXT.noDict], answers: {...SAFE, SYM_CONFIRM: 'sym_D01', ...DETAIL_MAX}, llm: makeLlm({classify: confirm(['D01', 'D02'])}), expect: [19, 24], note: '사전 0개 → LLM 후보 확인'}),
-    s('c24_dict_partial', {messages: [TEXT.c24], answers: {...SAFE, SYM_DICT_CONFIRM: 'sym_other', SYM_CONFIRM: 'sym_A11', ...DETAIL_MIN},
+    s('c24_dict_partial', {messages: [TEXT.dictPartial], answers: {...SAFE, SYM_DICT_CONFIRM: 'sym_other', SYM_CONFIRM: 'sym_A11', ...DETAIL_MIN},
       llm: makeLlm({classify: confirm(['A11', 'A09'])}), expect: [19, 24], note: '사전이 부수 증상만 → sym_other → LLM'}),
     s('llm_fail', {messages: [TEXT.noDict], answers: {...SAFE, ...DETAIL_MAX}, llm: makeLlm({classify: {status: 'fallback', reason: 'timeout', meta: {error: 'timeout'}}}), expect: [20, 25], note: 'LLM 실패 → SYM_NOT_FOUND → 증상 모름 + F2'}),
     s('llm_none', {messages: [TEXT.noDict], answers: {...SAFE, SYM_CONFIRM: 'sym_none', ...DETAIL_MIN}, llm: makeLlm({classify: confirm(['D01'])}), expect: [20, 25], note: 'LLM 후보 "해당 없음" → 증상 모름'}),
@@ -150,8 +151,8 @@ export function scenarios() {
     s('skip_after_t1', {messages: [TEXT.dict], answers: {...SAFE}, skipAt: 'T2', expect: null, note: 'T1까지 답하고 skip'}),
     // 11/17 EF: S1·I1 회귀(시뮬레이터 경로)
     s('hospital_keyword', {messages: [TEXT.hospital], answers: {...SAFE}, llm: makeLlm({classify: {status: 'route', intent: 'facility_search', meta: {}}}), expect: [7, 7], note: 'EF S1: 병원 찾기 문장 → Q0부터 → LLM 의도 facility_search'}),
-    s('risk_hospital_keyword', {messages: [TEXT.riskHospital], answers: {Q0: 'no', N1: 'yes', N2: 'no'}, expect: null, note: 'EF S1: 위험 단서 + 병원 → Q0부터 → N2(숨쉬기 어려움) → 긴급 안내'}),
-    s('i1_other_llm_fail', {messages: [TEXT.c24], answers: {...SAFE, SYM_DICT_CONFIRM: 'sym_other', ...DETAIL_MIN}, llm: makeLlm({classify: {status: 'fallback', reason: 'timeout', meta: {error: 'timeout'}}}), expect: null, note: 'EF I1: sym_other → LLM 실패 → SYM_NOT_FOUND 답 → N5…(반복 없음)'}),
+    s('risk_hospital_keyword', {messages: [TEXT.riskHospital], answers: {Q0: 'no', N1: 'yes', N2: 'no'}, expect: null, note: 'EF S1 → 11/17 R: 위험 표현(숨을 못 쉼) + 병원 → 첫 응답 긴급 안내(자유 입력 규칙)'}),
+    s('i1_other_llm_fail', {messages: [TEXT.dictPartial], answers: {...SAFE, SYM_DICT_CONFIRM: 'sym_other', ...DETAIL_MIN}, llm: makeLlm({classify: {status: 'fallback', reason: 'timeout', meta: {error: 'timeout'}}}), expect: null, note: 'EF I1: sym_other → LLM 실패 → SYM_NOT_FOUND 답 → N5…(반복 없음)'}),
   ];
 }
 

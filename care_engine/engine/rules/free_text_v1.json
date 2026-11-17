@@ -1,1 +1,286 @@
-{"version":"free-text-v1","rules":[]}
+{
+  "version": "free-text-v1",
+  "note": "위험 표현 사전 v1 초안(2026-11-17 R2, review_status draft). 기준: docs/위험표현_기준표.md(criteria_id). 패턴은 정규화한 메시지(NFKC → 소문자 → 공백 제거, llm/normalize.mjs)에 적용한다. 부정·다른 사람·과거 표현은 v1에서 걸리게 둔다(설계 §7-3). 비유(웃겨 죽겠다 등)는 걸리지 않게 짧은 어간·뒤보기 제외를 쓴다. 걸린 원문·위치는 남기지 않고 rule_id만.",
+  "rules": [
+    {
+      "rule_id": "FT-CONSC-01", "priority": 1, "result": "EMERGENCY_STOP", "terminal": true, "triage_category_id": 12,
+      "message_key": "freetext_emergency_119",
+      "patterns": ["의식이없", "의식을잃", "정신을잃", "의식불명", "(불러도|깨워도|흔들어도|꼬집어도)(아무)?(반응|대답|대꾸)(이|을|도)?(없|안|못)", "흔들어도(안깨|안일어)"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 신경학적 '급성 의식장애'·심혈관 '심폐소생술이 필요한 증상' / 매뉴얼 Ⅱ-1 PDF p.8 도입부 6·8(의식 없음=심정지 간주), 범주 8 p.19·12 p.23 긴급", "criteria_id": "C-01", "manual_119": {"category": 8, "page": 8, "level": "조기 긴급출동"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-APNEA-01", "priority": 1, "result": "EMERGENCY_STOP", "terminal": true, "triage_category_id": 8,
+      "message_key": "freetext_emergency_119",
+      "patterns": ["숨을(안|전혀안)쉬", "숨을쉬지않", "숨을안쉼", "호흡이(없|멈)", "호흡을안", "숨이(멎었|멎은|멈췄|멈춘|멈춰서)", "호흡정지"],
+      "evidence": {"source": "manual_119", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 심혈관 '심폐소생술이 필요한 증상' / 매뉴얼 Ⅱ-1 PDF p.8 도입부 7·8, 범주 8 p.19 긴급(무호흡)", "criteria_id": "C-02", "manual_119": {"category": 8, "page": 19, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-ARREST-01", "priority": 1, "result": "EMERGENCY_STOP", "terminal": true, "triage_category_id": 8,
+      "message_key": "freetext_emergency_119",
+      "patterns": ["심장이(멈췄|멈춘채|멈춰서|안뛰)", "심정지", "심장마비(?!올|걸릴|오는|날|가올)", "맥박이(없|안잡|안느껴|안뛰|안만져)", "(심폐소생술|cpr)(을)?(하고있|하는중|중이|해야|해주고|시작)"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 심혈관 '심폐소생술이 필요한 증상' / 매뉴얼 Ⅱ-1 PDF p.8 조기 긴급출동 '심정지에 준한 상황', 범주 8 p.19 긴급", "criteria_id": "C-03", "manual_119": {"category": 8, "page": 8, "level": "조기 긴급출동"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-AIRWAY-01", "priority": 1, "result": "EMERGENCY_STOP", "terminal": true, "triage_category_id": 1,
+      "message_key": "freetext_emergency_119",
+      "patterns": ["목에.{0,8}걸려.{0,6}(숨|말을못|말도못|소리를못|소리도못|켁켁|얼굴이|입술이)", "기도가막", "기도폐쇄", "질식(했|해서|한|상태|사고)"],
+      "evidence": {"source": "manual_119", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 심혈관 '급성 호흡곤란' / 매뉴얼 Ⅱ-1 PDF p.8 조기 긴급출동 '질식·기도이물', 범주 1 p.11 긴급(말을 못함·청색증)", "criteria_id": "C-04", "manual_119": {"category": 1, "page": 11, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-STRANGLE-01", "priority": 1, "result": "EMERGENCY_STOP", "terminal": true, "triage_category_id": 8,
+      "message_key": "freetext_emergency_119",
+      "patterns": ["목을졸(라|랐|려|린)", "목이졸(려|렸|린)", "목을(매달|매었|맨|맸)", "목맴"],
+      "evidence": {"source": "manual_119", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 심혈관 '심폐소생술이 필요한 증상' / 매뉴얼 Ⅱ-1 PDF p.8 조기 긴급출동 '목맴·목 졸림', 범주 8 p.19 긴급", "criteria_id": "C-05", "manual_119": {"category": 8, "page": 8, "level": "조기 긴급출동"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-DROWN-01", "priority": 1, "result": "EMERGENCY_STOP", "terminal": true, "triage_category_id": 24,
+      "message_key": "freetext_emergency_119",
+      "patterns": ["(아이|애|아기|애기|아들|딸|사람|친구|엄마|아빠|동생|형|누나|언니|오빠|할머니|할아버지|남편|아내|가족|조카|누가|내가|제가)(가|이)?물에빠", "물에빠진(사람|아이|애|아기)", "물에빠져(서)?(숨|의식|정신|허우적|안나와|가라앉)", "익수", "익사"],
+      "evidence": {"source": "manual_119", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 심혈관 '심폐소생술이 필요한 증상' / 매뉴얼 Ⅱ-1 PDF p.8 조기 긴급출동 '물에 빠진 상태', 범주 24 p.36 긴급", "criteria_id": "C-06", "manual_119": {"category": 24, "page": 8, "level": "조기 긴급출동"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-SEIZURE-NOW-01", "priority": 2, "result": "EMERGENCY_STOP", "terminal": true, "triage_category_id": 5,
+      "message_key": "freetext_emergency_119",
+      "patterns": ["경련(을)?(하고있|하는중|일으키고있)", "경련중", "발작(을)?(하고있|하는중|일으키고있)", "발작중", "경기(를)?(하고있|일으키고있|하는중)", "(아이|애|아기|애기)(가|이)?경기를일으", "거품을물고(쓰러|떨|경련|몸을)"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 소아과적 '소아경련성 장애'·신경학적 '급성 신경학적 이상' / 매뉴얼 범주 5 PDF p.15 '지금도 경련을 하고 있습니까 → 출동지시'", "criteria_id": "C-07", "manual_119": {"category": 5, "page": 15, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-BLEED-MASSIVE-01", "priority": 2, "result": "EMERGENCY_STOP", "terminal": true, "triage_category_id": 29,
+      "message_key": "freetext_emergency_119",
+      "patterns": ["피가(콸콸|철철|펑펑|쏟아|분수처럼|뿜어)", "피를(많이|엄청|너무많이|한바가지)흘", "출혈이(너무)?(심|많)", "피범벅", "피가흥건", "대량출혈", "과다출혈"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 출혈 '지혈이 안 되는 출혈' / 매뉴얼 범주 29 PDF p.41 긴급(위험한·심한 출혈), 범주 26 p.38 긴급", "criteria_id": "C-08", "manual_119": {"category": 29, "page": 41, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-POISON-01", "priority": 2, "result": "EMERGENCY_STOP", "terminal": true, "triage_category_id": 27,
+      "message_key": "freetext_emergency_119",
+      "patterns": ["약을(한꺼번에|한번에|왕창|통째로|잔뜩|많이|너무많이)(먹었|삼켰|먹어버|먹었는데)", "과다복용", "과량복용", "(세제|락스|표백제|농약|살충제|제초제|부동액|독극물|쥐약|빙초산|가성소다|세정제|소독약)(를|을)?(마셨|먹었|삼켰|마셔서|먹어서|마신|먹은)", "독(극물)?을먹었", "약을잘못먹"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 중독 '약물·알코올 또는 기타 물질의 과다 복용이나 중독' / 매뉴얼 범주 27 PDF p.39 긴급(약물과다, 가정용 세척제, 화학물질 섭취), 범주 12 p.23", "criteria_id": "C-09", "manual_119": {"category": 27, "page": 39, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-SELFHARM-ACT-01", "priority": 3, "result": "EMERGENCY_STOP", "terminal": true, "triage_category_id": 14,
+      "message_key": "freetext_emergency_119",
+      "patterns": ["자해(를)?(했|하고있|하는중|해서|한)", "자살(을)?시도", "극단적(인)?선택(을)?(했|시도|하려고했)", "죽으려고(했|약을)", "(스스로)?목숨을끊으려(고)?했"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 정신과적 '자신 또는 다른 사람을 해할 우려가 있는 정신장애' / 매뉴얼 범주 14 PDF p.26 긴급 '자해 혹은 자살 위협'", "criteria_id": "C-10", "manual_119": {"category": 14, "page": 26, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-MASS-01", "priority": 3, "result": "EMERGENCY_STOP", "terminal": true, "triage_category_id": null,
+      "message_key": "freetext_emergency_119",
+      "patterns": ["(여러|많은|몇)(명|사람)(이|들이)?(다쳤|쓰러|부상|피를)", "사람들이(많이)?(다쳤|쓰러졌|깔렸)", "다수(의)?(부상자|환자|사상자)", "(사람|사람들|아이|애|누가|가족)(이|가)?.{0,4}깔렸"],
+      "evidence": {"source": "manual_119", "ref": "매뉴얼 Ⅱ-1 PDF p.8 조기 긴급출동 '다수 환자 발생'", "criteria_id": "C-11", "manual_119": {"category": null, "page": 8, "level": "조기 긴급출동"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-DYSPNEA-01", "priority": 4, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 15,
+      "message_key": "freetext_urgent",
+      "patterns": ["(?<!웃겨서|웃겨|웃다가|웃느라|웃어서)숨을(못|제대로못)쉬", "숨이안쉬어", "숨을쉴수(가)?없", "숨쉬기(가)?(너무|매우|많이|정말|엄청)힘들", "숨이차서(말을|말도|걷지도)못", "말을못할(정도로|만큼)숨", "(?<!웃겨서|웃겨|웃다가|웃느라|웃어서)숨이넘어가", "숨을헐떡"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 심혈관 '급성 호흡곤란' / 매뉴얼 범주 15 PDF p.27 긴급 '한 문장을 말할 수 없음'", "criteria_id": "C-12", "manual_119": {"category": 15, "page": 27, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-CHEST-01", "priority": 4, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 17,
+      "message_key": "freetext_urgent",
+      "patterns": ["가슴(이|을|에)?(꽉|막)?(쥐어짜|조이|조여|짓눌|짓누르|칼로찌르)", "(가슴통증|흉통)(이)?(너무|심|엄청)", "심한(가슴통증|흉통)", "가슴이(너무|엄청|심하게|미치게|죽을듯이|죽을만큼)아(프|파)", "가슴(이아프|통증)(고|이있고|이있는데|면서|며|는데).{0,6}(식은땀|숨|토|왼팔|팔이|턱|어지)", "식은땀.{0,8}가슴(이|통증)"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 심혈관 '심장질환으로 인한 급성 흉통' / 매뉴얼 범주 17 PDF p.29 긴급(식은땀 동반, 35세 이상 흉통 등)", "criteria_id": "C-13", "manual_119": {"category": 17, "page": 29, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-STROKE-01", "priority": 4, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 2,
+      "message_key": "freetext_urgent",
+      "patterns": ["(한쪽|반쪽|왼쪽|오른쪽)(팔|다리|팔다리|얼굴|몸)(이|가|에)?.{0,4}(마비|힘이(안|없|빠)|안움직|감각이없|처져|처졌)", "(얼굴|입)(이|가)?(한쪽으로)?(돌아갔|비뚤어|처졌|틀어졌)", "편마비|반신마비|안면마비", "말(이|을)?(어눌|어둔)", "발음이(어눌|이상해|꼬이|꼬여|뭉개)", "갑자기말을(못|안)", "(팔|다리|얼굴|몸)(이|가)?.{0,3}마비(가|됐|되었|돼|된|왔)"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 신경학적 '급성 신경학적 이상' / 매뉴얼 범주 2 PDF p.12 긴급(편마비, 언어장애)", "criteria_id": "C-14", "manual_119": {"category": 2, "page": 12, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-CONFUSION-01", "priority": 4, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 12,
+      "message_key": "freetext_urgent",
+      "patterns": ["의식이(흐|희미|가물|오락가락|왔다갔다|떨어)", "정신이(오락가락|왔다갔다|혼미|희미|흐려)", "사람(을|도)?못알아(보|봐)", "횡설수설", "헛소리를(계속|하|해)", "축처져서(반응|대답|못일어)", "술.{0,10}(깨워도|흔들어도|불러도).{0,4}(안|반응)", "(깨워도|흔들어도)잘안깨"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 신경학적 '급성 의식장애' / 매뉴얼 범주 3 PDF p.13·16 p.28 긴급(의식 혼돈·혼란), 12 p.23 긴급(의식저하, 깨울 수 없는 과음)", "criteria_id": "C-15", "manual_119": {"category": 12, "page": 23, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-SYNCOPE-01", "priority": 4, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 12,
+      "message_key": "freetext_urgent",
+      "patterns": ["(?<!웃겨서|웃겨|웃다가|웃느라)쓰러졌", "(?<!웃겨서|웃겨|웃다가|웃느라)쓰러져(서|있|요|버)", "쓰러진(채|상태|뒤|후|적)", "(?<!웃겨서|웃겨|웃다가|놀라서|놀래서)기절(했|해서|하고|한)", "실신(했|해서|하고|한)", "까무러", "졸도"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 신경학적 '급성 의식장애' / 매뉴얼 범주 12 PDF p.23(일회성 실신 응급·반복 실신 긴급), 범주 18 p.30 긴급", "criteria_id": "C-16", "manual_119": {"category": 12, "page": 23, "level": "응급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-SEIZURE-01", "priority": 4, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 5,
+      "message_key": "freetext_urgent",
+      "patterns": ["경련(을)?(했|한|해서|일으켰)", "발작(을)?(했|한|해서|일으켰)", "(아이|애|아기|애기)(가|이)?경기(를)?(했|일으켰|한|해요|해서)", "경기를일으켰", "열경련", "간질발작"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 소아과적 '소아경련성 장애' / 매뉴얼 범주 5 PDF p.15 응급(경련을 멈추고 규칙적 호흡)·긴급(5분 이상·반복)", "criteria_id": "C-17", "manual_119": {"category": 5, "page": 15, "level": "응급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-HEAD-01", "priority": 4, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 22,
+      "message_key": "freetext_urgent",
+      "patterns": ["머리(를|가|에|도)?.{0,8}(부딪|다쳤|다쳐|찧|박았|맞았).{0,12}(토|구토|의식|정신|졸려|어지러|기억)", "두부손상"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 신경학적 '구토·의식장애 등의 증상이 있는 두부손상' / 매뉴얼 범주 22 PDF p.34 긴급(의식소실, 구역·구토)", "criteria_id": "C-18", "manual_119": {"category": 22, "page": 34, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-SHOCK-01", "priority": 5, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 17,
+      "message_key": "freetext_urgent",
+      "patterns": ["심장이(너무|엄청|미친듯이|터질듯이)?(빨리|빠르게|세게)뛰.{0,10}(어지러|쓰러|숨이|식은땀|가슴이아)", "맥(박)?이(너무)?(약하|약해|빠르고약|불규칙하)", "식은땀.{0,10}(창백|어지러|쓰러|기운이없)", "(얼굴|입술)이(하얗게|창백).{0,8}(식은땀|쓰러|어지러)"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 심혈관 '심계항진, 박동이상 및 쇼크' / 매뉴얼 범주 17 PDF p.29 긴급(심계항진 동반 흉통·식은땀), 범주 6 p.17·29 p.41 긴급(일으키면 실신)", "criteria_id": "C-19", "manual_119": {"category": 17, "page": 29, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-BLEED-01", "priority": 5, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 29,
+      "message_key": "freetext_urgent",
+      "patterns": ["피가(안멈|멈추지않|멈추질않|계속(나|흘|나와)|멎지않)", "지혈이(안|잘안|되지않)", "눌러도피가"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 출혈 '지혈이 안 되는 출혈' / 매뉴얼 범주 7 PDF p.18·23 p.35·26 p.38·29 p.41 긴급 '지혈되지 않는 출혈'", "criteria_id": "C-20", "manual_119": {"category": 29, "page": 41, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-GIBLEED-01", "priority": 5, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 10,
+      "message_key": "freetext_urgent",
+      "patterns": ["피를토", "피토(했|해|하)", "토혈", "(토|구토)(했는데|한거|물|한것)(에)?피", "피(가)?섞인(토|구토)", "검은(변|똥)", "흑변", "짜장(면)?(같은|색)(변|똥)", "변기가(온통)?피", "피설사"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 출혈 '급성 위장관 출혈' / 매뉴얼 범주 6 PDF p.17·10 p.21 긴급(토혈, 검은 변)", "criteria_id": "C-21", "manual_119": {"category": 6, "page": 17, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-HEMOPTYSIS-01", "priority": 5, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 7,
+      "message_key": "freetext_urgent",
+      "patterns": ["각혈", "객혈", "기침(할때|하면|하니까|하니|하는데|을하면|에|할때마다).{0,4}피(가|를)?(나|섞|나와|토)", "피(를)?기침"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 출혈 '계속되는 각혈' / 매뉴얼 범주 7 PDF p.18 비외상성 출혈", "criteria_id": "C-22", "manual_119": {"category": 7, "page": 18, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-DEHYD-01", "priority": 7, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 18,
+      "message_key": "freetext_urgent",
+      "patterns": ["탈수(가|증상이)?(심|너무)", "심한탈수", "(물도|물한모금도|아무것도)(못|안)(마시|먹).{0,10}(소변|오줌)(이|을|도)?.{0,4}(안|못|없)", "(물도|아무것도)못(마시|먹).{0,8}(축처|늘어|기운이없)"],
+      "evidence": {"source": "emergency_act_rule_annex1", "ref": "별표1 중독 및 대사장애 '심한 탈수' (매뉴얼 직접 기준 없음)", "criteria_id": "C-23"},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-METABOLIC-01", "priority": 7, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 12,
+      "message_key": "freetext_urgent",
+      "patterns": ["저혈당.{0,10}(쓰러|의식|정신|식은땀|떨|헛소리|깨)", "혈당이(너무|엄청)?(높|낮|떨어).{0,10}(의식|정신|쓰러|축처|헛소리)", "당뇨.{0,12}(쓰러|의식이|정신이)", "케톤산증"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 중독 및 대사장애 '급성대사장애(당뇨병 등)' / 매뉴얼 범주 12 PDF p.23·14 p.26 긴급(당뇨병 과거력·비정상 행동)", "criteria_id": "C-24", "manual_119": {"category": 12, "page": 23, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-ABDOMEN-01", "priority": 6, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 6,
+      "message_key": "freetext_urgent",
+      "patterns": ["배(가|를)?(찢어질|칼로찌르는|끊어질|뒤틀리는)(듯|것같)이?아(프|파)", "배(가)?(너무|엄청|심하게|죽을듯이|미친듯이)아파서.{0,6}(움직|걸을|일어|숨|구르|데굴|쓰러|식은땀|허리를펴)", "데굴데굴구를", "배가딱딱(하게|해지)?.{0,6}아(프|파)", "배를움켜쥐고", "(등|옆구리)(쪽)?(으로)?찢어지(듯|게)"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 외과적 '개복술을 요하는 급성 복증' / 매뉴얼 범주 6 PDF p.17 긴급(찢어지는 통증, 실신)", "criteria_id": "C-25", "manual_119": {"category": 6, "page": 17, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-BURN-01", "priority": 6, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 31,
+      "message_key": "freetext_urgent",
+      "patterns": ["온몸(에|이|을)?.{0,4}(화상|데었|데였|데어|데여)", "(넓게|크게|심하게|넓은부위)(화상|데었|데였|데어|데여)", "화상(을|이)?(넓|크게|심하게|심해|온몸)", "(?<!햇볕에|햇빛에|햇볕|햇빛)얼굴(에|을|이)?.{0,4}(화상|데었|데였|데어|데여)", "전기화상", "화학(약품|물질)?(에의한|으로)?화상"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 외과적 '광범위한 화상(신체 표면적 18% 이상)' / 매뉴얼 범주 31 PDF p.43 긴급(15% 이상, 얼굴·기도 화상, 전기·화학)", "criteria_id": "C-26", "manual_119": {"category": 31, "page": 43, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-PENETRATE-01", "priority": 6, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 26,
+      "message_key": "freetext_urgent",
+      "patterns": ["칼(에|로|으로).{0,4}찔", "(배|가슴|목|등|옆구리|머리|허벅지)(를|을|에|가|이)?(칼에|칼로)?찔렸", "관통(상|됐|했)", "총(에|을)맞", "총상", "(몸|배|가슴|머리|눈|목)(에|을)?.{0,6}(꽂혔|박혔)"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 외과적 '관통상' / 매뉴얼 범주 26 PDF p.38 긴급(중심부 손상)", "criteria_id": "C-27", "manual_119": {"category": 26, "page": 38, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-FRACTURE-01", "priority": 6, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 28,
+      "message_key": "freetext_urgent",
+      "patterns": ["뼈가(밖으로|튀어|살밖|살을뚫|보여|보이)", "(허벅지|넓적다리|대퇴)(뼈)?(가|이)?부러", "(척추|목뼈|허리뼈|경추)(가|를|이)?(부러|골절|다쳐|다쳤)", "(목|허리)(를)?다쳐서.{0,8}(다리|팔|몸)(이|가)?(안움직|감각|마비)", "여러군데(가)?(부러|골절)", "개방(성)?골절"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 외과적 '개방성·다발성 골절 또는 대퇴부 척추의 골절' / 매뉴얼 범주 28 PDF p.40 긴급(사지마비, 위험한 손상)·응급(대퇴부 제외 단독 골절)", "criteria_id": "C-28", "manual_119": {"category": 28, "page": 40, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-AMPUT-01", "priority": 6, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 29,
+      "message_key": "freetext_urgent",
+      "patterns": ["(손가락|발가락|손목|손|발|팔|다리)(이|가)?.{0,4}(잘렸|잘려나|절단|떨어져나)", "절단(됐|되었|사고)"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 외과적 '사지를 절단할 우려가 있는 혈관손상' / 매뉴얼 Ⅳ 절단 처치 PDF p.59, 범주 28 p.40", "criteria_id": "C-29", "manual_119": {"category": 28, "page": 59, "level": "응급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-TRAUMA-01", "priority": 6, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 20,
+      "message_key": "freetext_urgent",
+      "patterns": ["(차|트럭|버스|오토바이)(에|한테|에게)(치였|치어|받혔|부딪혀서)", "(차가|차량이)(전복|뒤집)", "차(안)?에(끼였|갇혔|깔렸)", "(차|오토바이)(에서|밖으로)튕겨", "(높은곳|지붕|옥상|사다리|건물|난간|베란다|창문|절벽|[2-9]층|[1-9][0-9]층)(에서|위에서)(떨어|추락)", "(사람|아이|애|누가|가족|엄마|아빠|친구|동생|남편|아내|할머니|할아버지)(이|가)?.{0,8}추락", "추락사고", "(?<!마음을|마음이|자존심이|자존심을)(크게|심하게|여러군데)다쳤", "교통사고.{0,10}(의식|피가많|못움직|안움직|크게|심하게)"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 외과적 '다발성 외상' / 매뉴얼 범주 20 PDF p.32 긴급(보행자 충돌, 전복, 끼임, 튕겨나감), 범주 28 p.40 긴급(3m 이상 추락)", "criteria_id": "C-30", "manual_119": {"category": 20, "page": 32, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-EYE-01", "priority": 7, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 21,
+      "message_key": "freetext_urgent",
+      "patterns": ["눈(에|으로|에다)?.{0,6}(락스|세제|표백제|약품|화학약품|화학물질|소독약|염산|본드|가성소다|세정제|리무버).{0,6}(들어|튀|묻)", "눈(에|이)?.{0,6}(박혔|꽂혔)", "(눈알|안구)(이|가)?(터|파열|찢)"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 안과적 '화학물질에 의한 눈의 손상' / 매뉴얼 범주 21 PDF p.33 긴급(화학 손상, 안구 이물 박힘, 안구 파열)", "criteria_id": "C-31", "manual_119": {"category": 21, "page": 33, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-VISION-01", "priority": 7, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 21,
+      "message_key": "freetext_urgent",
+      "patterns": ["갑자기.{0,6}(안보여|안보이|보이지않|시력이(떨어|없|안)|깜깜해|까매)", "(한쪽|양쪽)?눈(이|앞이)?갑자기.{0,4}(안보|보이지않|깜깜|까매)", "시력을(갑자기)?잃", "실명"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 안과적 '급성 시력소실' / 매뉴얼 범주 21 PDF p.33 '심각한 눈 손상'", "criteria_id": "C-32", "manual_119": {"category": 21, "page": 33, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-ALLERGY-01", "priority": 7, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 9,
+      "message_key": "freetext_urgent",
+      "patterns": ["(얼굴|입술|혀|목|눈)(이|가|도)?.{0,6}(부었|붓|부어|부풀).{0,10}(숨|삼키|침을|목이막|쌕쌕)", "(먹고|먹은뒤|먹었는데|먹은후|쏘이고|쏘였는데|맞고|맞았는데|바르고).{0,8}(얼굴|입술|혀|목)(이|가)?.{0,4}(부었|붓|부어|부풀)", "아나필락시스", "알레르기.{0,10}(숨|목이부|침을못|얼굴이부|입술이부)", "목(이|안이)?(부어서|조여서|막혀서)숨", "침(을|도)?못삼키", "혀가부", "벌(에|한테)쏘.{0,10}(숨|어지러|얼굴|입술|온몸)"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 알러지 '얼굴 부종을 동반한 알러지 반응' / 매뉴얼 범주 9 PDF p.20 긴급(호흡곤란·삼킴곤란, 점점 악화)", "criteria_id": "C-33", "manual_119": {"category": 9, "page": 20, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-BITE-01", "priority": 7, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 23,
+      "message_key": "freetext_urgent",
+      "patterns": ["뱀(에|한테|에게)?물", "독사", "(개|맹견|큰개|대형견)(에게|한테|에)?.{0,4}(얼굴|목|가슴)(을|이)?물", "(얼굴|목|가슴)(을|이)?.{0,4}(개|맹견)(에게|한테)물", "(멧돼지|곰|소|말)(에게|한테)(물렸|받혔)"],
+      "evidence": {"source": "manual_119", "ref": "매뉴얼 범주 9 PDF p.20 긴급 '뱀에 물린 경우', 범주 23 p.35 긴급(독이 있는 동물, 큰 동물, 얼굴·경부·가슴 교상)", "criteria_id": "C-34", "manual_119": {"category": 23, "page": 35, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-ELECTRIC-01", "priority": 7, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 19,
+      "message_key": "freetext_urgent",
+      "patterns": ["감전(됐|되었|당했|돼서|사고|되어|된)", "(?<!정)전기(에)?감전", "(?<!정)전기(가|에).{0,4}(통해서|통했는데).{0,8}(쓰러|의식|화상|숨|심장)", "벼락(을|에)?맞", "낙뢰"],
+      "evidence": {"source": "manual_119", "ref": "매뉴얼 범주 19 PDF p.31 긴급(220볼트 이상 감전, 실신·흉부 불편감 동반)", "criteria_id": "C-35", "manual_119": {"category": 19, "page": 31, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-GAS-01", "priority": 7, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 25,
+      "message_key": "freetext_urgent",
+      "patterns": ["일산화탄소(중독|를|에|가)", "연탄가스(중독|를|에|가)", "(가스|유독가스|연기)(를|을)?.{0,4}(많이)?(마시|마셔|들이마).{0,8}(어지러|쓰러|의식|정신|토|숨)", "가스중독", "유독가스(를|에|가)"],
+      "evidence": {"source": "manual_119", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 중독 '기타 물질의 중독' / 매뉴얼 범주 25 PDF p.37 긴급", "criteria_id": "C-36", "manual_119": {"category": 25, "page": 37, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-ENV-01", "priority": 7, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 16,
+      "message_key": "freetext_urgent",
+      "patterns": ["열사병(으로|이와|이온|에걸렸|같아요|인것같)", "일사병.{0,8}(쓰러|의식|정신|헛소리|경련)", "저체온증(으로|이와|이온|상태|같아요|인것같)", "(더위|햇볕)(를|에)?먹고.{0,6}(쓰러|의식|정신|헛소리)", "몸이(꽁꽁|너무)?얼어서.{0,8}(의식|정신|말을못|안움직)"],
+      "evidence": {"source": "manual_119", "ref": "매뉴얼 범주 16 PDF p.28 긴급(극단적 고온 노출, 심한 오한, 의식 혼란)", "criteria_id": "C-37", "manual_119": {"category": 16, "page": 28, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-PREG-01", "priority": 7, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 13,
+      "message_key": "freetext_urgent",
+      "patterns": ["양수가(터|샜|새|흘|나)", "아기(가|머리가)(나올것같|나오려|보여|보이)", "진통이(규칙적|[0-9]+분간격|몇분간격)", "임신.{0,12}(피가(많이|계속|쏟|콸)|하혈(이|을)?(많|심|계속))", "하혈(이|을)?(너무|심하게|많이)", "출산이임박"],
+      "evidence": {"source": "manual_119", "ref": "매뉴얼 범주 13 PDF p.24 긴급(20주 이상 질출혈·양수 파열·분만진통, 절박 분만, 실신 동반 질출혈)", "criteria_id": "C-38", "manual_119": {"category": 13, "page": 24, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-SELFHARM-THINK-01", "priority": 8, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 14,
+      "message_key": "crisis_notice_109",
+      "patterns": ["죽고싶", "자살(하고싶|할까|할거|생각|충동|하려|할것같|하면)", "살기(가)?싫", "살고싶지(가)?않", "사라지고싶", "없어지고싶", "자해(하고싶|충동|할것같|하려)", "극단적(인)?선택(을)?(하고싶|할까|생각|하려|할것같)", "목숨을끊고싶", "그만살고싶", "세상을떠나고싶", "죽어버리고싶", "죽어야겠"],
+      "evidence": {"source": "emergency_act_rule_annex1", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 정신과적 '자신 또는 다른 사람을 해할 우려가 있는 정신장애' / 매뉴얼 범주 14 PDF p.26 긴급 '자해 혹은 자살 위협'", "criteria_id": "C-39", "manual_119": {"category": 14, "page": 26, "level": "긴급"}},
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "FT-HEADACHE-01", "priority": 4, "result": "URGENT_NOTICE", "terminal": true, "triage_category_id": 3,
+      "message_key": "freetext_urgent",
+      "patterns": ["(평생|살면서|태어나서|난생)처음.{0,10}(두통|머리가아|머리아)", "(평생|살면서|태어나서).{0,6}(가장|제일)?(심한|센)두통", "갑자기.{0,4}머리가(깨질|터질|망치|쪼개질)", "머리가(깨질|터질|쪼개질)(듯|것같)이?.{0,4}아(프|파).{0,10}(토|구토|목이뻣|말이)", "벼락(같은|치듯|맞은듯)(한)?두통"],
+      "evidence": {"source": "manual_119", "sources": ["emergency_act_rule_annex1", "manual_119"], "ref": "별표1 신경학적 '급성 신경학적 이상'(추정) / 매뉴얼 범주 3 PDF p.13 긴급(평생 가장 심한 두통, 3시간 이내 갑자기 시작된 심한 두통, 구토 동반)", "criteria_id": "C-40", "manual_119": {"category": 3, "page": 13, "level": "긴급"}},
+      "review_status": "draft"
+    }
+  ]
+}
