@@ -62,7 +62,7 @@ test('Q0=예 + E 문항 끝 → emergency + 119 정리 요약(답한 것만), sk
   const r = ok(out);
   assert.deepEqual(Object.keys(r).sort(), ['emergency', 'summary']);
   const lines = r.summary.ko.split('\n');
-  assert.equal(lines[0], '119에 알릴 내용이에요(참고용).');
+  assert.equal(lines[0], '119에 알릴 내용입니다(참고용).');
   assert.ok(lines.includes('환자가 본인: 아니요'));
   assert.ok(lines.includes('정상 호흡: 확인 불가'));
   assert.ok(lines.includes('환자 수: 1명'));
@@ -120,13 +120,13 @@ test('완료: 요약 + 진료과 search + (본인) profileUpdates', async () => 
   assert.equal(calls.profile.length, 1);
   assert.equal(calls.profile[0].messages[0], '30살인데 기침이 나요');
   const lines = r.summary.ko.split('\n');
-  assert.equal(lines[0], '입력한 답을 정리한 참고용 내용이에요. 진단이 아니에요.');
+  assert.equal(lines[0], '입력하신 답을 정리한 참고용 내용입니다. 진단이 아닙니다.');
   assert.ok(lines.includes('상담 대상: 본인'));
   assert.ok(lines.includes(`주된 증상: ${data.refData.symptoms.get('R05').nameKo}`));
   assert.ok(lines.includes('시작: 오늘'));
   assert.ok(lines.includes('경과: 계속 나타남(예), 점점 심해짐(아니요)'));
   assert.ok(lines.some((l) => l.startsWith('참고할 진료과: ')));
-  assert.ok(lines.includes('복용 중인 약, 기존 질환, 함께 있는 다른 증상은 확인하지 않았어요. 해당되면 진료 때 꼭 알려 주세요.'));
+  assert.ok(lines.includes('복용 중인 약, 기존 질환, 함께 있는 다른 증상은 확인하지 않았습니다. 해당되면 진료 때 꼭 알려 주세요.'));
   assert.equal(lines.at(-1), '증상이 갑자기 심해지면 119에 연락하세요.');
   assert.ok(!r.summary.ko.includes('30살인데'));
   assert.deepEqual(out.trace.llm.profile, {called: true, itemCount: 1, fields: ['age'], error: null});
@@ -151,7 +151,7 @@ test('완료: 상담 대상이 본인이 아니면 extractProfileUpdates를 부�
 test('skip: Q0만 답한 직후 → 요약 첫 줄에 안전 질문 미응답 문구, 증상 모름 → general 진료과', async () => {
   const {out, calls} = await call({reason: 'skip', messages: ['기침이 나요'], answers: {Q0: 'no'}});
   const r = ok(out);
-  assert.ok(r.summary.ko.startsWith('응급 확인 질문에 답하지 않았어요.'));
+  assert.ok(r.summary.ko.startsWith('응급 확인 질문에 답하지 않았습니다.'));
   assert.ok(r.summary.ko.includes('주된 증상: 목록에서 찾지 못함'));
   assert.deepEqual(r.search, {type: 'hospital', department: 'internal'});
   assert.equal(out.trace.symptom.source, 'skip');
@@ -159,7 +159,7 @@ test('skip: Q0만 답한 직후 → 요약 첫 줄에 안전 질문 미응답 �
   assert.equal(calls.classify.length, 0);
   // 안전 질문을 다 답했으면 그 문구가 없다
   const r2 = ok((await call({reason: 'skip', messages: ['기침이 나요'], answers: {...SAFE_BASE, SYM_DICT_CONFIRM: 'sym_R05'}})).out);
-  assert.ok(!r2.summary.ko.includes('응급 확인 질문에 답하지 않았어요'));
+  assert.ok(!r2.summary.ko.includes('응급 확인 질문에 답하지 않았습니다'));
 });
 
 test('LLM 경로: 사전 0개 → classifySymptom 1회 → SYM_CONFIRM, 답하면 LLM 0회', async () => {

@@ -23,10 +23,12 @@ function clip(lines) {
 
 /**
  * 일반 요약.
- * @param {{slots:object, codes:Map, symptom:object|null, departments:Array<{nameKo}>, data:object, safetyUnanswered:boolean}} input
+ * @param {{slots:object, codes:Map, symptom:object|null, departments:Array<{nameKo}>, data:object, safetyUnanswered:boolean,
+ *          riskUnconfirmed?:boolean, group?:string|null}} input
+ *   group: recommend()의 group. null이면 증상 통계(variant) 경로, 문자열이면 fallback 그룹 경로, 생략(undefined)이면 순위 설명 줄을 넣지 않는다.
  * @returns {string}
  */
-export function buildSummary({slots, codes, symptom, departments = [], data, safetyUnanswered = false, riskUnconfirmed = false}) {
+export function buildSummary({slots, codes, symptom, departments = [], data, safetyUnanswered = false, riskUnconfirmed = false, group}) {
   const lines = [];
   if (riskUnconfirmed) lines.push(SUMMARY.riskUnconfirmed); // 11/17 RF2: 확인 질문 '잘 모르겠어요'(또는 2번 무응답)면 첫 줄
   if (safetyUnanswered) lines.push(SUMMARY.safetyUnanswered);
@@ -50,7 +52,12 @@ export function buildSummary({slots, codes, symptom, departments = [], data, saf
   if (course.length) lines.push(`${SUMMARY.course}: ${course.join(', ')}`);
   const pain = slotEntries(slots, 'detail.pain_score').map((e) => displayOf(e, data)).filter(Boolean);
   if (pain.length) lines.push(SUMMARY.pain(pain[0]));
-  if (departments.length) lines.push(`${SUMMARY.departments}: ${departments.map((d) => d.nameKo).join(', ')}`);
+  // 11/17 요약 말투: 진료과는 순위를 붙여(2개 이상), 1개뿐이면 순위 없이. 바로 다음 줄에 경로별 순위 설명
+  if (departments.length) {
+    const names = departments.length === 1 ? departments[0].nameKo : departments.map((d, i) => SUMMARY.departmentRank(i + 1, d.nameKo)).join(' / ');
+    lines.push(`${SUMMARY.departments}: ${names}`);
+    if (group !== undefined) lines.push(group === null ? SUMMARY.deptNoteStats : SUMMARY.deptNoteFallback);
+  }
   lines.push(SUMMARY.unchecked);
   lines.push(SUMMARY.footer);
   return clip(lines);

@@ -26,8 +26,8 @@ function assertNoTrace(out, logs, text) {
   assert.ok(!seen.includes('messageIndexes'), '메시지 위치');
 }
 
-test('RF3(+RG2): 문구 2개(templates-v4) — 초안 그대로, 길이 제한, 계약 통과, 112·119·1366 안내와 "상담하지 않아요"', () => {
-  assert.equal(TEMPLATE_VERSION, 'templates-v4');
+test('RF3(+RG2): 문구 2개(templates-v5) — 초안 그대로, 길이 제한, 계약 통과, 112·119·1366 안내와 "상담하지 않아요"', () => {
+  assert.equal(TEMPLATE_VERSION, 'templates-v5');
   assert.deepEqual(EMERGENCY_TEXT.threat_notice_112, {title: '지금은 안전이 먼저예요',
     message: '누군가 다치거나 위험해질 수 있는 상황으로 보여요. 지금 위험하다면 바로 112에 신고하세요. 다친 사람이 있으면 119에 연락하세요. 이 서비스는 이런 상황에 대한 상담은 하지 않아요.'});
   assert.deepEqual(EMERGENCY_TEXT.violence_notice_1366, {title: '도움받을 수 있는 곳이 있어요',

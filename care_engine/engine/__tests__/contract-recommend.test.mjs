@@ -127,25 +127,25 @@ test('요약: 답이 없는 줄은 빼고, 표시 문구만', () => {
   const slots = applyMappings({codes, data});
   const s = buildSummary({slots, codes, symptom: null, departments: [], data});
   assert.deepEqual(s.split('\n'), [
-    '입력한 답을 정리한 참고용 내용이에요. 진단이 아니에요.',
+    '입력하신 답을 정리한 참고용 내용입니다. 진단이 아닙니다.',
     '상담 대상: 아이',
     '주된 증상: 목록에서 찾지 못함',
-    '복용 중인 약, 기존 질환, 함께 있는 다른 증상은 확인하지 않았어요. 해당되면 진료 때 꼭 알려 주세요.',
+    '복용 중인 약, 기존 질환, 함께 있는 다른 증상은 확인하지 않았습니다. 해당되면 진료 때 꼭 알려 주세요.',
     '증상이 갑자기 심해지면 119에 연락하세요.',
   ]);
   const c2 = new Map([['Q0', 'no'], ['P0', 'yes'], ['P1', 'pain_7'], ['N6', 'no'], ['N6-1', 'freq_daily'], ['N11', 'yes'], ['N11-2', 'worse']]);
   const s2 = buildSummary({slots: applyMappings({codes: c2, data}), codes: c2, symptom: ref.symptoms.get('R05'), departments: [{nameKo: '내과'}, {nameKo: '이비인후과'}], data, safetyUnanswered: true});
   const lines = s2.split('\n');
-  assert.equal(lines[0], '응급 확인 질문에 답하지 않았어요. 의식이 흐리거나 숨쉬기 힘들거나, 갑작스러운 마비·말하기 어려움·심한 가슴 통증·멈추지 않는 출혈이 있으면 지금 119에 연락하세요.');
+  assert.equal(lines[0], '응급 확인 질문에 답하지 않았습니다. 의식이 흐리거나 숨쉬기 힘들거나, 갑작스러운 마비·말하기 어려움·심한 가슴 통증·멈추지 않는 출혈이 있으면 지금 119에 연락하세요.');
   assert.ok(lines.includes('경과: 계속 나타남(아니요), 하루 한 번, 나빠짐'));
   assert.ok(lines.includes('통증: 7점 (0~10)'));
-  assert.ok(lines.includes('참고할 진료과: 내과, 이비인후과'));
+  assert.ok(lines.includes('참고할 진료과: 1순위 내과 / 2순위 이비인후과'));
   assert.equal(displayOf({value: 'count_1', question: 'E8'}, data), '1명');
   assert.equal(buildEmergencySummary({slots: applyMappings({codes: new Map([['Q0', 'yes']]), data}), data}), null);
 });
 
 test('템플릿: 응급 문구 길이, 모르는 키', () => {
-  assert.equal(TEMPLATE_VERSION, 'templates-v4'); // 11/17 R: 자유 입력 문구 3개, RF3: 민감 안내 2개
+  assert.equal(TEMPLATE_VERSION, 'templates-v5'); // 11/17 R: 자유 입력 문구 3개, RF3: 민감 안내 2개
   for (const k of ['emergency_call_119', 'urgent_notice_consciousness', 'urgent_notice_breathing', 'urgent_notice_red_flags',
     'freetext_emergency_119', 'freetext_urgent', 'crisis_notice_109', 'threat_notice_112', 'violence_notice_1366', 'nope']) {
     const n = emergencyNotice(k);

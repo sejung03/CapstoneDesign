@@ -15,7 +15,7 @@ async function get(name) {
   }
   return results.get(name);
 }
-const SAFETY_LINE = '응급 확인 질문에 답하지 않았어요.';
+const SAFETY_LINE = '응급 확인 질문에 답하지 않았습니다.';
 
 test('모든 시나리오: 끝까지 돌고 모든 응답이 계약 검사 통과', async () => {
   for (const s of scenarios()) {
@@ -93,7 +93,7 @@ test('응급: Q0=예 → E 문항 → emergency + 119 정리, N1 모름 → 긴�
   const q0 = await get('q0_emergency');
   assert.deepEqual(q0.asked, ['Q0', 'E1', 'E2', 'E4', 'E5', 'E6', 'E7', 'E8', 'E8-1', 'E9', 'E9-1']);
   assert.ok(q0.responses.slice(1).every((x) => x.response.emergency?.active === true && !x.response.search));
-  assert.ok(q0.final.summary.ko.startsWith('119에 알릴 내용이에요'));
+  assert.ok(q0.final.summary.ko.startsWith('119에 알릴 내용입니다'));
   const n1 = await get('n1_unknown');
   assert.deepEqual(Object.keys(n1.final), ['emergency']);
 });

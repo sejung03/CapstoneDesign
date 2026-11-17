@@ -7,7 +7,7 @@ import {fakeLlm, call} from './helpers.mjs';
 const Q0 = ['yes', 'no', null];
 const N = ['yes', 'no', 'unknown', null];
 const RISKY = {N1: ['no', 'unknown'], N2: ['no', 'unknown'], N3: ['yes', 'unknown']};
-const SAFETY_LINE = '응급 확인 질문에 답하지 않았어요.';
+const SAFETY_LINE = '응급 확인 질문에 답하지 않았습니다.';
 
 function combos() {
   const out = [];
