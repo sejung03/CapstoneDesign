@@ -1,3 +1,4 @@
+import {phrase,expandLocales} from './i18n.mjs';
 import {uiIcon} from './ui-icons.mjs';
 export const travelModes=['walk','traffic','car'];
 export function validRouteLocation(point){return !!point&&Number.isFinite(point.lat)&&Number.isFinite(point.lng)&&Math.abs(point.lat)<=90&&Math.abs(point.lng)<=180;}
@@ -9,7 +10,7 @@ export function kakaoRouteLink(mode,origin,destination,locale='ko'){
  if(!travelModes.includes(mode)||!validRouteLocation(destination))return '';
  const end=encodeURIComponent(destination.name?.[locale]||destination.name?.ko||'Destination')+','+destination.lat+','+destination.lng;
  if(!validRouteLocation(origin))return 'https://map.kakao.com/link/to/'+end;
- return 'https://map.kakao.com/link/by/'+mode+'/'+encodeURIComponent(locale==='ko'?'내 위치':'My location')+','+origin.lat+','+origin.lng+'/'+end;
+ return 'https://map.kakao.com/link/by/'+mode+'/'+encodeURIComponent(phrase(locale,"My location"))+','+origin.lat+','+origin.lng+'/'+end;
 }
 export function routeContext(state){
  const destination=state.source==='live'&&state.view==='explore'&&state.routing.openId===state.search.selectedId?(state.live.items.find(item=>item.id===state.search.selectedId)||state.discovery?.items?.find(item=>item.id===state.search.selectedId)):null;
@@ -18,8 +19,7 @@ export function routeContext(state){
 export function routeDistance(meters){return meters<1000?Math.round(meters)+' m':(meters/1000).toFixed(1)+' km';}
 export function routeDuration(seconds,locale='ko'){
  const mins=Math.max(1,Math.ceil(seconds/60)),hours=Math.floor(mins/60),rest=mins%60;
- if(locale==='en')return hours?hours+' h'+(rest?' '+rest+' min':''):mins+' min';
- return hours?hours+'시간'+(rest?' '+rest+'분':''):mins+'분';
+ return hours?phrase(locale,'{0} h',[hours])+(rest?' '+phrase(locale,'{0} min',[rest]):''):phrase(locale,'{0} min',[mins]);
 }
 export function routeEntry(state,item){
  const key=routeQuery(state.routing?.mode||'walk',state.live.position,item);

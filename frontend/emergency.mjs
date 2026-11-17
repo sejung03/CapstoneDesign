@@ -1,3 +1,4 @@
+import {localizedLabels} from './i18n.mjs';
 import {loadKakaoSdk} from './kakao-client.mjs';
 export function createEmergency(){return {manual:false,notice:null,locationDraft:'',manualLocation:'',selectedPoint:null,locationSource:'',locationError:false,location:{phase:'idle',point:null,address:''}};}
 export function normalizeEmergency(raw){
@@ -6,7 +7,7 @@ export function normalizeEmergency(raw){
  if(!raw.active)return {active:false};
  const text=(value,max)=>{
   if(!value||typeof value.ko!=='string'||!value.ko.trim()||value.ko.length>max||value.en!==undefined&&(typeof value.en!=='string'||value.en.length>max))return fail();
-  return {ko:value.ko.trim(),...(value.en?.trim()?{en:value.en.trim()}:{})};
+  return localizedLabels(value,max);
  };
  if(raw.instructions!==undefined&&(!Array.isArray(raw.instructions)||raw.instructions.length>10))return fail();
  const instructions=(raw.instructions||[]).map(value=>text(value,1000));

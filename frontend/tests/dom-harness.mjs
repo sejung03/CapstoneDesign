@@ -1,5 +1,7 @@
 import fs from 'node:fs';
 import vm from 'node:vm';
+import * as i18n from '../i18n.mjs';
+import * as healthStorage from '../health-storage.mjs';
 export function mountApp({storage=new Map(),source='demo'}={}){
  const nodes=[];const ids=new Map();let renders=0;const listeners=[];
  const datasetOf=attributes=>Object.fromEntries(Object.entries(attributes).filter(([key])=>key.startsWith('data-')).map(([key,value])=>[key.slice(5).replace(/-([a-z])/g,(_,c)=>c.toUpperCase()),value]));
@@ -57,6 +59,7 @@ export function mountApp({storage=new Map(),source='demo'}={}){
  const document={createElement:tag=>new Element(tag),body,documentElement:{dataset:{},lang:''},getElementById:id=>ids.get(id)||null,querySelectorAll:selector=>select(selector),querySelector:selector=>select(selector)[0]||null,addEventListener:(...args)=>listeners.push(args),title:'',activeElement:null};
  const sandbox={document,console,AbortController,setTimeout:()=>1,clearTimeout(){},localStorage:{getItem(key){return storage.get(key)??null;},setItem(key,value){storage.set(key,value);},removeItem(key){storage.delete(key);}},window:{scrollY:0,scrollTo(){},matchMedia(){return {matches:false};},confirm(){return true;}}};
  document.removeEventListener=(type,handler)=>{const index=listeners.findIndex(entry=>entry[0]===type&&entry[1]===handler);if(index>=0)listeners.splice(index,1);};
+ Object.assign(sandbox,i18n,healthStorage);
  const context=vm.createContext(sandbox);
  const base=new URL('../',import.meta.url);
  let bundle=['account-session.mjs','favorites.mjs','health-updates.mjs','report-import.mjs','health-consent.mjs','workspace-model.mjs','departments.mjs','facility-art.mjs','ui-icons.mjs','copy.mjs','routing.mjs','public-hours.mjs','live-data.mjs','kakao-client.mjs','profile.mjs','care-context.mjs','flow.mjs','facilities.mjs','facilities-view.mjs','chat-model.mjs','intake-data.mjs','discovery.mjs','emergency.mjs','emergency-picker.mjs','emergency-resources.mjs','assistant.mjs','recommendations.mjs','intake-view.mjs','chat-view.mjs','report.mjs','app.js'].map(name=>fs.readFileSync(new URL(name,base),'utf8').replace(/^import .*;[\r]?$/gm,'').replace(/\bexport /g,'')).join('\n');

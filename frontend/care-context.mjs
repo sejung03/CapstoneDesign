@@ -1,3 +1,4 @@
+import {phrase,expandLocales} from './i18n.mjs';
 import {departmentCatalog} from './departments.mjs';
 // Frontend simulation only: explicit search preferences, no inference from symptoms.
 export function buildSuggestion(message,profile={},previous={}){
@@ -46,8 +47,8 @@ export function recommendationReasons(item,criteria){
 
 // Visible phrases are sent verbatim. These are entry shortcuts, not clinical rules.
 export const conversationStarters=[
- {id:'cough',icon:'user',text:{ko:'기침이 나요',en:'I have a cough'}},
- {id:'fever',icon:'user',text:{ko:'열이 나는 것 같아요',en:'I think I have a fever'}},
- {id:'stomach',icon:'user',text:{ko:'배가 아파요',en:'My stomach hurts'}},
- {id:'pharmacy',icon:'building',text:{ko:'지금 문 연 약국을 찾고 싶어요',en:'I want to find a pharmacy open now'},search:{type:'pharmacy',department:'pharmacy',openOnly:true}}
+ {id:'cough',icon:'user',text:expandLocales({ko:'기침이 나요',en:'I have a cough'})},
+ {id:'fever',icon:'user',text:expandLocales({ko:'열이 나는 것 같아요',en:'I think I have a fever'})},
+ {id:'stomach',icon:'user',text:expandLocales({ko:'배가 아파요',en:'My stomach hurts'})},
+ {id:'pharmacy',icon:'building',text:expandLocales({ko:'지금 문 연 약국을 찾고 싶어요',en:'I want to find a pharmacy open now'}),search:{type:'pharmacy',department:'pharmacy',openOnly:true}}
 ];

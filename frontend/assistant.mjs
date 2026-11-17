@@ -1,3 +1,4 @@
+import {phrase,expandLocales,localizedLabels} from './i18n.mjs';
 import {normalizeHealthUpdates} from './health-updates.mjs';
 import {canUsePreviousReport} from './report-import.mjs';
 import {normalizeEmergency} from './emergency.mjs';
@@ -26,9 +27,7 @@ export function assistantInputKey(state){return JSON.stringify([assistantContent
 export function normalizeAssistantResponse(raw,questionnaire=null){
  const fail=()=>{throw new TypeError('Invalid assistant response');};
  const label=value=>{
-  if(!value||typeof value.ko!=='string'||!value.ko.trim()||value.ko.length>2000)return fail();
-  if(value.en!==undefined&&(typeof value.en!=='string'||value.en.length>2000))return fail();
-  return {ko:value.ko,...(value.en?{en:value.en}:{})};
+  try{return localizedLabels(value,2000);}catch{return fail();}
  };
  if(!raw||typeof raw!=='object')return fail();
  const summary=raw.summary==null?null:label(raw.summary);
@@ -83,7 +82,7 @@ export function assistantReportNotes(state){
  if(!assistant)return '';
  const lines=assistant.answers.map(answer=>intakeLabel(answer.label,state.locale)+': '+intakeLabel(answer.optionLabel,state.locale));
  if(assistant.confirmed?.contentKey===assistantContentKey(state)){
-  lines.push((state.locale==='en'?'Reviewed summary':'확인한 상황 요약')+': '+assistant.confirmed.text);
+  lines.push((phrase(state.locale,"Reviewed summary"))+': '+assistant.confirmed.text);
  }
  return lines.join('\n');
 }

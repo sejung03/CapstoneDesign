@@ -1,4 +1,5 @@
 import {hasHealthConsent} from './health-consent.mjs';
+import {locales,phrase} from './i18n.mjs';
 export const reportImportLimits={bytes:5*1024*1024,pages:20,characters:20000};
 export function createReportImport(){return {open:false,confirmed:null};}
 export function canUsePreviousReport(state){return hasHealthConsent(state)&&(!(state.assistant?.connected||state.rankingConnected)||state.healthConsent?.notice?.allowReportImport===true);}
@@ -46,7 +47,8 @@ export async function extractPreviousPdf(file,{signal,loadPdf=()=>import('pdfjs-
    }
    const text=pages.join('\n\n').trim();if(!text)throw Error('importScanned');
    const compact=text.replace(/\s/g,'');
-   if(!compact.includes('진료전에보여줄내용')&&!compact.toLowerCase().includes('pre-visithealthnotes'))throw Error('importUnsupported');
+   const supportedTitles=locales.map(locale=>phrase(locale,'Pre-visit health notes').replace(/\s/g,'').toLowerCase());
+   if(!supportedTitles.some(title=>compact.toLowerCase().includes(title)))throw Error('importUnsupported');
    return text;
   };
   return await Promise.race([read(),stopped]);

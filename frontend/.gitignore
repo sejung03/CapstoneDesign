@@ -11,3 +11,4 @@ coverage/
 /public/clinic-demo.png
 
 /public/pdfjs/
+.local-data/

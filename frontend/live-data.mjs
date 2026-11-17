@@ -1,3 +1,4 @@
+import {phrase,expandLocales} from './i18n.mjs';
 import {departmentByKey,departmentFromCategory} from './departments.mjs';
 import {withCurrentHours} from './public-hours.mjs';
 export function createLiveState(){return {configured:false,key:'',phase:'idle',items:[],error:'',hasMore:false,nextCategories:[],page:0,queryKey:'',token:0};}
@@ -30,7 +31,7 @@ export function normalizePlace(raw,order=0){
  const providerId=String(raw.id);
  if(!/^\d+$/.test(providerId))return null;
  const phone=/^[0-9+\s()-]{5,30}$/.test(raw.phone||'')?String(raw.phone):'';
- return {id:'kakao-'+providerId,providerId,source:'kakao',providerOrder:order,name:{ko:name,en:name},area:{ko:address,en:address},region:address,type,department,categoryLabel:category,status:'unknown',hours:null,distance:null,accessible:null,photo:null,lat,lng,phone,roadAddress:String(raw.road_address_name||'').slice(0,300),jibunAddress:String(raw.address_name||'').slice(0,300),placeUrl:'https://place.map.kakao.com/'+providerId,directionsUrl:'https://map.kakao.com/link/to/'+encodeURIComponent(name)+','+lat+','+lng,access:{ko:'접근성 정보 확인 필요',en:'Accessibility information unavailable'}};
+ return {id:'kakao-'+providerId,providerId,source:'kakao',providerOrder:order,name:{ko:name,en:name},area:{ko:address,en:address},region:address,type,department,categoryLabel:category,status:'unknown',hours:null,distance:null,accessible:null,photo:null,lat,lng,phone,roadAddress:String(raw.road_address_name||'').slice(0,300),jibunAddress:String(raw.address_name||'').slice(0,300),placeUrl:'https://place.map.kakao.com/'+providerId,directionsUrl:'https://map.kakao.com/link/to/'+encodeURIComponent(name)+','+lat+','+lng,access:expandLocales({ko:'접근성 정보 확인 필요',en:'Accessibility information unavailable'})};
 }
 export function mergePlaces(existing,incoming){
  const map=new Map(existing.map(item=>[item.id,item]));

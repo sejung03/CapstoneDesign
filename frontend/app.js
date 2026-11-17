@@ -1,3 +1,5 @@
+import {phrase,expandLocales,localizedObject} from './i18n.mjs';
+import {emptyHealth,validateStoredHealth,healthStorageMessage} from './health-storage.mjs';
 import {createAccountSession,normalizeAccountSession} from './account-session.mjs';
 import {createFavorites,favoriteRecord,normalizeFavorites,FAVORITES_LIMIT} from './favorites.mjs';
 import {createHealthUpdates,normalizeHealthUpdates,validateHealthUpdateEvidence,applyHealthUpdateSelection,healthUpdateFields} from './health-updates.mjs';
@@ -192,13 +194,49 @@ function syncRecommendations(){
  })();
 }
 let accountAdapter=null,accountController=null,accountSequence=0;
+let healthStorageController=null,healthStorageSequence=0;
+function resetHealthStorage(){healthStorageController?.abort();healthStorageSequence++;state.healthStorage={phase:'ready',consented:false,grant:false,error:''};}
+async function loadAccountHealth(){
+ const id=state.account.accountId,adapter=accountAdapter?.healthProfile;
+ if(!id||!adapter)return;
+ healthStorageController?.abort();const controller=new AbortController();healthStorageController=controller;const token=++healthStorageSequence;
+ const current=()=>appMounted&&token===healthStorageSequence&&state.account.accountId===id&&!controller.signal.aborted;
+ state.healthStorage={phase:'loading',consented:false,grant:false,error:''};render();
+ const timer=setTimeout(()=>controller.abort(),10000);
+ try{const data=await adapter.get({signal:controller.signal});if(!current())return;const profile=validateStoredHealth(data.profile);state.profile={...state.profile,...profile};state.profileDraft={...state.profile};state.profileConfirmedAt=data.confirmedAt||null;state.healthStorage={phase:'ready',consented:data.storageConsent===true,grant:false,error:''};}
+ catch{if(token===healthStorageSequence&&state.account.accountId===id)state.healthStorage={phase:'error',consented:false,grant:false,error:'loadError'};}
+ finally{clearTimeout(timer);if(token===healthStorageSequence)render();}
+}
+async function persistAccountHealth(remove=false){
+ const id=state.account.accountId,adapter=accountAdapter?.healthProfile,storage=state.healthStorage;
+ if(!id||!adapter||['loading','saving','deleting'].includes(storage?.phase))return false;
+ if(!remove&&storage?.error==='loadError')return false;
+ if(!remove&&!hasHealthConsent(state))return false;
+ saveInputs();let profile;
+ if(!remove){try{profile=validateStoredHealth(Object.fromEntries(['age','allergies','medications','history'].map(k=>[k,state.profileDraft[k]||''])));}catch{state.profileError=true;render();return false;}}
+ const grant=!!document.getElementById('profile-storage-consent')?.checked||storage?.grant===true;
+ if(!remove&&!storage?.consented&&!grant){state.healthStorage={...storage,error:'consentRequired'};render();return false;}
+ healthStorageController?.abort();const controller=new AbortController();healthStorageController=controller;const token=++healthStorageSequence;
+ const current=()=>appMounted&&token===healthStorageSequence&&state.account.accountId===id&&!controller.signal.aborted;
+ state.healthStorage={...storage,phase:remove?'deleting':'saving',error:''};render();const timer=setTimeout(()=>controller.abort(),10000);
+ try{
+  const data=remove?await adapter.remove({signal:controller.signal}):await adapter.save(profile,{grant,signal:controller.signal});
+  if(!current())return false;
+  const saved=remove?emptyHealth():validateStoredHealth(data.profile);
+  state.profile={...state.profile,...saved};state.profileDraft={...state.profile};state.profileConfirmedAt=remove?null:data.confirmedAt;state.profileError=false;
+  state.healthStorage={phase:'ready',consented:!remove&&data.storageConsent===true,grant:false,error:''};render();toast(healthStorageMessage(state.locale,remove?'deleted':'saved'));return true;
+ }catch{if(token===healthStorageSequence&&state.account.accountId===id){state.healthStorage={...storage,phase:'error',error:remove?'deleteError':'saveError'};render();}return false;}
+ finally{clearTimeout(timer);}
+}
 async function applyAccountSession(session,token){
  if(token!==accountSequence)return;
  const changed=state.account.accountId!==session.accountId;state.account=session;
  if(changed){
+  resetHealthStorage();
   if(!viewRenderer)clearHealthAccess();
   void setFavoritesAdapter(session.accountId?accountAdapter?.favorites||null:null,{scope:session.accountId?'account:'+session.accountId:'guest'});
  }
+ if(session.accountId&&accountAdapter?.healthProfile&&(changed||!state.healthStorage||state.healthStorage.error==='loadError'))await loadAccountHealth();
  if(token===accountSequence)render();
 }
 async function abortableAccountCall(work,signal){
@@ -207,6 +245,7 @@ async function abortableAccountCall(work,signal){
  try{return await Promise.race([Promise.resolve().then(work),cancelled]);}finally{signal.removeEventListener('abort',abort);}
 }
 export async function setAccountAdapter(adapter=null){
+ if(adapter&&behaviorDemoAdapter){await setBehaviorDemoAdapter(null);await setFavoritesAdapter(null,{scope:'guest'});}
  if(adapter!==null&&(typeof adapter.getSession!=='function'||typeof adapter.logout!=='function'||adapter.favorites&&(typeof adapter.favorites.list!=='function'||typeof adapter.favorites.set!=='function')))throw new TypeError('Invalid account adapter');
  accountController?.abort();const token=++accountSequence;accountAdapter=adapter;
  if(!adapter){await applyAccountSession(createAccountSession(),token);return;}
@@ -228,7 +267,7 @@ let favoritesAdapter=null,favoritesController=null,favoritesSequence=0;
 export async function setFavoritesAdapter(adapter=null,{scope='guest'}={}){
  if(adapter!==null&&(typeof adapter.list!=='function'||typeof adapter.set!=='function'))throw new TypeError('Invalid favorites adapter');
  if(typeof scope!=='string'||!scope||scope.length>128)throw new TypeError('Invalid favorites scope');
- if(viewRenderer&&state.favorites.scope!==scope){clearHealthAccess();state.profileExit=false;pendingProfileExit=null;state.profileConfirmedAt=null;emergencyLocationController?.abort();emergencyLocationSequence++;state.emergency=createEmergency();}
+ if(viewRenderer&&state.favorites.scope!==scope && !scope.startsWith('demo:')){clearHealthAccess();state.profileExit=false;pendingProfileExit=null;state.profileConfirmedAt=null;emergencyLocationController?.abort();emergencyLocationSequence++;state.emergency=createEmergency();}
  favoritesController?.abort();const token=++favoritesSequence;favoritesAdapter=adapter;
  state.favorites={...createFavorites(),scope,phase:adapter?'loading':'ready'};render();if(!adapter)return;
  const controller=new AbortController();favoritesController=controller;
@@ -239,14 +278,105 @@ export async function setFavoritesAdapter(adapter=null,{scope='guest'}={}){
 async function toggleFavorite(id){
  if(state.favorites.pendingId||state.favorites.phase==='loading')return;
  const current=state.favorites.items.find(item=>item.id===id),item=current||state.live.items.find(item=>item.id===id)||state.discovery.items.find(item=>item.id===id)||searchFacilities(emptyCriteria()).find(item=>item.id===id);if(!item)return;
- if(!current&&state.favorites.items.length>=FAVORITES_LIMIT){toast(state.locale==='ko'?'즐겨찾기는 20곳까지 추가할 수 있어요.':'You can add up to 20 favorites.');return;}
+ if(!current&&state.favorites.items.length>=FAVORITES_LIMIT){toast(phrase(state.locale,"You can add up to 20 favorites."));return;}
  const facility=favoriteRecord(item),adapter=favoritesAdapter,token=favoritesSequence;
  saveInputs();state.favorites.pendingId=id;state.favorites.error='';render();
  const controller=new AbortController();favoritesController=controller;
  try{if(adapter)await adapter.set({facility,favorite:!current},{signal:controller.signal});if(token!==favoritesSequence||controller.signal.aborted)return;
   state.favorites.items=current?state.favorites.items.filter(value=>value.id!==id):[...state.favorites.items,facility];
- }catch{if(token===favoritesSequence&&!controller.signal.aborted){state.favorites.error='update';toast(state.locale==='ko'?'즐겨찾기를 변경하지 못했어요. 다시 시도해 주세요.':'Could not update favorites. Please try again.');}}
+  if(behaviorDemoAdapter&&state.favorites.scope.startsWith('demo:'))void updateBehaviorEvidenceAfterFavorite();
+ }catch{if(token===favoritesSequence&&!controller.signal.aborted){state.favorites.error='update';toast(phrase(state.locale,"Could not update favorites. Please try again."));}}
  finally{if(token===favoritesSequence){state.favorites.pendingId='';render();}}
+}
+// This adapter is only installed in Next.js development mode with fictional accounts.
+// Production account sessions and RLS must replace it; no real authentication is implied.
+let behaviorDemoAdapter=null,behaviorDemoSequence=0;
+let behaviorSignalSequence=0;
+async function updateBehaviorEvidenceAfterFavorite(){
+ const token=behaviorDemoSequence,signalToken=++behaviorSignalSequence,adapter=behaviorDemoAdapter;
+ if(!adapter||state.behaviorDemo.phase!=='ready')return;
+ try{
+  const [signal,statements]=await Promise.all([adapter.signal(),adapter.statements()]);
+  if(token!==behaviorDemoSequence||signalToken!==behaviorSignalSequence)return;
+  state.behaviorDemo={...state.behaviorDemo,signal,statements};render();
+ }catch{/* Favorite change may succeed even if optional preview refresh fails. */}
+}
+
+const blankBehaviorDemo=(account='a',phase='idle')=>({
+ account,phase,busy:false,error:'',notice:'',settings:null,signal:null,
+ draft:{region:'',preference:'distance'},regionApplied:false,statements:[],
+});
+async function loadBehaviorDemo(token,{loadFavorites=true}={}){
+ const adapter=behaviorDemoAdapter;
+ if(!adapter)return;
+ try{
+  const session=await adapter.demo.getSession();
+  if(token!==behaviorDemoSequence)return;
+  state.behaviorDemo={...blankBehaviorDemo(session.account,'loading')};render();
+  if(loadFavorites)await setFavoritesAdapter(adapter.favorites,{scope:'demo:'+session.account});
+  const [settings,signal,statements]=await Promise.all([adapter.settings.get(),adapter.signal(),adapter.statements()]);
+  if(token!==behaviorDemoSequence)return;
+  state.behaviorDemo={...state.behaviorDemo,phase:'ready',settings,signal,statements,
+   draft:{region:settings?.region||'',preference:settings?.preference||'distance'}};
+ }catch{
+  if(token!==behaviorDemoSequence)return;
+  state.behaviorDemo={...state.behaviorDemo,phase:'error',error:'load'};
+ }finally{if(token===behaviorDemoSequence)render();}
+}
+export async function setBehaviorDemoAdapter(adapter=null){
+ if(adapter!==null&&(!adapter.demo||!adapter.settings||!adapter.favorites||typeof adapter.signal!=='function'||typeof adapter.statements!=='function'))throw new TypeError('Invalid demo behavior adapter');
+ const token=++behaviorDemoSequence;behaviorDemoAdapter=adapter;
+ state.behaviorDemo=blankBehaviorDemo('a',adapter?'loading':'idle');render();
+ if(adapter&&!accountAdapter)await loadBehaviorDemo(token);
+}
+async function updateBehaviorDemo(action){
+ const adapter=behaviorDemoAdapter,demo=state.behaviorDemo;
+ if(!adapter||demo.busy||demo.phase!=='ready')return;
+ saveInputs();state.behaviorDemo.busy=true;state.behaviorDemo.error='';state.behaviorDemo.notice='';render();
+ const token=behaviorDemoSequence;
+ try{
+  if(action==='save'){
+   await adapter.settings.save({...state.behaviorDemo.draft});
+  }else if(action==='sample'){
+   await adapter.favorites.set({favorite:true,facility:{
+    id:'demo-hospital-01',type:'hospital',
+    name:expandLocales({ko:'가상 테스트 병원',en:'Fictional Test Hospital'}),address:'가상시 테스트동',
+   }});
+  }else if(action==='toggle'){
+   await adapter.settings.save({personalization_enabled: demo.settings?.personalization_enabled === false});
+  }else if(action==='delete'){
+   await adapter.settings.deleteAll();
+  }else if(action==='switch'){
+   const next=demo.account==='a'?'b':'a';
+   await adapter.demo.selectAccount(next);
+   if(token!==behaviorDemoSequence)return;
+   const nextToken=++behaviorDemoSequence;
+   state.behaviorDemo={...blankBehaviorDemo(next,'loading')};render();
+   await loadBehaviorDemo(nextToken);
+   return;
+  }
+  if(token!==behaviorDemoSequence)return;
+  if(action==='delete'){state.behaviorDemo.regionApplied=false;}
+  if(action==='delete'||action==='sample')await setFavoritesAdapter(adapter.favorites,{scope:'demo:'+demo.account});
+  const [settings,signal,statements]=await Promise.all([adapter.settings.get(),adapter.signal(),adapter.statements()]);
+  if(token!==behaviorDemoSequence)return;
+  state.behaviorDemo={...state.behaviorDemo,phase:'ready',settings,signal,statements,
+   draft:{region:settings?.region||'',preference:settings?.preference||'distance'},busy:false};
+  state.behaviorDemo.notice=localizedObject((action==='save'?'Saved demo settings.':action==='toggle'?'Demo personalization changed.':action==='sample'?'Fictional hospital added to favorites.':'Demo settings and favorites removed.'),state.locale);
+ }catch{
+  if(token===behaviorDemoSequence)state.behaviorDemo={...state.behaviorDemo,phase:'ready',busy:false,error:'mutation'};
+ }finally{if(token===behaviorDemoSequence)render();}
+}
+function useSavedBehaviorRegion(){
+ const region=state.behaviorDemo.settings?.region;
+ if(!region)return;
+ if(requestProfileExit(useSavedBehaviorRegion))return; // Preserve unsaved health-form changes.
+ saveInputs();state.draft.region=region;
+ state.behaviorDemo.regionApplied=true;
+ // Fill the search field but do not run a search or persist a new value.
+ if(viewRenderer){state.workspace.panel='explore';state.workspace.expanded=false;}
+ state.view='explore';state.search.initialized=true;state.search.origin='manual';
+ render();document.getElementById('search-region')?.focus({preventScroll:true});
 }
 let assistantAdapter=null,assistantProtocol=null,assistantController=null,assistantSequence=0;
 export function setAssistantAdapter(adapter,{questionnaire=null}={}){
@@ -665,6 +795,7 @@ function bindSearch(){
    state.draft.region=region;
   }
   state.search.origin='manual';state.search.focusedId=null;
+  if(region!==state.behaviorDemo.settings?.region)state.behaviorDemo.regionApplied=false;
   state.search.criteria={...state.search.criteria,targetFacilityId:null,targetQuery:null,region,center,type:state.type,department:state.search.department,openOnly:state.search.openOnly};
   if(filterWithoutText&&!region&&!center){
    state.search.selectedId=null;
@@ -727,11 +858,11 @@ function bindSearch(){
 
 function profileStorage(){try{return localStorage;}catch{return null;}}
 const restored=loadProfile(profileStorage());
-const state={account:createAccountSession(),favorites:createFavorites(),healthUpdates:createHealthUpdates(),emergencyGuides:defaultEmergencyGuides,reportImport:createReportImport(),healthConsent:createHealthConsent(),rankingConnected:false,emergency:createEmergency(),recommendations:createRecommendations(),discovery:{key:'',phase:'idle',items:[]},assistant:createAssistantState(),intakeStep:0,intakeQuestionnaire:mockIntakeQuestionnaire,intakeAnswers:{},routing:{mode:'walk',cache:{},openId:null},report:{saved:null,draft:null,editing:false,signature:'',updatedAt:Date.now()},source:'live',live:createLiveState(),profile:restored.profile,profileDraft:{...restored.profile},profileRemember:restored.remember,profileStorageNotice:restored.storageError,suggestion:null,view:'entry',locale:'ko',theme:'light',draft:emptyDraft(),type:'all',searchStatus:'',chat:{...createConversation(),open:true},chatReturnScroll:0,search:{criteria:emptyCriteria(),department:'all',openOnly:false,selectedId:null,display:'map',initialized:false}};
+const state={account:createAccountSession(),behaviorDemo:blankBehaviorDemo(),favorites:createFavorites(),healthUpdates:createHealthUpdates(),emergencyGuides:defaultEmergencyGuides,reportImport:createReportImport(),healthConsent:createHealthConsent(),rankingConnected:false,emergency:createEmergency(),recommendations:createRecommendations(),discovery:{key:'',phase:'idle',items:[]},assistant:createAssistantState(),intakeStep:0,intakeQuestionnaire:mockIntakeQuestionnaire,intakeAnswers:{},routing:{mode:'walk',cache:{},openId:null},report:{saved:null,draft:null,editing:false,signature:'',updatedAt:Date.now()},source:'live',live:createLiveState(),profile:restored.profile,profileDraft:{...restored.profile},profileRemember:restored.remember,profileStorageNotice:restored.storageError,suggestion:null,view:'entry',locale:'ko',theme:'light',draft:emptyDraft(),type:'all',searchStatus:'',chat:{...createConversation(),open:true},chatReturnScroll:0,search:{criteria:emptyCriteria(),department:'all',openOnly:false,selectedId:null,display:'map',initialized:false}};
 state.draft.region=state.profile.region;
 try{state.theme=localStorage.getItem('medical-theme')==='dark'?'dark':'light';const language=localStorage.getItem('medical-language');state.locale=Object.hasOwn(copy,language)?language:'ko';}catch{}
 let toastTimer;
-const t=key=>copy[state.locale][key];
+const t=key=>copy[state.locale]?.[key]??copy.ko[key]??key;
 function rememberPreferences(){try{localStorage.setItem('medical-theme',state.theme);localStorage.setItem('medical-language',state.locale);}catch{}}
 function saveInputs(){
  captureAssistant();
@@ -741,6 +872,10 @@ function saveInputs(){
  const input=document.getElementById('composer-input');if(input)state.chat.input=input.value;
  const symptom=document.getElementById('symptom');
  if(symptom)state.draft=prepareDraft({symptom:symptom.value,onset:document.getElementById('onset').value,region:document.getElementById('region').value});
+ const behaviorRegion=document.getElementById('behavior-region');
+ if(behaviorRegion&&state.behaviorDemo.phase==='ready'){
+  state.behaviorDemo.draft={region:behaviorRegion.value,preference:document.getElementById('behavior-sort')?.value||'distance'};
+ }
  const region=document.getElementById('search-region');
  if(region){state.draft.region=region.value.trim().slice(0,80);state.type=document.getElementById('facility-type').value;state.search.department=document.getElementById('department').value;state.search.openOnly=document.getElementById('open-only')?.checked||false;}
 }
@@ -754,7 +889,7 @@ function render(focus=false){
  const chatScroll=document.getElementById('chat-messages')?.scrollTop||0;
  document.body.dataset.view=state.view;document.body.dataset.chat=state.view==='entry'?'entry':state.chat.open?'open':'closed';
  document.documentElement.lang=state.locale;document.documentElement.dataset.theme=state.theme;
- document.title=state.locale==='ko'?'의료 안내 | 가까운 병원 찾기':'Medical Guide | Find care nearby';
+ document.title=phrase(state.locale,"Medical Guide | Find care nearby");
  document.querySelector('.skip-link').textContent=t('skipLink');
  const isEntry=state.view==='entry';
  clearBindings();
@@ -845,18 +980,30 @@ function commitProfile(){
  state.profile=cleanProfile(state.profileDraft);state.profileDraft={...state.profile};state.profileError=false;state.profileConfirmedAt=new Date().toISOString();return true;
 }
 function bindProfile(){
+ listen(document.getElementById('profile-storage-retry'),'click',()=>void loadAccountHealth());
+ listen(document.getElementById('profile-storage-consent'),'change',event=>{state.healthStorage={...state.healthStorage,grant:event.target.checked};});
+ listen(document.getElementById('behavior-save'),'click',()=>void updateBehaviorDemo('save'));
+ listen(document.getElementById('behavior-toggle'),'click',()=>void updateBehaviorDemo('toggle'));
+ listen(document.getElementById('behavior-switch'),'click',()=>void updateBehaviorDemo('switch'));
+ listen(document.getElementById('behavior-add-sample'),'click',()=>void updateBehaviorDemo('sample'));
+ listen(document.getElementById('behavior-retry'),'click',()=>{if(behaviorDemoAdapter)void loadBehaviorDemo(++behaviorDemoSequence);});
+ listen(document.getElementById('behavior-apply-region'),'click',useSavedBehaviorRegion);
+ listen(document.getElementById('behavior-delete'),'click',()=>{
+  if(!window.confirm(phrase(state.locale,"Delete demo search settings and favorites for this mock account? Health information is not deleted.")))return;
+  void updateBehaviorDemo('delete');
+ });
  listen(document.getElementById('account-retry'),'click',()=>{if(accountAdapter)void setAccountAdapter(accountAdapter);});
- listen(document.getElementById('account-logout'),'click',()=>{if(window.confirm(state.locale==='ko'?'로그아웃할까요? 저장하지 않은 입력과 이번 대화는 지워집니다.':'Log out? Unsaved entries and this conversation will be cleared.'))void logoutAccount();});
+ listen(document.getElementById('account-logout'),'click',()=>{if(window.confirm(phrase(state.locale,"Log out? Unsaved entries and this conversation will be cleared.")))void logoutAccount();});
  listen(document.getElementById('profile-pdf'),'click',function exportProfilePdf(){if(requestProfileExit(exportProfilePdf))return;window.print();});
  listen(document.getElementById('profile-health-start'),'click',()=>{requestHealthAccess('profile');});
- for(const choice of ['save','discard','cancel'])listen(document.getElementById('profile-leave-'+choice),'click',()=>{
-  const action=pendingProfileExit;if(choice==='save'&&!commitProfile())return;
+ for(const choice of ['save','discard','cancel'])listen(document.getElementById('profile-leave-'+choice),'click',async()=>{
+  const action=pendingProfileExit;if(choice==='save'){if(state.account.accountId){if(!await persistAccountHealth())return;}else if(!commitProfile())return;}
   if(choice==='discard'){state.profileDraft={...state.profile};state.profileError=false;}
   state.profileExit=false;pendingProfileExit=null;render();
   if(choice!=='cancel')action?.();
  });
- listen(document.getElementById('profile-form'),'submit',event=>{
-  event.preventDefault();if(viewRenderer){if(commitProfile()){render();toast(state.locale==='ko'?'건강정보를 저장했어요. 현재 페이지에서만 유지됩니다.':'Health information saved for this page.');}return;}
+ listen(document.getElementById('profile-form'),'submit',async event=>{
+  event.preventDefault();if(viewRenderer){if(state.account.accountId){await persistAccountHealth();}else if(commitProfile()){render();toast(phrase(state.locale,"Health information saved for this page."));}return;}
   saveInputs();state.profile=cleanProfile(state.profileDraft);
   const stored=persistProfile(profileStorage(),state.profile,state.profileRemember);
   if(stored)state.profileStorageNotice=false;
@@ -867,9 +1014,10 @@ function bindProfile(){
   if(state.suggestion)state.suggestion=buildSuggestion('',state.profile,{...state.suggestion,region:state.draft.region,priority:state.profile.preference});
   render();toast(t(!stored?'profileStorageError':state.profileRemember?'profileSaved':'profileSession'));
  });
- listen(document.getElementById('profile-delete'),'click',()=>{
-  const question=viewRenderer?(state.locale==='ko'?'건강정보를 지울까요? 수정한 상담 내용은 유지됩니다.':'Clear health information? Edited consultation notes will be kept.'):t('profileDeleteConfirm');
+ listen(document.getElementById('profile-delete'),'click',async()=>{
+  const question=viewRenderer&&state.account.accountId?healthStorageMessage(state.locale,'deleteConfirm'):viewRenderer?(phrase(state.locale,"Clear health information? Edited consultation notes will be kept.")):t('profileDeleteConfirm');
   if(!window.confirm(question))return;
+  if(viewRenderer&&state.account.accountId){await persistAccountHealth(true);return;}
   if(viewRenderer){const cleared={age:'',allergies:'',medications:'',history:''};state.profile={...state.profile,...cleared};state.profileDraft={...state.profile};state.profileError=false;state.profileConfirmedAt=null;render();toast(t('profileDeleted'));return;}
   const oldRegion=state.profile.region;const removed=persistProfile(profileStorage(),emptyProfile(),false);
   state.profile=emptyProfile();state.profileDraft=emptyProfile();state.profileRemember=false;state.profileStorageNotice=!removed;state.suggestion=null;
@@ -1030,7 +1178,9 @@ export function mountMedicalApp({renderView=null}={}){
  let disposed=false;
  return ()=>{
   if(disposed)return;saveInputs();disposed=true;appMounted=false;appGeneration++;
+  behaviorDemoSequence++;behaviorDemoAdapter=null;
   accountController?.abort();accountSequence++;
+  healthStorageController?.abort();healthStorageSequence++;
   favoritesController?.abort();favoritesSequence++;state.favorites.pendingId='';
   emergencyLocationController?.abort();emergencyLocationSequence++;
   configSequence++;configController?.abort();assistantController?.abort();assistantSequence++;recommendationController?.abort();recommendationSequence++;state.recommendations=createRecommendations();
