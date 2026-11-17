@@ -1,6 +1,6 @@
 // 사용자에게 보이는 엔진 문구(템플릿). 지시서 "문구 초안" 그대로 — 팀 검토 전 draft.
 // LLM을 쓰지 않는다. 사용자 원문·질환명·진단 표현을 넣지 않는다.
-export const TEMPLATE_VERSION = 'templates-v3'; // 11/17 R: 자유 입력 위험 표현 문구 3개, RF: 민감 안내 2개(112·1366)
+export const TEMPLATE_VERSION = 'templates-v4'; // 11/17 R: 자유 입력 문구 3개, RF: 민감 안내 2개(112·1366), RG: 확인 질문 '오늘' 기준·1366 문구
 
 // ---- 엔진 질문(설계 §4-4) ----
 export const ENGINE_Q = Object.freeze({
@@ -95,7 +95,7 @@ export const EMERGENCY_TEXT = Object.freeze({
   },
   violence_notice_1366: {
     title: '도움받을 수 있는 곳이 있어요',
-    message: '여성긴급전화 1366에서 24시간 상담받을 수 있고, 경찰·의료기관과도 연결해 드려요. 가까운 해바라기센터에서는 치료와 상담을 함께 받을 수 있어요. 지금 위험하다면 112, 다쳤다면 119에 연락하세요. 이 서비스는 이런 상황에 대한 상담은 하지 않아요.',
+    message: '여성긴급전화 1366에서 24시간 상담받을 수 있고, 경찰·의료기관 연결도 도와줘요. 가까운 해바라기센터에서는 치료와 상담을 함께 받을 수 있어요. 지금 위험하다면 112, 다쳤다면 119에 연락하세요. 이 서비스는 이런 상황에 대한 상담은 하지 않아요.',
   },
   crisis_notice_109: {
     title: '혼자 견디지 않아도 돼요',
@@ -113,7 +113,8 @@ const NOT_DIAGNOSIS = '이 서비스는 진단을 하지 않아요.';
 export const REFERRAL_ADDONS = Object.freeze({
   crisis_notice_109: CRISIS_109_ADDON,
   threat_notice_112: '안전이 위협받는 상황이면 112에도 신고하세요.',
-  violence_notice_1366: '폭력 피해가 있다면 여성긴급전화 1366(24시간)에서도 도움받을 수 있어요.',
+  // 11/17 RG2: 본문과 같은 표현(서비스가 연결해 주는 것처럼 읽히지 않게, 검토 G6)
+  violence_notice_1366: '폭력 피해가 있다면 여성긴급전화 1366에서 24시간 상담받을 수 있고, 경찰·의료기관 연결도 도와줘요.',
 });
 /** emergency 객체에 문장 하나를 진단 아님 문장 앞에 덧붙인다(이미 있으면 그대로). */
 export function withAddon(emergency, sentence) {
