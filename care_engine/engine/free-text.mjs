@@ -11,6 +11,8 @@ export const DEFAULT_FREE_TEXT_PATH = path.join(HERE, 'rules', 'free_text_v1.jso
 
 const RULE_ID_RE = /^FT-[A-Za-z0-9-]{1,60}$/;
 const RESULTS = new Set(['EMERGENCY_STOP', 'URGENT_NOTICE']);
+/** evidence.source 허용 값. 11/17 RF3: referral_policy(서비스 안내 정책, 1366) 추가. test_only는 테스트 규칙 파일용. */
+export const EVIDENCE_SOURCES = Object.freeze(['emergency_act_rule_annex1', 'manual_119', 'referral_policy', 'test_only']);
 
 export class FreeTextRuleError extends Error {
   constructor(problems) {
@@ -49,6 +51,7 @@ export function compileFreeTextRules(raw) {
     if (typeof r.terminal !== 'boolean') problems.push(`${at}: terminal 필수(boolean)`);
     if (typeof r.message_key !== 'string' || !r.message_key.trim()) problems.push(`${at}: message_key 필수`);
     if (!r.evidence || typeof r.evidence !== 'object' || typeof r.evidence.source !== 'string' || !r.evidence.source) problems.push(`${at}: evidence 필수(source)`);
+    else if (!EVIDENCE_SOURCES.includes(r.evidence.source)) problems.push(`${at}: evidence.source 값`);
     if (r.triage_category_id !== undefined && r.triage_category_id !== null && !Number.isInteger(r.triage_category_id)) problems.push(`${at}: triage_category_id`);
     return {
       ruleId: r.rule_id,

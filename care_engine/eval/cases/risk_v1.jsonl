@@ -151,3 +151,34 @@
 {"id":"f004","text":"지금 여는 병원 있나요","expect":"none","expect_key":null,"group":"facility","criteria_id":null}
 {"id":"f005","text":"소아과 어디 있어요","expect":"none","expect_key":null,"group":"facility","criteria_id":null}
 {"id":"f006","text":"응급실 있는 병원 찾아줘","expect":"none","expect_key":null,"group":"facility","criteria_id":null}
+{"id":"th001","text":"남편이 저를 죽이겠다고 해요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"positive","criteria_id":"C-51"}
+{"id":"th002","text":"흉기로 위협을 당하고 있어요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"positive","criteria_id":"C-51"}
+{"id":"th003","text":"전남친이 죽여버리겠다고 협박해요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"positive","criteria_id":"C-51"}
+{"id":"th004","text":"누가 계속 쫓아와요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"positive","criteria_id":"C-51"}
+{"id":"th005","text":"옆집 사람을 해치고 싶어요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"positive","criteria_id":"C-51"}
+{"id":"th006","text":"모르는 사람이 칼을 들고 찾아왔어요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"positive","criteria_id":"C-51"}
+{"id":"th007","text":"협박을 당하고 있어요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"positive","criteria_id":"C-51"}
+{"id":"vi001","text":"성폭행을 당했어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"positive","criteria_id":"C-52"}
+{"id":"vi002","text":"회사 상사에게 성추행을 당했어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"positive","criteria_id":"C-52"}
+{"id":"vi003","text":"남편이 저를 때려요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"positive","criteria_id":"C-52"}
+{"id":"vi004","text":"남자친구한테 맞았어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"positive","criteria_id":"C-52"}
+{"id":"vi005","text":"가정폭력을 당하고 있어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"positive","criteria_id":"C-52"}
+{"id":"vi006","text":"데이트폭력 피해를 입었어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"positive","criteria_id":"C-52"}
+{"id":"vi007","text":"스토킹을 당하고 있어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"positive","criteria_id":"C-52"}
+{"id":"vi008","text":"전남친이 스토커가 됐어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"positive","criteria_id":"C-52"}
+{"id":"vi009","text":"아빠가 자꾸 때려요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"positive","criteria_id":"C-52"}
+{"id":"vi010","text":"몰래카메라에 찍혔어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"positive","criteria_id":"C-52"}
+{"id":"mv001","text":"게임에서 다 죽여버리고 싶다","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv002","text":"공에 맞았어요","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv003","text":"모기 때려잡았어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv004","text":"동생이랑 장난치다 맞았어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv005","text":"엄마가 숙제 안 하면 죽여버린다고 했어 ㅋㅋ","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv006","text":"친구가 게임에서 날 죽였어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv007","text":"이 문제 진짜 죽이고 싶다","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv008","text":"드라마에서 남편이 아내를 때려서 화났어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv009","text":"성폭력 예방 교육을 들었어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv010","text":"고양이가 나를 따라와요","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv011","text":"친구가 나를 죽이겠대 게임에서","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv012","text":"스토킹 처벌법이 궁금해요","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv013","text":"형이랑 베개 싸움하다 맞았어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}
+{"id":"mv014","text":"가정폭력 예방 포스터를 만들었어","expect":"none","expect_key":null,"group":"metaphor","criteria_id":null}

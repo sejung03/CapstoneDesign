@@ -14,7 +14,7 @@ import {recommend, symptomSexMismatch} from './recommend.mjs';
 import {buildSummary, buildEmergencySummary, buildMedInfoSummary} from './summary.mjs';
 import {emergencyNotice, withCrisis109, riskConfirmQuestion, ENGINE_Q, OPT, TEMPLATE_VERSION} from './templates.mjs';
 import {resolveRiskConfirm} from './risk-confirm.mjs';
-import {RISK_CONFIRM_KEY} from './constants.mjs';
+import {RISK_CONFIRM_KEY, SENSITIVE_KEYS} from './constants.mjs';
 
 const CRISIS_KEY = 'crisis_notice_109';
 import {checkResponseContract} from './contract.mjs';
@@ -206,7 +206,9 @@ async function core(payload, ctx, deps, trace, now, log) {
 
   // 1. 안전 규칙(자유 입력 + 답) — 매 요청 맨 먼저
   const safety = evaluateSafety({codes: vis, messages, data, freeTextRules});
-  trace.ruleHits = safety.hits.map((h) => h.ruleId);
+  // 11/17 RF3: 민감 안내 hit(109·112·1366)는 다른 규칙과 함께 걸려도 trace·로그에 남기지 않는다
+  const isSensitive = (h) => SENSITIVE_KEYS.includes(h.messageKey);
+  trace.ruleHits = safety.hits.filter((h) => !isSensitive(h)).map((h) => h.ruleId);
   // 11/17 RF2: freetext_urgent hit는 확인 질문(RISK_CONFIRM_<n>)의 답으로 거른다. '예'일 때만 지금처럼 terminal
   const risk = resolveRiskConfirm({hits: safety.hits, riskConfirms, messageCount: messages.length, reason});
   if (risk.state !== 'none') trace.riskConfirm = {state: risk.state, asks: risk.asks};
@@ -239,6 +241,21 @@ async function core(payload, ctx, deps, trace, now, log) {
 
   // 응급(설계 §6): EMERGENCY_STOP, 또는 terminal URGENT_NOTICE → 진료과·search 없음
   let carryEmergency = null;
+  // 11/17 RF3: 민감 안내가 가장 앞서면 기관 안내만 내고 끝낸다. 질문·진료과·search·summary·profileUpdates 없음, LLM 호출 없음.
+  // trace에는 {kind:'sensitive_referral'}만 남긴다(rule_id·message_key·메시지 위치·패턴·다른 hit 목록 없음).
+  if (top && isSensitive(top)) {
+    const response = {emergency: emergencyNotice(top.messageKey).emergency};
+    const check = checkResponseContract(response);
+    if (!check.ok) return fail('contract');
+    if (signal?.aborted) return fail('aborted');
+    for (const k of ['ruleHits', 'warnings', 'skippedItems']) trace[k] = [];
+    delete trace.riskConfirm;
+    trace.slots = null;
+    trace.terminal = true;
+    trace.sensitive = {kind: 'sensitive_referral'};
+    trace.phase = 'sensitive_referral';
+    return {response};
+  }
   if (top) {
     const notice = emergencyNotice(top.messageKey);
     if (notice.warning) trace.warnings.push(`${notice.warning}:${top.ruleId}`);

@@ -120,15 +120,15 @@ test('자유 입력 규칙(테스트 전용): 정규화 후 검사, 답 규칙�
   assert.deepEqual(matchFreeText(['ＴＥＳＴ', '테스트 주의 표현'], testRules), ['FT-TEST-NOTICE']);
 });
 
-test('기본 자유 입력 규칙 파일: 형식 통과, 위험 표현 사전 v1(11/17 R: 규칙 40개), 테스트 단어는 걸리지 않음', () => {
+test('기본 자유 입력 규칙 파일: 형식 통과, 위험 표현 사전 v1(11/17 R: 40개, RF3: 42개), 테스트 단어는 걸리지 않음', () => {
   const def = loadFreeTextRules();
   assert.equal(def.version, 'free-text-v1');
-  assert.equal(def.rules.length, 40);
+  assert.equal(def.rules.length, 42);
   assert.deepEqual(matchFreeText(['테스트위험표현'], def), []);
 });
 
 test('자유 입력 규칙 형식 검사: rule_id·priority·patterns·필수 필드', () => {
-  const base = {rule_id: 'FT-X', priority: 5, patterns: ['a'], result: 'EMERGENCY_STOP', terminal: true, message_key: 'k', evidence: {source: 's'}};
+  const base = {rule_id: 'FT-X', priority: 5, patterns: ['a'], result: 'EMERGENCY_STOP', terminal: true, message_key: 'k', evidence: {source: 'test_only'}}; // 11/17 RF3: source는 허용 목록(EVIDENCE_SOURCES) 값만
   assert.doesNotThrow(() => compileFreeTextRules({version: 'v', rules: [base]}));
   const bad = [
     {rule_id: 'R-X'}, {priority: 10}, {priority: 0}, {patterns: []}, {patterns: ['(']},

@@ -8,7 +8,7 @@ import {loadFreeTextRules} from '../free-text.mjs';
 const KEYS = ['freetext_emergency_119', 'freetext_urgent', 'crisis_notice_109'];
 
 test('R3: 문구 3개 — title ≤ 120자, message ≤ 1000자, 계약 통과, 진단 아님 문장', () => {
-  assert.equal(TEMPLATE_VERSION, 'templates-v2');
+  assert.equal(TEMPLATE_VERSION, 'templates-v3');
   for (const k of KEYS) {
     const t = EMERGENCY_TEXT[k];
     assert.ok(t, k);
@@ -36,5 +36,5 @@ test('R3: 109 문구 — 109·24시간·지금 위험하면 119가 들어 있고
 test('R3: 규칙 파일의 모든 message_key에 문구가 있다(모르는 키 경고 없음)', () => {
   const rules = loadFreeTextRules();
   for (const r of rules.rules) assert.equal(emergencyNotice(r.messageKey).warning, null, r.ruleId);
-  assert.deepEqual([...new Set(rules.rules.map((r) => r.messageKey))].sort(), [...KEYS].sort());
+  assert.deepEqual([...new Set(rules.rules.map((r) => r.messageKey))].sort(), [...KEYS, 'threat_notice_112', 'violence_notice_1366'].sort());
 });

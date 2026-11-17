@@ -38,7 +38,8 @@ for (const [label, list, reasons] of [['위험 단서', [...RISK_FIRST, '애가 
       assert.equal(calls.classify.length + calls.profile.length, 0, m);
       if (FREE_TEXT_HIT.has(m)) {
         assert.equal(out.response.emergency?.active, true, m);
-        assert.ok(out.trace.ruleHits.length > 0 && out.trace.ruleHits.every((id) => id.startsWith('FT-')), m);
+        // 11/17 RF3: 민감 안내(109)는 trace에 rule_id를 남기지 않고 {kind:'sensitive_referral'}만
+        assert.ok((out.trace.ruleHits.length > 0 && out.trace.ruleHits.every((id) => id.startsWith('FT-'))) || out.trace.sensitive?.kind === 'sensitive_referral', m);
       } else {
         assert.equal(out.response.followUp?.id, 'Q0', m);
         assert.ok(reasons.includes(out.trace.facilityKeyword), `${m}: ${out.trace.facilityKeyword}`);

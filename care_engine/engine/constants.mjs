@@ -27,3 +27,6 @@ export const RISK_ANSWERS = Object.freeze({yes: 'risk_yes', no: 'risk_no', unsur
 export const RISK_CONFIRM_MAX_ASKS = 2;
 /** 확인 질문 대상 message_key(EMERGENCY_STOP·민감 안내는 대상이 아님). */
 export const RISK_CONFIRM_KEY = 'freetext_urgent';
+
+// ---- 11/17 RF3: 민감 안내(확인 질문·문진·LLM 없이 기관 안내만, 내용을 남기지 않음) ----
+export const SENSITIVE_KEYS = Object.freeze(['crisis_notice_109', 'threat_notice_112', 'violence_notice_1366']);

@@ -65,7 +65,11 @@ test('F4 G2: emergency_call_119 메시지 끝에 "이 서비스는 진단을 하
   const m = EMERGENCY_TEXT.emergency_call_119.message;
   assert.ok(m.endsWith('이 서비스는 진단을 하지 않아요.'));
   assert.ok(m.length <= 1000);
-  for (const k of Object.keys(EMERGENCY_TEXT)) assert.ok(emergencyNotice(k).emergency.message.ko.includes('진단을 하지 않아요'), k);
+  // 11/17 RF3: 민감 안내 2개(112·1366)는 지시서 문구대로 '이런 상황에 대한 상담은 하지 않아요'로 끝난다
+  for (const k of Object.keys(EMERGENCY_TEXT)) {
+    const tail = ['threat_notice_112', 'violence_notice_1366'].includes(k) ? '상담은 하지 않아요' : '진단을 하지 않아요';
+    assert.ok(emergencyNotice(k).emergency.message.ko.includes(tail), k);
+  }
 });
 
 test('F4 G2: search만 있는 응답(약국 지름길·시작 선택 검색)은 바꾸지 않는다(summary 없음)', async () => {

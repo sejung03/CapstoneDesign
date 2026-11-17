@@ -145,9 +145,9 @@ test('요약: 답이 없는 줄은 빼고, 표시 문구만', () => {
 });
 
 test('템플릿: 응급 문구 길이, 모르는 키', () => {
-  assert.equal(TEMPLATE_VERSION, 'templates-v2'); // 11/17 R: 자유 입력 문구 3개 추가
+  assert.equal(TEMPLATE_VERSION, 'templates-v3'); // 11/17 R: 자유 입력 문구 3개, RF3: 민감 안내 2개
   for (const k of ['emergency_call_119', 'urgent_notice_consciousness', 'urgent_notice_breathing', 'urgent_notice_red_flags',
-    'freetext_emergency_119', 'freetext_urgent', 'crisis_notice_109', 'nope']) {
+    'freetext_emergency_119', 'freetext_urgent', 'crisis_notice_109', 'threat_notice_112', 'violence_notice_1366', 'nope']) {
     const n = emergencyNotice(k);
     assert.ok(checkResponseContract({emergency: n.emergency}).ok, k);
     assert.equal(n.warning, k === 'nope' ? 'unknown_message_key' : null);

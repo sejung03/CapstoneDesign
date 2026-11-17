@@ -28,32 +28,32 @@ function criteriaRows() {
   return rows;
 }
 
-test('R5: free_text_v1.json — 기존 로더 형식 검사 통과, 규칙 40개, 모두 draft·terminal, priority 범위(ES 1~3, UN 4~7, 109 8)', () => {
+test('R5(+RF3): free_text_v1.json — 기존 로더 형식 검사 통과, 규칙 42개, 모두 draft·terminal, priority 범위(ES 1~3, 민감 안내 4, UN 5~7)', () => {
   const rules = loadFreeTextRules();
-  assert.equal(rules.rules.length, 40);
+  assert.equal(rules.rules.length, 42);
   assert.doesNotThrow(() => compileFreeTextRules(RAW));
   for (const r of RAW.rules) {
     assert.equal(r.review_status, 'draft', r.rule_id);
     assert.equal(r.terminal, true, r.rule_id);
     assert.ok(r.patterns.length <= 20, `${r.rule_id}: 패턴 20개 초과`);
     if (r.result === 'EMERGENCY_STOP') { assert.ok(r.priority >= 1 && r.priority <= 3, r.rule_id); assert.equal(r.message_key, 'freetext_emergency_119'); }
-    else if (r.message_key === 'crisis_notice_109') assert.equal(r.priority, 8, r.rule_id);
-    else { assert.ok(r.priority >= 4 && r.priority <= 7, r.rule_id); assert.equal(r.message_key, 'freetext_urgent'); }
+    else if (['crisis_notice_109', 'threat_notice_112', 'violence_notice_1366'].includes(r.message_key)) assert.equal(r.priority, 4, r.rule_id);
+    else { assert.ok(r.priority >= 5 && r.priority <= 7, r.rule_id); assert.equal(r.message_key, 'freetext_urgent'); }
     for (const p of r.patterns) assert.ok(!/\s/.test(p), `${r.rule_id}: 패턴에 공백`);
   }
 });
 
 test('R5: 모든 규칙의 evidence.criteria_id가 기준표(결과 있음)에 있고, 결과·규칙 ID가 서로 맞는다', () => {
   const rows = criteriaRows();
-  assert.equal(rows.size, 40);
+  assert.equal(rows.size, 42);
   const short = {EMERGENCY_STOP: 'ES', URGENT_NOTICE: 'UN'};
   for (const r of RAW.rules) {
     const row = rows.get(r.evidence?.criteria_id);
     assert.ok(row, `${r.rule_id}: 기준표에 ${r.evidence?.criteria_id} 없음`);
     assert.equal(row.ruleId, r.rule_id, r.evidence.criteria_id);
-    const expect = r.message_key === 'crisis_notice_109' ? 'UN+109' : short[r.result];
+    const expect = {crisis_notice_109: 'UN+109', threat_notice_112: 'UN+112', violence_notice_1366: 'UN+1366'}[r.message_key] ?? short[r.result];
     assert.equal(row.result, expect, r.rule_id);
-    assert.ok(['emergency_act_rule_annex1', 'manual_119'].includes(r.evidence.source), r.rule_id);
+    assert.ok(['emergency_act_rule_annex1', 'manual_119', 'referral_policy'].includes(r.evidence.source), r.rule_id);
     assert.ok(typeof r.evidence.ref === 'string' && r.evidence.ref.length > 0, r.rule_id);
   }
   // 기준표의 결과 있는 기준은 모두 규칙이 있다
@@ -123,7 +123,9 @@ test('R5: 자해·자살 생각 → crisis_notice_109 문구의 emergency, 진�
     assert.deepEqual(Object.keys(out.response), ['emergency'], id);
     assert.equal(out.response.emergency.title.ko, EMERGENCY_TEXT.crisis_notice_109.title, id);
     assert.equal(out.response.emergency.message.ko, EMERGENCY_TEXT.crisis_notice_109.message, id);
-    assert.deepEqual(out.trace.ruleHits, ['FT-SELFHARM-THINK-01'], id);
+    // 11/17 RF3: 민감 안내는 rule_id를 남기지 않는다
+    assert.deepEqual(out.trace.ruleHits, [], id);
+    assert.deepEqual(out.trace.sensitive, {kind: 'sensitive_referral'}, id);
   }
 });
 
@@ -135,7 +137,7 @@ test('R5: 우선순위 — EMERGENCY_STOP 표현 + 자해 생각 표현이 함�
   assert.ok(out.response.emergency.message.ko.startsWith('생명이 위험할 수 있는 상황으로 보여요. 바로 119에 전화하세요.'));
   assert.ok(out.response.emergency.message.ko.includes('109'));
   assert.ok(out.response.emergency.message.ko.endsWith('이 서비스는 진단을 하지 않아요.'));
-  assert.deepEqual(out.trace.ruleHits, ['FT-SELFHARM-ACT-01', 'FT-SELFHARM-THINK-01']);
+  assert.deepEqual(out.trace.ruleHits, ['FT-SELFHARM-ACT-01']); // 11/17 RF3: 함께 걸린 민감 hit는 trace에 남기지 않음
   // 11/17 RF2: URGENT(확인 전) + 109 → 109 안내(확인 질문 없음). 확인 전 urgent는 top 후보에서 빠진다
   const u = await call({messages: [byId('r078').text, byId('r023').text]});
   assert.equal(u.out.response.emergency.message.ko, EMERGENCY_TEXT.crisis_notice_109.message);
