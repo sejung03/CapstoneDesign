@@ -30,3 +30,19 @@ test('LC4 평가 라벨 정규화', () => {
   assert.equal(normalizeRiskKey('1366'), 'violence');
   assert.equal(normalizeRiskKey('해당 없음'), 'none');
 });
+
+test('LCR1 평가: --no-llm은 provider를 만들지 않고 규칙+강한 단서 결과와 단서 오탐 수를 낸다', async () => {
+  const cases = [
+    {id: 'n1', text: '백신 맞았어요', expect: 'none'},
+    {id: 'n2', text: '회사에서 추행이 있었어요', expect: 'none'},
+    {id: 'n3', text: '아기가 숨을 안 쉬어요', expect_key: 'freetext_emergency_119'},
+  ];
+  const r = await runRiskLlmEval({cases, noLlm: true, providerFactory: () => { throw new Error('호출 금지'); }});
+  assert.equal(r.actualCalls, 0);
+  assert.equal(r.costUsd, 0);
+  assert.equal(r.rows[0].ruleCue, 'none');
+  assert.equal(r.rows[1].ruleCue, 'violence');
+  assert.equal(r.rows[1].ruleCueEscape, true);
+  assert.equal(r.cueFalsePositive, 1);
+  assert.equal(r.ruleCue.falsePositiveEscape, 1);
+});

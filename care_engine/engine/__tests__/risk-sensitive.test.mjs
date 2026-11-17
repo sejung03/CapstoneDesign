@@ -140,7 +140,8 @@ test('RF6(검토 I4): 답 기반 EMERGENCY_STOP(Q0=예)은 민감 안내보다 �
 });
 
 test('LC1: 민감 규칙이 놓친 단서도 안내 선택으로 가고 LLM(분류·건강정보)을 부르지 않는다', async () => {
-  const text = '남편이 요즘 폭력적이에요';
+  // 11/17 LCR1: '폭력'은 강한 단서가 아니게 되어(지시서 강한 단서 목록에 없음) 강한 단서 '추행' 문장으로 바꿨다.
+  const text = '회사에서 추행이 있었어요';
   const llm = fakeLlm();
   const first = await call({messages: [text], llm});
   assert.deepEqual(first.out.trace.sensitive, {kind: 'sensitive_referral'});
@@ -150,7 +151,7 @@ test('LC1: 민감 규칙이 놓친 단서도 안내 선택으로 가고 LLM(분�
   const mid = await call({reason: 'followup', messages: [text], answers: {...SAFE_BASE}, llm});
   assert.equal(mid.out.response.followUp.id, 'SENSITIVE_CHOICE_1');
   assert.equal(llm.calls.classify.length + llm.calls.profile.length, 0);
-  assert.ok(!JSON.stringify(mid.out.trace).includes('폭력'));
+  assert.ok(!JSON.stringify(mid.out.trace).includes('추행'));
 });
 
 test('RG2: 1366 문구 — 서비스가 연결해 주는 것처럼 읽히지 않는 표현(본문·덧붙임 문장 같음), 길이 제한', async () => {

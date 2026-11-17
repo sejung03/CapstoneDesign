@@ -1,23 +1,44 @@
 import {
   SENSITIVE_ANSWERS, SENSITIVE_CHOICE_MAX_ASKS, SENSITIVE_CHOICE_PREFIX,
-  SENSITIVE_CUE_BRANCHES, SENSITIVE_KEYS,
+  SENSITIVE_CUE_BRANCHES, SENSITIVE_CUE_CONTEXT_RE, SENSITIVE_CUE_SELF_RE, SENSITIVE_CUE_WINDOW, SENSITIVE_KEYS,
 } from './constants.mjs';
 import {normalizeTerm} from '../llm/normalize.mjs';
 import {stripNoise} from './free-text.mjs';
 
-/** 메시지별 민감 단서를 정해진 우선순위(112 > 1366 > 109)로 하나만 고른다. */
+/**
+ * 11/17 LCR1: 정규화한 문자열 v에서 강한 단서 하나라도 "쓰임 제외 없이" 걸리면 true.
+ * 단서마다 바로 앞뒤 SENSITIVE_CUE_WINDOW자 안에 쓰임 제외(예방·영화·뉴스·뜻이 뭐…)가 있으면 그 단서는 넘긴다.
+ * 갈래별 쓰임 제외(near·anywhere)도 본다. 1366 갈래는 피해자가 '나'인 서술(SENSITIVE_CUE_SELF_RE)이면 쓰임 제외를 보지 않는다.
+ */
+function strongCueIn(v, branch) {
+  if (branch.selfOverride && SENSITIVE_CUE_SELF_RE.test(v)) { branch.re.lastIndex = 0; return branch.re.test(v); }
+  if (branch.anywhere && branch.anywhere.test(v)) return false;
+  const re = branch.re;
+  const excluded = (s) => SENSITIVE_CUE_CONTEXT_RE.test(s) || (branch.near ? branch.near.test(s) : false);
+  re.lastIndex = 0;
+  for (let m = re.exec(v); m; m = re.exec(v)) {
+    // 앞 창은 한 글자 더 잘라 '방법'의 '방'이 창 밖으로 잘려 '법'만 남는 일을 막는다. 뒤 창은 '신고하는방법' 길이만큼 4자 더 본다.
+    const before = v.slice(Math.max(0, m.index - SENSITIVE_CUE_WINDOW - 1), m.index);
+    const after = v.slice(m.index + m[0].length, m.index + m[0].length + SENSITIVE_CUE_WINDOW + 4);
+    if (!excluded(before) && !excluded(after)) return true;
+  }
+  return false;
+}
+
+/** 메시지별 강한 민감 단서를 정해진 우선순위(112 > 1366 > 109)로 하나만 고른다. 넓은 단어(맞았·때리·위협…)는 보지 않는다. */
 export function sensitiveCueHits(messages) {
   const out = [];
   for (let i = 0; i < messages.length; i += 1) {
+    if (typeof messages[i] !== 'string') continue;
     const t = normalizeTerm(messages[i]);
     const variants = [t, stripNoise(t)];
-    const branch = SENSITIVE_CUE_BRANCHES.find((b) => variants.some((v) => b.re.test(v)));
+    const branch = SENSITIVE_CUE_BRANCHES.find((b) => variants.some((v) => strongCueIn(v, b)));
     if (branch) out.push({messageKey: branch.messageKey, messageIndex: i});
   }
   return out;
 }
 
-/** 규칙 hit와 넓은 단서를 합친다. messageKey는 응답 문구 선택에만 쓰고 trace에는 넣지 않는다. */
+/** 규칙 hit와 강한 단서를 합친다. messageKey는 응답 문구 선택에만 쓰고 trace에는 넣지 않는다. */
 export function collectSensitiveEvents({hits, messages}) {
   const byIndex = new Map();
   for (const h of hits) {
