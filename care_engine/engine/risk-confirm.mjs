@@ -35,9 +35,14 @@ export function resolveRiskConfirm({hits, riskConfirms = [], messageCount, reaso
   if (worst === 3) return {state: 'yes', askId: null, asks: 0, unconfirmedByTimeout: false};
   if (uncovered.length > 0) {
     if (reason === 'skip') return {state: 'yes', askId: null, asks: 0, unconfirmedByTimeout: false};
-    const asks = messageCount - Math.min(...uncovered);
-    if (asks <= RISK_CONFIRM_MAX_ASKS) return {state: 'pending', askId: `${RISK_CONFIRM_PREFIX}${messageCount}`, asks, unconfirmedByTimeout: false};
-    return {state: 'unsure', askId: null, asks, unconfirmedByTimeout: true};
+    // 11/17 RF6(검토 I3): 덮이지 않은 hit 메시지마다 낸 횟수(L − i)를 따로 센다. 2번 이하인 메시지가 하나라도 있으면
+    // 새로 묻는다(그 질문의 답이 앞의 무응답 hit까지 덮는다). 모두 2번을 넘었으면 '잘 모르겠어요'.
+    const fresh = uncovered.filter((i) => messageCount - i <= RISK_CONFIRM_MAX_ASKS);
+    if (fresh.length > 0) {
+      const asks = messageCount - Math.min(...fresh);
+      return {state: 'pending', askId: `${RISK_CONFIRM_PREFIX}${messageCount}`, asks, unconfirmedByTimeout: false};
+    }
+    return {state: 'unsure', askId: null, asks: messageCount - Math.min(...uncovered), unconfirmedByTimeout: true};
   }
   if (worst === 2) return {state: 'unsure', askId: null, asks: 0, unconfirmedByTimeout: false};
   return {state: 'no', askId: null, asks: 0, unconfirmedByTimeout: false};

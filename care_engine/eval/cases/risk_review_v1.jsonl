@@ -197,3 +197,138 @@
 {"id":"v197","text":"손 베여서 피가 조금 났어요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
 {"id":"v198","text":"모기 물려서 부었어요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
 {"id":"v199","text":"넘어져서 무릎이 까졌어요","expect":"none","expect_key":null,"group":"review_neutral","criteria_id":null}
+{"id":"w200","text":"남자친구가 자꾸 저를 때려요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w201","text":"남편이 매일 저를 때려요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w202","text":"남편이 술만 마시면 때려요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w203","text":"남편이 또 때렸어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w204","text":"남편한테 또 맞았어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w205","text":"남편에게 폭행당했어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w206","text":"아빠가 엄마를 때려요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w207","text":"전 남친이 계속 집 앞에 찾아와요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w208","text":"남친이 저를 밀치고 때렸어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w209","text":"성폭행을 당했어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w210","text":"어제 성추행 당했어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w211","text":"누가 몰래 찍은 것 같아요 화장실에서","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w212","text":"남편이 폭력을 써요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w213","text":"남자친구한테 맞았어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w214","text":"애인이 때려서 멍이 들었어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w215","text":"남편이 죽여버린다고 해요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w216","text":"남편이 칼을 들고 있어요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w217","text":"전 남친이 죽이겠다고 문자 보냈어요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w218","text":"누가 집에 들어오려고 해요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w219","text":"모르는 남자가 계속 쫓아와요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w220","text":"사람을 해치고 싶은 생각이 들어요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w221","text":"누군가를 죽이고 싶어요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w222","text":"게임하다가 아빠가 쓰러져서 숨을 안 쉬어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w223","text":"축구 보다가 할아버지가 의식이 없어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w224","text":"축구 중계 보는데 아이가 경기를 하고 있어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w225","text":"드라마 보던 남편이 심장이 멈춘 것 같아요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w226","text":"카톡 보다가 할머니가 불러도 반응이 없어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w227","text":"주식 보던 아버지가 반응이 없어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w228","text":"게임하다 친구가 약을 한꺼번에 먹었어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w229","text":"화장한 것처럼 아이 입술이 파래요 숨을 이상하게 쉬어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w230","text":"게임 끝나자 남편이 칼 들고 위협해요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w231","text":"전남친이 시험 끝나고 찾아와서 죽이겠대요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w232","text":"남편이 게임 지고 나서 나를 죽이겠다고 해요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w233","text":"드라마 보다가 남편이 나를 때렸어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w234","text":"남편한테 장난 아니고 진짜 맞았어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w235","text":"남친이 게임하다 화나서 나를 때렸어요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w236","text":"모르는 사람이 계속 따라와서 무서워요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w237","text":"아빠가 술 마시면 엄마를 때려요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w238","text":"새아빠가 저를 때려요","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w239","text":"옆집 사람이 문 앞에서 죽이겠다고 소리쳐요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w240","text":"남편이 때려서 엄마가 의식이 없어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w241","text":"카톡 하던 엄마가 반응이 없어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w242","text":"영상 보던 아이가 반응이 없어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w243","text":"사람들 앞에서 아빠가 반응이 없어요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w244","text":"워치 차고 있는데 할머니 맥박이 안 잡혀요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w245","text":"추워서 떨던 아이 입술이 파래요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w246","text":"생리 중인데 피가 콸콸 나요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w247","text":"코에서 피가 너무 많이 나요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w248","text":"남편 심장이 멈춘 것 같아요","expect":"EMERGENCY_STOP","expect_key":"freetext_emergency_119","group":"review_emergency","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w249","text":"게임에서 보스를 죽여버리겠다고 다짐했어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w250","text":"친구가 나 죽이려고 작정했나봐 숙제를 너무 많이 줘","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w251","text":"엄마가 나 죽이겠대 성적표 보고","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w252","text":"동생이 내 과자 먹어서 죽여버릴거야","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w253","text":"누가 내 푸딩 먹었어 죽여버린다","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w254","text":"아빠가 모기를 때려잡았어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w255","text":"형이 바퀴벌레 때려서 잡았어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w256","text":"친구가 장난으로 어깨를 때렸어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w257","text":"오빠가 베개로 때렸어 ㅋㅋ","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w258","text":"엄마한테 맞았어요 등짝 스매싱","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w259","text":"아빠가 파리를 발로 찼어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w260","text":"우리 강아지가 고양이를 쫓아와요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w261","text":"모르는 사람이 길을 물어보러 따라와요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w262","text":"친구가 자꾸 따라와요 같이 집에 가자고","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w263","text":"이웃이 강아지 산책하다 따라와요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w264","text":"스토킹 처벌법이 뭐예요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w265","text":"드라마에서 가정폭력 장면 나와서 놀랐어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w266","text":"뉴스에서 데이트폭력 기사 봤어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w267","text":"가정폭력 신고는 어떻게 해요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w268","text":"교제폭력 처벌 강화된대요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w269","text":"성범죄 예방교육 들었어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w270","text":"칼로 위협하는 장면이 영화에 나왔어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w271","text":"축구에서 상대가 거칠게 위협했어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w272","text":"선배가 협박하듯이 커피 사오래요 ㅋㅋ","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w273","text":"흉기 소지 금지 안내문이 붙었어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w274","text":"아기가 나를 자꾸 때려요 귀여워","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w275","text":"애가 아빠를 때려서 혼냈어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w276","text":"남편이 코를 골아서 베개로 때렸어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w277","text":"남편이 벌레를 때려잡았어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w278","text":"사장이 일 안하면 죽이겠다고 농담했어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w279","text":"팀장님이 실적 못내면 해치울거래요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w280","text":"고양이가 쥐를 죽였어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w281","text":"스토커 영화 재밌었어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w282","text":"가정폭력예방교육 듣고 왔어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w283","text":"강아지가 자꾸 나를 따라와요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w284","text":"동생이랑 베개싸움하다 맞았어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w285","text":"언니가 내 옷 입으면 가만안두겠다고 말했어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w286","text":"게임 캐릭터가 칼로 위협하는 스킬 있음","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w287","text":"애인이 너무 좋아서 죽겠어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w288","text":"모기한테 물려서 엄마가 때려줬어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w289","text":"형이 날 때려서 엄마한테 일렀어 장난이었는데","expect":"URGENT_NOTICE","expect_key":"violence_notice_1366","group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장 · 검토 경계 사례 — 피해 서술로 보아 안내 유지"}
+{"id":"w290","text":"친구가 놀래키려고 따라왔어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w291","text":"웹툰 주인공이 스토킹 당하는 내용이에요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w292","text":"고양이가 강아지를 때려요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w293","text":"남친이 나 놀리면 죽여버린다고 했어 ㅋㅋ","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w294","text":"몰래카메라 예능 봤어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w295","text":"불법촬영 예방 스티커 붙였어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w296","text":"성추행 예방 포스터 만들었어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w297","text":"아빠가 축구공을 발로 찼어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w298","text":"엄마가 등을 때려주니까 시원했어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w299","text":"누가 쫓아오는 꿈을 꿨어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w300","text":"이웃이 층간소음 때문에 협박받았대요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w301","text":"아빠가 수박 자르려고 칼 들고 왔어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w302","text":"요리사가 칼을 휘둘러서 회를 떴어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w303","text":"칼 휘두르는 게임 추천해줘","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w304","text":"엄마가 아빠를 때려줬어 모기가 앉아서","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w305","text":"아빠가 엄마 등을 때렸어 모기 잡으려고","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w306","text":"오빠가 공 차다가 나를 발로 찼어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w307","text":"형이 레슬링하자고 해서 맞았어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w308","text":"친구랑 축구하다가 공에 맞았어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w309","text":"강아지가 나를 쫓아와요 놀자고","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w310","text":"모기가 자꾸 따라와요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w311","text":"선배가 나를 따라와요 같은 방향이라서","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w312","text":"후배가 졸졸 따라와요 귀여워","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w313","text":"우리 애가 자꾸 나를 때려요 장난으로","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w314","text":"동생이 자꾸 때려 귀찮아","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w315","text":"엄마 등쌀에 죽겠어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w316","text":"사장님이 오늘 안에 끝내라고 협박해요 ㅎㅎ","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w317","text":"숙제 때문에 엄마가 나를 죽이려고 해","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w318","text":"이번 시험 망하면 아빠가 나 죽이겠다고 했어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w319","text":"가정폭력 관련 법률 알려줘","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w320","text":"가정폭력 피해자 지원 제도 궁금해요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w321","text":"데이트폭력 예방법 알려주세요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w322","text":"성폭력 상담소 위치 알려줘","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w323","text":"스토킹 신고하는 방법 알려줘","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w324","text":"아이돌이 스토킹 당했대요 기사에서","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w325","text":"친구가 성추행 당했다는 뉴스 봤어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w326","text":"협박 문자가 스팸으로 왔어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w327","text":"상사가 해고하겠다고 협박해요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w328","text":"야구에서 투수가 타자를 위협구로 맞혔어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w329","text":"사극에서 칼로 위협하는 장면","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w330","text":"남편이 바퀴벌레를 발로 찼어요","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w331","text":"여친이 나 때리면서 웃었어 ㅋㅋ","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w332","text":"아내가 모기 때리다 내 팔을 때렸어","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w333","text":"아빠한테 맞았어요 게임하다 등짝","expect":"none","expect_key":null,"group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장"}
+{"id":"w334","text":"누가 우리 고양이를 죽이려고 해요 독을 놨대요","expect":"URGENT_NOTICE","expect_key":"threat_notice_112","group":"review_collision","criteria_id":null,"note":"RF6 독립 검토 문장 · 검토 경계 사례 — 위협 상황으로 보아 112 안내 유지"}

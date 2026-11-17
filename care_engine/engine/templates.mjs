@@ -109,6 +109,22 @@ export const EMERGENCY_TEXT = Object.freeze({
 export const CRISIS_109_ADDON = '마음이 힘들다면 자살예방 상담전화 109에서도 24시간 이야기를 들어 드려요.';
 const NOT_DIAGNOSIS = '이 서비스는 진단을 하지 않아요.';
 
+/** 11/17 RF6(검토 I4): 앞선 안내(EMERGENCY_STOP 등)에 함께 걸린 민감 안내의 기관을 한 문장으로 덧붙인다. */
+export const REFERRAL_ADDONS = Object.freeze({
+  crisis_notice_109: CRISIS_109_ADDON,
+  threat_notice_112: '안전이 위협받는 상황이면 112에도 신고하세요.',
+  violence_notice_1366: '폭력 피해가 있다면 여성긴급전화 1366(24시간)에서도 도움받을 수 있어요.',
+});
+/** emergency 객체에 문장 하나를 진단 아님 문장 앞에 덧붙인다(이미 있으면 그대로). */
+export function withAddon(emergency, sentence) {
+  const ko = emergency?.message?.ko ?? '';
+  if (!sentence || ko.includes(sentence)) return emergency;
+  const msg = ko.endsWith(NOT_DIAGNOSIS)
+    ? `${ko.slice(0, ko.length - NOT_DIAGNOSIS.length)}${sentence} ${NOT_DIAGNOSIS}`
+    : `${ko} ${sentence}`.trim();
+  return {...emergency, message: {...emergency.message, ko: msg.slice(0, 1000)}};
+}
+
 /** emergency 객체에 109 한 문장을 덧붙인 새 객체(이미 109가 있으면 그대로). */
 export function withCrisis109(emergency) {
   const ko = emergency?.message?.ko ?? '';

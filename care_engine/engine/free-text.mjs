@@ -85,7 +85,8 @@ export function loadFreeTextRules(file = DEFAULT_FREE_TEXT_PATH) {
 export function stripNoise(t) {
   return String(t ?? '')
     .replace(/[^\p{L}\p{N}]/gu, '')
-    .replace(/[ᄀ-ᇿㄱ-ㆎꥠ-꥿ힰ-퟿]/g, '');
+    // 11/17 RF6: 웃음 표시 ᄏ(U+110F)·ᄒ(U+1112)는 남긴다(규칙의 'ㅋㅋ' 제외가 두 번째 문자열에서도 읽히도록, 검토 G1)
+    .replace(/[ᄀ-ᄎᄐᄑᄓ-ᇿㄱ-ㆎꥠ-꥿ힰ-퟿]/g, '');
 }
 
 /**

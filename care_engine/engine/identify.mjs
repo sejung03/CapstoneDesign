@@ -139,7 +139,7 @@ export async function identify({engineAnswers, messages, codes, data, deps = {},
   if (fromAnswers?.kind === 'needLlm') {
     // b. sym_other: 사전이 일부만 맞은 경우. 메시지가 없으면 LLM을 부를 수 없으므로 증상 모름.
     if (msgs.length === 0) return {kind: 'unknown', source: 'dict_confirm'};
-    if (noLlm) return {kind: 'unknown', source: 'start_choice'};
+    if (noLlm) return {kind: 'unknown', source: typeof noLlm === 'string' ? noLlm : 'start_choice'};
     return runLlm({messages: msgs, codes, data, deps, ctx});
   }
   // d. 메시지 없음 → 시작 질문
@@ -155,6 +155,6 @@ export async function identify({engineAnswers, messages, codes, data, deps = {},
     .slice(0, 5);
   if (symptoms.length > 0) return {kind: 'ask', followUp: symDictConfirmQuestion(symptoms)};
   // f. LLM (시작 선택을 무시하고 온 경우는 부르지 않고 증상 모름)
-  if (noLlm) return {kind: 'unknown', source: 'start_choice'};
+  if (noLlm) return {kind: 'unknown', source: typeof noLlm === 'string' ? noLlm : 'start_choice'};
   return runLlm({messages: msgs, codes, data, deps, ctx});
 }

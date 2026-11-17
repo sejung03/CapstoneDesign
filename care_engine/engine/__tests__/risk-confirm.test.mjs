@@ -140,3 +140,23 @@ test('RF2: resolveRiskConfirm — 덮는 답 중 가장 보수적인 것, 범위
   assert.equal(bad.response.followUp.id, 'RISK_CONFIRM_1');
   assert.ok(bad.trace.warnings.includes('invalid_answer:RISK_CONFIRM'));
 });
+
+test('RF6(검토 I3): 무응답으로 잘 모르겠어요가 된 뒤 새 urgent 표현 → 새 확인 질문(RISK_CONFIRM_<L>)', async () => {
+  const r = await run([URGENT, PLAIN, PLAIN, URGENT2], {}, 'message');
+  assert.equal(r.response.followUp.id, 'RISK_CONFIRM_4');
+  assert.equal(r.trace.riskConfirm.state, 'pending');
+  // 새 질문의 답(아니요)은 앞의 무응답 hit까지 덮는다
+  const no = await run([URGENT, PLAIN, PLAIN, URGENT2], {RISK_CONFIRM_4: 'risk_no', Q0: 'no'});
+  assert.equal(no.response.followUp.id, 'N1');
+});
+
+test('RF6(검토 S3): 이미 지나간 사건 규칙(경련·실신·토혈 등)은 아니요여도 요약 첫 줄에 경고', async () => {
+  for (const m of ['아이가 경기를 일으켰어요', '아침에 피를 토했어요', '아까 엄마가 쓰러졌어요']) {
+    const p = await path([m], {riskPick: 'risk_no'});
+    assert.ok(p.final.search?.type === 'hospital', m);
+    assert.equal(p.final.summary.ko.split('\n')[0], SUMMARY.riskUnconfirmed, m);
+  }
+  // 지나간 사건 규칙이 아니면 경고 없음
+  const chest = await path([URGENT], {riskPick: 'risk_no'});
+  assert.notEqual(chest.final.summary.ko.split('\n')[0], SUMMARY.riskUnconfirmed);
+});

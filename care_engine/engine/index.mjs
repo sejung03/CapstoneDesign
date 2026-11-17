@@ -12,9 +12,11 @@ import {evaluateFacilityKeywords, loadFacilityKeywords, messageCues} from './fac
 import {identify, resolveFromAnswers, userMessages} from './identify.mjs';
 import {recommend, symptomSexMismatch} from './recommend.mjs';
 import {buildSummary, buildEmergencySummary, buildMedInfoSummary} from './summary.mjs';
-import {emergencyNotice, withCrisis109, riskConfirmQuestion, ENGINE_Q, OPT, TEMPLATE_VERSION} from './templates.mjs';
+import {emergencyNotice, withAddon, REFERRAL_ADDONS, riskConfirmQuestion, ENGINE_Q, OPT, TEMPLATE_VERSION} from './templates.mjs';
 import {resolveRiskConfirm} from './risk-confirm.mjs';
-import {RISK_CONFIRM_KEY, SENSITIVE_KEYS} from './constants.mjs';
+import {RISK_CONFIRM_KEY, SENSITIVE_KEYS, SENSITIVE_CUE_RE, PAST_EVENT_RULES} from './constants.mjs';
+import {normalizeTerm} from '../llm/normalize.mjs';
+import {stripNoise} from './free-text.mjs';
 
 const CRISIS_KEY = 'crisis_notice_109';
 import {checkResponseContract} from './contract.mjs';
@@ -213,7 +215,12 @@ async function core(payload, ctx, deps, trace, now, log) {
   const risk = resolveRiskConfirm({hits: safety.hits, riskConfirms, messageCount: messages.length, reason});
   if (risk.state !== 'none') trace.riskConfirm = {state: risk.state, asks: risk.asks};
   const isUrgentFree = (h) => h.source === 'free_text' && h.messageKey === RISK_CONFIRM_KEY;
-  const top = safety.hits.find((h) => !isUrgentFree(h) || risk.state === 'yes') ?? null;
+  let top = safety.hits.find((h) => !isUrgentFree(h) || risk.state === 'yes') ?? null;
+  // 11/17 RF6(검토 I4): 답 기반 EMERGENCY_STOP(Q0=예 등)은 민감 안내보다 먼저(지시서: EMERGENCY_STOP이 가장 먼저)
+  const answerStop = safety.hits.find((h) => h.source === 'answer' && h.result === 'EMERGENCY_STOP');
+  if (top && isSensitive(top) && answerStop) top = answerStop;
+  // 11/17 RF6(검토 S2): 민감 단서가 있으면(규칙이 놓친 경우 포함) 이 요청에서 LLM을 부르지 않는다
+  const sensitiveCue = messages.some((m) => { const t = normalizeTerm(m); return SENSITIVE_CUE_RE.test(t) || SENSITIVE_CUE_RE.test(stripNoise(t)); });
 
   let symptom = null; // {kind:'symptom'|'unknown', symptomId?, source}
   let llmUsed = false;
@@ -259,8 +266,10 @@ async function core(payload, ctx, deps, trace, now, log) {
   if (top) {
     const notice = emergencyNotice(top.messageKey);
     if (notice.warning) trace.warnings.push(`${notice.warning}:${top.ruleId}`);
-    // 11/17 R6(검토 I5): 자해·자살 생각 규칙이 함께 걸렸으면 앞선 규칙의 문구에도 109 한 문장을 덧붙인다
-    if (top.messageKey !== CRISIS_KEY && safety.hits.some((h) => h.messageKey === CRISIS_KEY)) notice.emergency = withCrisis109(notice.emergency);
+    // 11/17 R6(검토 I5)·RF6(검토 I4): 민감 안내 규칙이 함께 걸렸으면 앞선 문구에 그 기관 한 문장씩 덧붙인다(trace에는 남기지 않음)
+    for (const key of SENSITIVE_KEYS) {
+      if (top.messageKey !== key && safety.hits.some((h) => h.messageKey === key)) notice.emergency = withAddon(notice.emergency, REFERRAL_ADDONS[key]);
+    }
     if (top.result === 'EMERGENCY_STOP' || top.terminal) {
       trace.terminal = true;
       const response = {emergency: notice.emergency};
@@ -365,7 +374,7 @@ async function core(payload, ctx, deps, trace, now, log) {
         engineAnswers: engine, messages, codes: vis, data, // 11/17 EF(G4): 성별은 보이는 답에서만
         deps: {llm, matchSymptoms: deps.matchSymptoms, facilityKeywords},
         ctx: {consent: ctx.consent, signal, deadlineAt, requestId: ctx.requestId ?? null, reason, now},
-        noLlm: startOverridden,
+        noLlm: startOverridden ? 'start_choice' : (sensitiveCue ? 'no_llm' : false),
       });
       if (signal?.aborted) return fail('aborted');
       if (r.llmMeta) { trace.llm.classify = r.llmMeta; llmUsed = true; }
@@ -394,12 +403,16 @@ async function core(payload, ctx, deps, trace, now, log) {
   trace.symptom.fallbackGroup = rec.group;
   // 11/17 EF(G6): 안전 미응답 판단 문항은 답 규칙이 가리키는 문항 전체(데이터에서 만듦)
   const safetyUnanswered = safetyCheckItemIds(data).some((id) => !vis.has(id));
-  const summary = buildSummary({slots: trace.slots, codes: vis, symptom: symptomObj, departments: rec.departments, data, safetyUnanswered, riskUnconfirmed: risk.state === 'unsure'});
+  // 11/17 RF6(검토 S3): 이미 지나간 사건 규칙(경련·실신·토혈·각혈·두부손상)은 '아니요'여도 요약 첫 줄 경고를 남긴다
+  const pastEventNo = risk.state === 'no' && safety.hits.some((h) => isUrgentFree(h) && PAST_EVENT_RULES.includes(h.ruleId));
+  const summary = buildSummary({slots: trace.slots, codes: vis, symptom: symptomObj, departments: rec.departments, data, safetyUnanswered, riskUnconfirmed: risk.state === 'unsure' || pastEventNo});
   const response = withEmergency({summary: {ko: summary}, search: rec.search});
 
   // 건강정보 후보: 상담 대상이 본인일 때만, 요청당 LLM 1번(이미 증상 분류를 불렀으면 건너뜀)
   if (vis.get(TARGET_ITEM_ID) === TARGET_SELF) {
-    if (llmUsed) {
+    if (sensitiveCue) {
+      trace.llm.profile = {called: false, skipped: 'no_llm'}; // 11/17 RF6(검토 S2): 민감 단서가 있으면 건강정보 추출도 하지 않는다
+    } else if (llmUsed) {
       trace.llm.profile = {called: false, skipped: 'llm_once_per_request'};
     } else {
       const input = {

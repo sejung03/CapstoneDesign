@@ -30,3 +30,10 @@ export const RISK_CONFIRM_KEY = 'freetext_urgent';
 
 // ---- 11/17 RF3: 민감 안내(확인 질문·문진·LLM 없이 기관 안내만, 내용을 남기지 않음) ----
 export const SENSITIVE_KEYS = Object.freeze(['crisis_notice_109', 'threat_notice_112', 'violence_notice_1366']);
+/**
+ * 11/17 RF6(검토 S2): 민감 규칙이 놓친 문장도 LLM으로 보내지 않기 위한 넓은 단서(정규화·공백 없는 문자열 기준).
+ * 걸리면 증상 분류·건강정보 추출 LLM을 부르지 않는다(판정에는 쓰지 않음, trace에도 남기지 않음).
+ */
+export const SENSITIVE_CUE_RE = /(때려|때렸|때리|맞았|폭행|폭력|협박|위협|스토킹|스토커|성추행|성폭|강간|추행|몰카|몰래카메라|죽이겠|죽이려|죽여버|해치|자살|자해|죽고싶|죽고십)/;
+/** 11/17 RF6(검토 S3): '아니요'로 풀려도 요약 첫 줄 경고를 남기는 규칙(이미 지나간 사건을 잡는 freetext_urgent 규칙). */
+export const PAST_EVENT_RULES = Object.freeze(['FT-SEIZURE-01', 'FT-SYNCOPE-01', 'FT-GIBLEED-01', 'FT-HEMOPTYSIS-01', 'FT-HEAD-01']);

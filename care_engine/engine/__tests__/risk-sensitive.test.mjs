@@ -103,3 +103,28 @@ test('RF3: 이후 요청에서도 같은 메시지가 남아 있으면 같은 �
     }
   }
 });
+
+test('RF6(검토 I4): 답 기반 EMERGENCY_STOP(Q0=예)은 민감 안내보다 먼저(E 문항 유지), ES 응답에는 함께 걸린 기관 한 문장', async () => {
+  const q0 = await call({reason: 'followup', messages: ['배가 살살 아파요', '남편이 저를 죽이겠다고 협박해요'], answers: {Q0: 'yes'}});
+  assert.equal(q0.out.response.followUp?.id, 'E1');
+  assert.ok(q0.out.response.emergency.message.ko.includes('112'));
+  assert.equal(q0.out.trace.sensitive, undefined);
+  assert.ok(!JSON.stringify(q0.out.trace).includes('FT-THREAT'));
+  const es = await call({messages: ['남편이 또 때렸어요', ES]});
+  assert.ok(es.out.response.emergency.message.ko.includes('1366'));
+  assert.ok(es.out.response.emergency.message.ko.endsWith('이 서비스는 진단을 하지 않아요.'));
+  assert.ok(!JSON.stringify(es.out.trace).includes('FT-VIOLENCE'));
+});
+
+test('RF6(검토 S2): 민감 규칙이 놓친 문장이라도 민감 단서가 있으면 LLM(분류·건강정보)을 부르지 않는다', async () => {
+  const text = '남편이 요즘 폭력적이에요';
+  const llm = fakeLlm();
+  const first = await call({messages: [text], llm});
+  assert.equal(first.out.trace.sensitive, undefined); // 규칙은 걸리지 않음(문진으로)
+  const skip = await call({reason: 'skip', messages: [text], answers: {...SAFE_BASE}, llm});
+  assert.ok(skip.out.response.summary);
+  const mid = await call({reason: 'followup', messages: [text], answers: {...SAFE_BASE}, llm});
+  assert.ok(mid.out.response.followUp || mid.out.response.summary);
+  assert.equal(llm.calls.classify.length + llm.calls.profile.length, 0);
+  assert.ok(!JSON.stringify(mid.out.trace).includes('폭력'));
+});
