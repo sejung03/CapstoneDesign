@@ -1,0 +1,76 @@
+const audioTypes = new Set(['audio/webm', 'audio/mp4', 'audio/ogg', 'audio/wav']);
+const headers = {'cache-control': 'no-store'};
+const error = (code, status) => Response.json({detail: code}, {status, headers});
+
+async function readBody(request, limit) {
+  if (!request.body) return Buffer.alloc(0);
+  if (Number(request.headers.get('content-length')) > limit) return null;
+  const reader = request.body.getReader();
+  const chunks = [];
+  let length = 0;
+  try {
+    while (true) {
+      const {done, value} = await reader.read();
+      if (done) return Buffer.concat(chunks, length);
+      length += value.byteLength;
+      if (length > limit) {
+        void reader.cancel().catch(() => {});
+        return null;
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+}
+
+export async function forwardVoice(request, action, {sameOrigin, fetchImpl = fetch}) {
+  if (process.env.NEXT_PUBLIC_VOICE_ENABLED !== '1' || !['stt', 'tts'].includes(action)) {
+    return error('voice_disabled', 404);
+  }
+  if (!sameOrigin(request)) return error('invalid_origin', 403);
+
+  const contentType = request.headers.get('content-type') || '';
+  const mime = contentType.split(';')[0].trim();
+  const stt = action === 'stt';
+  if (stt ? !audioTypes.has(mime) : mime !== 'application/json') {
+    return error('unsupported_media_type', 415);
+  }
+
+  let body;
+  try {
+    body = await readBody(request, stt ? 4 * 1024 * 1024 : 8192);
+  } catch {
+    return error('invalid_body', 400);
+  }
+  if (!body) return error('body_too_large', 413);
+  if (!body.length) return error('empty_body', 400);
+
+  const port = Number(process.env.VOICE_SERVICE_PORT || 3091);
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    return error('invalid_voice_port', 503);
+  }
+
+  try {
+    const upstream = await fetchImpl('http://127.0.0.1:' + port + '/' + action, {
+      method: 'POST',
+      headers: {'content-type': mime},
+      body,
+      redirect: 'error',
+      signal: AbortSignal.any([request.signal, AbortSignal.timeout(stt ? 180000 : 30000)]),
+    });
+    const type = upstream.headers.get('content-type')?.split(';')[0];
+    if (type !== (upstream.ok && !stt ? 'audio/wav' : 'application/json')) {
+      void upstream.body?.cancel().catch(() => {});
+      return error('invalid_voice_response', 502);
+    }
+    return new Response(upstream.body, {
+      status: upstream.status,
+      headers: {...headers, 'content-type': type},
+    });
+  } catch (cause) {
+    return cause.name === 'TimeoutError'
+      ? error('voice_timeout', 504)
+      : error('voice_service_unavailable', 503);
+  }
+}

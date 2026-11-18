@@ -1,3 +1,4 @@
+import {emergencyCallHref,emergencySmsHref} from '../emergency-contact.mjs';
 import {phrase,expandLocales,localizedObject,localizedText} from '../i18n.mjs';
 import {EmergencyLocationPicker} from './emergency-location-picker.jsx';
 import {emergencyResources,defaultEmergencyGuides} from '../emergency-resources.mjs';
@@ -21,7 +22,9 @@ function EmergencyHelp({state,t,notice,onEmergencyLocation}){
   {notice?.message&&<p>{label(notice.message)}</p>}
   {!ko&&notice?.message?.ko&&label(notice.message)!==notice.message.ko&&<p className="emergency-original"><span className="emergency-note">{phrase(state.locale,"Korean original (you can show this to 119 or people nearby):")}</span> <span lang="ko">{notice.message.ko}</span></p>}
   <p>{phrase(state.locale,"In an emergency in Korea, call 119.")}</p>
-  <a className="primary-button emergency-call" href="tel:119"><Icon name="phone" />{phrase(state.locale,"Call 119")}</a>
+  <a className="primary-button emergency-call" href={emergencyCallHref}><Icon name="phone" />{phrase(state.locale,"Call 119")}</a>
+  <a className="secondary-button" href={emergencySmsHref}>{ko?'119 문자 앱 열기':'Open a text message to 119'}</a>
+  <p className="emergency-note">{ko?'말하기 어렵다면 문자 앱에 현재 위치와 상황을 적어 119로 보내세요.':'If speaking is difficult, text your location and situation to 119.'}</p>
   <p className="emergency-note">{phrase(state.locale,"If calling is unavailable on this device, dial 119 on your phone. Follow the dispatcher’s instructions.")}</p>
   <details className="emergency-location" id="emergency-location-section" aria-labelledby="emergency-location-heading">
    <summary id="emergency-location-heading">{phrase(state.locale,"Check or edit reporting location")}</summary>

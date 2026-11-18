@@ -165,3 +165,7 @@ Next.js 라우트와 상대 import가 기존 프론트엔드 구조를 사용하
 | 문서 | `README.md`, `frontend/README.md`, `frontend/docs/`의 표시된 파일 | 추가 기능의 구현 위치·API 계약·설정·연동 내용 |
 
 표에서 별도 접두사가 없는 코드 경로는 `frontend/` 기준이다.
+
+## 로컬 한국어 음성 기능
+
+Windows 로컬 음성 서버 설치 및 프런트엔드 연결은 [음성 모듈 실행 가이드](voice_service/README.md)를 참고하세요.

@@ -10,6 +10,7 @@ import {createEmergency,normalizeEmergency,normalizeEmergencyGuides,visibleEmerg
 import {createRecommendations,recommendationSnapshot,normalizeRecommendations} from './recommendations.mjs';
 import {createWorkspace,intakeSnapshot} from './workspace-model.mjs';
 import {bindSearchSuggestions,alternativeKey,alternativeItems,comparisonDepartments,releaseSearchSuggestions} from './discovery.mjs';
+import {consumeSpokenAnswer} from './voice-answer.mjs';
 import {createAssistantState,assistantContent,assistantContentKey,assistantSearchContext,assistantInputKey,normalizeAssistantResponse} from './assistant.mjs';
 import {mockIntakeQuestionnaire,normalizeIntakeQuestionnaire,buildIntakeSubmission,intakeSelection} from './intake-data.mjs';
 import {renderIntakeSteps} from './intake-view.mjs';
@@ -423,6 +424,16 @@ function captureAssistant(){
  const input=document.getElementById('assistant-summary');
  if(input)state.assistant.summaryDraft=input.value.slice(0,2000);
 }
+function selectAssistantOption(optionId){
+ const a=state.assistant,response=a.response;
+ if(a.status!=='ready'||response?.contentKey!==assistantContentKey(state))return false;
+ const question=response.followUp,option=question?.options.find(item=>item.id===optionId);
+ if(!option)return false;
+ a.questions=[...(a.questions||[]).filter(item=>item.id!==question.id),question];
+ a.answers=[...a.answers.filter(answer=>answer.questionId!==question.id),{questionId:question.id,value:option.id,label:{...question.label},optionLabel:{...option.label}}];
+ void requestAssistant('followup');
+ return true;
+}
 function bindAssistant(){
  listen(document.getElementById('assistant-retry'),'click',()=>{saveInputs();void requestAssistant(state.assistant.lastReason||'message');});
  listen(document.getElementById('assistant-edit'),'click',()=>{
@@ -439,13 +450,8 @@ function bindAssistant(){
   a.confirmed={text,contentKey:assistantContentKey(state)};a.editing=false;render();
  });
  document.querySelectorAll('[data-assistant-option]').forEach(button=>listen(button,'click',()=>{
-  saveInputs();const a=state.assistant;
-  if(a.response?.contentKey!==assistantContentKey(state))return;
-  const question=a.response.followUp,option=question?.options.find(item=>item.id===button.dataset.assistantOption);
-  if(!option)return;
-  a.questions=[...(a.questions||[]).filter(item=>item.id!==question.id),question];
-  a.answers=[...a.answers.filter(answer=>answer.questionId!==question.id),{questionId:question.id,value:option.id,label:{...question.label},optionLabel:{...option.label}}];
-  void requestAssistant('followup');
+  saveInputs();
+  selectAssistantOption(button.dataset.assistantOption);
  }));
  listen(document.getElementById('assistant-skip'),'click',()=>{
   saveInputs();const a=state.assistant;if(a.status!=='ready'||a.response?.contentKey!==assistantContentKey(state)||!a.answers.some(answer=>answer.value!=null))return;
@@ -1060,7 +1066,21 @@ function bind(){
   const open=state.chat.open;state.intakeAnswers={};state.intakeStep=0;state.draft={...emptyDraft(),region:state.profile.region};state.chat={...createConversation(),open};state.suggestion=null;state.search.criteria={...emptyCriteria(),region:state.profile.region};state.type='all';state.search.department='all';state.search.openOnly=false;state.search.selectedId=null;state.search.origin='manual';state.search.focusedId=null;render();document.getElementById('clear').focus();toast(t('cleared'));
  });
  listen(document.getElementById('composer-input'),'keydown',event=>{if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();document.getElementById('composer-form').requestSubmit();}});
- listen(document.getElementById('composer-form'),'submit',event=>{event.preventDefault();saveInputs();submitChatText(state.chat.input);});
+ listen(document.getElementById('composer-form'),'submit',event=>{
+  event.preventDefault();
+  saveInputs();
+  const input=document.getElementById('composer-input'),text=state.chat.input;
+  const {status,response}=state.assistant;
+  const currentQuestion=status==='ready'&&response?.contentKey===assistantContentKey(state)?response.followUp:null;
+  const option=consumeSpokenAnswer(input,text,currentQuestion);
+  if(option&&hasHealthConsent(state)){
+   input.value='';
+   state.chat.input='';
+   selectAssistantOption(option.id);
+   return;
+  }
+  submitChatText(text);
+ });
 
 }
 function submitChatText(text,starter=null){
