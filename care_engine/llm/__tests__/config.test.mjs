@@ -11,11 +11,13 @@ test('getConfig: 환경변수가 없으면 설계 8절 기본값(+L4: 후보 기
   const c = getConfig({});
   assert.equal(c.provider, 'mock');
   assert.equal(c.model, 'mock-v0');
-  assert.equal(c.timeoutMs, 4000);
+  assert.equal(c.timeoutMs, 6000);
   assert.equal(c.budgetMs, 7000);
   assert.equal(c.retryMinRemainingMs, 3000);
   assert.equal(c.candidateMode, 'all');
   assert.equal(c.candidateK, 40);
+  assert.equal(c.symptomMode, 'rewrite'); // 11/18 절충 1: 측정 뒤 기본은 rewrite
+  assert.equal(c.rewriteTimeoutMs, 3000);
   assert.equal(c.maxConcurrency, 2);
   assert.equal(c.reasoningEffort, 'none');
   assert.equal(c.temperature, null);
@@ -23,10 +25,11 @@ test('getConfig: 환경변수가 없으면 설계 8절 기본값(+L4: 후보 기
   assert.equal(c.evalBudgetUsd, 2);
   assert.equal(c.modelWarning, null);
   assert.deepEqual({...c.versions}, {
-    promptSymptom: 'symptom_v1', promptProfile: 'profile_v1',
+    promptSymptom: 'symptom_v2', promptProfile: 'profile_v1',
     schemaSymptom: 'symptom_pick_v1', schemaProfile: 'profile_extract_v1',
-    promptRisk: 'risk_v2', promptSymptomRisk: 'symptom_risk_v2',
+    promptRisk: 'risk_v2', promptSymptomRisk: 'symptom_risk_v3',
     schemaRisk: 'risk_signal_v1', schemaSymptomRisk: 'symptom_risk_v1',
+    promptRewrite: 'symptom_rewrite_v1', schemaRewrite: 'symptom_rewrite_v1',
   });
 });
 
@@ -39,6 +42,12 @@ test('getConfig: 환경변수 반영, 잘못된 값은 기본값', () => {
   assert.equal(c.candidateMode, 'all');
   assert.equal(c.candidateK, 40);
   assert.equal(c.maxConcurrency, 1);
+  // 11/18 절충 1 설정
+  assert.equal(getConfig({LLM_SYMPTOM_MODE: 'Rewrite', LLM_REWRITE_TIMEOUT_MS: '2000'}).symptomMode, 'rewrite');
+  assert.equal(getConfig({LLM_REWRITE_TIMEOUT_MS: '2000'}).rewriteTimeoutMs, 2000);
+  assert.equal(getConfig({LLM_SYMPTOM_MODE: 'both', LLM_REWRITE_TIMEOUT_MS: '-1'}).symptomMode, 'rewrite');
+  assert.equal(getConfig({LLM_SYMPTOM_MODE: 'full'}).symptomMode, 'full');
+  assert.equal(getConfig({LLM_REWRITE_TIMEOUT_MS: '-1'}).rewriteTimeoutMs, 3000);
   assert.equal(getConfig({LLM_CANDIDATE_MODE: 'everything'}).candidateMode, 'all');
   assert.equal(getConfig({LLM_CANDIDATE_MODE: 'retrieve'}).candidateMode, 'retrieve');
   assert.equal(getConfig({LLM_PROVIDER: 'gemini'}).model, null);

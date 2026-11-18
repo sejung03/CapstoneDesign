@@ -145,3 +145,35 @@ function checkProfileItem(it, messages) {
   if (!quoteNorm.includes(normalizeTerm(v))) return 'valueNotInQuote';
   return null;
 }
+
+/** 11/18 절충 1: 고쳐 쓴 표현 개수·길이 상한(스키마에 넣지 않는 제한) */
+export const REWRITE_MAX_TERMS = 4;
+export const REWRITE_TERM_MAX = 30;
+
+/**
+ * 고쳐 쓰기 출력 검사. terms는 사전 재검색에만 쓰고 사용자에게 보이지 않는다.
+ * 문자열이 아니거나 빈 표현은 버리고, 앞에서부터 REWRITE_MAX_TERMS개, 각 REWRITE_TERM_MAX자까지만 쓴다.
+ * @param {{risk?:boolean}} [opts]
+ * @returns {{ok:boolean, error?:'bad_json', intent?:string, terms:string[], riskSignal:string, riskError:string|null}}
+ */
+export function validateRewrite(raw, {risk = false} = {}) {
+  const bad = {ok: false, error: 'bad_json', terms: [], riskSignal: 'none', riskError: risk ? 'bad_json' : null};
+  const parsed = parseMaybeJson(raw);
+  if (!parsed.ok || !isPlainObject(parsed.value)) return bad;
+  const o = parsed.value;
+  if (!hasExactKeys(o, risk ? ['intent', 'terms', 'risk_signal'] : ['intent', 'terms'])) return bad;
+  if (!INTENTS.includes(o.intent) || !Array.isArray(o.terms)) return bad;
+  const seen = new Set();
+  const terms = [];
+  for (const t of o.terms) {
+    if (typeof t !== 'string') continue;
+    const s = t.replace(/[\r\n]+/g, ' ').trim().slice(0, REWRITE_TERM_MAX);
+    const n = normalizeTerm(s);
+    if (!n || seen.has(n)) continue;
+    seen.add(n);
+    terms.push(s);
+    if (terms.length >= REWRITE_MAX_TERMS) break;
+  }
+  const riskOk = !risk || RISK_SIGNALS.includes(o.risk_signal);
+  return {ok: true, intent: o.intent, terms, riskSignal: risk && riskOk ? o.risk_signal : 'none', riskError: riskOk ? null : 'invalid_risk_signal'};
+}

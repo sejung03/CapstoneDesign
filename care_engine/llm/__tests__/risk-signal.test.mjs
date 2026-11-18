@@ -7,7 +7,7 @@ import {riskSignalSchema, symptomRiskSchema, RISK_SIGNALS} from '../schemas.mjs'
 
 const consent = {granted: true, provider: 'mock', version: 'test-v1', healthInfo: true};
 const text = '오늘 갑자기 많이 아파요';
-const config = getConfig({LLM_CANDIDATE_MODE: 'all'});
+const config = getConfig({LLM_SYMPTOM_MODE: 'full', LLM_CANDIDATE_MODE: 'all'});
 
 function providerFor(data) {
   return {name: 'mock', model: 'mock-v0', calls: 0, async generateStructured() { this.calls += 1; return {ok: true, data, meta: {}}; }};
