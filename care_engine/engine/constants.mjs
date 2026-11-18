@@ -15,6 +15,20 @@ export const INJURY_ITEM_ID = 'F2';
 /** F2에서 '예'를 뜻하는 code. */
 export const INJURY_YES = 'yes';
 
+/**
+ * 나이(T3). 11/17 연결: 상담 대상이 본인(T1=self)이고 T3 답이 없을 때, 프론트 내 정보의 만 나이(payload.profile.age)로
+ * T3 code를 채운다(사용자가 직접 입력한 값이므로 같은 질문을 다시 묻지 않음). 나이 → code 구간은 T3 선택지와 같다.
+ */
+export const AGE_ITEM_ID = 'T3';
+export function ageBandCode(age) {
+  if (!Number.isInteger(age) || age < 0 || age > 120) return null;
+  if (age < 1) return 'age_lt1';
+  if (age <= 12) return 'age_1_12';
+  if (age <= 18) return 'age_13_18';
+  if (age <= 64) return 'age_19_64';
+  return 'age_65plus';
+}
+
 // ---- 11/17 RF2: 위험 표현 확인 질문(RISK_CONFIRM) ----
 /**
  * 확인 질문 ID는 `RISK_CONFIRM_<n>`이다. n은 질문을 낼 때까지의 사용자 메시지 수(엔진의 userMessages 기준).

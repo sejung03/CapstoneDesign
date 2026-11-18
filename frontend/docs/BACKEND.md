@@ -553,3 +553,12 @@ Next development 빌드에서만 dev-console.mjs를 동적 import해 window.medi
 모의 계정·즐겨찾기는 설치한 개발 페이지의 메모리에서만 유지합니다. 로그인 성공 메시지는 콘솔에 개발용임을 명시하며 실제 OAuth/DB 요청을 하지 않습니다. 테스트 계정이 달라지면 기존 계정 전환과 동일하게 페이지의 개인정보를 비웁니다. 새로고침하면 모의 계정은 사라집니다. UI의 로그아웃 버튼은 실제 컨트롤러의 서버 응답 대기/계정 비우기 흐름을 따르되 어댑터만 메모리 모의 구현입니다.
 
 process.env.NODE_ENV의 개발 분기에서만 설치하며 production 브라우저에는 medicalDev가 없습니다. 이 모듈은 이전 Node 정적 파일 허용 목록에 추가하지 않았습니다. 실제 인증 우회나 운영용 로그인 수단으로 사용하면 안 됩니다. 소스 코드로 모듈을 가져오는 것과 운영 인증을 얻는 것은 무관하며 운영 API는 서버에서 사용자 권한을 검증해야 합니다.
+
+## 0.25.0 문진 엔진 연결 (/api/care)
+
+- 연결 위치: `app/medical-app.jsx`가 mountMedicalApp 뒤 `connectCare({requestAssistant, rankFacilities, healthNotice})`를 호출합니다. 요청 함수는 `care-adapter.mjs`, 서버는 `app/api/care/route.js`(`lib/care-engine-server.mjs`)입니다. 서버가 `care_engine`의 `runCare`를 Node로 직접 불러옵니다(번들하지 않음). 응답은 엔진 계약 객체만이며 trace·원문은 보내지 않습니다.
+- 처리 안내: 원래 화면 안내(`localHealthNotice`, "외부 AI 업체에 제공하지 않습니다")를 그대로 씁니다(영어 화면도 원래 영어 안내). 확인한 뒤에만 요청이 나가고 `consent:{granted:true, version}`이 붙습니다. 서버는 외부 전송을 고지한 안내 버전(`care-openai-1`)일 때만 엔진에 외부 AI 동의를 넘기므로, **지금은 OpenAI를 호출하지 않고 규칙·사전으로만 문진합니다.** OpenAI를 쓰려면 외부 전송을 고지하는 안내(법적 검토)를 그 버전으로 만들어 바꿉니다.
+- 미응답 위험 질문: 답하지 않은 `RISK_CONFIRM_<n>`·`SENSITIVE_CHOICE_<n>` ID를 다음 요청 followUpAnswers에 `value:null`로 붙입니다(ID만 페이지 메모리).
+- 추천 순위: `rankFacilities`는 `reason:'recommendations'`, `search`, `candidates`만 보냅니다(대화 내용 없음). 후보에 `displayOrder`(현재 목록 위치, 좌표 아님)를 더했습니다. 서버는 LLM 없이 현재 적용한 진료과가 대표 진료과인 곳 → 그 진료과 진료가 확인된 곳 순으로 올리고, 같은 무리 안에서는 displayOrder를 지킵니다. 근거가 없으면 빈 items(기존 순서)입니다.
+- 내 정보: 본인 상담이면 만 나이로 문진의 나이 질문(T3)을 대신합니다. 알레르기·복용약·병력은 엔진에 쓰지 않습니다.
+- 엔진 데이터: Supabase `ref` 스키마를 10분 캐시로 읽고(검사 통과 시), 실패하면 같은 버전의 시드 CSV로 동작합니다.

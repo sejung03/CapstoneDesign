@@ -15,7 +15,7 @@ const FRONT = path.resolve(HERE, '../../../frontend');
 /** 프론트 시작 선택지 파일을 읽어(가져오지 않고) 약국 문장을 꺼낸다. */
 function pharmacyStarterText() {
   const src = readFileSync(path.join(FRONT, 'care-context.mjs'), 'utf8');
-  const m = src.match(/id:'pharmacy'[^\n]*?text:\{ko:'([^']+)'/);
+  const m = src.match(/id:'pharmacy'[^\n]*?text:(?:expandLocales\()?\{ko:'([^']+)'/);
   assert.ok(m, '프론트 약국 시작 문장을 찾지 못함');
   return m[1];
 }

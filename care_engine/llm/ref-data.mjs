@@ -69,8 +69,32 @@ function readCsv(dir, name) {
 
 const bool = (v) => v === 'true';
 
+/**
+ * 11/17 연결: DB(Supabase REST) 행을 CSV 행과 같은 문자열 형식으로 바꾼다.
+ * null → '', boolean → 'true'/'false', 배열(text[]·int[]) → Postgres 배열 문자열 '{a,b}', 객체 → JSON 문자열, 숫자 → String.
+ * jsonColumns(jsonb 열)는 값이 무엇이든 JSON 문자열로 둔다(시드 CSV도 jsonb는 JSON으로 적혀 있음).
+ */
+export const JSONB_COLUMNS = Object.freeze({app_config: ['value'], symptom_department: ['clinic_ranking', 'hospital_ranking']});
+export function toCsvRow(row, jsonColumns = []) {
+  const out = {};
+  for (const [k, v] of Object.entries(row ?? {})) {
+    if (jsonColumns.includes(k) && v !== null && v !== undefined) out[k] = JSON.stringify(v);
+    else if (v === null || v === undefined) out[k] = '';
+    else if (typeof v === 'boolean') out[k] = v ? 'true' : 'false';
+    else if (Array.isArray(v)) out[k] = v.every((x) => typeof x !== 'object' || x === null) ? `{${v.join(',')}}` : JSON.stringify(v);
+    else if (typeof v === 'object') out[k] = JSON.stringify(v);
+    else out[k] = String(v);
+  }
+  return out;
+}
+
 function loadFromCsv(dir) {
-  const versions = readCsv(dir, 'data_version.csv');
+  return buildRefData((name) => readCsv(dir, name), 'csv');
+}
+
+/** 행 읽기 함수(readRows(파일 이름) → CSV 형식 행 배열)로 증상 참조 데이터를 만든다. CSV·Supabase가 같은 검사를 거친다. */
+export function buildRefData(readRows, source = 'csv') {
+  const versions = readRows('data_version.csv');
   if (versions.length !== 1) {
     throw new Error(`data_version.csv 행이 ${versions.length}개다(1개여야 함)`);
   }
@@ -82,10 +106,10 @@ function loadFromCsv(dir) {
     return kept;
   };
 
-  const symRows = sameVersion(readCsv(dir, 'symptom.csv'), 'symptom');
-  const sdRows = sameVersion(readCsv(dir, 'symptom_department.csv'), 'symptom_department');
-  const varRows = sameVersion(readCsv(dir, 'symptom_department_variant.csv'), 'symptom_department_variant');
-  const synRows = sameVersion(readCsv(dir, 'symptom_synonym.csv'), 'symptom_synonym');
+  const symRows = sameVersion(readRows('symptom.csv'), 'symptom');
+  const sdRows = sameVersion(readRows('symptom_department.csv'), 'symptom_department');
+  const varRows = sameVersion(readRows('symptom_department_variant.csv'), 'symptom_department_variant');
+  const synRows = sameVersion(readRows('symptom_synonym.csv'), 'symptom_synonym');
 
   const sdFallback = new Map(sdRows.map((r) => [r.symptom_id, bool(r.fallback)]));
   const combos = new Map();
@@ -138,7 +162,7 @@ function loadFromCsv(dir) {
   const orphan = synRows.length - synonyms.length;
   if (orphan > 0) warnings.push(`symptom_synonym: 없는 symptom_id ${orphan}행 제외`);
 
-  return {source: 'csv', dataVersion, symptoms, synonyms, warnings};
+  return {source, dataVersion, symptoms, synonyms, warnings};
 }
 
 const cache = new Map();

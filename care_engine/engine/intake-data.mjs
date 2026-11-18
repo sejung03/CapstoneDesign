@@ -1,9 +1,9 @@
 // 문진 데이터 로더(설계 §3). 시드 CSV를 읽기만 한다(LLM 모듈 ref-data.mjs와 같은 방식).
 // 로드 때 검사에 실패하면 IntakeDataError를 던진다. runCare는 이것을 잡아 error:'data'로 돌려준다.
-// 나중에 Supabase 로더를 같은 반환 형식으로 추가한다(source = 'csv' | 'supabase').
+// 11/17 연결: Supabase ref 표에서도 같은 형식으로 만든다(loadIntakeDataFromRows, source = 'supabase'). 검사는 CSV와 같다.
 import {readFileSync} from 'node:fs';
 import path from 'node:path';
-import {parseCsv, DEFAULT_CSV_DIR, loadRefData} from '../llm/ref-data.mjs';
+import {parseCsv, DEFAULT_CSV_DIR, loadRefData, buildRefData, toCsvRow, JSONB_COLUMNS} from '../llm/ref-data.mjs';
 
 export {DEFAULT_CSV_DIR};
 
@@ -48,14 +48,32 @@ function readCsv(dir, name) {
 }
 
 function loadFromCsv(dir) {
+  return buildIntakeData((name) => readCsv(dir, name), 'csv', loadRefData({dir}));
+}
+
+/**
+ * 11/17 연결: Supabase ref 스키마에서 읽은 표({표 이름: 행 배열}, REST JSON 그대로)로 같은 데이터를 만든다.
+ * 값은 toCsvRow로 CSV 형식에 맞춘 뒤 CSV와 똑같은 검사를 거친다. 표가 없으면 IntakeDataError.
+ */
+export function loadIntakeDataFromRows(tables, {source = 'supabase'} = {}) {
+  const readRows = (name) => {
+    const table = name.replace(/\.csv$/, '');
+    const rows = tables?.[table];
+    if (!Array.isArray(rows)) throw new IntakeDataError([`${name}: 표를 읽지 못함`]);
+    return rows.map((r) => toCsvRow(r, JSONB_COLUMNS[table] ?? []));
+  };
+  return buildIntakeData(readRows, source, buildRefData(readRows, source));
+}
+
+function buildIntakeData(readRows, source, refData) {
   const problems = [];
   const warnings = [];
 
-  const versions = readCsv(dir, 'data_version.csv');
+  const versions = readRows('data_version.csv');
   if (versions.length !== 1) throw new IntakeDataError([`data_version.csv 행이 ${versions.length}개(1개여야 함)`]);
   const dataVersion = versions[0].version;
   const read = (name) => {
-    const rows = readCsv(dir, name);
+    const rows = readRows(name);
     const kept = rows.filter((r) => r.data_version === dataVersion);
     if (kept.length !== rows.length) warnings.push(`${name}: data_version 불일치 ${rows.length - kept.length}행 제외`);
     return kept;
@@ -271,9 +289,8 @@ function loadFromCsv(dir) {
 
   if (problems.length > 0) throw new IntakeDataError(problems);
 
-  const refData = loadRefData({dir});
   return {
-    source: 'csv',
+    source,
     dataVersion,
     questionnaire,
     items,

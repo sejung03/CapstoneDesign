@@ -18,7 +18,7 @@ export const CONSENT = Object.freeze({granted: true, provider: 'mock', version: 
 /** 프론트 약국 시작 문장(파일로 읽음). */
 export function pharmacyStarterText() {
   const src = readFileSync(path.resolve(HERE, '../../frontend/care-context.mjs'), 'utf8');
-  return src.match(/id:'pharmacy'[^\n]*?text:\{ko:'([^']+)'/)[1];
+  return src.match(/id:'pharmacy'[^\n]*?text:(?:expandLocales\()?\{ko:'([^']+)'/)[1];
 }
 
 export const TEXT = Object.freeze({

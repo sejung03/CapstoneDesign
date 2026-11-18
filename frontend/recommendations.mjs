@@ -4,10 +4,11 @@ import {displayedFacilities,liveQueryKey} from './live-data.mjs';
 import {searchFacilities} from './facilities.mjs';
 export function createRecommendations(){return {phase:'idle',key:'',items:[]};}
 // Snapshot contains only real, currently open search results. No coordinates or contact details.
+// displayOrder: position in the current list (distance order), so a ranker can keep it among equally matched places.
 export function recommendationSnapshot(state){
  if(state.search.origin==='favorite'||state.source!=='live'||state.live.phase!=='ready'||state.live.hoursPhase==='loading'||state.live.queryKey!==liveQueryKey(state.search.criteria))return null;
  const ids=new Set(state.live.items.map(item=>item.id));
- const items=displayedFacilities(state,searchFacilities).filter(item=>ids.has(item.id)&&item.status==='open').map(item=>({facilityId:item.id,name:item.name.ko,type:item.type,department:item.department,departments:item.type==='pharmacy'?['pharmacy']:facilityDepartments(item),status:'open'})).sort((a,b)=>a.facilityId.localeCompare(b.facilityId));
+ const items=displayedFacilities(state,searchFacilities).filter(item=>ids.has(item.id)&&item.status==='open').map((item,displayOrder)=>({facilityId:item.id,name:item.name.ko,type:item.type,department:item.department,departments:item.type==='pharmacy'?['pharmacy']:facilityDepartments(item),status:'open',displayOrder})).sort((a,b)=>a.facilityId.localeCompare(b.facilityId));
  if(!items.length)return null;
  const resultSetId='results-'+state.live.token;
  const search=assistantSearchContext(state);

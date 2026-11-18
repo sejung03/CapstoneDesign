@@ -19,7 +19,7 @@ import {collectSensitiveEvents, resolveSensitiveChoice} from './sensitive-choice
 
 const CRISIS_KEY = 'crisis_notice_109';
 import {checkResponseContract} from './contract.mjs';
-import {TARGET_ITEM_ID, TARGET_SELF, INJURY_ITEM_ID, INJURY_YES} from './constants.mjs';
+import {TARGET_ITEM_ID, TARGET_SELF, INJURY_ITEM_ID, INJURY_YES, AGE_ITEM_ID, ageBandCode} from './constants.mjs';
 
 export const ENGINE_VERSION = 'care-engine-v1';
 export const ENGINE_BUDGET_MS = 7000;
@@ -80,9 +80,27 @@ function newTrace(reason) {
     symptom: {id: null, source: null, fallback: null, fallbackGroup: null},
     slots: null,
     skippedItems: [],
+    prefilled: [], // 11/17 연결: 내 정보로 채운 문항 ID(값은 남기지 않음)
     llm: {risk: {called: false}, classify: {called: false}, profile: {called: false}},
     warnings: [],
   };
+}
+
+/**
+ * 11/17 연결: 본인 상담(T1=self)이고 T3 답이 없으면 내 정보의 만 나이로 T3를 채운다.
+ * 나이는 0~120 정수 문자열·숫자만 받는다. 값은 trace에 남기지 않고 문항 ID만 남긴다.
+ */
+function prefillAgeFromProfile(codes, profile, data, trace) {
+  if (codes.get(TARGET_ITEM_ID) !== TARGET_SELF || codes.has(AGE_ITEM_ID)) return;
+  const raw = profile && typeof profile === 'object' ? profile.age : undefined;
+  const text = typeof raw === 'number' ? String(raw) : typeof raw === 'string' ? raw.trim() : '';
+  if (!/^\d{1,3}$/.test(text)) return;
+  const code = ageBandCode(Number(text));
+  const options = data.optionsById?.get(AGE_ITEM_ID);
+  const valid = Array.isArray(options) ? options.some((o) => o.code === code) : options instanceof Map ? options.has(code) : false;
+  if (!code || !valid) return;
+  codes.set(AGE_ITEM_ID, code);
+  trace.prefilled.push(AGE_ITEM_ID);
 }
 
 /**
@@ -195,16 +213,18 @@ async function core(payload, ctx, deps, trace, now, log) {
   trace.facilityKeywordsVersion = facilityKeywords?.version ?? null;
 
   const llm = {
-    classifySymptom: deps.llm?.classifySymptom ?? ((input) => classifySymptom(input, {log})),
-    classifySymptomWithRisk: deps.llm?.classifySymptomWithRisk ?? ((input) => classifySymptomWithRisk(input, {log})),
+    // 11/17 연결: LLM 후보도 엔진과 같은 데이터(refStore가 Supabase면 Supabase)를 쓴다
+    classifySymptom: deps.llm?.classifySymptom ?? ((input) => classifySymptom(input, {log, refData: data.refData})),
+    classifySymptomWithRisk: deps.llm?.classifySymptomWithRisk ?? ((input) => classifySymptomWithRisk(input, {log, refData: data.refData})),
     detectRiskSignal: deps.llm?.detectRiskSignal ?? ((input) => detectRiskSignal(input, {log})),
     extractProfileUpdates: deps.llm?.extractProfileUpdates ?? ((input) => extractProfileUpdates(input, {log})),
   };
 
-  // 0. 입력 정리 (previousReport·intake·profile·search 내용은 v1에서 쓰지 않는다)
+  // 0. 입력 정리 (previousReport·intake·search 내용은 읽지 않는다. profile은 본인 상담의 만 나이만 T3에 쓴다)
   const messages = userMessages(payload.messages);
   const {codes, engine, warnings, riskConfirms, sensitiveChoices, pendingRisks, pendingSensitive} = normalizeAnswers(payload.followUpAnswers, data);
   trace.warnings.push(...warnings);
+  prefillAgeFromProfile(codes, payload.profile, data, trace);
   const vis = visibleCodes(codes, data);
 
   // 1. 안전 규칙(자유 입력 + 답) — 매 요청 맨 먼저

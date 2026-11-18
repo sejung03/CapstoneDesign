@@ -70,3 +70,14 @@ test('late session responses cannot change the account-scope header used for hea
  }});
  const old=client.getSession();await client.getSession();resolveOld(Response.json({authenticated:true,accountId:'A'}));await old;await client.healthProfile.get();assert.equal(scope,'B');
 });
+
+test('account client: 가입 동의를 마치지 않은 로그인(pendingSignup)이 남아 있어도 페이지를 /signup으로 보내지 않고 비회원으로 둔다',async()=>{
+ const previous=globalThis.location;let assigned=null;
+ globalThis.location={assign:url=>{assigned=url;}};
+ try{
+  const client=createAccountClient({fetchImpl:async()=>Response.json({authenticated:false,pendingSignup:true})});
+  const session=await client.getSession();
+  assert.equal(session.authenticated,false);
+  assert.equal(assigned,null);
+ }finally{globalThis.location=previous;}
+});

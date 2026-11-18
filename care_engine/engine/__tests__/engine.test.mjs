@@ -10,7 +10,7 @@ import {data, SAFE_BASE, fakeLlm, confirmFor, call} from './helpers.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const testRules = loadFreeTextRules(path.join(HERE, 'fixtures', 'free_text_test.json'));
-const PHARMACY_TEXT = readFileSync(path.resolve(HERE, '../../../frontend/care-context.mjs'), 'utf8').match(/id:'pharmacy'[^\n]*?text:\{ko:'([^']+)'/)[1];
+const PHARMACY_TEXT = readFileSync(path.resolve(HERE, '../../../frontend/care-context.mjs'), 'utf8').match(/id:'pharmacy'[^\n]*?text:(?:expandLocales\()?\{ko:'([^']+)'/)[1];
 const DETAIL_SAFE = {N5: 'yes', 'N5-1': 'onset_today', N6: 'yes', N7: 'no', N8: 'no', N9: 'no', N10: 'no', N11: 'no', N12: 'no', N13: 'no', P0: 'no'};
 
 const ok = (out) => {

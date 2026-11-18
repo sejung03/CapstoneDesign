@@ -1,0 +1,115 @@
+// 문진 엔진(care_engine runCare) 서버 연결. 브라우저는 /api/care로 요청하고, 엔진·OpenAI 키는 서버에만 있다.
+// 엔진은 자기 파일 위치 기준으로 시드 CSV·규칙 JSON을 읽으므로 번들하지 않고 Node가 원래 경로에서 불러온다.
+import {existsSync, readFileSync} from 'node:fs';
+import path from 'node:path';
+import {pathToFileURL} from 'node:url';
+import {parseEnv} from 'node:util';
+import {CARE_CONSENT_VERSION} from '../care-adapter.mjs';
+import {rankFacilities, RankingInputError} from './care-ranking.mjs';
+import {createSupabaseRefStore} from './care-data-supabase.mjs';
+
+const MAX_BODY = 64 * 1024;
+const SERVER_BUDGET_MS = 7000; // 프론트 8초 제한 안쪽(엔진 README)
+// 엔진 LLM 설정 중 개발 환경에서 care_engine/.env로부터 채워 넣는 키(이미 있는 값은 덮지 않음)
+const ENGINE_ENV_KEYS = ['OPENAI_API_KEY', 'LLM_PROVIDER', 'LLM_MODEL', 'LLM_DEV_CONSENT', 'LLM_REASONING_EFFORT',
+  'LLM_TEMPERATURE', 'LLM_CANDIDATE_MODE', 'LLM_CANDIDATE_K', 'LLM_TIMEOUT_MS', 'LLM_BUDGET_MS'];
+const ERROR_STATUS = {unsupported_reason: 400, aborted: 499, data: 503, contract: 500, internal: 500};
+
+export function engineDir(env = process.env) {
+  return path.resolve(env.CARE_ENGINE_DIR || path.join(process.cwd(), '..', 'care_engine'));
+}
+
+/** 개발 환경에서만 care_engine/.env의 LLM 키를 서버 프로세스에 채운다. 값은 출력하지 않는다. */
+export function loadEngineEnv({env = process.env, dir = engineDir(env), read = readFileSync, exists = existsSync} = {}) {
+  if (env.NODE_ENV !== 'development') return [];
+  const file = path.join(dir, '.env');
+  if (!exists(file)) return [];
+  const parsed = parseEnv(read(file, 'utf8'));
+  const added = [];
+  for (const key of ENGINE_ENV_KEYS) {
+    if (env[key] === undefined && typeof parsed[key] === 'string') { env[key] = parsed[key]; added.push(key); }
+  }
+  return added;
+}
+
+let enginePromise = null;
+/** @returns {Promise<{runCare:Function, loadIntakeDataFromRows:Function}>} */
+export function loadEngine(env = process.env) {
+  if (!enginePromise) {
+    loadEngineEnv({env});
+    const dir = engineDir(env);
+    const load = (file) => import(/* webpackIgnore: true */ /* turbopackIgnore: true */ pathToFileURL(path.join(dir, 'engine', file)).href);
+    enginePromise = Promise.all([load('index.mjs'), load('intake-data.mjs')])
+      .then(([index, data]) => ({runCare: index.runCare, loadIntakeDataFromRows: data.loadIntakeDataFromRows}))
+      .catch((e) => { enginePromise = null; throw e; });
+  }
+  return enginePromise;
+}
+
+/**
+ * 외부 AI 동의. 브라우저는 처리 안내(careHealthNotice)를 확인한 뒤에만 요청하고, 그 버전을 payload.consent로 보낸다.
+ * 버전이 지금 안내와 같을 때만 엔진 consent를 만든다. 그 밖에는 {granted:false}를 넘겨 개발용 동의(LLM_DEV_CONSENT)도 쓰지 않는다.
+ */
+export function engineConsent(payloadConsent, env = process.env) {
+  const provider = String(env.LLM_PROVIDER ?? '').trim().toLowerCase() || 'mock';
+  if (payloadConsent && payloadConsent.granted === true && payloadConsent.version === CARE_CONSENT_VERSION) {
+    return {granted: true, provider, version: CARE_CONSENT_VERSION, healthInfo: true};
+  }
+  return {granted: false};
+}
+
+/** Supabase가 설정되어 있으면 ref 스키마에서 엔진 데이터를 읽는다(검사 통과 시에만, 실패하면 시드 CSV). */
+export function createRefStore({supabaseConfig, loadEngine: load = loadEngine, log = (msg) => console.warn(msg)} = {}) {
+  if (!supabaseConfig) return Object.assign(async () => null, {warm: async () => {}});
+  let builder = null;
+  const store = createSupabaseRefStore({
+    config: supabaseConfig,
+    buildData: (tables) => { if (!builder) throw new Error('engine_not_loaded'); return builder(tables); },
+    onError: (e) => log(`[care] Supabase 데이터 대신 시드 CSV 사용: ${e?.message ?? e}`),
+  });
+  const getData = async () => {
+    try { builder ??= (await load()).loadIntakeDataFromRows; } catch { return null; }
+    return store();
+  };
+  /** 서버가 뜰 때 한 번 불러 첫 사용자 요청 전에 읽기를 시작한다. */
+  getData.warm = () => getData().then(() => store.ready()).catch(() => {});
+  return getData;
+}
+
+/**
+ * POST /api/care 처리기. 응답 본문은 엔진의 response(프론트 계약)만이며 trace·원문은 내보내지 않는다.
+ * @param {{loadEngine?:Function, sameOrigin:(request:Request)=>boolean, refStore?:()=>Promise<object|null>, env?:object,
+ *          now?:()=>number, newId?:()=>string}} deps
+ */
+export function createCareHandler({loadEngine: load = loadEngine, sameOrigin, refStore = async () => null, env = process.env,
+  now = Date.now, newId = () => crypto.randomUUID()}) {
+  const headers = {'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff'};
+  const reply = (data, status = 200) => Response.json(data, {status, headers});
+  return async (request) => {
+    if (request.method !== 'POST') return new Response(null, {status: 405, headers: {...headers, Allow: 'POST'}});
+    if (!sameOrigin(request)) return reply({error: 'invalid_origin'}, 403);
+    if (!request.headers.get('content-type')?.startsWith('application/json')) return reply({error: 'content_type'}, 415);
+    if (Number(request.headers.get('content-length')) > MAX_BODY) return reply({error: 'body_too_large'}, 413);
+    let payload;
+    try {
+      const text = await request.text();
+      if (Buffer.byteLength(text) > MAX_BODY) return reply({error: 'body_too_large'}, 413);
+      payload = JSON.parse(text);
+    } catch { return reply({error: 'invalid_json'}, 400); }
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return reply({error: 'invalid_payload'}, 400);
+    // 추천 순위는 엔진·LLM을 부르지 않는다(대화 내용을 쓰지 않음)
+    if (payload.reason === 'recommendations') {
+      try { return reply(rankFacilities(payload)); } catch (e) { return reply({error: e instanceof RankingInputError ? 'invalid_candidates' : 'internal'}, e instanceof RankingInputError ? 400 : 500); }
+    }
+    let runCare;
+    try { ({runCare} = await load()); } catch { return reply({error: 'engine_unavailable'}, 503); }
+    const {consent: payloadConsent, ...enginePayload} = payload;
+    let data = null;
+    try { data = await refStore(); } catch { data = null; }
+    const out = await runCare(enginePayload,
+      {signal: request.signal, deadlineAt: now() + SERVER_BUDGET_MS, requestId: newId(), consent: engineConsent(payloadConsent, env)},
+      data ? {refStore: data} : {});
+    if (out?.error || !out?.response) return reply({error: out?.error || 'internal'}, ERROR_STATUS[out?.error] ?? 500);
+    return reply(out.response);
+  };
+}

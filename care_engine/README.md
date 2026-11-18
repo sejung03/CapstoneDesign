@@ -134,7 +134,8 @@ else { respond(out.response); saveTrace(out.trace); }
 | `messages` | 사용자 문장 배열(안전 규칙·증상 확인·키워드 기관 찾기·건강정보 후보) |
 | `followUpAnswers` | 선택 답 `{questionId, value}`. 같은 질문은 마지막 것, `value:null`은 미응답 |
 | `locale` | `ko`(v1 문구는 한국어만) |
-| `profile`·`search`·`intake`·`previousReport` | **v1은 읽지 않는다**(previousReport는 신뢰할 수 없는 문서라 LLM에도 보내지 않음) |
+| `profile` | *(11/17 연결)* **만 나이(`age`)만** 쓴다: 상담 대상이 본인(T1=self)이고 T3 답이 없으면 0~120 정수 나이로 T3 구간을 채우고 묻지 않는다(`trace.prefilled:["T3"]`, 값은 남기지 않음). 알레르기·복용약·병력은 읽지 않는다 |
+| `search`·`intake`·`previousReport` | **읽지 않는다**(previousReport는 신뢰할 수 없는 문서라 LLM에도 보내지 않음. search의 지역은 프론트가 조건 적용 때 그대로 유지) |
 
 - `response`: 프론트 계약 객체만(`followUp` | `summary` | `search` | `emergency` | `profileUpdates`). 엔진의 계약 검사(`engine/contract.mjs`)를 통과한 것만 나간다. 질문은 매 응답 하나(`followUp`, singleChoice).
 - `trace`(서버 저장·카드용, **사용자 원문 없음**): `engineVersion`, `templateVersion`, `dataVersion`, `questionnaireVersion`, `freeTextVersion`, `facilityKeywordsVersion`, `reason`, `phase`(`question`·`identify`·`emergency`·`start_choice`·`facility_keyword`·`complete`·`error`), `ruleHits`, `terminal`, `nextQuestionId`, `symptom{id, source, fallback, fallbackGroup}`, `slots{card, filter, detail, report, flow}`(각 값 `{value, question}`, 여러 값이면 배열), `skippedItems`, `llm{classify, profile}`, `warnings`. 119 신고 요약 카드는 `trace.slots.card`.
@@ -146,10 +147,11 @@ else { respond(out.response); saveTrace(out.trace); }
 - 시간: LLM은 요청당 최대 1번, 안전·대상 질문(Q0~T3) 동안 0번. LLM이 마감 뒤에 끝나면 기다리지 않고 "증상을 찾지 못했어요" 질문으로 간다.
 - 응급: 안전 규칙(답 + 자유 입력)은 매 요청 맨 먼저 돈다. 걸리면 `emergency`(+ 119 정리용 E 문항 또는 정리 요약)만 나가고 진료과·search는 나가지 않는다. 응급 콘텐츠(`topicId`·영상)는 엔진이 넣지 않는다(팀원 3).
 - 같은 입력이면 같은 응답·trace(상태 없음). 프론트가 매번 전체 메시지·답을 보내야 한다.
-- 데이터는 `../data_pipeline/db/seed/v2.1-20261113/` CSV(읽기만, 시작 후 캐시). Supabase 로더는 같은 형식으로 나중에(`deps.refStore`).
+- 데이터는 기본이 `../data_pipeline/db/seed/v2.1-20261113/` CSV(읽기만, 시작 후 캐시). *(11/17 연결)* `loadIntakeDataFromRows(tables)`로 Supabase `ref` 표(REST JSON)에서도 같은 형식을 만든다(`source:"supabase"`, CSV와 같은 검사). `deps.refStore`로 넘기면 LLM 증상 후보도 같은 데이터를 쓴다. 프론트 서버(`frontend/lib/care-data-supabase.mjs`)는 10분 캐시로 Supabase를 읽고, 실패하면 시드 CSV로 동작한다. 2026-11-17 실제 DB로 만든 데이터는 CSV와 표마다 같았다.
 
 **규칙 파일 자리**
-- **LC5 통합 전 필수 작업:** 연결 계층이 미응답 위험 질문 ID를 `followUpAnswers`의 `{questionId,value:null}`로 유지해야 LLM만 잡은 위험도 다음 skip·무응답 요청에서 유지된다. 현재 프론트에는 이 전달이 보장되지 않는다. 민감 종류는 추가 저장하지 않는다. 상세: `docs/reports/risk_LC_review.md`.
+- *(11/17 연결 완료)* 미응답 위험 질문 ID 유지: 프론트 `care-adapter.mjs`가 답하지 않은 `RISK_CONFIRM_<n>`·`SENSITIVE_CHOICE_<n>`를 다음 요청에 `{questionId,value:null}`로 보낸다(질문 ID만 페이지 메모리, 새 대화면 비움). 상세: `docs/reports/risk_LC_review.md` I3.
+- *(11/17 연결)* 서버 연결: `frontend/app/api/care/route.js`(`lib/care-engine-server.mjs`). 동의는 외부 전송을 고지한 처리 안내 버전(`care-openai-1`)을 확인한 요청에만 `{granted:true, provider:<LLM_PROVIDER>, version, healthInfo:true}`로 넘기고, 그 밖에는 `{granted:false}`라 웹 경로에서는 `LLM_DEV_CONSENT`도 쓰이지 않는다. 지금 프론트는 원래 안내("외부 AI 업체에 제공하지 않습니다")를 쓰므로 웹에서는 LLM을 부르지 않는다. 개발 모드(`npm run dev`)에서만 `care_engine/.env`의 LLM 키를 읽는다(운영은 서버 환경변수).
 - *(11/17 LC 반영)* **위험 LLM 보조·민감 안내 선택**: 민감 안내(규칙 hit·강한 민감 단서·LLM 민감 신호)는 첫 응답이 기관 안내 + `SENSITIVE_CHOICE_<n>`(`sens_end`·`sens_continue`), terminal:false. 규칙 hit와 강한 단서가 없는 `reason=message` 요청에서만 LLM이 최근 메시지 하나로 `risk_signal`을 주고(요청당 LLM 1번), emergency는 `RISK_CONFIRM_<n>`, 민감은 `SENSITIVE_CHOICE_<n>`. LLM은 규칙 경보를 끄거나 EMERGENCY_STOP을 만들지 못한다. 강한 단서(`SENSITIVE_NOTICE_CUE_RE`)가 있거나 `sens_continue` 뒤에는 그 대화에서 LLM을 부르지 않는다. 넓은 단어(맞았·때리·위협·해치)는 단서가 아니다(LCR1). trace: `llm.risk`(`{called, signal}` 또는 `{called, error}`), 민감이면 `sensitive:{kind:'sensitive_referral'}`만. 평가 `npm run eval:risk-llm`(`--no-llm`·`--cases`·`--no-text`).
 - 자유 입력 위험 표현 규칙: `engine/rules/free_text_v1.json` (`{"version", "rules":[{rule_id:"FT-…", priority:1~9, patterns:[정규식], result, terminal, message_key, evidence, review_status}]}`). 패턴은 NFKC → 소문자 → 공백 제거한 메시지(와 거기서 구두점·이모지·홀로 쓴 자모를 지운 문자열)에 메시지마다 적용. *(11/17 R 반영)* 위험 표현 사전 v1: 규칙 40개(EMERGENCY_STOP 11 → 지금 119 문구, URGENT_NOTICE 28 → 119·응급실 문구, 자해·자살 생각 1 → 109 문구), 모두 `review_status: draft`. *(11/17 RF 반영)* 규칙 42개: ① EMERGENCY_STOP 11 → 지금 119(유지) ② 민감 안내 3(자해·자살 생각 109, 위협 112, 폭력 피해 1366) → 기관 안내만, 질문·진료과·summary·LLM 없음, trace에는 `{kind:"sensitive_referral"}`만 ③ 그 밖의 응급증상 28 → 응급 안내 + 확인 질문 `RISK_CONFIRM_<n>`(예: 응급 안내만 / 아니요: `emergency.active:false`로 해제 후 문진 계속 / 잘 모르겠어요·2번 무응답: 안내를 붙인 채 문진 계속, 요약 첫 줄 경고). 문맥 제외는 애매한 단어 바로 앞뒤 쓰임으로만. 근거는 `docs/위험표현_기준표.md`(응급의료법 시행규칙 별표1·119 상담 매뉴얼). 한 번 걸리면 메시지가 남아 있는 동안 매 요청 응급 안내만 나간다(상태 없음). trace·로그에는 rule_id만(원문·패턴 없음). 형식이 틀리면 `error:'data'`.
 - 키워드 기관 찾기 단서: `engine/rules/facility_keywords_v2.json`(초안, 평가셋으로 고칠 것). *(11/17 EF 반영)* `riskCues`가 없으면 로드를 거부한다(`error:'data'`). v1 파일은 기록용.
