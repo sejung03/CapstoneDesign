@@ -28,12 +28,13 @@ function rejects(file, edit, pattern) {
   });
 }
 
-test('개수: 문항 46, 선택지 114, enableWhen 45, 안전 규칙 4, 결과 매핑 54, 증상 197', () => {
-  assert.equal(data.items.length, 46);
-  assert.equal([...data.optionsById.values()].reduce((n, l) => n + l.length, 0), 114);
-  assert.equal([...data.enableWhenById.values()].reduce((n, l) => n + l.length, 0), 45);
+// 11/18 문진 재설계: 상세 문항을 줄임(문항 46 → 27, 선택지 114 → 89, enableWhen 45 → 26, 결과 매핑 54 → 37)
+test('개수(11/18 재설계): 문항 27, 선택지 89, enableWhen 26, 안전 규칙 4, 결과 매핑 37, 증상 197', () => {
+  assert.equal(data.items.length, 27);
+  assert.equal([...data.optionsById.values()].reduce((n, l) => n + l.length, 0), 89);
+  assert.equal([...data.enableWhenById.values()].reduce((n, l) => n + l.length, 0), 26);
   assert.equal(data.rules.length, 4);
-  assert.equal(data.mappings.length, 54);
+  assert.equal(data.mappings.length, 37);
   assert.equal(data.refData.symptoms.size, 197);
 });
 
@@ -69,7 +70,9 @@ test('안전 규칙 조건의 Postgres 배열을 배열로 파싱', () => {
 test('선택지·enableWhen·진료과·variant·fallback·app_config', () => {
   assert.deepEqual(data.optionsById.get('T1').map((o) => o.code), ['self', 'child', 'other']);
   assert.equal(data.optionsById.get('N1')[0].displayKo, '예, 괜찮아요');
-  assert.deepEqual(data.enableWhenById.get('N5-1'), [{question: 'N5', operator: 'exists', answer: true}]);
+  assert.deepEqual(data.enableWhenById.get('N5-1'), [{question: 'Q0', operator: '=', answer: 'no'}]); // 11/18: N5를 빼고 N5-1이 시작 시점을 바로 묻는다
+  assert.equal(data.itemById.get('P3').engineCondition, 'symptom_is_pain');
+  assert.equal(data.itemById.get('N12').engineCondition, 'symptom_not_pain');
   assert.equal(data.itemById.get('Q0').enableBehavior, 'all');
   assert.deepEqual(data.departments.get('internal_medicine'), {deptId: 'internal_medicine', nameKo: '내과', searchKey: 'internal', isGuidable: true, sexOnly: null, maxAge: null});
   const v = data.variants.get('A01|female|adult');
@@ -88,7 +91,7 @@ test('data_version이 다른 행은 빼고 warnings에 기록', () => {
 });
 
 test('검사 거부: link_id 형식', () => {
-  rejects('questionnaire_item.csv', (t) => t.replace('\nP0,intake-v1', '\nP 0,intake-v1'), /link_id 형식/);
+  rejects('questionnaire_item.csv', (t) => t.replace('\nP3,intake-v1', '\nP 3,intake-v1'), /link_id 형식/);
 });
 
 test('검사 거부: 선택지 code 형식', () => {
@@ -104,7 +107,8 @@ test('검사 거부: todo 아닌 choice 문항의 선택지 0개', () => {
 });
 
 test('검사 거부: order 중복', () => {
-  rejects('questionnaire_item.csv', (t) => t.replace('\nP0,intake-v1,700,', '\nP0,intake-v1,710,'), /order 710 중복/);
+  rejects('questionnaire_item.csv', (t) => t.replace('\nP3,intake-v1,430,', '\nP3,intake-v1,440,'), /order 440 중복/);
+  rejects('questionnaire_item.csv', (t) => t.replace(',symptom_is_pain,', ',symptom_is_sad,'), /engine_condition 'symptom_is_sad'/);
 });
 
 test('검사 거부: enableWhen이 뒤 문항을 가리킴', () => {

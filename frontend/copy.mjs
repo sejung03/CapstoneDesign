@@ -411,6 +411,7 @@ export const copy=expandLocales({
     "nearerDifference": "더 가까워요",
 
     "assistantLoading": "입력한 내용을 정리하고 있어요.",
+    "assistantSlow": "조금 오래 걸리고 있어요. 잠시만 기다려 주세요.",
     "assistantError": "내용을 정리하지 못했어요. 직접 검색하거나 다시 시도해 주세요.",
     "assistantRetry": "다시 시도",
     "assistantOutdated": "새로 입력한 내용이 있어요. 다음 응답에서 함께 반영할게요.",
@@ -847,6 +848,7 @@ export const copy=expandLocales({
     "nearerDifference": "closer",
 
     "assistantLoading": "Organizing your input.",
+    "assistantSlow": "This is taking a little longer. Please wait a moment.",
     "assistantError": "Could not organize your input. Search directly or try again.",
     "assistantRetry": "Try again",
     "assistantOutdated": "You have provided new information. It will be included in the next response.",

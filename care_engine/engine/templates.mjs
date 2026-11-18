@@ -1,6 +1,6 @@
 // 사용자에게 보이는 엔진 문구(템플릿). 지시서 "문구 초안" 그대로 — 팀 검토 전 draft.
 // LLM을 쓰지 않는다. 사용자 원문·질환명·진단 표현을 넣지 않는다.
-export const TEMPLATE_VERSION = 'templates-v6'; // LC1: 민감 안내 선택 추가
+export const TEMPLATE_VERSION = 'templates-v8'; // LC1: 민감 안내 선택 추가 / 11/18 v7: 되묻기(SYM_RETRY·SYM_AREA_PICK) 문구 / v8: 문진 재설계(증상 이름 자리, 요약 줄)
 
 // ---- 엔진 질문(설계 §4-4) ----
 export const ENGINE_Q = Object.freeze({
@@ -10,6 +10,9 @@ export const ENGINE_Q = Object.freeze({
   ASK_START: 'ASK_START',
   MED_CHOICE: 'MED_CHOICE',
   RISK_CONFIRM: 'RISK_CONFIRM', // 11/17 RF2: 실제 질문 ID는 RISK_CONFIRM_<메시지 수>(constants.mjs)
+  SYM_RETRY: 'SYM_RETRY', // 11/18: 실제 질문 ID는 SYM_RETRY_<메시지 수>(constants.mjs)
+  SYM_AREA_PICK: 'SYM_AREA_PICK', // 11/18: 되묻기에서 고른 부위의 흔한 증상
+  SYM_REWRITE_CONFIRM: 'SYM_REWRITE_CONFIRM', // 11/18 절충 1: 고쳐 쓰기 → 사전 후보 확인(llm/confirm-question.mjs)
 });
 export const OPT = Object.freeze({
   symPrefix: 'sym_',
@@ -39,6 +42,24 @@ export const ENGINE_TEXT = Object.freeze({
   'q.sym_dict_confirm.unsure': '잘 모르겠어요',
   'q.sym_not_found.label': '말씀하신 증상을 목록에서 찾지 못했어요. 몇 가지 질문에 답해 주시면 진료과를 안내해 드릴게요.',
   'q.sym_not_found.continue': '질문에 답할게요',
+  // 11/18 되묻기: 사전·LLM이 증상을 못 찾았을 때 한 번 더 말해 달라고 한다(부위 버튼은 빠른 답장)
+  'q.sym_retry.label': '말씀하신 내용만으로는 증상을 정확히 찾지 못했어요. 어디가 어떻게 불편한지 대화창에 조금만 더 자세히 적어 주세요. (예: "어제부터 오른쪽 아랫배가 콕콕 쑤셔요") 아래에서 불편한 곳을 골라도 돼요.',
+  'q.sym_retry.continue': '잘 모르겠어요 (질문에 답할게요)',
+  'q.sym_retry.area_head': '머리·어지럼증',
+  'q.sym_retry.area_eye_ear': '눈·귀',
+  'q.sym_retry.area_nose_throat': '코·목·기침',
+  'q.sym_retry.area_chest': '가슴·두근거림',
+  'q.sym_retry.area_belly': '배·소화',
+  'q.sym_retry.area_mouth': '입·치아',
+  'q.sym_retry.area_bone': '목·어깨·허리·팔다리',
+  'q.sym_retry.area_skin': '피부·상처',
+  'q.sym_retry.area_urine': '소변·생식기·임신',
+  'q.sym_retry.area_mind': '마음·잠',
+  'q.sym_retry.area_body': '열·피로 등 온몸',
+  'q.sym_area_pick.label': '이 중에 가까운 증상이 있나요?',
+  'q.sym_area_pick.other': '여기 없어요',
+  // 11/18 문진 재설계: 질문 문구의 {symptom} 자리에 증상을 모를 때 넣는 말("지금 불편한 증상은 언제부터 있었나요?")
+  'q.symptom_unknown': '지금 불편한',
   'q.ask_start.label': '어디가 어떻게 불편한지 대화창에 적어 주세요. 병원이나 약국만 찾으려면 아래에서 골라 주세요.',
   'q.ask_start.find_hospital': '병원 찾기',
   'q.ask_start.find_pharmacy': '약국 찾기',
@@ -69,6 +90,23 @@ export function symDictConfirmQuestion(symptoms) {
 export function symNotFoundQuestion() {
   return q(ENGINE_Q.SYM_NOT_FOUND, T['q.sym_not_found.label'], [
     [OPT.symContinue, T['q.sym_not_found.continue']],
+  ]);
+}
+/**
+ * 11/18 되묻기. @param {string} id SYM_RETRY_<n> @param {ReadonlyArray<{id:string}>} areas symptom-areas.mjs SYMPTOM_AREAS
+ * 부위 문구는 ENGINE_TEXT('q.sym_retry.<부위 ID>')에서 읽는다(번역 키와 같게).
+ */
+export function symRetryQuestion(id, areas) {
+  return q(id, T['q.sym_retry.label'], [
+    ...areas.map((a) => [a.id, T[`q.sym_retry.${a.id}`]]),
+    [OPT.symContinue, T['q.sym_retry.continue']],
+  ]);
+}
+/** 11/18 부위의 흔한 증상 고르기. @param {Array<{id:string, nameKo:string}>} symptoms */
+export function symAreaPickQuestion(symptoms) {
+  return q(ENGINE_Q.SYM_AREA_PICK, T['q.sym_area_pick.label'], [
+    ...symptoms.map((s) => [`${OPT.symPrefix}${s.id}`, s.nameKo]),
+    [OPT.symOther, T['q.sym_area_pick.other']],
   ]);
 }
 export function askStartQuestion() {
@@ -221,6 +259,13 @@ export const SUMMARY = Object.freeze({
   deptNoteStats: '같은 증상으로 진료받는 사람이 많은 진료과 순서입니다. 병원 찾기는 1순위 진료과로 먼저 보여 드립니다.',
   deptNoteFallback: '증상에 맞는 통계가 없어 일반적으로 먼저 찾는 진료과를 안내합니다. 병원 찾기는 1순위 진료과로 먼저 보여 드립니다.',
   unchecked: '복용 중인 약, 기존 질환, 함께 있는 다른 증상은 확인하지 않았습니다. 해당되면 진료 때 꼭 알려 주세요.',
+  // 11/18 문진 재설계: 상세 줄(통증 양상 P3, 일상생활 불편 정도 N12)과 저장한 건강정보(본인 상담, 사용자가 저장한 값 그대로)
+  painQuality: '통증 양상',
+  dailyImpact: '일상생활',
+  profileMedications: '복용 중인 약(저장한 건강정보)',
+  profileHistory: '기존 질환(저장한 건강정보)',
+  profileAllergies: '알레르기(저장한 건강정보)',
+  uncheckedWithProfile: '저장한 건강정보 말고는 복용 중인 약, 기존 질환, 함께 있는 다른 증상을 확인하지 않았습니다. 해당되면 진료 때 꼭 알려 주세요.',
   // 11/17 RF2·RG1: 확인 질문에 '잘 모르겠어요'(또는 2번 무응답, 확인 전 skip)일 때 요약 첫 줄(risk_unconfirmed)
   riskUnconfirmed: '응급 증상인지 확인하지 못했습니다. 증상이 심해지거나 걱정되면 바로 119에 연락하거나 응급실로 가세요.',
   safetyUnanswered: '응급 확인 질문에 답하지 않았습니다. 의식이 흐리거나 숨쉬기 힘들거나, 갑작스러운 마비·말하기 어려움·심한 가슴 통증·멈추지 않는 출혈이 있으면 지금 119에 연락하세요.',

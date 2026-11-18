@@ -13,7 +13,8 @@ export const FRONTEND_DEPARTMENT_KEYS = Object.freeze([
 ]);
 const TRAVEL_MODES = ['walk', 'traffic', 'car'];
 const SEARCH_KEYS = ['region', 'type', 'department', 'openOnly', 'mode'];
-const RESPONSE_KEYS = ['summary', 'followUp', 'search', 'emergency', 'profileUpdates'];
+// 11/18 재설계: progress = 증상 확인 뒤 상세 질문의 진행 {current, total}(followUp과 함께만)
+const RESPONSE_KEYS = ['summary', 'followUp', 'search', 'emergency', 'profileUpdates', 'progress'];
 const ID_RE = /^[a-zA-Z0-9_-]{1,80}$/;
 const HEALTH_FIELDS = ['age', 'allergies', 'medications', 'history'];
 const EVIDENCE_KINDS = ['message', 'intake', 'intakeNote', 'followup'];
@@ -98,6 +99,13 @@ export function checkResponseContract(response) {
   for (const k of Object.keys(response)) if (!RESPONSE_KEYS.includes(k)) errors.push(`'${k}' 허용 안 함`);
   if (response.summary != null) checkText(response.summary, 2000, 'summary', errors);
   if (response.followUp != null) checkFollowUp(response.followUp, errors);
+  if (response.progress != null) {
+    const p = response.progress;
+    const ok = isObj(p) && Object.keys(p).length === 2 && Number.isInteger(p.current) && Number.isInteger(p.total)
+      && p.current >= 1 && p.current <= p.total && p.total <= 20;
+    if (!ok) errors.push('progress: {current, total} 정수, 1 ≤ current ≤ total ≤ 20');
+    if (response.followUp == null) errors.push('progress: followUp과 함께만');
+  }
   if (response.search != null) checkSearch(response.search, errors);
   if (response.emergency != null) checkEmergency(response.emergency, errors);
   if (response.profileUpdates != null) checkProfileUpdates(response.profileUpdates, errors);

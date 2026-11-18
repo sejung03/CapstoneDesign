@@ -257,215 +257,48 @@ items:
     type: string          # 대화 메시지로 받는다. 사전 매칭 대상
     required: true
     enable_when: *nonemergency
-  - link_id: N5
-    order: 410
-    flow: detail
-    source: team_pdf
-    text: 이 증상이 오늘 처음 시작되었나요?
-    type: choice
-    required: false
-    answer_options: *yes_no
-    enable_when: *nonemergency
+  # ---------- detail (11/18 재설계) ----------
+  # 증상 확인 뒤 질문을 3~4개로 줄였다(사용자 요청: 성별·나이까지는 모두에게 같게, 그 뒤는 증상에 맞게 적게).
+  #   통증 증상: N5-1 언제부터 → P3 어떻게 아픈지 → P1 몇 점 → N7 심해지는지
+  #   통증 아닌 증상·증상 모름: N5-1 → N12 일상생활 불편 정도 → N7 (증상 모름·fallback이면 F2 다쳤는지)
+  #   통증 여부는 엔진이 확정 증상으로 정한다(engine_condition symptom_is_pain / symptom_not_pain, 기준은 engine/intake-data.mjs).
+  #   문구의 {symptom}은 엔진이 확정 증상 이름으로 채운다(모르면 '지금 불편한').
+  # 뺀 문항(팀 PDF에는 있음, 필요하면 되돌린다): N5(오늘 처음?) — N5-1이 대신, N6·N6-1·N6-2(계속·빈도·지속), N7-1(악화 시점),
+  #   N8·N8-1(이전 경험), N9·N9-1·N10·N10-1(악화·완화 요인, 선택지 미정), N11·N11-1·N11-2(약·처치),
+  #   N12-1(가장 불편한 것), N13·N13-1(기존 질환), P0(통증 있나요 — 증상으로 정함), P2(통증 부위 — 증상이 부위를 포함).
+  #   약·기존 질환은 저장된 건강정보가 있으면 요약에 넣는다(엔진). 요약에는 확인하지 않은 정보를 계속 적는다.
   - link_id: N5-1
     order: 420
     flow: detail
-    source: added        # PDF "예 → 오늘의 발생 시각 확인, 아니요 → 이전 시작 시점 확인"을 한 문항으로
-    text: 증상은 언제 시작되었나요?
+    source: added        # PDF N5 "오늘 처음 시작? 예 → 발생 시각, 아니요 → 이전 시작 시점"을 한 문항으로
+    text: "{symptom} 증상은 언제부터 있었나요?"
     type: choice
     required: false
     answer_options: *onset
-    enable_when: [{question: N5, operator: exists, answer: true}]
-  - link_id: N6
+    enable_when: *nonemergency
+  - link_id: P3
     order: 430
-    flow: detail
-    source: team_pdf
-    text: 증상이 계속 나타나고 있나요?
-    type: choice
-    required: false
-    answer_options: *yes_no
-    enable_when: *nonemergency
-  - link_id: N6-1
-    order: 440
-    flow: detail
-    source: added        # PDF "아니요 → 반복되는 빈도·지속 시간 확인" 중 빈도
-    text: 증상이 얼마나 자주 나타나나요?
-    type: choice
-    required: false
-    answer_options:
-      - {code: freq_many_daily, display: 하루 여러 번}
-      - {code: freq_daily, display: 하루 한 번}
-      - {code: freq_few_days, display: 며칠에 한 번}
-      - {code: freq_sometimes, display: 가끔}
-      - {code: unknown, display: 모름}
-    enable_when: [{question: N6, operator: "=", answer: "no"}]
-  - link_id: N6-2
-    order: 450
-    flow: detail
-    source: added        # PDF "아니요 → 반복되는 빈도·지속 시간 확인" 중 지속 시간. 선택지 목록이 PDF에 없음
-    text: 증상이 한 번 나타나면 얼마나 지속되나요?
-    type: choice
-    required: false
-    todo: true
-    answer_options: []
-    enable_when: [{question: N6, operator: "=", answer: "no"}]
-  - link_id: N7
-    order: 460
-    flow: detail
-    source: team_pdf
-    text: 시간이 지나면서 증상이 심해지고 있나요?
-    type: choice
-    required: false
-    answer_options: *yes_no
-    enable_when: *nonemergency
-  - link_id: N7-1
-    order: 470
-    flow: detail
-    source: added        # PDF "예 → 악화 시점 확인"
-    text: 언제부터 심해졌나요?
-    type: choice
-    required: false
-    answer_options: *onset
-    enable_when: [{question: N7, operator: "=", answer: "yes"}]
-  - link_id: N8
-    order: 480
-    flow: detail
-    source: team_pdf
-    text: 이전에도 비슷한 증상을 경험한 적이 있나요?
-    type: choice
-    required: false
-    answer_options: *yes_no
-    enable_when: *nonemergency
-  - link_id: N8-1
-    order: 490
-    flow: detail
-    source: added        # PDF "예 → 이전과 다른 점 확인". 선택지 목록이 없어 대화 입력으로 받음
-    text: 이전과 다른 점이 있나요?
-    type: string
-    required: false
-    enable_when: [{question: N8, operator: "=", answer: "yes"}]
-  - link_id: N9
-    order: 500
-    flow: detail
-    source: team_pdf
-    text: 특정 행동이나 상황에서 증상이 심해지나요?
-    type: choice
-    required: false
-    answer_options: *yes_no
-    enable_when: *nonemergency
-  - link_id: N9-1
-    order: 510
-    flow: detail
-    source: added        # PDF "예 → 악화 요인 선택". 선택지 목록이 PDF에 없음
-    text: 어떤 때 증상이 심해지나요?
-    type: choice
-    required: false
-    todo: true
-    answer_options: []
-    enable_when: [{question: N9, operator: "=", answer: "yes"}]
-  - link_id: N10
-    order: 520
-    flow: detail
-    source: team_pdf
-    text: 특정 행동이나 상황에서 증상이 완화되나요?
-    type: choice
-    required: false
-    answer_options: *yes_no
-    enable_when: *nonemergency
-  - link_id: N10-1
-    order: 530
-    flow: detail
-    source: added        # PDF "예 → 완화 요인 선택". 선택지 목록이 PDF에 없음
-    text: 어떤 때 증상이 나아지나요?
-    type: choice
-    required: false
-    todo: true
-    answer_options: []
-    enable_when: [{question: N10, operator: "=", answer: "yes"}]
-  - link_id: N11
-    order: 540
-    flow: detail
-    source: team_pdf
-    text: 증상을 줄이기 위해 약을 먹거나 처치를 했나요?
-    type: choice
-    required: false
-    answer_options: *yes_no
-    enable_when: *nonemergency
-  - link_id: N11-1
-    order: 550
-    flow: detail
-    source: added        # PDF "예 → 약·처치·효과 확인" 중 약·처치
-    text: 어떤 약이나 처치를 했나요?
-    type: string
-    required: false
-    enable_when: [{question: N11, operator: "=", answer: "yes"}]
-  - link_id: N11-2
-    order: 560
-    flow: detail
-    source: added        # PDF "예 → 약·처치·효과 확인" 중 효과
-    text: 약이나 처치 후 증상은 어땠나요?
-    type: choice
-    required: false
-    answer_options:
-      - {code: better, display: 좋아짐}
-      - {code: same, display: 그대로}
-      - {code: worse, display: 나빠짐}
-      - {code: unknown, display: 모름}
-    enable_when: [{question: N11, operator: "=", answer: "yes"}]
-  - link_id: N12
-    order: 570
-    flow: detail
-    source: team_pdf
-    text: 현재 증상으로 일상생활에 어려움이 있나요?
-    type: choice
-    required: false
-    answer_options: *yes_no
-    enable_when: *nonemergency
-  - link_id: N12-1
-    order: 580
-    flow: detail
-    source: added        # PDF "예 → 수면·식사·보행·업무 등 확인". 복수 선택 미지원 → 가장 불편한 것 하나
-    text: 가장 불편한 것 하나를 골라 주세요.
-    type: choice
-    required: false
-    answer_options:
-      - {code: sleep, display: 수면}
-      - {code: meal, display: 식사}
-      - {code: walking, display: 보행}
-      - {code: work_study, display: 업무·학업}
-      - {code: other, display: 기타}
-    enable_when: [{question: N12, operator: "=", answer: "yes"}]
-  - link_id: N13
-    order: 590
-    flow: detail
-    source: team_pdf
-    text: 현재 증상과 관련된 기존 질환이 있나요?
-    type: choice
-    required: false
-    answer_options: *yes_no
-    enable_when: *nonemergency
-  - link_id: N13-1
-    order: 600
-    flow: detail
-    source: added        # PDF "예 → 질환명 선택 또는 입력". 선택 목록이 없어 입력만
-    text: 어떤 질환인가요?
-    type: string
-    required: false
-    enable_when: [{question: N13, operator: "=", answer: "yes"}]
-
-  # ---------- pain (PDF "추가로 통증이 있는 경우") ----------
-  - link_id: P0
-    order: 700
     flow: pain
-    source: added        # PDF의 "통증이 있는 경우"를 묻는 문항
-    text: 통증이 있나요?
+    source: added        # PDF "통증 양상". 선택지는 통증 표현 구조(아픔 → 어디 → 어떻게 → 얼마나)의 '어떻게' 대표 표현
+    engine_condition: symptom_is_pain
+    text: 어떻게 아픈가요? 가장 가까운 것을 골라 주세요.
     type: choice
     required: false
-    answer_options: *yes_no
+    answer_options:
+      - {code: pq_stabbing, display: 찌르듯이·콕콕}
+      - {code: pq_throbbing, display: 욱신욱신·지끈지끈}
+      - {code: pq_squeezing, display: 쥐어짜듯이·조이듯이}
+      - {code: pq_burning, display: 화끈거리거나 따가움}
+      - {code: pq_dull, display: 뻐근하거나 묵직함}
+      - {code: pq_tingling, display: 저리거나 찌릿함}
+      - {code: other, display: 기타}
+      - {code: unknown, display: 잘 모르겠어요}
     enable_when: *nonemergency
   - link_id: P1
-    order: 710
+    order: 440
     flow: pain
     source: added        # PDF "통증 강도 0~10점"
+    engine_condition: symptom_is_pain
     text: 통증은 0~10점 중 몇 점인가요? (0 = 통증 없음, 10 = 상상할 수 있는 가장 심한 통증)
     type: choice
     required: false
@@ -481,27 +314,31 @@ items:
       - {code: pain_8, display: "8"}
       - {code: pain_9, display: "9"}
       - {code: pain_10, display: "10"}
-    enable_when: [{question: P0, operator: "=", answer: "yes"}]
-  - link_id: P2
-    order: 720
-    flow: pain
-    source: added        # PDF "통증 부위". body_part_ui 화면 그룹이 17개라 선택지 12개 제한을 넘음
-    text: 어디가 아픈가요?
+    enable_when: *nonemergency
+  - link_id: N12
+    order: 450
+    flow: detail
+    source: team_pdf     # PDF "현재 증상으로 일상생활에 어려움이 있나요?"를 정도로 묻는다(예/아니요 + N12-1을 하나로)
+    engine_condition: symptom_not_pain
+    text: "{symptom} 증상 때문에 일상생활이 얼마나 불편한가요?"
     type: choice
     required: false
-    todo: true
-    answer_options: []
-    enable_when: [{question: P0, operator: "=", answer: "yes"}]
-  - link_id: P3
-    order: 730
-    flow: pain
-    source: added        # PDF "통증 양상". 선택지 목록이 PDF에 없음
-    text: 어떻게 아픈가요?
+    answer_options:
+      - {code: impact_little, display: 거의 불편하지 않아요}
+      - {code: impact_some, display: 조금 불편해요}
+      - {code: impact_much, display: 일·공부·잠에 지장이 있어요}
+      - {code: impact_severe, display: 일상생활을 거의 못 해요}
+      - {code: unknown, display: 잘 모르겠어요}
+    enable_when: *nonemergency
+  - link_id: N7
+    order: 460
+    flow: detail
+    source: team_pdf
+    text: 시간이 지나면서 증상이 심해지고 있나요?
     type: choice
     required: false
-    todo: true
-    answer_options: []
-    enable_when: [{question: P0, operator: "=", answer: "yes"}]
+    answer_options: *yes_no_dontknow
+    enable_when: *nonemergency
 
   # ---------- fallback 되묻기 ----------
   # enable_when이 아니라 엔진 조건으로 낸다: N4로 찾은 증상이 fallback(ref.recommend_departments의
@@ -623,28 +460,11 @@ output_mappings:
   # 분석서
   - {from: answer, question: N4, when: any, slot: report.symptom}
   - {from: answer, question: N5-1, when: any, slot: report.onset}
-  - {from: answer, question: N6-1, when: any, slot: report.notes}
-  - {from: answer, question: N6-2, when: any, slot: report.notes}
-  - {from: answer, question: N7-1, when: any, slot: report.notes}
-  - {from: answer, question: N8-1, when: any, slot: report.notes}
-  - {from: answer, question: N11-2, when: any, slot: report.notes}
   - {from: answer, question: F3, when: any, slot: report.notes}
   # 상세
-  - {from: answer, question: N6, when: any, slot: detail.continuous}
   - {from: answer, question: N7, when: any, slot: detail.worsening}
-  - {from: answer, question: N8, when: any, slot: detail.prior_episode}
-  - {from: answer, question: N9, when: "no", slot: detail.aggravating, value: none}
-  - {from: answer, question: N9-1, when: any, slot: detail.aggravating}
-  - {from: answer, question: N10, when: "no", slot: detail.relieving, value: none}
-  - {from: answer, question: N10-1, when: any, slot: detail.relieving}
-  - {from: answer, question: N11, when: "no", slot: detail.self_treatment, value: none}
-  - {from: answer, question: N11-1, when: any, slot: detail.self_treatment}
-  - {from: answer, question: N12, when: "no", slot: detail.daily_impact, value: none}
-  - {from: answer, question: N12-1, when: any, slot: detail.daily_impact}
-  - {from: answer, question: N13, when: "no", slot: detail.related_condition, value: none}
-  - {from: answer, question: N13-1, when: any, slot: detail.related_condition}
+  - {from: answer, question: N12, when: any, slot: detail.daily_impact}   # 11/18 재설계: 불편 정도 하나로
   - {from: answer, question: P1, when: any, slot: detail.pain_score}
-  - {from: answer, question: P2, when: any, slot: detail.pain_site}
   - {from: answer, question: P3, when: any, slot: detail.pain_quality}
   # 흐름
   - {from: rule, rule_id: R-Q0-EMERGENCY, slot: flow.emergency_stop, value: "true"}

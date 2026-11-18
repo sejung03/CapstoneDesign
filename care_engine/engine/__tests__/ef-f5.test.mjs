@@ -27,10 +27,11 @@ test('F5 S1 회귀(시뮬레이터): 병원 찾기 문장 7문항 → search, �
   assert.equal(r.llmCalls.classify, 0);
 });
 
-test('F5 I1 회귀(시뮬레이터): sym_other → LLM 실패 → SYM_NOT_FOUND → N5…, 반복 없음, LLM 분류 1번', async () => {
+// 11/18: 첫 실패는 되묻기(SYM_RETRY_1), 가짜 사용자 '잘 모르겠어요' → 증상 모름
+test('F5 I1 회귀(시뮬레이터): sym_other → LLM 실패 → 되묻기 → N5-1…, 반복 없음, LLM 분류 1번', async () => {
   const r = await simulate(scenario('i1_other_llm_fail'));
-  assert.equal(r.asked.filter((id) => id === 'SYM_NOT_FOUND').length, 1);
-  assert.equal(r.asked[r.asked.indexOf('SYM_NOT_FOUND') + 1], 'N5');
+  assert.equal(r.asked.filter((id) => id === 'SYM_RETRY_1').length, 1);
+  assert.equal(r.asked[r.asked.indexOf('SYM_RETRY_1') + 1], 'N5-1'); // 11/18 재설계
   assert.ok(r.asked.includes('F2'));
   assert.equal(r.llmCalls.classify, 1);
   assert.equal(r.resultKind, 'recommend');

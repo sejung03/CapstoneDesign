@@ -91,3 +91,12 @@ export const SENSITIVE_CUE_BRANCHES = Object.freeze([
   {messageKey: 'crisis_notice_109', re: /(자살|자해|죽고싶|죽고십)/g, near: null, anywhere: null, selfOverride: false},
 ]);
 
+
+// ---- 11/18: 증상 되묻기(SYM_RETRY) ----
+/**
+ * 사전·LLM이 증상을 못 찾으면 바로 '증상 모름'으로 가지 않고 한 번 더 묻는다. 질문 ID는 `SYM_RETRY_<n>`(n = 그때까지의 사용자 메시지 수).
+ * 사용자가 대화창에 더 적으면(메시지 수 > n) 사전·LLM을 한 번 더 시도하고, 그래도 못 찾으면 SYM_NOT_FOUND(증상 모름)로 간다.
+ * 프론트는 답하지 않은 SYM_RETRY_<n>을 value:null로 계속 보낸다(RISK_CONFIRM과 같은 방식, care-adapter.mjs).
+ */
+export const SYM_RETRY_PREFIX = 'SYM_RETRY_';
+export const SYM_RETRY_ID_RE = /^SYM_RETRY_(\d{1,4})$/;

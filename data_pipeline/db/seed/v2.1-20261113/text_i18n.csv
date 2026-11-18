@@ -171,42 +171,10 @@ item,N1,en,Are you (or the patient) fully alert and able to act normally right n
 item,N1,uz,Hozir hushi joyida va odatdagidek harakat qila oladimi?,현재 의식이 또렷하고 정상적으로 활동할 수 있나요?,draft,v2.1-20261113
 item,N1,vi,Hiện tại có tỉnh táo và sinh hoạt bình thường được không?,현재 의식이 또렷하고 정상적으로 활동할 수 있나요?,draft,v2.1-20261113
 item,N1,zh,现在意识清醒并能正常活动吗？,현재 의식이 또렷하고 정상적으로 활동할 수 있나요?,draft,v2.1-20261113
-item,N10,en,Does the symptom ease with certain activities or situations?,특정 행동이나 상황에서 증상이 완화되나요?,draft,v2.1-20261113
-item,N10,uz,Muayyan harakat yoki vaziyatda belgi yengillashadimi?,특정 행동이나 상황에서 증상이 완화되나요?,draft,v2.1-20261113
-item,N10,vi,Triệu chứng có giảm khi làm việc gì hoặc trong tình huống nào không?,특정 행동이나 상황에서 증상이 완화되나요?,draft,v2.1-20261113
-item,N10,zh,在特定动作或情况下症状会缓解吗？,특정 행동이나 상황에서 증상이 완화되나요?,draft,v2.1-20261113
-item,N10-1,en,When does the symptom get better?,어떤 때 증상이 나아지나요?,draft,v2.1-20261113
-item,N10-1,uz,Belgi qachon yaxshilanadi?,어떤 때 증상이 나아지나요?,draft,v2.1-20261113
-item,N10-1,vi,Khi nào triệu chứng đỡ hơn?,어떤 때 증상이 나아지나요?,draft,v2.1-20261113
-item,N10-1,zh,什么时候症状会好转？,어떤 때 증상이 나아지나요?,draft,v2.1-20261113
-item,N11,en,Have you taken medicine or done anything to relieve the symptom?,증상을 줄이기 위해 약을 먹거나 처치를 했나요?,draft,v2.1-20261113
-item,N11,uz,Belgini kamaytirish uchun dori ichdingizmi yoki biror choralar ko'rdingizmi?,증상을 줄이기 위해 약을 먹거나 처치를 했나요?,draft,v2.1-20261113
-item,N11,vi,Bạn đã uống thuốc hoặc xử trí gì để giảm triệu chứng chưa?,증상을 줄이기 위해 약을 먹거나 처치를 했나요?,draft,v2.1-20261113
-item,N11,zh,为了缓解症状，有没有吃药或做过处理？,증상을 줄이기 위해 약을 먹거나 처치를 했나요?,draft,v2.1-20261113
-item,N11-1,en,What medicine or treatment did you use?,어떤 약이나 처치를 했나요?,draft,v2.1-20261113
-item,N11-1,uz,Qanday dori yoki choralar ko'rdingiz?,어떤 약이나 처치를 했나요?,draft,v2.1-20261113
-item,N11-1,vi,Bạn đã dùng thuốc hoặc cách xử trí nào?,어떤 약이나 처치를 했나요?,draft,v2.1-20261113
-item,N11-1,zh,用了什么药或处理？,어떤 약이나 처치를 했나요?,draft,v2.1-20261113
-item,N11-2,en,How was the symptom after the medicine or treatment?,약이나 처치 후 증상은 어땠나요?,draft,v2.1-20261113
-item,N11-2,uz,Dori yoki choradan keyin belgi qanday bo'ldi?,약이나 처치 후 증상은 어땠나요?,draft,v2.1-20261113
-item,N11-2,vi,"Sau khi dùng thuốc hoặc xử trí, triệu chứng thế nào?",약이나 처치 후 증상은 어땠나요?,draft,v2.1-20261113
-item,N11-2,zh,用药或处理后症状如何？,약이나 처치 후 증상은 어땠나요?,draft,v2.1-20261113
-item,N12,en,Does the symptom make daily life difficult right now?,현재 증상으로 일상생활에 어려움이 있나요?,draft,v2.1-20261113
-item,N12,uz,Hozirgi belgi kundalik hayotingizni qiyinlashtiryaptimi?,현재 증상으로 일상생활에 어려움이 있나요?,draft,v2.1-20261113
-item,N12,vi,Triệu chứng hiện tại có gây khó khăn cho sinh hoạt hằng ngày không?,현재 증상으로 일상생활에 어려움이 있나요?,draft,v2.1-20261113
-item,N12,zh,现在的症状是否影响日常生活？,현재 증상으로 일상생활에 어려움이 있나요?,draft,v2.1-20261113
-item,N12-1,en,Please choose the one thing that is hardest.,가장 불편한 것 하나를 골라 주세요.,draft,v2.1-20261113
-item,N12-1,uz,Eng qiyin bo'lgan bittasini tanlang.,가장 불편한 것 하나를 골라 주세요.,draft,v2.1-20261113
-item,N12-1,vi,Vui lòng chọn một điều khó khăn nhất.,가장 불편한 것 하나를 골라 주세요.,draft,v2.1-20261113
-item,N12-1,zh,请选择最不方便的一项。,가장 불편한 것 하나를 골라 주세요.,draft,v2.1-20261113
-item,N13,en,Do you have an existing condition related to this symptom?,현재 증상과 관련된 기존 질환이 있나요?,draft,v2.1-20261113
-item,N13,uz,Hozirgi belgiga bog'liq avvaldan bor kasallik bormi?,현재 증상과 관련된 기존 질환이 있나요?,draft,v2.1-20261113
-item,N13,vi,Có bệnh nền nào liên quan đến triệu chứng hiện tại không?,현재 증상과 관련된 기존 질환이 있나요?,draft,v2.1-20261113
-item,N13,zh,有与现在症状相关的既往疾病吗？,현재 증상과 관련된 기존 질환이 있나요?,draft,v2.1-20261113
-item,N13-1,en,What condition is it?,어떤 질환인가요?,draft,v2.1-20261113
-item,N13-1,uz,Qanday kasallik?,어떤 질환인가요?,draft,v2.1-20261113
-item,N13-1,vi,Đó là bệnh gì?,어떤 질환인가요?,draft,v2.1-20261113
-item,N13-1,zh,是什么疾病？,어떤 질환인가요?,draft,v2.1-20261113
+item,N12,en,How much is your daily life affected by your {symptom}?,{symptom} 증상 때문에 일상생활이 얼마나 불편한가요?,draft,v2.1-20261113
+item,N12,uz,{symptom} belgisi kundalik hayotingizga qanchalik xalaqit beryapti?,{symptom} 증상 때문에 일상생활이 얼마나 불편한가요?,draft,v2.1-20261113
+item,N12,vi,Triệu chứng {symptom} gây bất tiện cho sinh hoạt hằng ngày đến mức nào?,{symptom} 증상 때문에 일상생활이 얼마나 불편한가요?,draft,v2.1-20261113
+item,N12,zh,{symptom}症状对日常生活造成多大不便？,{symptom} 증상 때문에 일상생활이 얼마나 불편한가요?,draft,v2.1-20261113
 item,N2,en,Is breathing free of serious difficulty right now?,현재 숨쉬는 데 심한 어려움이 없나요?,draft,v2.1-20261113
 item,N2,uz,Hozir nafas olishda jiddiy qiyinchilik yo'qmi?,현재 숨쉬는 데 심한 어려움이 없나요?,draft,v2.1-20261113
 item,N2,vi,Hiện tại có thở mà không gặp khó khăn nghiêm trọng không?,현재 숨쉬는 데 심한 어려움이 없나요?,draft,v2.1-20261113
@@ -219,66 +187,22 @@ item,N4,en,What is the most bothersome symptom right now?,현재 가장 불편�
 item,N4,uz,Hozir eng bezovta qilayotgan belgi nima?,현재 가장 불편한 증상은 무엇인가요?,draft,v2.1-20261113
 item,N4,vi,Triệu chứng khó chịu nhất hiện nay là gì?,현재 가장 불편한 증상은 무엇인가요?,draft,v2.1-20261113
 item,N4,zh,现在最不舒服的症状是什么？,현재 가장 불편한 증상은 무엇인가요?,draft,v2.1-20261113
-item,N5,en,Did this symptom first start today?,이 증상이 오늘 처음 시작되었나요?,draft,v2.1-20261113
-item,N5,uz,Bu belgi bugun birinchi marta boshlandimi?,이 증상이 오늘 처음 시작되었나요?,draft,v2.1-20261113
-item,N5,vi,Triệu chứng này mới bắt đầu hôm nay phải không?,이 증상이 오늘 처음 시작되었나요?,draft,v2.1-20261113
-item,N5,zh,这个症状是今天才开始的吗？,이 증상이 오늘 처음 시작되었나요?,draft,v2.1-20261113
-item,N5-1,en,When did the symptoms start?,증상은 언제 시작되었나요?,draft,v2.1-20261113
-item,N5-1,uz,Belgilar qachon boshlandi?,증상은 언제 시작되었나요?,draft,v2.1-20261113
-item,N5-1,vi,Triệu chứng bắt đầu khi nào?,증상은 언제 시작되었나요?,draft,v2.1-20261113
-item,N5-1,zh,症状是什么时候开始的？,증상은 언제 시작되었나요?,draft,v2.1-20261113
-item,N6,en,Is the symptom still present?,증상이 계속 나타나고 있나요?,draft,v2.1-20261113
-item,N6,uz,Belgi hali ham davom etyaptimi?,증상이 계속 나타나고 있나요?,draft,v2.1-20261113
-item,N6,vi,Triệu chứng có còn đang xuất hiện không?,증상이 계속 나타나고 있나요?,draft,v2.1-20261113
-item,N6,zh,症状仍在持续吗？,증상이 계속 나타나고 있나요?,draft,v2.1-20261113
-item,N6-1,en,How often does the symptom occur?,증상이 얼마나 자주 나타나나요?,draft,v2.1-20261113
-item,N6-1,uz,Belgi qanchalik tez-tez paydo bo'ladi?,증상이 얼마나 자주 나타나나요?,draft,v2.1-20261113
-item,N6-1,vi,Triệu chứng xuất hiện thường xuyên như thế nào?,증상이 얼마나 자주 나타나나요?,draft,v2.1-20261113
-item,N6-1,zh,症状多久出现一次？,증상이 얼마나 자주 나타나나요?,draft,v2.1-20261113
-item,N6-2,en,"Once it starts, how long does the symptom last?",증상이 한 번 나타나면 얼마나 지속되나요?,draft,v2.1-20261113
-item,N6-2,uz,Belgi paydo bo'lganda qancha davom etadi?,증상이 한 번 나타나면 얼마나 지속되나요?,draft,v2.1-20261113
-item,N6-2,vi,"Mỗi lần xuất hiện, triệu chứng kéo dài bao lâu?",증상이 한 번 나타나면 얼마나 지속되나요?,draft,v2.1-20261113
-item,N6-2,zh,症状每次出现会持续多久？,증상이 한 번 나타나면 얼마나 지속되나요?,draft,v2.1-20261113
+item,N5-1,en,When did your {symptom} start?,{symptom} 증상은 언제부터 있었나요?,draft,v2.1-20261113
+item,N5-1,uz,{symptom} belgisi qachondan beri bor?,{symptom} 증상은 언제부터 있었나요?,draft,v2.1-20261113
+item,N5-1,vi,Triệu chứng {symptom} bắt đầu từ khi nào?,{symptom} 증상은 언제부터 있었나요?,draft,v2.1-20261113
+item,N5-1,zh,{symptom}症状是从什么时候开始的？,{symptom} 증상은 언제부터 있었나요?,draft,v2.1-20261113
 item,N7,en,Is the symptom getting worse over time?,시간이 지나면서 증상이 심해지고 있나요?,draft,v2.1-20261113
 item,N7,uz,Vaqt o'tishi bilan belgi kuchayyaptimi?,시간이 지나면서 증상이 심해지고 있나요?,draft,v2.1-20261113
 item,N7,vi,Triệu chứng có nặng dần theo thời gian không?,시간이 지나면서 증상이 심해지고 있나요?,draft,v2.1-20261113
 item,N7,zh,症状是否随着时间在加重？,시간이 지나면서 증상이 심해지고 있나요?,draft,v2.1-20261113
-item,N7-1,en,Since when has it been getting worse?,언제부터 심해졌나요?,draft,v2.1-20261113
-item,N7-1,uz,Qachondan beri kuchaydi?,언제부터 심해졌나요?,draft,v2.1-20261113
-item,N7-1,vi,Nặng hơn từ khi nào?,언제부터 심해졌나요?,draft,v2.1-20261113
-item,N7-1,zh,从什么时候开始加重的？,언제부터 심해졌나요?,draft,v2.1-20261113
-item,N8,en,Have you had similar symptoms before?,이전에도 비슷한 증상을 경험한 적이 있나요?,draft,v2.1-20261113
-item,N8,uz,Ilgari ham shunga o'xshash belgilar bo'lganmi?,이전에도 비슷한 증상을 경험한 적이 있나요?,draft,v2.1-20261113
-item,N8,vi,Trước đây đã từng có triệu chứng tương tự chưa?,이전에도 비슷한 증상을 경험한 적이 있나요?,draft,v2.1-20261113
-item,N8,zh,以前有过类似的症状吗？,이전에도 비슷한 증상을 경험한 적이 있나요?,draft,v2.1-20261113
-item,N8-1,en,Is anything different from before?,이전과 다른 점이 있나요?,draft,v2.1-20261113
-item,N8-1,uz,Avvalgidan farqli tomoni bormi?,이전과 다른 점이 있나요?,draft,v2.1-20261113
-item,N8-1,vi,Có điểm nào khác so với trước không?,이전과 다른 점이 있나요?,draft,v2.1-20261113
-item,N8-1,zh,和以前有什么不同吗？,이전과 다른 점이 있나요?,draft,v2.1-20261113
-item,N9,en,Does the symptom get worse with certain activities or situations?,특정 행동이나 상황에서 증상이 심해지나요?,draft,v2.1-20261113
-item,N9,uz,Muayyan harakat yoki vaziyatda belgi kuchayadimi?,특정 행동이나 상황에서 증상이 심해지나요?,draft,v2.1-20261113
-item,N9,vi,Triệu chứng có nặng hơn khi làm việc gì hoặc trong tình huống nào không?,특정 행동이나 상황에서 증상이 심해지나요?,draft,v2.1-20261113
-item,N9,zh,在特定动作或情况下症状会加重吗？,특정 행동이나 상황에서 증상이 심해지나요?,draft,v2.1-20261113
-item,N9-1,en,When does the symptom get worse?,어떤 때 증상이 심해지나요?,draft,v2.1-20261113
-item,N9-1,uz,Belgi qachon kuchayadi?,어떤 때 증상이 심해지나요?,draft,v2.1-20261113
-item,N9-1,vi,Khi nào triệu chứng nặng hơn?,어떤 때 증상이 심해지나요?,draft,v2.1-20261113
-item,N9-1,zh,什么时候症状会加重？,어떤 때 증상이 심해지나요?,draft,v2.1-20261113
-item,P0,en,Is there any pain?,통증이 있나요?,draft,v2.1-20261113
-item,P0,uz,Og'riq bormi?,통증이 있나요?,draft,v2.1-20261113
-item,P0,vi,Có bị đau không?,통증이 있나요?,draft,v2.1-20261113
-item,P0,zh,有疼痛吗？,통증이 있나요?,draft,v2.1-20261113
 item,P1,en,"On a scale of 0 to 10, how bad is the pain? (0 = no pain, 10 = the worst pain imaginable)","통증은 0~10점 중 몇 점인가요? (0 = 통증 없음, 10 = 상상할 수 있는 가장 심한 통증)",draft,v2.1-20261113
 item,P1,uz,"Og'riq 0 dan 10 gacha necha ball? (0 = og'riq yo'q, 10 = tasavvur qilish mumkin bo'lgan eng kuchli og'riq)","통증은 0~10점 중 몇 점인가요? (0 = 통증 없음, 10 = 상상할 수 있는 가장 심한 통증)",draft,v2.1-20261113
 item,P1,vi,"Mức độ đau từ 0 đến 10 là bao nhiêu? (0 = không đau, 10 = đau dữ dội nhất có thể tưởng tượng)","통증은 0~10점 중 몇 점인가요? (0 = 통증 없음, 10 = 상상할 수 있는 가장 심한 통증)",draft,v2.1-20261113
 item,P1,zh,疼痛在0~10分中是几分？（0 = 不痛，10 = 能想象到的最剧烈的疼痛）,"통증은 0~10점 중 몇 점인가요? (0 = 통증 없음, 10 = 상상할 수 있는 가장 심한 통증)",draft,v2.1-20261113
-item,P2,en,Where does it hurt?,어디가 아픈가요?,draft,v2.1-20261113
-item,P2,uz,Qayer og'riyapti?,어디가 아픈가요?,draft,v2.1-20261113
-item,P2,vi,Đau ở đâu?,어디가 아픈가요?,draft,v2.1-20261113
-item,P2,zh,哪里痛？,어디가 아픈가요?,draft,v2.1-20261113
-item,P3,en,What does the pain feel like?,어떻게 아픈가요?,draft,v2.1-20261113
-item,P3,uz,Og'riq qanday?,어떻게 아픈가요?,draft,v2.1-20261113
-item,P3,vi,Đau như thế nào?,어떻게 아픈가요?,draft,v2.1-20261113
-item,P3,zh,是怎样的疼痛？,어떻게 아픈가요?,draft,v2.1-20261113
+item,P3,en,What does the pain feel like? Choose the closest one.,어떻게 아픈가요? 가장 가까운 것을 골라 주세요.,draft,v2.1-20261113
+item,P3,uz,Qanday og'riyapti? Eng yaqinini tanlang.,어떻게 아픈가요? 가장 가까운 것을 골라 주세요.,draft,v2.1-20261113
+item,P3,vi,Bạn đau như thế nào? Hãy chọn mục gần nhất.,어떻게 아픈가요? 가장 가까운 것을 골라 주세요.,draft,v2.1-20261113
+item,P3,zh,是怎样的疼痛？请选择最接近的一项。,어떻게 아픈가요? 가장 가까운 것을 골라 주세요.,draft,v2.1-20261113
 item,Q0,en,Do you think this is an emergency that needs a 119 call right now?,현재 119 신고가 필요하다고 생각되는 응급 상황인가요?,draft,v2.1-20261113
 item,Q0,uz,Hozir 119 ga qo'ng'iroq qilish kerak bo'lgan favqulodda holat deb o'ylaysizmi?,현재 119 신고가 필요하다고 생각되는 응급 상황인가요?,draft,v2.1-20261113
 item,Q0,vi,Bạn có nghĩ đây là tình huống khẩn cấp cần gọi 119 ngay bây giờ không?,현재 119 신고가 필요하다고 생각되는 응급 상황인가요?,draft,v2.1-20261113
@@ -419,74 +343,26 @@ option,F2:yes,en,Yes,예,draft,v2.1-20261113
 option,F2:yes,uz,Ha,예,draft,v2.1-20261113
 option,F2:yes,vi,Có,예,draft,v2.1-20261113
 option,F2:yes,zh,是,예,draft,v2.1-20261113
-option,N10:no,en,No,아니요,draft,v2.1-20261113
-option,N10:no,uz,Yo'q,아니요,draft,v2.1-20261113
-option,N10:no,vi,Không,아니요,draft,v2.1-20261113
-option,N10:no,zh,否,아니요,draft,v2.1-20261113
-option,N10:yes,en,Yes,예,draft,v2.1-20261113
-option,N10:yes,uz,Ha,예,draft,v2.1-20261113
-option,N10:yes,vi,Có,예,draft,v2.1-20261113
-option,N10:yes,zh,是,예,draft,v2.1-20261113
-option,N11-2:better,en,Got better,좋아짐,draft,v2.1-20261113
-option,N11-2:better,uz,Yaxshilandi,좋아짐,draft,v2.1-20261113
-option,N11-2:better,vi,Đỡ hơn,좋아짐,draft,v2.1-20261113
-option,N11-2:better,zh,好转,좋아짐,draft,v2.1-20261113
-option,N11-2:same,en,No change,그대로,draft,v2.1-20261113
-option,N11-2:same,uz,O'zgarmadi,그대로,draft,v2.1-20261113
-option,N11-2:same,vi,Không thay đổi,그대로,draft,v2.1-20261113
-option,N11-2:same,zh,没有变化,그대로,draft,v2.1-20261113
-option,N11-2:unknown,en,Don't know,모름,draft,v2.1-20261113
-option,N11-2:unknown,uz,Bilmayman,모름,draft,v2.1-20261113
-option,N11-2:unknown,vi,Không biết,모름,draft,v2.1-20261113
-option,N11-2:unknown,zh,不知道,모름,draft,v2.1-20261113
-option,N11-2:worse,en,Got worse,나빠짐,draft,v2.1-20261113
-option,N11-2:worse,uz,Yomonlashdi,나빠짐,draft,v2.1-20261113
-option,N11-2:worse,vi,Nặng hơn,나빠짐,draft,v2.1-20261113
-option,N11-2:worse,zh,变差,나빠짐,draft,v2.1-20261113
-option,N11:no,en,No,아니요,draft,v2.1-20261113
-option,N11:no,uz,Yo'q,아니요,draft,v2.1-20261113
-option,N11:no,vi,Không,아니요,draft,v2.1-20261113
-option,N11:no,zh,否,아니요,draft,v2.1-20261113
-option,N11:yes,en,Yes,예,draft,v2.1-20261113
-option,N11:yes,uz,Ha,예,draft,v2.1-20261113
-option,N11:yes,vi,Có,예,draft,v2.1-20261113
-option,N11:yes,zh,是,예,draft,v2.1-20261113
-option,N12-1:meal,en,Eating,식사,draft,v2.1-20261113
-option,N12-1:meal,uz,Ovqatlanish,식사,draft,v2.1-20261113
-option,N12-1:meal,vi,Ăn uống,식사,draft,v2.1-20261113
-option,N12-1:meal,zh,进食,식사,draft,v2.1-20261113
-option,N12-1:other,en,Other,기타,draft,v2.1-20261113
-option,N12-1:other,uz,Boshqa,기타,draft,v2.1-20261113
-option,N12-1:other,vi,Khác,기타,draft,v2.1-20261113
-option,N12-1:other,zh,其他,기타,draft,v2.1-20261113
-option,N12-1:sleep,en,Sleep,수면,draft,v2.1-20261113
-option,N12-1:sleep,uz,Uyqu,수면,draft,v2.1-20261113
-option,N12-1:sleep,vi,Giấc ngủ,수면,draft,v2.1-20261113
-option,N12-1:sleep,zh,睡眠,수면,draft,v2.1-20261113
-option,N12-1:walking,en,Walking,보행,draft,v2.1-20261113
-option,N12-1:walking,uz,Yurish,보행,draft,v2.1-20261113
-option,N12-1:walking,vi,Đi lại,보행,draft,v2.1-20261113
-option,N12-1:walking,zh,行走,보행,draft,v2.1-20261113
-option,N12-1:work_study,en,Work or study,업무·학업,draft,v2.1-20261113
-option,N12-1:work_study,uz,Ish·o'qish,업무·학업,draft,v2.1-20261113
-option,N12-1:work_study,vi,Công việc·học tập,업무·학업,draft,v2.1-20261113
-option,N12-1:work_study,zh,工作·学习,업무·학업,draft,v2.1-20261113
-option,N12:no,en,No,아니요,draft,v2.1-20261113
-option,N12:no,uz,Yo'q,아니요,draft,v2.1-20261113
-option,N12:no,vi,Không,아니요,draft,v2.1-20261113
-option,N12:no,zh,否,아니요,draft,v2.1-20261113
-option,N12:yes,en,Yes,예,draft,v2.1-20261113
-option,N12:yes,uz,Ha,예,draft,v2.1-20261113
-option,N12:yes,vi,Có,예,draft,v2.1-20261113
-option,N12:yes,zh,是,예,draft,v2.1-20261113
-option,N13:no,en,No,아니요,draft,v2.1-20261113
-option,N13:no,uz,Yo'q,아니요,draft,v2.1-20261113
-option,N13:no,vi,Không,아니요,draft,v2.1-20261113
-option,N13:no,zh,否,아니요,draft,v2.1-20261113
-option,N13:yes,en,Yes,예,draft,v2.1-20261113
-option,N13:yes,uz,Ha,예,draft,v2.1-20261113
-option,N13:yes,vi,Có,예,draft,v2.1-20261113
-option,N13:yes,zh,是,예,draft,v2.1-20261113
+option,N12:impact_little,en,Hardly at all,거의 불편하지 않아요,draft,v2.1-20261113
+option,N12:impact_little,uz,Deyarli xalaqit bermaydi,거의 불편하지 않아요,draft,v2.1-20261113
+option,N12:impact_little,vi,Hầu như không bất tiện,거의 불편하지 않아요,draft,v2.1-20261113
+option,N12:impact_little,zh,几乎没有不便,거의 불편하지 않아요,draft,v2.1-20261113
+option,N12:impact_much,en,"It gets in the way of work, study or sleep",일·공부·잠에 지장이 있어요,draft,v2.1-20261113
+option,N12:impact_much,uz,"Ish, o'qish yoki uyquga xalaqit beradi",일·공부·잠에 지장이 있어요,draft,v2.1-20261113
+option,N12:impact_much,vi,"Ảnh hưởng đến công việc, học tập hoặc giấc ngủ",일·공부·잠에 지장이 있어요,draft,v2.1-20261113
+option,N12:impact_much,zh,影响工作、学习或睡眠,일·공부·잠에 지장이 있어요,draft,v2.1-20261113
+option,N12:impact_severe,en,I can hardly manage daily life,일상생활을 거의 못 해요,draft,v2.1-20261113
+option,N12:impact_severe,uz,Kundalik hayotni deyarli eplay olmayapman,일상생활을 거의 못 해요,draft,v2.1-20261113
+option,N12:impact_severe,vi,Gần như không thể sinh hoạt bình thường,일상생활을 거의 못 해요,draft,v2.1-20261113
+option,N12:impact_severe,zh,几乎无法正常生活,일상생활을 거의 못 해요,draft,v2.1-20261113
+option,N12:impact_some,en,A little,조금 불편해요,draft,v2.1-20261113
+option,N12:impact_some,uz,Biroz xalaqit beradi,조금 불편해요,draft,v2.1-20261113
+option,N12:impact_some,vi,Hơi bất tiện,조금 불편해요,draft,v2.1-20261113
+option,N12:impact_some,zh,有点不便,조금 불편해요,draft,v2.1-20261113
+option,N12:unknown,en,I'm not sure,잘 모르겠어요,draft,v2.1-20261113
+option,N12:unknown,uz,Bilmayman,잘 모르겠어요,draft,v2.1-20261113
+option,N12:unknown,vi,Tôi không chắc,잘 모르겠어요,draft,v2.1-20261113
+option,N12:unknown,zh,不太清楚,잘 모르겠어요,draft,v2.1-20261113
 option,N1:no,en,"No, something is wrong","아니요, 이상해요",draft,v2.1-20261113
 option,N1:no,uz,"Yo'q, nimadir noto'g'ri","아니요, 이상해요",draft,v2.1-20261113
 option,N1:no,vi,"Không, có gì đó không ổn","아니요, 이상해요",draft,v2.1-20261113
@@ -551,102 +427,18 @@ option,N5-1:unknown,en,Don't know,모름,draft,v2.1-20261113
 option,N5-1:unknown,uz,Bilmayman,모름,draft,v2.1-20261113
 option,N5-1:unknown,vi,Không biết,모름,draft,v2.1-20261113
 option,N5-1:unknown,zh,不知道,모름,draft,v2.1-20261113
-option,N5:no,en,No,아니요,draft,v2.1-20261113
-option,N5:no,uz,Yo'q,아니요,draft,v2.1-20261113
-option,N5:no,vi,Không,아니요,draft,v2.1-20261113
-option,N5:no,zh,否,아니요,draft,v2.1-20261113
-option,N5:yes,en,Yes,예,draft,v2.1-20261113
-option,N5:yes,uz,Ha,예,draft,v2.1-20261113
-option,N5:yes,vi,Có,예,draft,v2.1-20261113
-option,N5:yes,zh,是,예,draft,v2.1-20261113
-option,N6-1:freq_daily,en,Once a day,하루 한 번,draft,v2.1-20261113
-option,N6-1:freq_daily,uz,Kuniga bir marta,하루 한 번,draft,v2.1-20261113
-option,N6-1:freq_daily,vi,Một lần một ngày,하루 한 번,draft,v2.1-20261113
-option,N6-1:freq_daily,zh,一天一次,하루 한 번,draft,v2.1-20261113
-option,N6-1:freq_few_days,en,Once every few days,며칠에 한 번,draft,v2.1-20261113
-option,N6-1:freq_few_days,uz,Bir necha kunda bir marta,며칠에 한 번,draft,v2.1-20261113
-option,N6-1:freq_few_days,vi,Vài ngày một lần,며칠에 한 번,draft,v2.1-20261113
-option,N6-1:freq_few_days,zh,几天一次,며칠에 한 번,draft,v2.1-20261113
-option,N6-1:freq_many_daily,en,Several times a day,하루 여러 번,draft,v2.1-20261113
-option,N6-1:freq_many_daily,uz,Kuniga bir necha marta,하루 여러 번,draft,v2.1-20261113
-option,N6-1:freq_many_daily,vi,Nhiều lần một ngày,하루 여러 번,draft,v2.1-20261113
-option,N6-1:freq_many_daily,zh,一天多次,하루 여러 번,draft,v2.1-20261113
-option,N6-1:freq_sometimes,en,Occasionally,가끔,draft,v2.1-20261113
-option,N6-1:freq_sometimes,uz,Ba'zan,가끔,draft,v2.1-20261113
-option,N6-1:freq_sometimes,vi,Thỉnh thoảng,가끔,draft,v2.1-20261113
-option,N6-1:freq_sometimes,zh,偶尔,가끔,draft,v2.1-20261113
-option,N6-1:unknown,en,Don't know,모름,draft,v2.1-20261113
-option,N6-1:unknown,uz,Bilmayman,모름,draft,v2.1-20261113
-option,N6-1:unknown,vi,Không biết,모름,draft,v2.1-20261113
-option,N6-1:unknown,zh,不知道,모름,draft,v2.1-20261113
-option,N6:no,en,No,아니요,draft,v2.1-20261113
-option,N6:no,uz,Yo'q,아니요,draft,v2.1-20261113
-option,N6:no,vi,Không,아니요,draft,v2.1-20261113
-option,N6:no,zh,否,아니요,draft,v2.1-20261113
-option,N6:yes,en,Yes,예,draft,v2.1-20261113
-option,N6:yes,uz,Ha,예,draft,v2.1-20261113
-option,N6:yes,vi,Có,예,draft,v2.1-20261113
-option,N6:yes,zh,是,예,draft,v2.1-20261113
-option,N7-1:onset_1_3d,en,1–3 days ago,1~3일 전,draft,v2.1-20261113
-option,N7-1:onset_1_3d,uz,1–3 kun oldin,1~3일 전,draft,v2.1-20261113
-option,N7-1:onset_1_3d,vi,1–3 ngày trước,1~3일 전,draft,v2.1-20261113
-option,N7-1:onset_1_3d,zh,1~3天前,1~3일 전,draft,v2.1-20261113
-option,N7-1:onset_1_4w,en,1–4 weeks ago,1~4주 전,draft,v2.1-20261113
-option,N7-1:onset_1_4w,uz,1–4 hafta oldin,1~4주 전,draft,v2.1-20261113
-option,N7-1:onset_1_4w,vi,1–4 tuần trước,1~4주 전,draft,v2.1-20261113
-option,N7-1:onset_1_4w,zh,1~4周前,1~4주 전,draft,v2.1-20261113
-option,N7-1:onset_4_7d,en,4–7 days ago,4~7일 전,draft,v2.1-20261113
-option,N7-1:onset_4_7d,uz,4–7 kun oldin,4~7일 전,draft,v2.1-20261113
-option,N7-1:onset_4_7d,vi,4–7 ngày trước,4~7일 전,draft,v2.1-20261113
-option,N7-1:onset_4_7d,zh,4~7天前,4~7일 전,draft,v2.1-20261113
-option,N7-1:onset_gt1m,en,1 month or more,1달 이상,draft,v2.1-20261113
-option,N7-1:onset_gt1m,uz,1 oy yoki undan ko'p,1달 이상,draft,v2.1-20261113
-option,N7-1:onset_gt1m,vi,1 tháng trở lên,1달 이상,draft,v2.1-20261113
-option,N7-1:onset_gt1m,zh,1个月以上,1달 이상,draft,v2.1-20261113
-option,N7-1:onset_lt1h,en,Within 1 hour,1시간 이내,draft,v2.1-20261113
-option,N7-1:onset_lt1h,uz,1 soat ichida,1시간 이내,draft,v2.1-20261113
-option,N7-1:onset_lt1h,vi,Trong vòng 1 giờ,1시간 이내,draft,v2.1-20261113
-option,N7-1:onset_lt1h,zh,1小时以内,1시간 이내,draft,v2.1-20261113
-option,N7-1:onset_today,en,Today,오늘,draft,v2.1-20261113
-option,N7-1:onset_today,uz,Bugun,오늘,draft,v2.1-20261113
-option,N7-1:onset_today,vi,Hôm nay,오늘,draft,v2.1-20261113
-option,N7-1:onset_today,zh,今天,오늘,draft,v2.1-20261113
-option,N7-1:unknown,en,Don't know,모름,draft,v2.1-20261113
-option,N7-1:unknown,uz,Bilmayman,모름,draft,v2.1-20261113
-option,N7-1:unknown,vi,Không biết,모름,draft,v2.1-20261113
-option,N7-1:unknown,zh,不知道,모름,draft,v2.1-20261113
 option,N7:no,en,No,아니요,draft,v2.1-20261113
 option,N7:no,uz,Yo'q,아니요,draft,v2.1-20261113
 option,N7:no,vi,Không,아니요,draft,v2.1-20261113
 option,N7:no,zh,否,아니요,draft,v2.1-20261113
+option,N7:unknown,en,I'm not sure,잘 모르겠어요,draft,v2.1-20261113
+option,N7:unknown,uz,Bilmayman,잘 모르겠어요,draft,v2.1-20261113
+option,N7:unknown,vi,Tôi không chắc,잘 모르겠어요,draft,v2.1-20261113
+option,N7:unknown,zh,不太清楚,잘 모르겠어요,draft,v2.1-20261113
 option,N7:yes,en,Yes,예,draft,v2.1-20261113
 option,N7:yes,uz,Ha,예,draft,v2.1-20261113
 option,N7:yes,vi,Có,예,draft,v2.1-20261113
 option,N7:yes,zh,是,예,draft,v2.1-20261113
-option,N8:no,en,No,아니요,draft,v2.1-20261113
-option,N8:no,uz,Yo'q,아니요,draft,v2.1-20261113
-option,N8:no,vi,Không,아니요,draft,v2.1-20261113
-option,N8:no,zh,否,아니요,draft,v2.1-20261113
-option,N8:yes,en,Yes,예,draft,v2.1-20261113
-option,N8:yes,uz,Ha,예,draft,v2.1-20261113
-option,N8:yes,vi,Có,예,draft,v2.1-20261113
-option,N8:yes,zh,是,예,draft,v2.1-20261113
-option,N9:no,en,No,아니요,draft,v2.1-20261113
-option,N9:no,uz,Yo'q,아니요,draft,v2.1-20261113
-option,N9:no,vi,Không,아니요,draft,v2.1-20261113
-option,N9:no,zh,否,아니요,draft,v2.1-20261113
-option,N9:yes,en,Yes,예,draft,v2.1-20261113
-option,N9:yes,uz,Ha,예,draft,v2.1-20261113
-option,N9:yes,vi,Có,예,draft,v2.1-20261113
-option,N9:yes,zh,是,예,draft,v2.1-20261113
-option,P0:no,en,No,아니요,draft,v2.1-20261113
-option,P0:no,uz,Yo'q,아니요,draft,v2.1-20261113
-option,P0:no,vi,Không,아니요,draft,v2.1-20261113
-option,P0:no,zh,否,아니요,draft,v2.1-20261113
-option,P0:yes,en,Yes,예,draft,v2.1-20261113
-option,P0:yes,uz,Ha,예,draft,v2.1-20261113
-option,P0:yes,vi,Có,예,draft,v2.1-20261113
-option,P0:yes,zh,是,예,draft,v2.1-20261113
 option,P1:pain_0,en,0,0,draft,v2.1-20261113
 option,P1:pain_0,uz,0,0,draft,v2.1-20261113
 option,P1:pain_0,vi,0,0,draft,v2.1-20261113
@@ -691,6 +483,38 @@ option,P1:pain_9,en,9,9,draft,v2.1-20261113
 option,P1:pain_9,uz,9,9,draft,v2.1-20261113
 option,P1:pain_9,vi,9,9,draft,v2.1-20261113
 option,P1:pain_9,zh,9,9,draft,v2.1-20261113
+option,P3:other,en,Other,기타,draft,v2.1-20261113
+option,P3:other,uz,Boshqa,기타,draft,v2.1-20261113
+option,P3:other,vi,Khác,기타,draft,v2.1-20261113
+option,P3:other,zh,其他,기타,draft,v2.1-20261113
+option,P3:pq_burning,en,Burning or stinging,화끈거리거나 따가움,draft,v2.1-20261113
+option,P3:pq_burning,uz,Kuydirib yoki achishtirib,화끈거리거나 따가움,draft,v2.1-20261113
+option,P3:pq_burning,vi,Nóng rát hoặc xót,화끈거리거나 따가움,draft,v2.1-20261113
+option,P3:pq_burning,zh,火辣辣或刺痛,화끈거리거나 따가움,draft,v2.1-20261113
+option,P3:pq_dull,en,Dull ache or heaviness,뻐근하거나 묵직함,draft,v2.1-20261113
+option,P3:pq_dull,uz,Zirqirab yoki og'irlik bilan,뻐근하거나 묵직함,draft,v2.1-20261113
+option,P3:pq_dull,vi,Âm ỉ hoặc nặng nề,뻐근하거나 묵직함,draft,v2.1-20261113
+option,P3:pq_dull,zh,酸胀或沉重,뻐근하거나 묵직함,draft,v2.1-20261113
+option,P3:pq_squeezing,en,Squeezing or tightening,쥐어짜듯이·조이듯이,draft,v2.1-20261113
+option,P3:pq_squeezing,uz,"Siqib, qisib og'riydi",쥐어짜듯이·조이듯이,draft,v2.1-20261113
+option,P3:pq_squeezing,vi,"Như bị bóp chặt, thắt lại",쥐어짜듯이·조이듯이,draft,v2.1-20261113
+option,P3:pq_squeezing,zh,绞痛·紧缩感,쥐어짜듯이·조이듯이,draft,v2.1-20261113
+option,P3:pq_stabbing,en,Stabbing or pricking,찌르듯이·콕콕,draft,v2.1-20261113
+option,P3:pq_stabbing,uz,"Sanchiydigan, igna sanchgandek",찌르듯이·콕콕,draft,v2.1-20261113
+option,P3:pq_stabbing,vi,"Như bị đâm, nhói từng cơn",찌르듯이·콕콕,draft,v2.1-20261113
+option,P3:pq_stabbing,zh,刺痛·一阵阵扎着疼,찌르듯이·콕콕,draft,v2.1-20261113
+option,P3:pq_throbbing,en,Throbbing or pounding,욱신욱신·지끈지끈,draft,v2.1-20261113
+option,P3:pq_throbbing,uz,"Lo'qillab, tepib og'riydi",욱신욱신·지끈지끈,draft,v2.1-20261113
+option,P3:pq_throbbing,vi,"Đau nhức theo nhịp, giật giật",욱신욱신·지끈지끈,draft,v2.1-20261113
+option,P3:pq_throbbing,zh,一跳一跳地痛·阵阵胀痛,욱신욱신·지끈지끈,draft,v2.1-20261113
+option,P3:pq_tingling,en,"Numb, tingling or electric",저리거나 찌릿함,draft,v2.1-20261113
+option,P3:pq_tingling,uz,Uvishib yoki tok urgandek,저리거나 찌릿함,draft,v2.1-20261113
+option,P3:pq_tingling,vi,Tê hoặc như điện giật,저리거나 찌릿함,draft,v2.1-20261113
+option,P3:pq_tingling,zh,发麻或触电感,저리거나 찌릿함,draft,v2.1-20261113
+option,P3:unknown,en,I'm not sure,잘 모르겠어요,draft,v2.1-20261113
+option,P3:unknown,uz,Bilmayman,잘 모르겠어요,draft,v2.1-20261113
+option,P3:unknown,vi,Tôi không chắc,잘 모르겠어요,draft,v2.1-20261113
+option,P3:unknown,zh,不太清楚,잘 모르겠어요,draft,v2.1-20261113
 option,Q0:no,en,No,아니요,draft,v2.1-20261113
 option,Q0:no,uz,Yo'q,아니요,draft,v2.1-20261113
 option,Q0:no,vi,Không,아니요,draft,v2.1-20261113
@@ -1747,6 +1571,14 @@ template,q.sensitive_choice.label,en,"Please review the information. If you need
 template,q.sensitive_choice.label,uz,"Ma'lumotni ko'rib chiqing. Belgilar bo'yicha maslahat kerak bo'lsa, davom ettirishingiz mumkin.",안내를 확인해 주세요. 증상 상담이 필요하시면 계속할 수 있습니다.,draft,v2.1-20261113
 template,q.sensitive_choice.label,vi,"Vui lòng xem thông tin trên. Nếu cần tư vấn triệu chứng, bạn có thể tiếp tục.",안내를 확인해 주세요. 증상 상담이 필요하시면 계속할 수 있습니다.,draft,v2.1-20261113
 template,q.sensitive_choice.label,zh,请确认以上信息。如需症状咨询，可以继续。,안내를 확인해 주세요. 증상 상담이 필요하시면 계속할 수 있습니다.,draft,v2.1-20261113
+template,q.sym_area_pick.label,en,Is any of these close to your symptom?,이 중에 가까운 증상이 있나요?,draft,v2.1-20261113
+template,q.sym_area_pick.label,uz,Bularning orasida sizga yaqin belgi bormi?,이 중에 가까운 증상이 있나요?,draft,v2.1-20261113
+template,q.sym_area_pick.label,vi,Có triệu chứng nào gần giống với bạn không?,이 중에 가까운 증상이 있나요?,draft,v2.1-20261113
+template,q.sym_area_pick.label,zh,这些中有接近您症状的吗？,이 중에 가까운 증상이 있나요?,draft,v2.1-20261113
+template,q.sym_area_pick.other,en,Not listed here,여기 없어요,draft,v2.1-20261113
+template,q.sym_area_pick.other,uz,Bu yerda yo'q,여기 없어요,draft,v2.1-20261113
+template,q.sym_area_pick.other,vi,Không có ở đây,여기 없어요,draft,v2.1-20261113
+template,q.sym_area_pick.other,zh,这里没有,여기 없어요,draft,v2.1-20261113
 template,q.sym_confirm.label,en,Please choose the one closest to your symptom.,말씀하신 증상과 가장 가까운 것을 하나 골라 주세요.,draft,v2.1-20261113
 template,q.sym_confirm.label,uz,Aytgan belgingizga eng yaqin bittasini tanlang.,말씀하신 증상과 가장 가까운 것을 하나 골라 주세요.,draft,v2.1-20261113
 template,q.sym_confirm.label,vi,Hãy chọn một mục gần nhất với triệu chứng của bạn.,말씀하신 증상과 가장 가까운 것을 하나 골라 주세요.,draft,v2.1-20261113
@@ -1779,10 +1611,70 @@ template,q.sym_not_found.label,en,"We couldn't find your symptom in our list. If
 template,q.sym_not_found.label,uz,"Aytgan belgingizni ro'yxatdan topa olmadik. Bir nechta savolga javob bersangiz, bo'limni tavsiya qilamiz.",말씀하신 증상을 목록에서 찾지 못했어요. 몇 가지 질문에 답해 주시면 진료과를 안내해 드릴게요.,draft,v2.1-20261113
 template,q.sym_not_found.label,vi,"Chúng tôi không tìm thấy triệu chứng của bạn trong danh sách. Nếu bạn trả lời vài câu hỏi, chúng tôi sẽ gợi ý chuyên khoa.",말씀하신 증상을 목록에서 찾지 못했어요. 몇 가지 질문에 답해 주시면 진료과를 안내해 드릴게요.,draft,v2.1-20261113
 template,q.sym_not_found.label,zh,没能在列表中找到您说的症状。回答几个问题后，我们会为您推荐科室。,말씀하신 증상을 목록에서 찾지 못했어요. 몇 가지 질문에 답해 주시면 진료과를 안내해 드릴게요.,draft,v2.1-20261113
+template,q.sym_retry.area_belly,en,Stomach / digestion,배·소화,draft,v2.1-20261113
+template,q.sym_retry.area_belly,uz,Qorin / hazm,배·소화,draft,v2.1-20261113
+template,q.sym_retry.area_belly,vi,Bụng / tiêu hóa,배·소화,draft,v2.1-20261113
+template,q.sym_retry.area_belly,zh,腹部·消化,배·소화,draft,v2.1-20261113
+template,q.sym_retry.area_body,en,"Whole body (fever, fatigue, etc.)",열·피로 등 온몸,draft,v2.1-20261113
+template,q.sym_retry.area_body,uz,"Butun tana (isitma, charchoq va h.k.)",열·피로 등 온몸,draft,v2.1-20261113
+template,q.sym_retry.area_body,vi,"Toàn thân (sốt, mệt mỏi...)",열·피로 등 온몸,draft,v2.1-20261113
+template,q.sym_retry.area_body,zh,全身（发烧、疲劳等）,열·피로 등 온몸,draft,v2.1-20261113
+template,q.sym_retry.area_bone,en,Neck / shoulders / back / arms and legs,목·어깨·허리·팔다리,draft,v2.1-20261113
+template,q.sym_retry.area_bone,uz,Bo'yin / yelka / bel / qo'l-oyoq,목·어깨·허리·팔다리,draft,v2.1-20261113
+template,q.sym_retry.area_bone,vi,Cổ / vai / lưng / tay chân,목·어깨·허리·팔다리,draft,v2.1-20261113
+template,q.sym_retry.area_bone,zh,脖子·肩膀·腰·四肢,목·어깨·허리·팔다리,draft,v2.1-20261113
+template,q.sym_retry.area_chest,en,Chest / palpitations,가슴·두근거림,draft,v2.1-20261113
+template,q.sym_retry.area_chest,uz,Ko'krak / yurak urishi,가슴·두근거림,draft,v2.1-20261113
+template,q.sym_retry.area_chest,vi,Ngực / tim đập nhanh,가슴·두근거림,draft,v2.1-20261113
+template,q.sym_retry.area_chest,zh,胸部·心悸,가슴·두근거림,draft,v2.1-20261113
+template,q.sym_retry.area_eye_ear,en,Eyes / ears,눈·귀,draft,v2.1-20261113
+template,q.sym_retry.area_eye_ear,uz,Ko'z / quloq,눈·귀,draft,v2.1-20261113
+template,q.sym_retry.area_eye_ear,vi,Mắt / tai,눈·귀,draft,v2.1-20261113
+template,q.sym_retry.area_eye_ear,zh,眼睛·耳朵,눈·귀,draft,v2.1-20261113
+template,q.sym_retry.area_head,en,Head / dizziness,머리·어지럼증,draft,v2.1-20261113
+template,q.sym_retry.area_head,uz,Bosh / bosh aylanishi,머리·어지럼증,draft,v2.1-20261113
+template,q.sym_retry.area_head,vi,Đầu / chóng mặt,머리·어지럼증,draft,v2.1-20261113
+template,q.sym_retry.area_head,zh,头部·头晕,머리·어지럼증,draft,v2.1-20261113
+template,q.sym_retry.area_mind,en,Mood / sleep,마음·잠,draft,v2.1-20261113
+template,q.sym_retry.area_mind,uz,Kayfiyat / uyqu,마음·잠,draft,v2.1-20261113
+template,q.sym_retry.area_mind,vi,Tâm trạng / giấc ngủ,마음·잠,draft,v2.1-20261113
+template,q.sym_retry.area_mind,zh,心理·睡眠,마음·잠,draft,v2.1-20261113
+template,q.sym_retry.area_mouth,en,Mouth / teeth,입·치아,draft,v2.1-20261113
+template,q.sym_retry.area_mouth,uz,Og'iz / tish,입·치아,draft,v2.1-20261113
+template,q.sym_retry.area_mouth,vi,Miệng / răng,입·치아,draft,v2.1-20261113
+template,q.sym_retry.area_mouth,zh,口腔·牙齿,입·치아,draft,v2.1-20261113
+template,q.sym_retry.area_nose_throat,en,Nose / throat / cough,코·목·기침,draft,v2.1-20261113
+template,q.sym_retry.area_nose_throat,uz,Burun / tomoq / yo'tal,코·목·기침,draft,v2.1-20261113
+template,q.sym_retry.area_nose_throat,vi,Mũi / họng / ho,코·목·기침,draft,v2.1-20261113
+template,q.sym_retry.area_nose_throat,zh,鼻子·咽喉·咳嗽,코·목·기침,draft,v2.1-20261113
+template,q.sym_retry.area_skin,en,Skin / wounds,피부·상처,draft,v2.1-20261113
+template,q.sym_retry.area_skin,uz,Teri / jarohat,피부·상처,draft,v2.1-20261113
+template,q.sym_retry.area_skin,vi,Da / vết thương,피부·상처,draft,v2.1-20261113
+template,q.sym_retry.area_skin,zh,皮肤·伤口,피부·상처,draft,v2.1-20261113
+template,q.sym_retry.area_urine,en,Urination / genitals / pregnancy,소변·생식기·임신,draft,v2.1-20261113
+template,q.sym_retry.area_urine,uz,Siydik / jinsiy a'zolar / homiladorlik,소변·생식기·임신,draft,v2.1-20261113
+template,q.sym_retry.area_urine,vi,Tiểu tiện / bộ phận sinh dục / mang thai,소변·생식기·임신,draft,v2.1-20261113
+template,q.sym_retry.area_urine,zh,小便·生殖器·怀孕,소변·생식기·임신,draft,v2.1-20261113
+template,q.sym_retry.continue,en,I'm not sure (I'll answer the questions),잘 모르겠어요 (질문에 답할게요),draft,v2.1-20261113
+template,q.sym_retry.continue,uz,Bilmayman (savollarga javob beraman),잘 모르겠어요 (질문에 답할게요),draft,v2.1-20261113
+template,q.sym_retry.continue,vi,Tôi không chắc (Tôi sẽ trả lời câu hỏi),잘 모르겠어요 (질문에 답할게요),draft,v2.1-20261113
+template,q.sym_retry.continue,zh,不太清楚（我来回答问题）,잘 모르겠어요 (질문에 답할게요),draft,v2.1-20261113
+template,q.sym_retry.label,en,"We couldn't pinpoint your symptom from what you wrote. Please describe in the chat where and how you feel unwell in a bit more detail. (e.g., ""Since yesterday, my lower right belly has a stabbing pain"") You can also pick the area below.","말씀하신 내용만으로는 증상을 정확히 찾지 못했어요. 어디가 어떻게 불편한지 대화창에 조금만 더 자세히 적어 주세요. (예: ""어제부터 오른쪽 아랫배가 콕콕 쑤셔요"") 아래에서 불편한 곳을 골라도 돼요.",draft,v2.1-20261113
+template,q.sym_retry.label,uz,"Aytganlaringizdan belgini aniq topa olmadik. Qayeringiz va qanday bezovta qilayotganini suhbat oynasiga biroz batafsilroq yozing. (Masalan: ""Kechadan beri qornimning o'ng pastki qismi sanchib og'riyapti"") Quyida bezovta qilayotgan joyni ham tanlashingiz mumkin.","말씀하신 내용만으로는 증상을 정확히 찾지 못했어요. 어디가 어떻게 불편한지 대화창에 조금만 더 자세히 적어 주세요. (예: ""어제부터 오른쪽 아랫배가 콕콕 쑤셔요"") 아래에서 불편한 곳을 골라도 돼요.",draft,v2.1-20261113
+template,q.sym_retry.label,vi,"Chúng tôi chưa xác định chính xác được triệu chứng từ những gì bạn nói. Vui lòng mô tả chi tiết hơn một chút trong khung trò chuyện: bạn khó chịu ở đâu và như thế nào. (Ví dụ: ""Từ hôm qua bụng dưới bên phải đau nhói"") Bạn cũng có thể chọn vùng khó chịu bên dưới.","말씀하신 내용만으로는 증상을 정확히 찾지 못했어요. 어디가 어떻게 불편한지 대화창에 조금만 더 자세히 적어 주세요. (예: ""어제부터 오른쪽 아랫배가 콕콕 쑤셔요"") 아래에서 불편한 곳을 골라도 돼요.",draft,v2.1-20261113
+template,q.sym_retry.label,zh,仅凭您说的内容，我们未能准确找到症状。请在对话框中再详细写一下哪里、怎样不舒服。（例如：“从昨天开始右下腹一阵阵刺痛”）也可以在下面选择不舒服的部位。,"말씀하신 내용만으로는 증상을 정확히 찾지 못했어요. 어디가 어떻게 불편한지 대화창에 조금만 더 자세히 적어 주세요. (예: ""어제부터 오른쪽 아랫배가 콕콕 쑤셔요"") 아래에서 불편한 곳을 골라도 돼요.",draft,v2.1-20261113
+template,q.symptom_unknown,en,symptoms,지금 불편한,draft,v2.1-20261113
+template,q.symptom_unknown,uz,hozirgi bezovta qiluvchi,지금 불편한,draft,v2.1-20261113
+template,q.symptom_unknown,vi,khó chịu hiện tại,지금 불편한,draft,v2.1-20261113
+template,q.symptom_unknown,zh,目前不适的,지금 불편한,draft,v2.1-20261113
 template,summary.course,en,Course,경과,draft,v2.1-20261113
 template,summary.course,uz,Kechishi,경과,draft,v2.1-20261113
 template,summary.course,vi,Diễn biến,경과,draft,v2.1-20261113
 template,summary.course,zh,经过,경과,draft,v2.1-20261113
+template,summary.dailyImpact,en,Daily life,일상생활,draft,v2.1-20261113
+template,summary.dailyImpact,uz,Kundalik hayot,일상생활,draft,v2.1-20261113
+template,summary.dailyImpact,vi,Sinh hoạt hằng ngày,일상생활,draft,v2.1-20261113
+template,summary.dailyImpact,zh,日常生活,일상생활,draft,v2.1-20261113
 template,summary.departmentRank,en,#{0} {1},{0}순위 {1},draft,v2.1-20261113
 template,summary.departmentRank,uz,{0}-o'rin: {1},{0}순위 {1},draft,v2.1-20261113
 template,summary.departmentRank,vi,Ưu tiên {0}: {1},{0}순위 {1},draft,v2.1-20261113
@@ -1823,6 +1715,22 @@ template,summary.pain,en,Pain: {0} (0–10),통증: {0}점 (0~10),draft,v2.1-202
 template,summary.pain,uz,Og'riq: {0} ball (0–10),통증: {0}점 (0~10),draft,v2.1-20261113
 template,summary.pain,vi,Mức đau: {0} điểm (0–10),통증: {0}점 (0~10),draft,v2.1-20261113
 template,summary.pain,zh,疼痛：{0}分（0~10）,통증: {0}점 (0~10),draft,v2.1-20261113
+template,summary.painQuality,en,Type of pain,통증 양상,draft,v2.1-20261113
+template,summary.painQuality,uz,Og'riq turi,통증 양상,draft,v2.1-20261113
+template,summary.painQuality,vi,Kiểu đau,통증 양상,draft,v2.1-20261113
+template,summary.painQuality,zh,疼痛性质,통증 양상,draft,v2.1-20261113
+template,summary.profileAllergies,en,Allergies (saved health information),알레르기(저장한 건강정보),draft,v2.1-20261113
+template,summary.profileAllergies,uz,Allergiyalar (saqlangan sog'liq ma'lumotlari),알레르기(저장한 건강정보),draft,v2.1-20261113
+template,summary.profileAllergies,vi,Dị ứng (thông tin sức khỏe đã lưu),알레르기(저장한 건강정보),draft,v2.1-20261113
+template,summary.profileAllergies,zh,过敏（已保存的健康信息）,알레르기(저장한 건강정보),draft,v2.1-20261113
+template,summary.profileHistory,en,Existing conditions (saved health information),기존 질환(저장한 건강정보),draft,v2.1-20261113
+template,summary.profileHistory,uz,Mavjud kasalliklar (saqlangan sog'liq ma'lumotlari),기존 질환(저장한 건강정보),draft,v2.1-20261113
+template,summary.profileHistory,vi,Bệnh nền (thông tin sức khỏe đã lưu),기존 질환(저장한 건강정보),draft,v2.1-20261113
+template,summary.profileHistory,zh,既往疾病（已保存的健康信息）,기존 질환(저장한 건강정보),draft,v2.1-20261113
+template,summary.profileMedications,en,Medications (saved health information),복용 중인 약(저장한 건강정보),draft,v2.1-20261113
+template,summary.profileMedications,uz,Qabul qilinayotgan dorilar (saqlangan sog'liq ma'lumotlari),복용 중인 약(저장한 건강정보),draft,v2.1-20261113
+template,summary.profileMedications,vi,Thuốc đang dùng (thông tin sức khỏe đã lưu),복용 중인 약(저장한 건강정보),draft,v2.1-20261113
+template,summary.profileMedications,zh,正在服用的药物（已保存的健康信息）,복용 중인 약(저장한 건강정보),draft,v2.1-20261113
 template,summary.riskUnconfirmed,en,"We could not confirm whether this is an emergency. If symptoms get worse or you are worried, call 119 right away or go to an emergency room.",응급 증상인지 확인하지 못했습니다. 증상이 심해지거나 걱정되면 바로 119에 연락하거나 응급실로 가세요.,draft,v2.1-20261113
 template,summary.riskUnconfirmed,uz,"Bu favqulodda belgi ekanini tasdiqlay olmadik. Belgilar kuchaysa yoki xavotirda bo'lsangiz, darhol 119 ga qo'ng'iroq qiling yoki shoshilinch yordam bo'limiga boring.",응급 증상인지 확인하지 못했습니다. 증상이 심해지거나 걱정되면 바로 119에 연락하거나 응급실로 가세요.,draft,v2.1-20261113
 template,summary.riskUnconfirmed,vi,"Chúng tôi chưa xác nhận được đây có phải triệu chứng khẩn cấp hay không. Nếu triệu chứng nặng hơn hoặc bạn lo lắng, hãy gọi 119 ngay hoặc đến phòng cấp cứu.",응급 증상인지 확인하지 못했습니다. 증상이 심해지거나 걱정되면 바로 119에 연락하거나 응급실로 가세요.,draft,v2.1-20261113
@@ -1847,3 +1755,7 @@ template,summary.unchecked,en,"We did not check medicines you take, existing con
 template,summary.unchecked,uz,"Qabul qilayotgan dorilar, mavjud kasalliklar va boshqa birga kechayotgan belgilar tekshirilmadi. Agar bo'lsa, shifokorga albatta ayting.","복용 중인 약, 기존 질환, 함께 있는 다른 증상은 확인하지 않았습니다. 해당되면 진료 때 꼭 알려 주세요.",draft,v2.1-20261113
 template,summary.unchecked,vi,"Chúng tôi chưa kiểm tra thuốc đang dùng, bệnh nền hay các triệu chứng đi kèm khác. Nếu có, hãy nhớ báo cho bác sĩ khi khám.","복용 중인 약, 기존 질환, 함께 있는 다른 증상은 확인하지 않았습니다. 해당되면 진료 때 꼭 알려 주세요.",draft,v2.1-20261113
 template,summary.unchecked,zh,未确认正在服用的药物、既往疾病及其他伴随症状。如有，请就诊时务必告知医生。,"복용 중인 약, 기존 질환, 함께 있는 다른 증상은 확인하지 않았습니다. 해당되면 진료 때 꼭 알려 주세요.",draft,v2.1-20261113
+template,summary.uncheckedWithProfile,en,"Apart from your saved health information, we did not check medications, existing conditions or other symptoms. If any apply, be sure to tell the doctor.","저장한 건강정보 말고는 복용 중인 약, 기존 질환, 함께 있는 다른 증상을 확인하지 않았습니다. 해당되면 진료 때 꼭 알려 주세요.",draft,v2.1-20261113
+template,summary.uncheckedWithProfile,uz,"Saqlangan sog'liq ma'lumotlaridan tashqari qabul qilinayotgan dorilar, mavjud kasalliklar va boshqa belgilar tekshirilmadi. Agar bo'lsa, shifokorga albatta ayting.","저장한 건강정보 말고는 복용 중인 약, 기존 질환, 함께 있는 다른 증상을 확인하지 않았습니다. 해당되면 진료 때 꼭 알려 주세요.",draft,v2.1-20261113
+template,summary.uncheckedWithProfile,vi,"Ngoài thông tin sức khỏe đã lưu, chúng tôi chưa kiểm tra thuốc đang dùng, bệnh nền và các triệu chứng khác đi kèm. Nếu có, hãy nhớ báo cho bác sĩ khi khám.","저장한 건강정보 말고는 복용 중인 약, 기존 질환, 함께 있는 다른 증상을 확인하지 않았습니다. 해당되면 진료 때 꼭 알려 주세요.",draft,v2.1-20261113
+template,summary.uncheckedWithProfile,zh,除已保存的健康信息外，未确认正在服用的药物、既往疾病和其他伴随症状。如有，请务必在就诊时告知。,"저장한 건강정보 말고는 복용 중인 약, 기존 질환, 함께 있는 다른 증상을 확인하지 않았습니다. 해당되면 진료 때 꼭 알려 주세요.",draft,v2.1-20261113

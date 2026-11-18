@@ -49,7 +49,7 @@ test('F3 I2: 성별 제한 증상 전부 × 반대 성별(SYM_CONFIRM·SYM_DICT_
 
 test('F3 I2: 불일치로 증상 모름이 되면 F2를 묻는다(문진 계속, LLM 없음)', async () => {
   const w = restricted.find((s) => s.sexRestriction === 'female');
-  const answers = {...SAFE_BASE, T2: 'male', SYM_DICT_CONFIRM: `sym_${w.id}`, N5: 'no', 'N5-1': 'onset_1_3d', N6: 'yes', N7: 'no', N8: 'no', N9: 'no', N10: 'no', N11: 'no', N12: 'no', N13: 'no', P0: 'no'};
+  const answers = {...SAFE_BASE, T2: 'male', SYM_DICT_CONFIRM: `sym_${w.id}`, 'N5-1': 'onset_1_3d', P3: 'pq_dull', P1: 'pain_2', N12: 'impact_little', N7: 'no'} // 11/18 재설계;
   const llm = fakeLlm();
   const {out, calls} = await call({reason: 'followup', messages: ['지어낸 문장이에요'], answers, llm});
   assert.equal(out.response.followUp.id, INJURY_ITEM_ID);
@@ -65,9 +65,9 @@ test('F3 G3: ASK_START=find_pharmacy 뒤 증상 메시지 → 검색 대신 증�
   assert.ok(dict.out.trace.warnings.includes(WARNING_START_CHOICE_OVERRIDDEN));
   // 증상 단서만(사전 0개) → LLM 부르지 않고 증상 모름 → 다음 문항
   const llm = fakeLlm();
-  const cue = await call({reason: 'followup', messages: ['그냥 이야기하고 싶어요', '배가 아파요'], answers: {...SAFE_BASE, ASK_START: 'find_hospital'}, llm});
+  const cue = await call({reason: 'followup', messages: ['그냥 이야기하고 싶어요', '몸이 아파요'], answers: {...SAFE_BASE, ASK_START: 'find_hospital'}, llm});
   assert.equal(cue.out.response.search, undefined);
-  assert.equal(cue.out.response.followUp.id, 'N5');
+  assert.equal(cue.out.response.followUp.id, 'N5-1');
   assert.equal(cue.out.trace.symptom.source, 'start_choice');
   assert.equal(cue.calls.classify.length, 0);
   // 위험 단서 → 정상 흐름
@@ -83,13 +83,13 @@ test('F3 G3: ASK_START=find_pharmacy 뒤 증상 메시지 → 검색 대신 증�
 
 test('F3 G3: MED_CHOICE med_pharmacy·med_info + 증상 단서 → 정상 흐름, med_symptom은 기존대로, 단서 없으면 검색', async () => {
   for (const v of ['med_pharmacy', 'med_info']) {
-    const {out, calls} = await call({reason: 'followup', messages: ['약 먹고 배가 아파요'], answers: {...SAFE_BASE, MED_CHOICE: v}});
+    const {out, calls} = await call({reason: 'followup', messages: ['약 먹고 몸이 아파요'], answers: {...SAFE_BASE, MED_CHOICE: v}});
     assert.equal(out.response.search, undefined, v);
-    assert.equal(out.response.followUp.id, 'N5', v);
+    assert.equal(out.response.followUp.id, 'N5-1', v);
     assert.equal(calls.classify.length, 0, v);
   }
-  const sym = await call({reason: 'followup', messages: ['약 먹고 배가 아파요'], answers: {...SAFE_BASE, MED_CHOICE: 'med_symptom'}});
-  assert.equal(sym.out.response.followUp.id, 'N5');
+  const sym = await call({reason: 'followup', messages: ['약 먹고 몸이 아파요'], answers: {...SAFE_BASE, MED_CHOICE: 'med_symptom'}});
+  assert.equal(sym.out.response.followUp.id, 'N5-1');
   assert.ok(!sym.out.trace.warnings.includes(WARNING_START_CHOICE_OVERRIDDEN));
   const plain = await call({reason: 'followup', messages: ['먹는 약 때문에 궁금한 게 있어요'], answers: {...SAFE_BASE, MED_CHOICE: 'med_pharmacy'}});
   assert.deepEqual(plain.out.response, {search: {type: 'pharmacy', department: 'pharmacy'}});

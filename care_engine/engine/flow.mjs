@@ -5,12 +5,17 @@ import {isVisible} from './answers.mjs';
 /**
  * 구조상 묻지 않는 문항이면 그 이유, 아니면 null.
  * @param {'pending'|'known'|'fallback'|'unknown'} symptomState
+ * @param {boolean} [symptomIsPain] 11/18 재설계: 확정 증상이 통증인지(data.painSymptomIds). 증상을 모르면 false
  */
-export function structuralSkipReason(item, symptomState) {
+export function structuralSkipReason(item, symptomState, symptomIsPain = false) {
   if (item.todo) return 'todo';
   if (item.ui === 'frontend') return 'frontend';
   if (item.type !== 'choice') return item.type; // string(N4 포함)·display
   if (item.engineCondition === 'symptom_is_fallback' && symptomState !== 'fallback' && symptomState !== 'unknown') return 'engine_condition';
+  const decided = symptomState === 'known' || symptomState === 'fallback';
+  // 11/18: 통증 증상이면 양상·점수(P3·P1), 통증이 아니거나 증상을 모르면 불편 정도(N12)
+  if (item.engineCondition === 'symptom_is_pain' && !(decided && symptomIsPain)) return 'engine_condition';
+  if (item.engineCondition === 'symptom_not_pain' && !(symptomState === 'unknown' || (decided && !symptomIsPain))) return 'engine_condition';
   return null;
 }
 
@@ -20,7 +25,7 @@ export function structuralSkipReason(item, symptomState) {
  * @returns {{kind:'item', item:object, skippedItems:string[]} | {kind:'identify', skippedItems:string[]} | {kind:'done', skippedItems:string[]}}
  *   skippedItems: 보이고 답이 없지만 구조상 묻지 않은 문항 ID(trace용)
  */
-export function nextQuestion({codes, data, mode = 'normal', symptomState = 'pending'}) {
+export function nextQuestion({codes, data, mode = 'normal', symptomState = 'pending', symptomIsPain = false}) {
   const skippedItems = [];
   if (mode === 'stopped') return {kind: 'done', skippedItems};
   const symptomItem = data.itemById.get(data.symptomItemId);
@@ -30,13 +35,27 @@ export function nextQuestion({codes, data, mode = 'normal', symptomState = 'pend
     if (mode === 'emergency' && item.flow !== 'emergency') continue;
     if (codes.has(item.linkId) && isVisible(item.linkId, codes, data)) continue; // 이미 답함
     if (!isVisible(item.linkId, codes, data)) continue;
-    const why = structuralSkipReason(item, symptomState);
+    const why = structuralSkipReason(item, symptomState, symptomIsPain);
     if (why) { skippedItems.push(item.linkId); continue; }
     if (identifyOpen && item.order > identifyAt) return {kind: 'identify', skippedItems};
     return {kind: 'item', item, skippedItems};
   }
   if (identifyOpen) return {kind: 'identify', skippedItems};
   return {kind: 'done', skippedItems};
+}
+
+/**
+ * 11/18 재설계: 증상 확인 뒤 상세 질문의 진행(n번째 / 전체). 증상 문항(N4)보다 뒤에 있고 지금 상태에서 물을 문항만 센다
+ * (이미 답한 것 포함, 미리 채운 것 포함). 상세 문항이 아니면 null. 상세 문항끼리는 조건이 Q0뿐이라 답에 따라 전체 수가 바뀌지 않는다.
+ * @returns {{current:number, total:number}|null}
+ */
+export function detailProgress({itemId, codes, data, symptomState, symptomIsPain = false}) {
+  const symptomItem = data.itemById.get(data.symptomItemId);
+  if (!symptomItem) return null;
+  const plan = data.items.filter((it) => it.order > symptomItem.order && isVisible(it.linkId, codes, data)
+    && !structuralSkipReason(it, symptomState, symptomIsPain)).map((it) => it.linkId);
+  const i = plan.indexOf(itemId);
+  return i < 0 ? null : {current: i + 1, total: plan.length};
 }
 
 /**
