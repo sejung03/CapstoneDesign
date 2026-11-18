@@ -18,6 +18,8 @@ export const REF_TABLES=Object.freeze({
  symptom_synonym:'id',
  fallback_department:'grp,rank',
  app_config:'key',
+ // 다국어 번역(005_ref_i18n.sql). DB에 아직 없으면 읽기가 실패하고 같은 버전의 시드 CSV(번역 포함)로 동작한다.
+ text_i18n:'target,key,locale',
 });
 const PAGE=1000;
 

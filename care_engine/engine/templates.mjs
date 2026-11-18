@@ -29,46 +29,73 @@ export const OPT = Object.freeze({
   sensContinue: 'sens_continue',
 });
 
+/**
+ * 11/17 다국어: 엔진 문구를 키로 모은다(한국어 원본). 번역은 ref.text_i18n(target='template')에 이 키로 둔다.
+ * 문구를 바꾸면 그 키의 번역은 원문이 달라져 쓰이지 않는다(care_engine/docs/다국어_설계.md 원칙 6).
+ */
+export const ENGINE_TEXT = Object.freeze({
+  'q.sym_dict_confirm.label': '말씀하신 증상이 이 중에 있나요?',
+  'q.sym_dict_confirm.other': '다른 증상이에요',
+  'q.sym_dict_confirm.unsure': '잘 모르겠어요',
+  'q.sym_not_found.label': '말씀하신 증상을 목록에서 찾지 못했어요. 몇 가지 질문에 답해 주시면 진료과를 안내해 드릴게요.',
+  'q.sym_not_found.continue': '질문에 답할게요',
+  'q.ask_start.label': '어디가 어떻게 불편한지 대화창에 적어 주세요. 병원이나 약국만 찾으려면 아래에서 골라 주세요.',
+  'q.ask_start.find_hospital': '병원 찾기',
+  'q.ask_start.find_pharmacy': '약국 찾기',
+  'q.risk_confirm.label': '앞에서 말씀하신 일이 오늘 실제로 있었던 일인가요? (본인이나 함께 있는 분에게, 지금은 괜찮아졌어도)',
+  'q.risk_confirm.yes': '예, 오늘 있었어요',
+  'q.risk_confirm.no': '아니요 (예전 일이거나 실제 일이 아니에요)',
+  'q.risk_confirm.unsure': '잘 모르겠어요',
+  'q.sensitive_choice.label': '안내를 확인해 주세요. 증상 상담이 필요하시면 계속할 수 있습니다.',
+  'q.sensitive_choice.end': '안내만 보고 마치겠습니다',
+  'q.sensitive_choice.continue': '증상 상담을 계속하겠습니다',
+  'q.med_choice.label': '어떤 도움이 필요하세요?',
+  'q.med_choice.symptom': '증상·부작용 상담',
+  'q.med_choice.pharmacy': '약국 위치 찾기',
+  'q.med_choice.info': '복용법 등 약 정보 문의',
+});
+const T = ENGINE_TEXT;
+
 const q = (id, ko, options) => ({id, type: 'singleChoice', required: true, label: {ko}, options: options.map(([oid, oko]) => ({id: oid, label: {ko: oko}}))});
 
 /** 사전 후보 확인 질문. @param {Array<{id:string, nameKo:string}>} symptoms 최대 5개 */
 export function symDictConfirmQuestion(symptoms) {
-  return q(ENGINE_Q.SYM_DICT_CONFIRM, '말씀하신 증상이 이 중에 있나요?', [
+  return q(ENGINE_Q.SYM_DICT_CONFIRM, T['q.sym_dict_confirm.label'], [
     ...symptoms.map((s) => [`${OPT.symPrefix}${s.id}`, s.nameKo]),
-    [OPT.symOther, '다른 증상이에요'],
-    [OPT.symUnsure, '잘 모르겠어요'],
+    [OPT.symOther, T['q.sym_dict_confirm.other']],
+    [OPT.symUnsure, T['q.sym_dict_confirm.unsure']],
   ]);
 }
 export function symNotFoundQuestion() {
-  return q(ENGINE_Q.SYM_NOT_FOUND, '말씀하신 증상을 목록에서 찾지 못했어요. 몇 가지 질문에 답해 주시면 진료과를 안내해 드릴게요.', [
-    [OPT.symContinue, '질문에 답할게요'],
+  return q(ENGINE_Q.SYM_NOT_FOUND, T['q.sym_not_found.label'], [
+    [OPT.symContinue, T['q.sym_not_found.continue']],
   ]);
 }
 export function askStartQuestion() {
-  return q(ENGINE_Q.ASK_START, '어디가 어떻게 불편한지 대화창에 적어 주세요. 병원이나 약국만 찾으려면 아래에서 골라 주세요.', [
-    [OPT.findHospital, '병원 찾기'],
-    [OPT.findPharmacy, '약국 찾기'],
+  return q(ENGINE_Q.ASK_START, T['q.ask_start.label'], [
+    [OPT.findHospital, T['q.ask_start.find_hospital']],
+    [OPT.findPharmacy, T['q.ask_start.find_pharmacy']],
   ]);
 }
 /** 11/17 RF2 → RG1: 위험 표현 확인 질문. 기준을 '지금'에서 '오늘'로(멎은 경련·끝난 토혈은 예, 작년 일은 아니요). @param {string} id RISK_CONFIRM_<n> */
 export function riskConfirmQuestion(id) {
-  return q(id, '앞에서 말씀하신 일이 오늘 실제로 있었던 일인가요? (본인이나 함께 있는 분에게, 지금은 괜찮아졌어도)', [
-    [OPT.riskYes, '예, 오늘 있었어요'],
-    [OPT.riskNo, '아니요 (예전 일이거나 실제 일이 아니에요)'],
-    [OPT.riskUnsure, '잘 모르겠어요'],
+  return q(id, T['q.risk_confirm.label'], [
+    [OPT.riskYes, T['q.risk_confirm.yes']],
+    [OPT.riskNo, T['q.risk_confirm.no']],
+    [OPT.riskUnsure, T['q.risk_confirm.unsure']],
   ]);
 }
 export function sensitiveChoiceQuestion(id) {
-  return q(id, '안내를 확인해 주세요. 증상 상담이 필요하시면 계속할 수 있습니다.', [
-    [OPT.sensEnd, '안내만 보고 마치겠습니다'],
-    [OPT.sensContinue, '증상 상담을 계속하겠습니다'],
+  return q(id, T['q.sensitive_choice.label'], [
+    [OPT.sensEnd, T['q.sensitive_choice.end']],
+    [OPT.sensContinue, T['q.sensitive_choice.continue']],
   ]);
 }
 export function medChoiceQuestion() {
-  return q(ENGINE_Q.MED_CHOICE, '어떤 도움이 필요하세요?', [
-    [OPT.medSymptom, '증상·부작용 상담'],
-    [OPT.medPharmacy, '약국 위치 찾기'],
-    [OPT.medInfo, '복용법 등 약 정보 문의'],
+  return q(ENGINE_Q.MED_CHOICE, T['q.med_choice.label'], [
+    [OPT.medSymptom, T['q.med_choice.symptom']],
+    [OPT.medPharmacy, T['q.med_choice.pharmacy']],
+    [OPT.medInfo, T['q.med_choice.info']],
   ]);
 }
 
@@ -115,7 +142,7 @@ export const EMERGENCY_TEXT = Object.freeze({
  * 109가 사라지지 않게 덧붙이는 한 문장. 진단 아님 문장 앞에 넣는다.
  */
 export const CRISIS_109_ADDON = '마음이 힘들다면 자살예방 상담전화 109에서도 24시간 이야기를 들어 드려요.';
-const NOT_DIAGNOSIS = '이 서비스는 진단을 하지 않아요.';
+export const NOT_DIAGNOSIS = '이 서비스는 진단을 하지 않아요.';
 
 /** 11/17 RF6(검토 I4): 앞선 안내(EMERGENCY_STOP 등)에 함께 걸린 민감 안내의 기관을 한 문장으로 덧붙인다. */
 export const REFERRAL_ADDONS = Object.freeze({
@@ -124,6 +151,19 @@ export const REFERRAL_ADDONS = Object.freeze({
   // 11/17 RG2: 본문과 같은 표현(서비스가 연결해 주는 것처럼 읽히지 않게, 검토 G6)
   violence_notice_1366: '폭력 피해가 있다면 여성긴급전화 1366에서 24시간 상담받을 수 있고, 경찰·의료기관 연결도 도와줘요.',
 });
+/**
+ * 11/17 다국어: 응급 안내 객체가 어떤 문구(기본 message_key + 덧붙인 문장 키)로 만들어졌는지 기억한다(응답에는 넣지 않음).
+ * 번역(engine/localize.mjs)은 이것으로 언어마다 같은 순서로 다시 조립한다.
+ */
+export const EMERGENCY_PARTS = new WeakMap();
+const ADDON_KEY_BY_TEXT = new Map(Object.entries(REFERRAL_ADDONS).map(([k, v]) => [v, k]));
+function registerAddon(from, to, sentence) {
+  const parts = EMERGENCY_PARTS.get(from);
+  const key = ADDON_KEY_BY_TEXT.get(sentence);
+  if (parts && key) EMERGENCY_PARTS.set(to, {base: parts.base, addons: [...parts.addons, key]});
+  return to;
+}
+
 /** emergency 객체에 문장 하나를 진단 아님 문장 앞에 덧붙인다(이미 있으면 그대로). */
 export function withAddon(emergency, sentence) {
   const ko = emergency?.message?.ko ?? '';
@@ -131,7 +171,7 @@ export function withAddon(emergency, sentence) {
   const msg = ko.endsWith(NOT_DIAGNOSIS)
     ? `${ko.slice(0, ko.length - NOT_DIAGNOSIS.length)}${sentence} ${NOT_DIAGNOSIS}`
     : `${ko} ${sentence}`.trim();
-  return {...emergency, message: {...emergency.message, ko: msg.slice(0, 1000)}};
+  return registerAddon(emergency, {...emergency, message: {...emergency.message, ko: msg.slice(0, 1000)}}, sentence);
 }
 
 /** emergency 객체에 109 한 문장을 덧붙인 새 객체(이미 109가 있으면 그대로). */
@@ -141,22 +181,30 @@ export function withCrisis109(emergency) {
   const msg = ko.endsWith(NOT_DIAGNOSIS)
     ? `${ko.slice(0, ko.length - NOT_DIAGNOSIS.length)}${CRISIS_109_ADDON} ${NOT_DIAGNOSIS}`
     : `${ko} ${CRISIS_109_ADDON}`.trim();
-  return {...emergency, message: {...emergency.message, ko: msg.slice(0, 1000)}};
+  return registerAddon(emergency, {...emergency, message: {...emergency.message, ko: msg.slice(0, 1000)}}, CRISIS_109_ADDON);
 }
 
-const EMERGENCY_UNKNOWN = Object.freeze({title: URGENT_TITLE, message: '지금 119에 연락하거나 가까운 응급실로 가세요.'});
+export const EMERGENCY_UNKNOWN = Object.freeze({title: URGENT_TITLE, message: '지금 119에 연락하거나 가까운 응급실로 가세요.'});
 
 /** @returns {{emergency:{active:true, title:{ko}, message:{ko}}, warning:string|null}} 모르는 키는 일반 긴급 문구 + warning */
 export function emergencyNotice(messageKey) {
   const t = Object.hasOwn(EMERGENCY_TEXT, messageKey) ? EMERGENCY_TEXT[messageKey] : null;
   const use = t ?? EMERGENCY_UNKNOWN;
-  return {
-    emergency: {active: true, title: {ko: use.title}, message: {ko: use.message}},
-    warning: t ? null : 'unknown_message_key',
-  };
+  const emergency = {active: true, title: {ko: use.title}, message: {ko: use.message}};
+  EMERGENCY_PARTS.set(emergency, {base: t ? messageKey : 'unknown', addons: []});
+  return {emergency, warning: t ? null : 'unknown_message_key'};
 }
 
 // ---- 요약(설계 §8-2·§8-4) ----
+/** 11/17 다국어: 값이 들어가는 요약 문구는 자리 표시({0}, {1})가 있는 형식으로 둔다(번역도 같은 자리 표시를 쓴다). */
+export const SUMMARY_FORMAT = Object.freeze({
+  pain: '통증: {0}점 (0~10)',
+  departmentRank: '{0}순위 {1}',
+});
+/** '{0}' 자리 표시를 값으로 바꾼다. */
+export function fillText(format, values) {
+  return String(format).replace(/\{(\d)\}/g, (m, i) => (values[Number(i)] === undefined ? m : String(values[Number(i)])));
+}
 export const SUMMARY = Object.freeze({
   // 11/17 요약 말투: 최종 안내는 '~습니다'체(사람 결정 문구 그대로). 이름표·footer는 그대로
   header: '입력하신 답을 정리한 참고용 내용입니다. 진단이 아닙니다.',
@@ -165,10 +213,10 @@ export const SUMMARY = Object.freeze({
   symptomUnknown: '목록에서 찾지 못함',
   onset: '시작',
   course: '경과',
-  pain: (v) => `통증: ${v}점 (0~10)`,
+  pain: (v) => fillText(SUMMARY_FORMAT.pain, [v]),
   departments: '참고할 진료과',
   /** 진료과 순위 표기(2개 이상일 때). 1개뿐이면 순위 없이 이름만. */
-  departmentRank: (i, name) => `${i}순위 ${name}`,
+  departmentRank: (i, name) => fillText(SUMMARY_FORMAT.departmentRank, [i, name]),
   // 진료과 줄 바로 다음 순위 설명(경로별). recommend()의 group이 null이면 stats, 아니면 fallback
   deptNoteStats: '같은 증상으로 진료받는 사람이 많은 진료과 순서입니다. 병원 찾기는 1순위 진료과로 먼저 보여 드립니다.',
   deptNoteFallback: '증상에 맞는 통계가 없어 일반적으로 먼저 찾는 진료과를 안내합니다. 병원 찾기는 1순위 진료과로 먼저 보여 드립니다.',

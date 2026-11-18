@@ -55,12 +55,17 @@ export function parseSymptomConfirm(followUpAnswers, refData) {
   return {status: 'fallback', reason: 'invalid'};
 }
 
+/** 11/17 다국어: 프론트(frontend/i18n.mjs locales)와 같은 언어. ko 필수, 나머지는 선택. */
+export const LABEL_LOCALES = Object.freeze(['ko', 'en', 'zh', 'vi', 'uz']);
+
 function checkText(label, at, errors) {
   if (label === null || typeof label !== 'object' || Array.isArray(label)) { errors.push(`${at}: label 객체 없음`); return; }
-  for (const k of Object.keys(label)) if (k !== 'ko' && k !== 'en') errors.push(`${at}: 허용하지 않는 언어 '${k}'`);
+  for (const k of Object.keys(label)) if (!LABEL_LOCALES.includes(k)) errors.push(`${at}: 허용하지 않는 언어 '${k}'`);
   if (typeof label.ko !== 'string' || !label.ko.trim()) errors.push(`${at}.ko: 필수`);
   else if (label.ko.length > TEXT_MAX) errors.push(`${at}.ko: ${TEXT_MAX}자 초과`);
-  if ('en' in label && (typeof label.en !== 'string' || label.en.length > TEXT_MAX)) errors.push(`${at}.en: 문자열 ${TEXT_MAX}자 이하`);
+  for (const k of LABEL_LOCALES.slice(1)) {
+    if (k in label && (typeof label[k] !== 'string' || label[k].length > TEXT_MAX)) errors.push(`${at}.${k}: 문자열 ${TEXT_MAX}자 이하`);
+  }
 }
 
 /** 프론트 followUp 계약 검사(BACKEND.md 0.20.0). @returns {{ok:boolean, errors:string[]}} */

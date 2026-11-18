@@ -144,8 +144,9 @@ Data API의 Exposed schemas에는 `ref`, `app`을 넣는다(`private`는 넣지 
 ```bash
 python pipeline/06a_build_seed.py                     # 시드 CSV → db/seed/<data_version>/ (접속 없음)
 python pipeline/06d_build_intake_seed.py              # 문진 시드(config/intake_v1.yaml, D5 검사 포함)
+python pipeline/06f_build_i18n_seed.py                # 다국어 번역 시드(config/i18n_v1.csv → text_i18n.csv, care_engine/docs/다국어_설계.md)
 python pipeline/06c_run_migrations.py db/migrations/001_ref_schema.sql db/migrations/001b_ref_functions.sql \
-                                      db/migrations/003_ref_intake.sql db/migrations/004_drop_icpc_text.sql
+                                      db/migrations/003_ref_intake.sql db/migrations/004_drop_icpc_text.sql                                       db/migrations/005_ref_i18n.sql
 python pipeline/06b_load_supabase.py --dry-run        # 행 수·컬럼 순서·FK 검사 (접속 없음)
 python pipeline/06b_load_supabase.py                  # ref 적재 (문진 포함, 한 트랜잭션)
 python pipeline/06e_verify_ref.py                     # → reports/step6_load.md

@@ -29,9 +29,11 @@ ORDER = ["data_version", "source", "department", "triage_category", "symptom", "
          "symptom_department", "symptom_department_variant", "fallback_department", "app_config",
          # D5 문진 (003_ref_intake.sql, pipeline/06d_build_intake_seed.py)
          "questionnaire", "questionnaire_item", "questionnaire_answer_option", "questionnaire_enable_when",
-         "safety_rule", "safety_rule_condition", "output_mapping", "item_topic"]
+         "safety_rule", "safety_rule_condition", "output_mapping", "item_topic",
+         # 다국어 번역 (005_ref_i18n.sql, pipeline/06f_build_i18n_seed.py)
+         "text_i18n"]
 # 컬럼 순서 검사용(실행 순서대로). 004는 ref.symptom의 ICPC 원본 칸을 뺀다
-MIGRATIONS = ["001_ref_schema.sql", "003_ref_intake.sql", "004_drop_icpc_text.sql"]
+MIGRATIONS = ["001_ref_schema.sql", "003_ref_intake.sql", "004_drop_icpc_text.sql", "005_ref_i18n.sql"]
 # (테이블, 컬럼) → (참조 테이블, 참조 컬럼)
 FK = [
     ("source", "data_version", "data_version", "version"),
@@ -74,6 +76,7 @@ FK = [
     ("output_mapping", "data_version", "data_version", "version"),
     ("item_topic", "question", "questionnaire_item", "link_id"),
     ("item_topic", "data_version", "data_version", "version"),
+    ("text_i18n", "data_version", "data_version", "version"),
 ]
 PK = {"data_version": ["version"], "source": ["source_id"], "department": ["dept_id"], "triage_category": ["id"],
       "symptom": ["symptom_id"], "symptom_synonym": ["id"], "symptom_department": ["symptom_id"],
@@ -81,7 +84,7 @@ PK = {"data_version": ["version"], "source": ["source_id"], "department": ["dept
       "fallback_department": ["grp", "rank"], "app_config": ["key"],
       "questionnaire": ["id"], "questionnaire_item": ["link_id"], "questionnaire_answer_option": ["link_id", "code"],
       "questionnaire_enable_when": ["id"], "safety_rule": ["rule_id"], "safety_rule_condition": ["id"],
-      "output_mapping": ["id"], "item_topic": ["id"]}
+      "output_mapping": ["id"], "item_topic": ["id"], "text_i18n": ["target", "key", "locale"]}
 
 
 def load_yaml(path):

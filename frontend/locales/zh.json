@@ -754,5 +754,7 @@
   "Question {0}": "问题 {0}",
   "Could not load the page. Please refresh.": "无法加载页面，请刷新。",
   "Refresh": "刷新",
-  "Question {0} / {1}": "问题 {0} / {1}"
+  "Question {0} / {1}": "问题 {0} / {1}",
+  "Please write your symptoms in Korean if you can. Danger signs written in other languages may not be detected. In an emergency, call 119.": "请尽量用韩语描述症状。用其他语言写的危险信号可能无法被识别。如遇紧急情况，请拨打119。",
+  "Korean original (you can show this to 119 or people nearby):": "韩语原文（可出示给119或周围的人）："
 }

@@ -754,5 +754,7 @@
   "Question {0}": "Savol {0}",
   "Could not load the page. Please refresh.": "Sahifa yuklanmadi. Qayta yuklang.",
   "Refresh": "Qayta yuklash",
-  "Question {0} / {1}": "Savol {0} / {1}"
+  "Question {0} / {1}": "Savol {0} / {1}",
+  "Please write your symptoms in Korean if you can. Danger signs written in other languages may not be detected. In an emergency, call 119.": "Iloji bo‘lsa, belgilaringizni koreys tilida yozing. Boshqa tilda yozilgan xavfli belgilar aniqlanmasligi mumkin. Favqulodda holatda 119 ga qo‘ng‘iroq qiling.",
+  "Korean original (you can show this to 119 or people nearby):": "Koreyscha asl matn (119 ga yoki atrofdagilarga ko‘rsatishingiz mumkin):"
 }

@@ -754,5 +754,7 @@
   "Question {0}": "문진 {0}",
   "Could not load the page. Please refresh.": "화면을 불러오지 못했습니다. 새로고침해 주세요.",
   "Refresh": "새로고침",
-  "Question {0} / {1}": "질문 {0} / {1}"
+  "Question {0} / {1}": "질문 {0} / {1}",
+  "Please write your symptoms in Korean if you can. Danger signs written in other languages may not be detected. In an emergency, call 119.": "증상은 가능하면 한국어로 적어 주세요. 다른 언어로 적은 위험 신호는 감지되지 않을 수 있어요. 응급 상황이면 119에 연락하세요.",
+  "Korean original (you can show this to 119 or people nearby):": "한국어 원문(119나 주변 사람에게 보여 줄 수 있어요):"
 }

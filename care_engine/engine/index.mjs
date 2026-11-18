@@ -19,6 +19,7 @@ import {collectSensitiveEvents, resolveSensitiveChoice} from './sensitive-choice
 
 const CRISIS_KEY = 'crisis_notice_109';
 import {checkResponseContract} from './contract.mjs';
+import {localizeResponse, localizedSummary} from './localize.mjs';
 import {TARGET_ITEM_ID, TARGET_SELF, INJURY_ITEM_ID, INJURY_YES, AGE_ITEM_ID, ageBandCode} from './constants.mjs';
 
 export const ENGINE_VERSION = 'care-engine-v1';
@@ -269,10 +270,12 @@ async function core(payload, ctx, deps, trace, now, log) {
     trace.symptom.fallback = symptom ? !s || s.isFallback : null;
     return s;
   };
-  const finish = (response, phase) => {
+  const finish = (responseKo, phase) => {
     trace.phase = phase;
     setSlots();
-    if (response.followUp) trace.nextQuestionId = response.followUp.id;
+    if (responseKo.followUp) trace.nextQuestionId = responseKo.followUp.id;
+    // 11/17 다국어: 질문·응급 안내를 언어별 문구로(번역이 없으면 한국어만)
+    const response = localizeResponse(responseKo, data);
     const check = checkResponseContract(response);
     if (!check.ok) {
       trace.warnings.push(`contract:${check.errors.slice(0, 3).join('|')}`);
@@ -287,8 +290,9 @@ async function core(payload, ctx, deps, trace, now, log) {
   let carryEmergency = null;
   // LC1: 민감 규칙 또는 넓은 단서이면 기관 안내와 선택을 먼저 낸다. 종류·원문·규칙은 trace에 남기지 않는다.
   if (top?.result !== 'EMERGENCY_STOP' && (sensitive.state === 'pending' || sensitive.state === 'end')) {
-    const response = {emergency: sensitive.messageKey ? emergencyNotice(sensitive.messageKey).emergency : {active: true}};
-    if (sensitive.state === 'pending') response.followUp = sensitiveChoiceQuestion(sensitive.askId);
+    const responseKo = {emergency: sensitive.messageKey ? emergencyNotice(sensitive.messageKey).emergency : {active: true}};
+    if (sensitive.state === 'pending') responseKo.followUp = sensitiveChoiceQuestion(sensitive.askId);
+    const response = localizeResponse(responseKo, data);
     const check = checkResponseContract(response);
     if (!check.ok) return fail('contract');
     if (signal?.aborted) return fail('aborted');
@@ -316,8 +320,8 @@ async function core(payload, ctx, deps, trace, now, log) {
         if (nq.kind === 'item') response.followUp = itemToFollowUp(nq.item, data, locale);
         else {
           trace.slots = applyMappings({codes: vis, ruleHits: safety.hits, data});
-          const s = buildEmergencySummary({slots: trace.slots, data});
-          if (s) response.summary = {ko: s};
+          const s = localizedSummary((tx) => buildEmergencySummary({slots: trace.slots, data, tx}), data);
+          if (s) response.summary = s;
         }
       }
       return finish(response, 'emergency');
@@ -422,7 +426,7 @@ async function core(payload, ctx, deps, trace, now, log) {
     if (v === OPT.medPharmacy || v === OPT.medInfo) {
       if (!overrideStart()) {
         if (v === OPT.medPharmacy) return finish(withEmergency({search: {...PHARMACY_SEARCH}}), 'start_choice');
-        return finish(withEmergency({summary: {ko: buildMedInfoSummary()}, search: {...PHARMACY_SEARCH}}), 'start_choice');
+        return finish(withEmergency({summary: localizedSummary((tx) => buildMedInfoSummary({tx}), data), search: {...PHARMACY_SEARCH}}), 'start_choice');
       }
     } else if (v === OPT.medSymptom) symptom = {kind: 'unknown', source: 'med_symptom'};
     else trace.warnings.push(`invalid_answer:${ENGINE_Q.MED_CHOICE}`);
@@ -471,7 +475,7 @@ async function core(payload, ctx, deps, trace, now, log) {
       if (r.llmMeta) { trace.llm.classify = r.llmMeta; llmUsed = true; }
       if (r.kind === 'ask') return finish(withEmergency({followUp: r.followUp}), 'identify');
       if (r.kind === 'search') return finish(withEmergency({search: r.search}), 'identify');
-      if (r.kind === 'medInfo') return finish(withEmergency({summary: {ko: buildMedInfoSummary()}, search: {...PHARMACY_SEARCH}}), 'identify');
+      if (r.kind === 'medInfo') return finish(withEmergency({summary: localizedSummary((tx) => buildMedInfoSummary({tx}), data), search: {...PHARMACY_SEARCH}}), 'identify');
       symptom = r.kind === 'symptom' ? guardSex(r) : {kind: 'unknown', source: r.source ?? 'unknown'};
       nq = nextQuestion({codes, data, mode: 'normal', symptomState: stateOf()});
     }
@@ -494,8 +498,8 @@ async function core(payload, ctx, deps, trace, now, log) {
   trace.symptom.fallbackGroup = rec.group;
   // 11/17 EF(G6): 안전 미응답 판단 문항은 답 규칙이 가리키는 문항 전체(데이터에서 만듦)
   const safetyUnanswered = safetyCheckItemIds(data).some((id) => !vis.has(id));
-  const summary = buildSummary({slots: trace.slots, codes: vis, symptom: symptomObj, departments: rec.departments, data, safetyUnanswered, riskUnconfirmed: risk.state === 'unsure', group: rec.group}); // 11/17 RG1: RF 판단 #11(지나간 사건 '아니요' 경고) 삭제 — 질문 기준이 '오늘'이 되어 필요 없음
-  const response = withEmergency({summary: {ko: summary}, search: rec.search});
+  const summary = localizedSummary((tx) => buildSummary({slots: trace.slots, codes: vis, symptom: symptomObj, departments: rec.departments, data, safetyUnanswered, riskUnconfirmed: risk.state === 'unsure', group: rec.group, tx}), data); // 11/17 RG1: RF 판단 #11(지나간 사건 '아니요' 경고) 삭제 — 질문 기준이 '오늘'이 되어 필요 없음
+  const response = withEmergency({summary, search: rec.search});
 
   // 건강정보 후보: 상담 대상이 본인일 때만, 요청당 LLM 1번(이미 증상 분류를 불렀으면 건너뜀)
   if (vis.get(TARGET_ITEM_ID) === TARGET_SELF) {

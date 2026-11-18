@@ -4,6 +4,7 @@
 import {readFileSync} from 'node:fs';
 import path from 'node:path';
 import {parseCsv, DEFAULT_CSV_DIR, loadRefData, buildRefData, toCsvRow, JSONB_COLUMNS} from '../llm/ref-data.mjs';
+import {buildI18nIndex} from './i18n.mjs';
 
 export {DEFAULT_CSV_DIR};
 
@@ -65,7 +66,8 @@ export function loadIntakeDataFromRows(tables, {source = 'supabase'} = {}) {
   return buildIntakeData(readRows, source, buildRefData(readRows, source));
 }
 
-function buildIntakeData(readRows, source, refData) {
+function buildIntakeData(readRows, source, refDataIn) {
+  let refData = refDataIn;
   const problems = [];
   const warnings = [];
 
@@ -287,10 +289,20 @@ function buildIntakeData(readRows, source, refData) {
     problems.push('app_config: max_recommendations 정수 아님');
   }
 
+  // 11/17 다국어: 번역 표(care_engine/docs/다국어_설계.md). 시드 폴더에 파일이 없으면 번역 없이(한국어만) 동작한다.
+  let i18nRows = [];
+  try { i18nRows = read('text_i18n.csv'); } catch (e) {
+    if (source === 'csv' && e?.code === 'ENOENT') warnings.push('text_i18n.csv 없음: 번역 없이 한국어만');
+    else throw e;
+  }
+  const i18n = buildI18nIndex(i18nRows, problems);
+
   if (problems.length > 0) throw new IntakeDataError(problems);
 
+  refData = {...refData, i18n};
   return {
     source,
+    i18n,
     dataVersion,
     questionnaire,
     items,

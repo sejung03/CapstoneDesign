@@ -47,7 +47,7 @@ test('연결: toCsvRow — DB 값을 CSV 문자열 형식으로', () => {
 function restLikeTables() {
   const files = ['data_version', 'questionnaire', 'questionnaire_item', 'questionnaire_answer_option', 'questionnaire_enable_when',
     'safety_rule', 'safety_rule_condition', 'output_mapping', 'department', 'symptom', 'symptom_department',
-    'symptom_department_variant', 'symptom_synonym', 'fallback_department', 'app_config'];
+    'symptom_department_variant', 'symptom_synonym', 'fallback_department', 'app_config', 'text_i18n'];
   const tables = {};
   for (const f of files) {
     const rows = parseCsv(readFileSync(path.join(DEFAULT_CSV_DIR, `${f}.csv`), 'utf8'));

@@ -1,7 +1,7 @@
 // 응답 계약 검사(설계 §8-5). 프론트 normalizeAssistantResponse(frontend/assistant.mjs)와
 // normalizeIntakeQuestionnaire·normalizeEmergency·normalizeHealthUpdates 규칙을 옮겼다(프론트 파일은 import하지 않는다).
 // 엔진은 프론트보다 조금 더 엄격하다: 허용 필드 밖 금지, followUpQuestionId 금지, emergency의 topicId·videos·instructions 금지(설계 §6).
-import {checkFollowUpContract} from '../llm/confirm-question.mjs';
+import {checkFollowUpContract, LABEL_LOCALES} from '../llm/confirm-question.mjs';
 
 /**
  * 프론트 departmentCatalog의 key 목록(frontend/departments.mjs). 테스트가 프론트 파일을 읽어 같은지 확인한다.
@@ -22,8 +22,9 @@ const isObj = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
 
 function checkText(v, max, at, errors, {trim = false} = {}) {
   if (!isObj(v) || typeof v.ko !== 'string' || !v.ko.trim() || (trim ? v.ko.trim() : v.ko).length > max) { errors.push(`${at}.ko`); return; }
-  if (v.en !== undefined && (typeof v.en !== 'string' || v.en.length > max)) errors.push(`${at}.en`);
-  for (const k of Object.keys(v)) if (k !== 'ko' && k !== 'en') errors.push(`${at}: '${k}' 허용 안 함`);
+  // 11/17 다국어: ko 필수, en·zh·vi·uz 선택(프론트 frontend/i18n.mjs locales와 같음)
+  for (const k of LABEL_LOCALES.slice(1)) if (v[k] !== undefined && (typeof v[k] !== 'string' || v[k].length > max)) errors.push(`${at}.${k}`);
+  for (const k of Object.keys(v)) if (!LABEL_LOCALES.includes(k)) errors.push(`${at}: '${k}' 허용 안 함`);
 }
 
 function normalizeAge(value) {

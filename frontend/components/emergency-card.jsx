@@ -19,6 +19,7 @@ function EmergencyHelp({state,t,notice,onEmergencyLocation}){
  return <section id="emergency-card" className="emergency-card" aria-labelledby="emergency-heading">
   <div className="emergency-heading"><h3 id="emergency-heading">{label(notice?.title)||(phrase(state.locale,"Emergency help"))}</h3><button id="emergency-close" className="text-button">{t('close')}</button></div>
   {notice?.message&&<p>{label(notice.message)}</p>}
+  {!ko&&notice?.message?.ko&&label(notice.message)!==notice.message.ko&&<p className="emergency-original"><span className="emergency-note">{phrase(state.locale,"Korean original (you can show this to 119 or people nearby):")}</span> <span lang="ko">{notice.message.ko}</span></p>}
   <p>{phrase(state.locale,"In an emergency in Korea, call 119.")}</p>
   <a className="primary-button emergency-call" href="tel:119"><Icon name="phone" />{phrase(state.locale,"Call 119")}</a>
   <p className="emergency-note">{phrase(state.locale,"If calling is unavailable on this device, dial 119 on your phone. Follow the dispatcher’s instructions.")}</p>

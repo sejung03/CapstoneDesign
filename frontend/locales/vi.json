@@ -754,5 +754,7 @@
   "Question {0}": "Câu hỏi {0}",
   "Could not load the page. Please refresh.": "Không thể tải trang. Vui lòng tải lại.",
   "Refresh": "Tải lại",
-  "Question {0} / {1}": "Câu hỏi {0} / {1}"
+  "Question {0} / {1}": "Câu hỏi {0} / {1}",
+  "Please write your symptoms in Korean if you can. Danger signs written in other languages may not be detected. In an emergency, call 119.": "Vui lòng viết triệu chứng bằng tiếng Hàn nếu có thể. Các dấu hiệu nguy hiểm viết bằng ngôn ngữ khác có thể không được nhận biết. Nếu khẩn cấp, hãy gọi 119.",
+  "Korean original (you can show this to 119 or people nearby):": "Bản gốc tiếng Hàn (có thể đưa cho 119 hoặc người xung quanh xem):"
 }
