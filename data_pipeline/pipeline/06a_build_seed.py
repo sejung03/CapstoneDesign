@@ -32,6 +32,7 @@ import json
 import os
 import re
 import sys
+import unicodedata
 from collections import Counter, defaultdict
 
 from ruamel.yaml import YAML
@@ -268,6 +269,25 @@ def main():
 
     # ---------- 사전 ----------
     syn = read_csv(J(inp["synonym"]))
+    # 11/18 일상 표현(config/synonym_everyday_v1.csv): 라벨링 사전에 없는 생활 표현("발목을 접질렀어요"의 "발목").
+    # 시나리오 care_engine/eval/symptom_phrases_v*.json으로 찾은 것. 같은 (증상, 정규화 표현)이 이미 있으면 넣지 않는다.
+    if inp.get("synonym_everyday"):
+        std_ids = {r["symptom_id"] for r in std}
+        have = {(r["symptom_id"], r["term_norm"]) for r in syn}
+        bad = []
+        for r in read_csv(J(inp["synonym_everyday"])):
+            term = r["term"].strip()
+            norm = "".join(ch for ch in unicodedata.normalize("NFKC", term).lower() if not ch.isspace())
+            if r["symptom_id"] not in std_ids or not norm:
+                bad.append((r["symptom_id"], term))
+                continue
+            if (r["symptom_id"], norm) in have:
+                continue
+            have.add((r["symptom_id"], norm))
+            syn.append({"symptom_id": r["symptom_id"], "term": term, "term_norm": norm, "term_type": "동의어",
+                        "sex_restriction": "", "source": "everyday", "status": "added"})
+        if bad:
+            sys.exit(f"synonym_everyday: 없는 증상 ID·빈 표현 {bad}")
     span_norms = sorted({r["term_norm"] for r in syn if r["term_type"] == "span"})
     span_group = {t: i for i, t in enumerate(span_norms, 1)}
     syn_rows, long_terms, syn_src_missing = [], [], set()

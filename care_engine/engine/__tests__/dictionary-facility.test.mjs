@@ -27,7 +27,8 @@ const facility = (messages, {hasAnyAnswer = false} = {}) => checkFacilityKeyword
 test('matchSymptoms: 시작 문장(사실 확인 §2와 같은 결과)', () => {
   assert.deepEqual(matchSymptoms('기침이 나요', ref), ['R05']);
   assert.deepEqual(matchSymptoms('열이 나는 것 같아요', ref), ['A03']);
-  assert.deepEqual(matchSymptoms('배가 아파요', ref), []);
+  assert.deepEqual(matchSymptoms('배가 아파요', ref), ['D01']); // 11/18 일상 표현 사전(synonym_everyday_v1.csv)
+  assert.deepEqual(matchSymptoms('몸이 아파요', ref), []); // 증상 단서만 있고 사전에는 없는 문장
   assert.deepEqual(matchSymptoms(pharmacyStarterText(), ref), []);
   assert.deepEqual(matchSymptoms('', ref), []);
 });
@@ -114,7 +115,8 @@ test('F1 키워드: "사고" 단독은 위험 단서가 아니다(약 사고 싶
 });
 
 test('F1 키워드: 약국 + 증상·약 질문 단서·사전 매칭·병원 이름·답 → null(사유 코드)', () => {
-  assert.equal(reasonOf(['배가 아픈데 약국 어디예요']), 'blocked_symptom');
+  assert.equal(reasonOf(['몸이 아픈데 약국 어디예요']), 'blocked_symptom'); // 11/18: '배가 아픈데'는 이제 사전에 맞아 blocked_dict
+  assert.equal(reasonOf(['배가 아픈데 약국 어디예요']), 'blocked_dict');
   assert.equal(reasonOf(['약국 약이랑 같이 먹어도 되나요']), 'blocked_medication');
   assert.equal(reasonOf(['병원이나 약국 어디 있어요']), 'blocked_place');
   assert.equal(reasonOf(['기침 심한데 약국 어디예요']), 'blocked_dict');
