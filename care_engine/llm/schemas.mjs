@@ -7,8 +7,6 @@ export const SYMPTOM_SCHEMA_NAME = 'symptom_pick_v1';
 export const PROFILE_SCHEMA_NAME = 'profile_extract_v1';
 export const RISK_SCHEMA_NAME = 'risk_signal_v1';
 export const SYMPTOM_RISK_SCHEMA_NAME = 'symptom_risk_v1';
-export const REWRITE_SCHEMA_NAME = 'symptom_rewrite_v1'; // 11/18 절충 1
-export const REWRITE_RISK_SCHEMA_NAME = 'symptom_rewrite_risk_v1';
 
 export const INTENTS = ['symptom', 'facility_search', 'medication_question', 'other'];
 export const PICK_STATUSES = ['matched', 'no_match', 'unclear'];
@@ -54,18 +52,6 @@ export function symptomRiskSchema(candidateIds) {
     properties: {...base.properties, risk_signal: {type: 'string', enum: [...RISK_SIGNALS]}},
     required: [...base.required, 'risk_signal'],
   };
-  assertPortableSchema(schema);
-  return schema;
-}
-
-/**
- * 11/18 절충 1: 고쳐 쓰기. terms = 표준 증상 표현(자유 문자열, 개수·길이는 validate.mjs가 강제). 증상 ID 목록이 없어 스키마가 작다.
- * @param {{risk?:boolean}} [opts] risk면 risk_signal도 받는다(결합 호출과 같은 위험 정의).
- */
-export function rewriteSchema({risk = false} = {}) {
-  const properties = {intent: {type: 'string', enum: [...INTENTS]}, terms: {type: 'array', items: {type: 'string'}}};
-  if (risk) properties.risk_signal = {type: 'string', enum: [...RISK_SIGNALS]};
-  const schema = {type: 'object', properties, required: Object.keys(properties), additionalProperties: false};
   assertPortableSchema(schema);
   return schema;
 }

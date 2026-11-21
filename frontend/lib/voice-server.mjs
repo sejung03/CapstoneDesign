@@ -1,3 +1,6 @@
+import {grantVoice, hasVoiceGrant, transcribeManaged} from './voice-managed.mjs';
+
+const voiceLanguages=new Set(['ko','en','zh','vi','uz']);
 const audioTypes = new Set(['audio/webm', 'audio/mp4', 'audio/ogg', 'audio/wav']);
 const headers = {'cache-control': 'no-store'};
 const error = (code, status) => Response.json({detail: code}, {status, headers});
@@ -24,11 +27,17 @@ async function readBody(request, limit) {
   }
 }
 
-export async function forwardVoice(request, action, {sameOrigin, fetchImpl = fetch}) {
-  if (process.env.NEXT_PUBLIC_VOICE_ENABLED !== '1' || !['stt', 'tts'].includes(action)) {
+export async function forwardVoice(request, action, {sameOrigin, fetchImpl = fetch, env = process.env}) {
+  if (env.NEXT_PUBLIC_VOICE_ENABLED !== '1' || !['stt', 'tts', 'consent'].includes(action)) {
     return error('voice_disabled', 404);
   }
   if (!sameOrigin(request)) return error('invalid_origin', 403);
+
+  const managed = env.VOICE_STT_PROVIDER === 'openai';
+  if (managed && env.VERCEL_ENV !== 'preview') return error('voice_disabled',404);
+  if (action === 'consent') return managed ? grantVoice(request,env.VOICE_CONSENT_SECRET) : error('voice_disabled',404);
+  if (managed && action === 'tts') return error('voice_disabled',404);
+  if (managed && !hasVoiceGrant(request,env.VOICE_CONSENT_SECRET)) return error('voice_consent_required',403);
 
   const contentType = request.headers.get('content-type') || '';
   const mime = contentType.split(';')[0].trim();
@@ -46,7 +55,12 @@ export async function forwardVoice(request, action, {sameOrigin, fetchImpl = fet
   if (!body) return error('body_too_large', 413);
   if (!body.length) return error('empty_body', 400);
 
-  const port = Number(process.env.VOICE_SERVICE_PORT || 3091);
+  const requestedLanguage=request.headers.get('x-voice-language');
+  if(requestedLanguage&&!voiceLanguages.has(requestedLanguage))return error('invalid_voice_language',400);
+  const language=requestedLanguage||'ko';
+  if (managed) return transcribeManaged(request,mime,body,{apiKey:env.VOICE_OPENAI_API_KEY,fetchImpl,language});
+
+  const port = Number(env.VOICE_SERVICE_PORT || 3091);
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
     return error('invalid_voice_port', 503);
   }
@@ -54,7 +68,7 @@ export async function forwardVoice(request, action, {sameOrigin, fetchImpl = fet
   try {
     const upstream = await fetchImpl('http://127.0.0.1:' + port + '/' + action, {
       method: 'POST',
-      headers: {'content-type': mime},
+      headers: {'content-type': mime,'x-voice-language':language},
       body,
       redirect: 'error',
       signal: AbortSignal.any([request.signal, AbortSignal.timeout(stt ? 180000 : 30000)]),

@@ -44,13 +44,12 @@ test('enableWhen "=": Q0=no일 때만 N1이 보임, 답이 없으면 거짓', ()
   assert.equal(isVisible('Q0', new Map(), data), true);
 });
 
-// 11/18 재설계로 실제 데이터에 exists 조건이 없어졌다 → 합성 데이터로 같은 의미를 검사
-test('enableWhen "exists": 가리킨 문항에 답이 있으면 보임, 가리킨 문항이 숨겨지면 답이 있어도 없는 것 (합성 데이터)', () => {
-  const syn = {...data, enableWhenById: new Map([...data.enableWhenById, ['N7', [{question: 'N5-1', operator: 'exists', answer: true}]]])};
-  assert.equal(isVisible('N7', new Map([['Q0', 'no']]), syn), false);
-  assert.equal(isVisible('N7', new Map([['Q0', 'no'], ['N5-1', 'onset_today']]), syn), true);
-  assert.equal(isVisible('N7', new Map([['Q0', 'yes'], ['N5-1', 'onset_today']]), syn), false);
-  assert.equal(isVisible('N5-1', new Map([['Q0', 'no']]), data), true);
+test('enableWhen "exists": N5에 답이 있으면 N5-1이 보임', () => {
+  assert.equal(isVisible('N5-1', new Map([['Q0', 'no']]), data), false);
+  assert.equal(isVisible('N5-1', new Map([['Q0', 'no'], ['N5', 'yes']]), data), true);
+  assert.equal(isVisible('N5-1', new Map([['Q0', 'no'], ['N5', 'no']]), data), true);
+  // 가리킨 N5가 숨겨지면(Q0=yes) 답이 있어도 없는 것으로 본다
+  assert.equal(isVisible('N5-1', new Map([['Q0', 'yes'], ['N5', 'yes']]), data), false);
 });
 
 test('enableWhen "!=": 가리킨 문항이 숨겨지거나 답이 없으면 거짓 (합성 데이터)', () => {

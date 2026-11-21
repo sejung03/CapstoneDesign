@@ -27,8 +27,7 @@ test('모든 시나리오: 끝까지 돌고 모든 응답이 계약 검사 통�
   }
 });
 
-// 11/18 문진 재설계: 증상 경로 19~25 → 11~13(공통 7 + 증상 확인 1~2 + 상세 3~4)
-test('질문 수(11/18 재설계): 약국 0, 증상 11~13, 증상 확인 직후 skip 8, 약 의도 8', async () => {
+test('질문 수: 사실 확인 §8 표와 비교(약국 0, 증상 19~24, 증상 확인 직후 skip 8, 증상 모름 20~25, 약 의도 8)', async () => {
   const diffs = [];
   for (const s of scenarios()) {
     if (!s.expect) continue;
@@ -38,11 +37,10 @@ test('질문 수(11/18 재설계): 약국 0, 증상 11~13, 증상 확인 직후 
   // c24 형태는 사전 확인 + LLM 확인으로 엔진 질문이 2개(표에 없는 경로). 그 밖에는 표와 같아야 한다.
   assert.deepEqual(diffs, []);
   assert.equal((await get('pharmacy_keyword')).questionCount, 0);
-  assert.equal((await get('dict_min')).questionCount, 11); // 기침(통증 아님): 7 + 사전 확인 + N5-1·N12·N7
-  assert.equal((await get('dict_max')).questionCount, 11);
-  assert.equal((await get('llm_confirm')).questionCount, 12); // 배 아픔(통증): 7 + LLM 확인 + N5-1·P3·P1·N7
+  assert.equal((await get('dict_min')).questionCount, 19);
+  assert.equal((await get('dict_max')).questionCount, 24);
   assert.equal((await get('dict_skip_after_identify')).questionCount, 8);
-  assert.equal((await get('llm_fail')).questionCount, 12); // 증상 모름: 7 + 되묻기 + N5-1·N12·N7·F2
+  assert.equal((await get('llm_fail')).questionCount, 25);
   assert.equal((await get('med_pharmacy')).questionCount, 8);
   assert.equal((await get('c24_dict_partial')).engineQuestionCount, 2);
 });
@@ -56,17 +54,7 @@ test('경로 결과: 약국 키워드·사전·LLM·LLM 실패·약 의도·기�
   assert.equal(llm.finalTrace.symptom.source, 'llm_confirm');
   assert.equal(llm.llmCalls.classify, 1);
   const fail = await get('llm_fail');
-  // 11/18: 첫 실패는 되묻기(SYM_RETRY_1). 가짜 사용자 '잘 모르겠어요' → 증상 모름
-  assert.ok(fail.asked.includes('SYM_RETRY_1') && !fail.asked.includes('SYM_NOT_FOUND') && fail.asked.includes('F2'));
-  assert.equal(fail.finalTrace.symptom.source, 'retry_skip');
-  const twice = await get('llm_fail_retry_text');
-  assert.deepEqual(twice.asked.filter((id) => id.startsWith('SYM_')), ['SYM_RETRY_1', 'SYM_NOT_FOUND']);
-  assert.equal(twice.finalTrace.symptom.source, 'not_found');
-  assert.ok(twice.asked.includes('F2'));
-  const area = await get('retry_area_pick');
-  assert.deepEqual(area.asked.filter((id) => id.startsWith('SYM_')), ['SYM_RETRY_1', 'SYM_AREA_PICK']);
-  assert.equal(area.finalTrace.symptom.id, 'L16');
-  assert.equal(area.finalTrace.symptom.source, 'area_pick');
+  assert.ok(fail.asked.includes('SYM_NOT_FOUND') && fail.asked.includes('F2'));
   assert.equal(fail.finalTrace.symptom.fallbackGroup, 'general');
   assert.ok(fail.final.summary.ko.includes('주된 증상: 목록에서 찾지 못함'));
   assert.deepEqual((await get('fallback_injury')).final.search, {type: 'hospital', department: 'orthopedics'});
@@ -91,7 +79,7 @@ test('c24 형태: 사전 확인(정답 없음) → sym_other → LLM 후보에�
 test('안전·대상 질문(Q0~T3) 동안 LLM 0회, 증상 확인은 T3 다음에만', async () => {
   for (const s of scenarios()) {
     const r = await get(s.name);
-    const idx = r.asked.findIndex((id) => ENGINE_QUESTION_IDS.includes(id) || /^SYM_RETRY_\d+$/.test(id)); // 11/18 되묻기도 엔진 질문
+    const idx = r.asked.findIndex((id) => ENGINE_QUESTION_IDS.includes(id));
     if (idx >= 0) {
       assert.equal(r.asked[idx - 1], 'T3', `${s.name}: ${r.asked.join(',')}`);
       // 엔진 질문이 처음 나오기 전 응답들의 trace에는 LLM 호출이 없다
@@ -131,16 +119,15 @@ test('skip 여러 시점: Q0 직후는 안전 미응답 문구, T1 뒤(안전 �
   assert.ok(id.usedSkip && id.final.summary.ko.includes('주된 증상: '));
 });
 
-test('도달 가능성(11/18 재설계): 엔진이 묻는 문항 23개 + 엔진 질문 7개(+ 되묻기)가 시나리오에서 한 번 이상 나온다', async () => {
+test('도달 가능성: 엔진이 묻는 문항 34개 + 엔진 질문 5개가 시나리오에서 한 번 이상 나온다', async () => {
   const seen = new Set();
   for (const s of scenarios()) for (const id of (await get(s.name)).asked) seen.add(id);
   const never = new Set(neverAskedItems(data));
   const askable = data.items.map((i) => i.linkId).filter((id) => !never.has(id));
-  assert.equal(askable.length, 23);
-  assert.equal(fixedQuestionCount(), 23);
+  assert.equal(askable.length, 34);
+  assert.equal(fixedQuestionCount(), 34);
   const missing = [...askable, ...ENGINE_QUESTION_IDS].filter((id) => !seen.has(id));
   assert.deepEqual(missing, []);
-  assert.ok([...seen].some((id) => /^SYM_RETRY_\d+$/.test(id)), '되묻기(SYM_RETRY_<n>)가 나온다');
   for (const id of never) assert.ok(!seen.has(id), `${id}가 나옴`);
 });
 
@@ -160,7 +147,7 @@ test('원문 유출: 표식 문자열이 trace·로그에 없다(LLM·건강정�
   const runs = [
     await simulate({name: 'leak_llm', messages: [`${TEXT.noDict} ${MARK}`], answers: {...SAFE_BASE, SYM_CONFIRM: 'sym_D01'},
       llm: makeLlm({classify: confirmFor(['D01']), profile: {items: [item], meta: {}}})}),
-    await simulate({name: 'leak_dict', messages: [`${TEXT.dict} ${MARK}`], answers: {...SAFE_BASE, SYM_DICT_CONFIRM: 'sym_R05'}, skipAt: 'N5-1',
+    await simulate({name: 'leak_dict', messages: [`${TEXT.dict} ${MARK}`], answers: {...SAFE_BASE, SYM_DICT_CONFIRM: 'sym_R05'}, skipAt: 'N5',
       llm: makeLlm({profile: {items: [item], meta: {}}})}),
     await simulate({name: 'leak_kw', messages: [`문 연 약국 ${MARK}`], answers: {}}),
     await simulate({name: 'leak_em', messages: [MARK], answers: {Q0: 'yes'}}),
@@ -174,11 +161,11 @@ test('원문 유출: 표식 문자열이 trace·로그에 없다(LLM·건강정�
   assert.deepEqual(runs[0].finalTrace.llm.profile.fields, ['age']);
 });
 
-test('시간: LLM이 deadline 뒤에 끝나면 되묻기(11/18, 예전 SYM_NOT_FOUND)', async () => {
+test('시간: LLM이 deadline 뒤에 끝나면 SYM_NOT_FOUND', async () => {
   const llm = fakeLlm({classify: confirmFor(['D01']), classifyDelayMs: 400});
   const t0 = Date.now();
   const {out} = await call({reason: 'followup', messages: [TEXT.noDict], answers: SAFE_BASE, llm, ctx: {deadlineAt: Date.now() + 60}});
-  assert.equal(out.response.followUp.id, 'SYM_RETRY_1');
+  assert.equal(out.response.followUp.id, 'SYM_NOT_FOUND');
   assert.equal(out.trace.llm.classify.fallbackReason, 'timeout');
   assert.ok(Date.now() - t0 < 350, '늦은 LLM을 기다리지 않는다');
 });
@@ -199,13 +186,4 @@ test('결정성: 같은 입력 두 번 → 같은 응답·trace', async () => {
   const c = await call({reason: 'followup', messages: [TEXT.noDict], answers: SAFE_BASE, llm: fakeLlm({classify: confirmFor(['D01', 'D02'])})});
   const d = await call({reason: 'followup', messages: [TEXT.noDict], answers: SAFE_BASE, llm: fakeLlm({classify: confirmFor(['D01', 'D02'])})});
   assert.deepEqual(c.out, d.out);
-});
-
-test('11/18 절충 1: 고쳐 쓰기 후보가 틀림 → 다른 증상이에요 → 전체 목록 LLM → 확정(LLM 2번, 질문 반복 없음)', async () => {
-  const r = await get('rewrite_confirm_other');
-  assert.deepEqual(r.asked.filter((id) => id.startsWith('SYM_')), ['SYM_REWRITE_CONFIRM', 'SYM_CONFIRM']);
-  assert.equal(r.finalTrace.symptom.id, 'D06');
-  assert.equal(r.finalTrace.symptom.source, 'llm_confirm');
-  assert.equal(r.llmCalls.classify, 2);
-  assert.equal(r.contractErrors.length, 0);
 });

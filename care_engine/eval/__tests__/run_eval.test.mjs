@@ -11,7 +11,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const cases = readCases(path.join(HERE, '..', 'cases', 'draft_v0.jsonl'));
 const fixtures = JSON.parse(readFileSync(path.join(HERE, '..', 'fixtures', 'mock_v0.json'), 'utf8'));
 // 1차 mock 기대값은 retrieve 기준으로 손으로 계산했다 → 그 테스트는 retrieve로 고정, all 기본값은 따로 검사
-const config = getConfig({LLM_SYMPTOM_MODE: 'full', LLM_PROVIDER: 'mock', LLM_CANDIDATE_MODE: 'retrieve'});
+const config = getConfig({LLM_PROVIDER: 'mock', LLM_CANDIDATE_MODE: 'retrieve'});
 
 test('draft_v0: 30개, 구성 개수, 형식', () => {
   assert.equal(cases.length, 30);
@@ -52,9 +52,8 @@ test('runEval(mock): 지표가 fixture 설계대로 나온다', async () => {
   assert.deepEqual([m.profilePrecision.hit, m.profilePrecision.n], [3, 3]);
   assert.deepEqual([m.profileRecall.hit, m.profileRecall.n], [3, 4]);
   assert.equal(m.profileCalls, 2);
-  // 11/18 일상 표현 사전(동의어 1173 → 1598)으로 retrieve 후보가 정답을 더 잘 담는다(16·15 → 21·21)
-  assert.deepEqual([m.candidateSentRecall.hit, m.candidateSentRecall.n], [21, 22]);
-  assert.deepEqual([m.candidateRecall['R@40'].hit, m.candidateRecall['R@40'].n], [21, 22]);
+  assert.deepEqual([m.candidateSentRecall.hit, m.candidateSentRecall.n], [16, 22]);
+  assert.deepEqual([m.candidateRecall['R@40'].hit, m.candidateRecall['R@40'].n], [15, 22]);
   assert.equal(m.emergencyMissRate.value, '미측정');
   assert.deepEqual([m.repeatAgreement.hit, m.repeatAgreement.n], [30, 30]);
   // confirm = 정답 포함 증상 사례 15 + 정답 없이 다른 증상을 고른 c01·c08·c27 3 (c07은 no_match)
@@ -62,7 +61,7 @@ test('runEval(mock): 지표가 fixture 설계대로 나온다', async () => {
 });
 
 test('runEval(mock, all 기본값): 후보를 전부 보내므로 보낸 후보에 정답 22/22, 나머지 지표는 같다', async () => {
-  const r = await runEval({cases, fixtures, providerName: 'mock', repeat: 1, config: getConfig({LLM_SYMPTOM_MODE: 'full', LLM_PROVIDER: 'mock'})});
+  const r = await runEval({cases, fixtures, providerName: 'mock', repeat: 1, config: getConfig({LLM_PROVIDER: 'mock'})});
   const m = r.metrics;
   assert.equal(r.candidateMode, 'all');
   assert.deepEqual([m.candidateSentRecall.hit, m.candidateSentRecall.n], [22, 22]);
@@ -77,7 +76,7 @@ test('runEval 결과에 사례 원문·profile 값이 없다', async () => {
 });
 
 test('runEval(gemini 자리): 모두 not_implemented 실패, 네트워크 없음', async () => {
-  const r = await runEval({cases: cases.slice(0, 3), fixtures, providerName: 'gemini', repeat: 1, config: getConfig({LLM_SYMPTOM_MODE: 'full', LLM_PROVIDER: 'gemini'})});
+  const r = await runEval({cases: cases.slice(0, 3), fixtures, providerName: 'gemini', repeat: 1, config: getConfig({LLM_PROVIDER: 'gemini'})});
   assert.deepEqual(r.metrics.failuresByReason, {not_implemented: 3});
 });
 
@@ -153,7 +152,7 @@ test('runEval: quota·auth·bad_request가 나면 그 자리에서 멈춘다(재
 
 test('runEval: LLM_DEV_CONSENT=true면 consent 없이 개발용 동의 경로', async () => {
   const f = spyFactory();
-  const cfg = getConfig({LLM_SYMPTOM_MODE: 'full', LLM_PROVIDER: 'mock', LLM_DEV_CONSENT: 'true'});
+  const cfg = getConfig({LLM_PROVIDER: 'mock', LLM_DEV_CONSENT: 'true'});
   const r = await runEval({cases: cases.slice(0, 1), providerName: 'mock', repeat: 1, config: cfg, prices: PRICES, providerFactory: f, budgetUsd: 100});
   assert.equal(r.consentSource, 'dev');
   assert.equal(f.calls(), 1);

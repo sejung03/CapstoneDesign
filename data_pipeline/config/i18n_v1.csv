@@ -18,11 +18,30 @@ item,T1,누구의 증상인가요?,draft,Whose symptoms are these?,这是谁的�
 item,T2,진료과 추천에 쓸 신체 기준 성별을 알려주세요.,draft,Please tell us the sex (based on the body) used to recommend a department.,请告诉我们用于推荐科室的生理性别。,Vui lòng cho biết giới tính sinh học để gợi ý chuyên khoa.,Bo'limni tavsiya qilish uchun tana bo'yicha jinsingizni ko'rsating.
 item,T3,나이는 어떻게 되나요?,draft,How old is the patient?,年龄多大？,Người bệnh bao nhiêu tuổi?,Yoshi nechada?
 item,N4,현재 가장 불편한 증상은 무엇인가요?,draft,What is the most bothersome symptom right now?,现在最不舒服的症状是什么？,Triệu chứng khó chịu nhất hiện nay là gì?,Hozir eng bezovta qilayotgan belgi nima?
-item,N5-1,{symptom} 증상은 언제부터 있었나요?,draft,When did your {symptom} start?,{symptom}症状是从什么时候开始的？,Triệu chứng {symptom} bắt đầu từ khi nào?,{symptom} belgisi qachondan beri bor?
-item,P3,어떻게 아픈가요? 가장 가까운 것을 골라 주세요.,draft,What does the pain feel like? Choose the closest one.,是怎样的疼痛？请选择最接近的一项。,Bạn đau như thế nào? Hãy chọn mục gần nhất.,Qanday og'riyapti? Eng yaqinini tanlang.
-item,P1,"통증은 0~10점 중 몇 점인가요? (0 = 통증 없음, 10 = 상상할 수 있는 가장 심한 통증)",draft,"On a scale of 0 to 10, how bad is the pain? (0 = no pain, 10 = the worst pain imaginable)",疼痛在0~10分中是几分？（0 = 不痛，10 = 能想象到的最剧烈的疼痛）,"Mức độ đau từ 0 đến 10 là bao nhiêu? (0 = không đau, 10 = đau dữ dội nhất có thể tưởng tượng)","Og'riq 0 dan 10 gacha necha ball? (0 = og'riq yo'q, 10 = tasavvur qilish mumkin bo'lgan eng kuchli og'riq)"
-item,N12,{symptom} 증상 때문에 일상생활이 얼마나 불편한가요?,draft,How much is your daily life affected by your {symptom}?,{symptom}症状对日常生活造成多大不便？,Triệu chứng {symptom} gây bất tiện cho sinh hoạt hằng ngày đến mức nào?,{symptom} belgisi kundalik hayotingizga qanchalik xalaqit beryapti?
+item,N5,이 증상이 오늘 처음 시작되었나요?,draft,Did this symptom first start today?,这个症状是今天才开始的吗？,Triệu chứng này mới bắt đầu hôm nay phải không?,Bu belgi bugun birinchi marta boshlandimi?
+item,N5-1,증상은 언제 시작되었나요?,draft,When did the symptoms start?,症状是什么时候开始的？,Triệu chứng bắt đầu khi nào?,Belgilar qachon boshlandi?
+item,N6,증상이 계속 나타나고 있나요?,draft,Is the symptom still present?,症状仍在持续吗？,Triệu chứng có còn đang xuất hiện không?,Belgi hali ham davom etyaptimi?
+item,N6-1,증상이 얼마나 자주 나타나나요?,draft,How often does the symptom occur?,症状多久出现一次？,Triệu chứng xuất hiện thường xuyên như thế nào?,Belgi qanchalik tez-tez paydo bo'ladi?
+item,N6-2,증상이 한 번 나타나면 얼마나 지속되나요?,draft,"Once it starts, how long does the symptom last?",症状每次出现会持续多久？,"Mỗi lần xuất hiện, triệu chứng kéo dài bao lâu?",Belgi paydo bo'lganda qancha davom etadi?
 item,N7,시간이 지나면서 증상이 심해지고 있나요?,draft,Is the symptom getting worse over time?,症状是否随着时间在加重？,Triệu chứng có nặng dần theo thời gian không?,Vaqt o'tishi bilan belgi kuchayyaptimi?
+item,N7-1,언제부터 심해졌나요?,draft,Since when has it been getting worse?,从什么时候开始加重的？,Nặng hơn từ khi nào?,Qachondan beri kuchaydi?
+item,N8,이전에도 비슷한 증상을 경험한 적이 있나요?,draft,Have you had similar symptoms before?,以前有过类似的症状吗？,Trước đây đã từng có triệu chứng tương tự chưa?,Ilgari ham shunga o'xshash belgilar bo'lganmi?
+item,N8-1,이전과 다른 점이 있나요?,draft,Is anything different from before?,和以前有什么不同吗？,Có điểm nào khác so với trước không?,Avvalgidan farqli tomoni bormi?
+item,N9,특정 행동이나 상황에서 증상이 심해지나요?,draft,Does the symptom get worse with certain activities or situations?,在特定动作或情况下症状会加重吗？,Triệu chứng có nặng hơn khi làm việc gì hoặc trong tình huống nào không?,Muayyan harakat yoki vaziyatda belgi kuchayadimi?
+item,N9-1,어떤 때 증상이 심해지나요?,draft,When does the symptom get worse?,什么时候症状会加重？,Khi nào triệu chứng nặng hơn?,Belgi qachon kuchayadi?
+item,N10,특정 행동이나 상황에서 증상이 완화되나요?,draft,Does the symptom ease with certain activities or situations?,在特定动作或情况下症状会缓解吗？,Triệu chứng có giảm khi làm việc gì hoặc trong tình huống nào không?,Muayyan harakat yoki vaziyatda belgi yengillashadimi?
+item,N10-1,어떤 때 증상이 나아지나요?,draft,When does the symptom get better?,什么时候症状会好转？,Khi nào triệu chứng đỡ hơn?,Belgi qachon yaxshilanadi?
+item,N11,증상을 줄이기 위해 약을 먹거나 처치를 했나요?,draft,Have you taken medicine or done anything to relieve the symptom?,为了缓解症状，有没有吃药或做过处理？,Bạn đã uống thuốc hoặc xử trí gì để giảm triệu chứng chưa?,Belgini kamaytirish uchun dori ichdingizmi yoki biror choralar ko'rdingizmi?
+item,N11-1,어떤 약이나 처치를 했나요?,draft,What medicine or treatment did you use?,用了什么药或处理？,Bạn đã dùng thuốc hoặc cách xử trí nào?,Qanday dori yoki choralar ko'rdingiz?
+item,N11-2,약이나 처치 후 증상은 어땠나요?,draft,How was the symptom after the medicine or treatment?,用药或处理后症状如何？,"Sau khi dùng thuốc hoặc xử trí, triệu chứng thế nào?",Dori yoki choradan keyin belgi qanday bo'ldi?
+item,N12,현재 증상으로 일상생활에 어려움이 있나요?,draft,Does the symptom make daily life difficult right now?,现在的症状是否影响日常生活？,Triệu chứng hiện tại có gây khó khăn cho sinh hoạt hằng ngày không?,Hozirgi belgi kundalik hayotingizni qiyinlashtiryaptimi?
+item,N12-1,가장 불편한 것 하나를 골라 주세요.,draft,Please choose the one thing that is hardest.,请选择最不方便的一项。,Vui lòng chọn một điều khó khăn nhất.,Eng qiyin bo'lgan bittasini tanlang.
+item,N13,현재 증상과 관련된 기존 질환이 있나요?,draft,Do you have an existing condition related to this symptom?,有与现在症状相关的既往疾病吗？,Có bệnh nền nào liên quan đến triệu chứng hiện tại không?,Hozirgi belgiga bog'liq avvaldan bor kasallik bormi?
+item,N13-1,어떤 질환인가요?,draft,What condition is it?,是什么疾病？,Đó là bệnh gì?,Qanday kasallik?
+item,P0,통증이 있나요?,draft,Is there any pain?,有疼痛吗？,Có bị đau không?,Og'riq bormi?
+item,P1,"통증은 0~10점 중 몇 점인가요? (0 = 통증 없음, 10 = 상상할 수 있는 가장 심한 통증)",draft,"On a scale of 0 to 10, how bad is the pain? (0 = no pain, 10 = the worst pain imaginable)",疼痛在0~10分中是几分？（0 = 不痛，10 = 能想象到的最剧烈的疼痛）,"Mức độ đau từ 0 đến 10 là bao nhiêu? (0 = không đau, 10 = đau dữ dội nhất có thể tưởng tượng)","Og'riq 0 dan 10 gacha necha ball? (0 = og'riq yo'q, 10 = tasavvur qilish mumkin bo'lgan eng kuchli og'riq)"
+item,P2,어디가 아픈가요?,draft,Where does it hurt?,哪里痛？,Đau ở đâu?,Qayer og'riyapti?
+item,P3,어떻게 아픈가요?,draft,What does the pain feel like?,是怎样的疼痛？,Đau như thế nào?,Og'riq qanday?
 item,F1,불편한 곳이 몸의 어느 부위인가요?,draft,Which part of the body is bothering you?,不舒服的是身体哪个部位？,Chỗ khó chịu ở bộ phận nào của cơ thể?,Tananing qaysi qismi bezovta qilyapti?
 item,F2,다쳐서 생긴 증상인가요?,draft,Is the symptom caused by an injury?,这是受伤引起的症状吗？,Triệu chứng này có phải do chấn thương không?,Bu belgi jarohat tufayli paydo bo'lganmi?
 item,F3,같이 있는 다른 증상이 있나요?,draft,Are there any other symptoms along with it?,还有其他伴随症状吗？,Có triệu chứng nào khác đi kèm không?,Birga kechayotgan boshqa belgilar bormi?
@@ -78,6 +97,8 @@ option,T3:age_13_18,13~18세,draft,13–18 years,13~18岁,13–18 tuổi,13–18
 option,T3:age_19_64,19~64세,draft,19–64 years,19~64岁,19–64 tuổi,19–64 yosh
 option,T3:age_65plus,65세 이상,draft,65 or older,65岁及以上,65 tuổi trở lên,65 yosh va undan katta
 option,T3:unknown,모름,draft,Don't know,不知道,Không biết,Bilmayman
+option,N5:yes,예,draft,Yes,是,Có,Ha
+option,N5:no,아니요,draft,No,否,Không,Yo'q
 option,N5-1:onset_lt1h,1시간 이내,draft,Within 1 hour,1小时以内,Trong vòng 1 giờ,1 soat ichida
 option,N5-1:onset_today,오늘,draft,Today,今天,Hôm nay,Bugun
 option,N5-1:onset_1_3d,1~3일 전,draft,1–3 days ago,1~3天前,1–3 ngày trước,1–3 kun oldin
@@ -85,14 +106,45 @@ option,N5-1:onset_4_7d,4~7일 전,draft,4–7 days ago,4~7天前,4–7 ngày tr�
 option,N5-1:onset_1_4w,1~4주 전,draft,1–4 weeks ago,1~4周前,1–4 tuần trước,1–4 hafta oldin
 option,N5-1:onset_gt1m,1달 이상,draft,1 month or more,1个月以上,1 tháng trở lên,1 oy yoki undan ko'p
 option,N5-1:unknown,모름,draft,Don't know,不知道,Không biết,Bilmayman
-option,P3:pq_stabbing,찌르듯이·콕콕,draft,Stabbing or pricking,刺痛·一阵阵扎着疼,"Như bị đâm, nhói từng cơn","Sanchiydigan, igna sanchgandek"
-option,P3:pq_throbbing,욱신욱신·지끈지끈,draft,Throbbing or pounding,一跳一跳地痛·阵阵胀痛,"Đau nhức theo nhịp, giật giật","Lo'qillab, tepib og'riydi"
-option,P3:pq_squeezing,쥐어짜듯이·조이듯이,draft,Squeezing or tightening,绞痛·紧缩感,"Như bị bóp chặt, thắt lại","Siqib, qisib og'riydi"
-option,P3:pq_burning,화끈거리거나 따가움,draft,Burning or stinging,火辣辣或刺痛,Nóng rát hoặc xót,Kuydirib yoki achishtirib
-option,P3:pq_dull,뻐근하거나 묵직함,draft,Dull ache or heaviness,酸胀或沉重,Âm ỉ hoặc nặng nề,Zirqirab yoki og'irlik bilan
-option,P3:pq_tingling,저리거나 찌릿함,draft,"Numb, tingling or electric",发麻或触电感,Tê hoặc như điện giật,Uvishib yoki tok urgandek
-option,P3:other,기타,draft,Other,其他,Khác,Boshqa
-option,P3:unknown,잘 모르겠어요,draft,I'm not sure,不太清楚,Tôi không chắc,Bilmayman
+option,N6:yes,예,draft,Yes,是,Có,Ha
+option,N6:no,아니요,draft,No,否,Không,Yo'q
+option,N6-1:freq_many_daily,하루 여러 번,draft,Several times a day,一天多次,Nhiều lần một ngày,Kuniga bir necha marta
+option,N6-1:freq_daily,하루 한 번,draft,Once a day,一天一次,Một lần một ngày,Kuniga bir marta
+option,N6-1:freq_few_days,며칠에 한 번,draft,Once every few days,几天一次,Vài ngày một lần,Bir necha kunda bir marta
+option,N6-1:freq_sometimes,가끔,draft,Occasionally,偶尔,Thỉnh thoảng,Ba'zan
+option,N6-1:unknown,모름,draft,Don't know,不知道,Không biết,Bilmayman
+option,N7:yes,예,draft,Yes,是,Có,Ha
+option,N7:no,아니요,draft,No,否,Không,Yo'q
+option,N7-1:onset_lt1h,1시간 이내,draft,Within 1 hour,1小时以内,Trong vòng 1 giờ,1 soat ichida
+option,N7-1:onset_today,오늘,draft,Today,今天,Hôm nay,Bugun
+option,N7-1:onset_1_3d,1~3일 전,draft,1–3 days ago,1~3天前,1–3 ngày trước,1–3 kun oldin
+option,N7-1:onset_4_7d,4~7일 전,draft,4–7 days ago,4~7天前,4–7 ngày trước,4–7 kun oldin
+option,N7-1:onset_1_4w,1~4주 전,draft,1–4 weeks ago,1~4周前,1–4 tuần trước,1–4 hafta oldin
+option,N7-1:onset_gt1m,1달 이상,draft,1 month or more,1个月以上,1 tháng trở lên,1 oy yoki undan ko'p
+option,N7-1:unknown,모름,draft,Don't know,不知道,Không biết,Bilmayman
+option,N8:yes,예,draft,Yes,是,Có,Ha
+option,N8:no,아니요,draft,No,否,Không,Yo'q
+option,N9:yes,예,draft,Yes,是,Có,Ha
+option,N9:no,아니요,draft,No,否,Không,Yo'q
+option,N10:yes,예,draft,Yes,是,Có,Ha
+option,N10:no,아니요,draft,No,否,Không,Yo'q
+option,N11:yes,예,draft,Yes,是,Có,Ha
+option,N11:no,아니요,draft,No,否,Không,Yo'q
+option,N11-2:better,좋아짐,draft,Got better,好转,Đỡ hơn,Yaxshilandi
+option,N11-2:same,그대로,draft,No change,没有变化,Không thay đổi,O'zgarmadi
+option,N11-2:worse,나빠짐,draft,Got worse,变差,Nặng hơn,Yomonlashdi
+option,N11-2:unknown,모름,draft,Don't know,不知道,Không biết,Bilmayman
+option,N12:yes,예,draft,Yes,是,Có,Ha
+option,N12:no,아니요,draft,No,否,Không,Yo'q
+option,N12-1:sleep,수면,draft,Sleep,睡眠,Giấc ngủ,Uyqu
+option,N12-1:meal,식사,draft,Eating,进食,Ăn uống,Ovqatlanish
+option,N12-1:walking,보행,draft,Walking,行走,Đi lại,Yurish
+option,N12-1:work_study,업무·학업,draft,Work or study,工作·学习,Công việc·học tập,Ish·o'qish
+option,N12-1:other,기타,draft,Other,其他,Khác,Boshqa
+option,N13:yes,예,draft,Yes,是,Có,Ha
+option,N13:no,아니요,draft,No,否,Không,Yo'q
+option,P0:yes,예,draft,Yes,是,Có,Ha
+option,P0:no,아니요,draft,No,否,Không,Yo'q
 option,P1:pain_0,0,draft,0,0,0,0
 option,P1:pain_1,1,draft,1,1,1,1
 option,P1:pain_2,2,draft,2,2,2,2
@@ -104,14 +156,6 @@ option,P1:pain_7,7,draft,7,7,7,7
 option,P1:pain_8,8,draft,8,8,8,8
 option,P1:pain_9,9,draft,9,9,9,9
 option,P1:pain_10,10,draft,10,10,10,10
-option,N12:impact_little,거의 불편하지 않아요,draft,Hardly at all,几乎没有不便,Hầu như không bất tiện,Deyarli xalaqit bermaydi
-option,N12:impact_some,조금 불편해요,draft,A little,有点不便,Hơi bất tiện,Biroz xalaqit beradi
-option,N12:impact_much,일·공부·잠에 지장이 있어요,draft,"It gets in the way of work, study or sleep",影响工作、学习或睡眠,"Ảnh hưởng đến công việc, học tập hoặc giấc ngủ","Ish, o'qish yoki uyquga xalaqit beradi"
-option,N12:impact_severe,일상생활을 거의 못 해요,draft,I can hardly manage daily life,几乎无法正常生活,Gần như không thể sinh hoạt bình thường,Kundalik hayotni deyarli eplay olmayapman
-option,N12:unknown,잘 모르겠어요,draft,I'm not sure,不太清楚,Tôi không chắc,Bilmayman
-option,N7:yes,예,draft,Yes,是,Có,Ha
-option,N7:no,아니요,draft,No,否,Không,Yo'q
-option,N7:unknown,잘 모르겠어요,draft,I'm not sure,不太清楚,Tôi không chắc,Bilmayman
 option,F2:yes,예,draft,Yes,是,Có,Ha
 option,F2:no,아니요,draft,No,否,Không,Yo'q
 option,F2:unknown,모름,draft,Don't know,不知道,Không biết,Bilmayman
@@ -345,22 +389,6 @@ template,q.sym_dict_confirm.other,다른 증상이에요,draft,It's a different 
 template,q.sym_dict_confirm.unsure,잘 모르겠어요,draft,Not sure,不太清楚,Tôi không chắc,Aniq bilmayman
 template,q.sym_not_found.label,말씀하신 증상을 목록에서 찾지 못했어요. 몇 가지 질문에 답해 주시면 진료과를 안내해 드릴게요.,draft,"We couldn't find your symptom in our list. If you answer a few questions, we'll suggest a department.",没能在列表中找到您说的症状。回答几个问题后，我们会为您推荐科室。,"Chúng tôi không tìm thấy triệu chứng của bạn trong danh sách. Nếu bạn trả lời vài câu hỏi, chúng tôi sẽ gợi ý chuyên khoa.","Aytgan belgingizni ro'yxatdan topa olmadik. Bir nechta savolga javob bersangiz, bo'limni tavsiya qilamiz."
 template,q.sym_not_found.continue,질문에 답할게요,draft,I'll answer the questions,我来回答问题,Tôi sẽ trả lời câu hỏi,Savollarga javob beraman
-template,q.sym_retry.label,"말씀하신 내용만으로는 증상을 정확히 찾지 못했어요. 어디가 어떻게 불편한지 대화창에 조금만 더 자세히 적어 주세요. (예: ""어제부터 오른쪽 아랫배가 콕콕 쑤셔요"") 아래에서 불편한 곳을 골라도 돼요.",draft,"We couldn't pinpoint your symptom from what you wrote. Please describe in the chat where and how you feel unwell in a bit more detail. (e.g., ""Since yesterday, my lower right belly has a stabbing pain"") You can also pick the area below.",仅凭您说的内容，我们未能准确找到症状。请在对话框中再详细写一下哪里、怎样不舒服。（例如：“从昨天开始右下腹一阵阵刺痛”）也可以在下面选择不舒服的部位。,"Chúng tôi chưa xác định chính xác được triệu chứng từ những gì bạn nói. Vui lòng mô tả chi tiết hơn một chút trong khung trò chuyện: bạn khó chịu ở đâu và như thế nào. (Ví dụ: ""Từ hôm qua bụng dưới bên phải đau nhói"") Bạn cũng có thể chọn vùng khó chịu bên dưới.","Aytganlaringizdan belgini aniq topa olmadik. Qayeringiz va qanday bezovta qilayotganini suhbat oynasiga biroz batafsilroq yozing. (Masalan: ""Kechadan beri qornimning o'ng pastki qismi sanchib og'riyapti"") Quyida bezovta qilayotgan joyni ham tanlashingiz mumkin."
-template,q.sym_retry.continue,잘 모르겠어요 (질문에 답할게요),draft,I'm not sure (I'll answer the questions),不太清楚（我来回答问题）,Tôi không chắc (Tôi sẽ trả lời câu hỏi),Bilmayman (savollarga javob beraman)
-template,q.sym_retry.area_head,머리·어지럼증,draft,Head / dizziness,头部·头晕,Đầu / chóng mặt,Bosh / bosh aylanishi
-template,q.sym_retry.area_eye_ear,눈·귀,draft,Eyes / ears,眼睛·耳朵,Mắt / tai,Ko'z / quloq
-template,q.sym_retry.area_nose_throat,코·목·기침,draft,Nose / throat / cough,鼻子·咽喉·咳嗽,Mũi / họng / ho,Burun / tomoq / yo'tal
-template,q.sym_retry.area_chest,가슴·두근거림,draft,Chest / palpitations,胸部·心悸,Ngực / tim đập nhanh,Ko'krak / yurak urishi
-template,q.sym_retry.area_belly,배·소화,draft,Stomach / digestion,腹部·消化,Bụng / tiêu hóa,Qorin / hazm
-template,q.sym_retry.area_mouth,입·치아,draft,Mouth / teeth,口腔·牙齿,Miệng / răng,Og'iz / tish
-template,q.sym_retry.area_bone,목·어깨·허리·팔다리,draft,Neck / shoulders / back / arms and legs,脖子·肩膀·腰·四肢,Cổ / vai / lưng / tay chân,Bo'yin / yelka / bel / qo'l-oyoq
-template,q.sym_retry.area_skin,피부·상처,draft,Skin / wounds,皮肤·伤口,Da / vết thương,Teri / jarohat
-template,q.sym_retry.area_urine,소변·생식기·임신,draft,Urination / genitals / pregnancy,小便·生殖器·怀孕,Tiểu tiện / bộ phận sinh dục / mang thai,Siydik / jinsiy a'zolar / homiladorlik
-template,q.sym_retry.area_mind,마음·잠,draft,Mood / sleep,心理·睡眠,Tâm trạng / giấc ngủ,Kayfiyat / uyqu
-template,q.sym_retry.area_body,열·피로 등 온몸,draft,"Whole body (fever, fatigue, etc.)",全身（发烧、疲劳等）,"Toàn thân (sốt, mệt mỏi...)","Butun tana (isitma, charchoq va h.k.)"
-template,q.sym_area_pick.label,이 중에 가까운 증상이 있나요?,draft,Is any of these close to your symptom?,这些中有接近您症状的吗？,Có triệu chứng nào gần giống với bạn không?,Bularning orasida sizga yaqin belgi bormi?
-template,q.sym_area_pick.other,여기 없어요,draft,Not listed here,这里没有,Không có ở đây,Bu yerda yo'q
-template,q.symptom_unknown,지금 불편한,draft,symptoms,目前不适的,khó chịu hiện tại,hozirgi bezovta qiluvchi
 template,q.ask_start.label,어디가 어떻게 불편한지 대화창에 적어 주세요. 병원이나 약국만 찾으려면 아래에서 골라 주세요.,draft,"Please describe in the chat where and how you feel unwell. To just find a hospital or pharmacy, choose below.",请在对话框中写下哪里、怎样不舒服。如果只想找医院或药店，请在下方选择。,"Hãy viết vào khung trò chuyện chỗ nào và khó chịu như thế nào. Nếu chỉ muốn tìm bệnh viện hoặc nhà thuốc, hãy chọn bên dưới.","Qayeringiz va qanday bezovta qilayotganini suhbat oynasiga yozing. Faqat shifoxona yoki dorixona topmoqchi bo'lsangiz, quyidan tanlang."
 template,q.ask_start.find_hospital,병원 찾기,draft,Find a hospital,查找医院,Tìm bệnh viện,Shifoxona topish
 template,q.ask_start.find_pharmacy,약국 찾기,draft,Find a pharmacy,查找药店,Tìm nhà thuốc,Dorixona topish
@@ -412,12 +440,6 @@ template,summary.departments,참고할 진료과,draft,Suggested departments,参
 template,summary.deptNoteStats,같은 증상으로 진료받는 사람이 많은 진료과 순서입니다. 병원 찾기는 1순위 진료과로 먼저 보여 드립니다.,draft,Departments are listed by how many people with the same symptom visit them. Hospital search shows the No. 1 department first.,按照同样症状就诊人数多的科室排序。查找医院时会先显示第1位科室。,"Các chuyên khoa được xếp theo số người khám vì cùng triệu chứng. Khi tìm bệnh viện, chuyên khoa ưu tiên 1 sẽ được hiển thị trước.",Bo'limlar shu belgi bilan murojaat qiladiganlar soniga qarab tartiblangan. Shifoxona qidiruvida avval 1-o'rindagi bo'lim ko'rsatiladi.
 template,summary.deptNoteFallback,증상에 맞는 통계가 없어 일반적으로 먼저 찾는 진료과를 안내합니다. 병원 찾기는 1순위 진료과로 먼저 보여 드립니다.,draft,"There are no statistics for this symptom, so we suggest departments people usually visit first. Hospital search shows the No. 1 department first.",没有与症状相符的统计数据，因此推荐一般首先就诊的科室。查找医院时会先显示第1位科室。,"Không có thống kê phù hợp với triệu chứng nên chúng tôi gợi ý chuyên khoa thường được đến khám trước. Khi tìm bệnh viện, chuyên khoa ưu tiên 1 sẽ được hiển thị trước.","Bu belgi bo'yicha statistika yo'q, shuning uchun odatda birinchi murojaat qilinadigan bo'limlarni tavsiya qilamiz. Shifoxona qidiruvida avval 1-o'rindagi bo'lim ko'rsatiladi."
 template,summary.unchecked,"복용 중인 약, 기존 질환, 함께 있는 다른 증상은 확인하지 않았습니다. 해당되면 진료 때 꼭 알려 주세요.",draft,"We did not check medicines you take, existing conditions, or other symptoms. If any apply, be sure to tell the doctor.",未确认正在服用的药物、既往疾病及其他伴随症状。如有，请就诊时务必告知医生。,"Chúng tôi chưa kiểm tra thuốc đang dùng, bệnh nền hay các triệu chứng đi kèm khác. Nếu có, hãy nhớ báo cho bác sĩ khi khám.","Qabul qilayotgan dorilar, mavjud kasalliklar va boshqa birga kechayotgan belgilar tekshirilmadi. Agar bo'lsa, shifokorga albatta ayting."
-template,summary.painQuality,통증 양상,draft,Type of pain,疼痛性质,Kiểu đau,Og'riq turi
-template,summary.dailyImpact,일상생활,draft,Daily life,日常生活,Sinh hoạt hằng ngày,Kundalik hayot
-template,summary.profileMedications,복용 중인 약(저장한 건강정보),draft,Medications (saved health information),正在服用的药物（已保存的健康信息）,Thuốc đang dùng (thông tin sức khỏe đã lưu),Qabul qilinayotgan dorilar (saqlangan sog'liq ma'lumotlari)
-template,summary.profileHistory,기존 질환(저장한 건강정보),draft,Existing conditions (saved health information),既往疾病（已保存的健康信息）,Bệnh nền (thông tin sức khỏe đã lưu),Mavjud kasalliklar (saqlangan sog'liq ma'lumotlari)
-template,summary.profileAllergies,알레르기(저장한 건강정보),draft,Allergies (saved health information),过敏（已保存的健康信息）,Dị ứng (thông tin sức khỏe đã lưu),Allergiyalar (saqlangan sog'liq ma'lumotlari)
-template,summary.uncheckedWithProfile,"저장한 건강정보 말고는 복용 중인 약, 기존 질환, 함께 있는 다른 증상을 확인하지 않았습니다. 해당되면 진료 때 꼭 알려 주세요.",draft,"Apart from your saved health information, we did not check medications, existing conditions or other symptoms. If any apply, be sure to tell the doctor.",除已保存的健康信息外，未确认正在服用的药物、既往疾病和其他伴随症状。如有，请务必在就诊时告知。,"Ngoài thông tin sức khỏe đã lưu, chúng tôi chưa kiểm tra thuốc đang dùng, bệnh nền và các triệu chứng khác đi kèm. Nếu có, hãy nhớ báo cho bác sĩ khi khám.","Saqlangan sog'liq ma'lumotlaridan tashqari qabul qilinayotgan dorilar, mavjud kasalliklar va boshqa belgilar tekshirilmadi. Agar bo'lsa, shifokorga albatta ayting."
 template,summary.riskUnconfirmed,응급 증상인지 확인하지 못했습니다. 증상이 심해지거나 걱정되면 바로 119에 연락하거나 응급실로 가세요.,draft,"We could not confirm whether this is an emergency. If symptoms get worse or you are worried, call 119 right away or go to an emergency room.",未能确认是否为紧急症状。如果症状加重或感到担心，请立即拨打119或前往急诊室。,"Chúng tôi chưa xác nhận được đây có phải triệu chứng khẩn cấp hay không. Nếu triệu chứng nặng hơn hoặc bạn lo lắng, hãy gọi 119 ngay hoặc đến phòng cấp cứu.","Bu favqulodda belgi ekanini tasdiqlay olmadik. Belgilar kuchaysa yoki xavotirda bo'lsangiz, darhol 119 ga qo'ng'iroq qiling yoki shoshilinch yordam bo'limiga boring."
 template,summary.safetyUnanswered,"응급 확인 질문에 답하지 않았습니다. 의식이 흐리거나 숨쉬기 힘들거나, 갑작스러운 마비·말하기 어려움·심한 가슴 통증·멈추지 않는 출혈이 있으면 지금 119에 연락하세요.",draft,"The emergency check questions were not answered. If there is confusion, difficulty breathing, sudden paralysis, trouble speaking, severe chest pain, or bleeding that won't stop, call 119 now.",未回答紧急情况确认问题。如果出现意识模糊、呼吸困难、突然瘫痪、说话困难、剧烈胸痛或止不住的出血，请立即拨打119。,"Bạn chưa trả lời các câu hỏi kiểm tra khẩn cấp. Nếu có lơ mơ, khó thở, liệt đột ngột, khó nói, đau ngực dữ dội hoặc chảy máu không cầm được, hãy gọi 119 ngay.","Favqulodda holatni tekshirish savollariga javob berilmadi. Hush xiralashsa, nafas olish qiyin bo'lsa, to'satdan falaj, gapirish qiyinligi, kuchli ko'krak og'rig'i yoki to'xtamaydigan qon ketish bo'lsa, hozir 119 ga qo'ng'iroq qiling."
 template,summary.footer,증상이 갑자기 심해지면 119에 연락하세요.,draft,"If symptoms suddenly get worse, call 119.",如果症状突然加重，请拨打119。,"Nếu triệu chứng đột ngột nặng hơn, hãy gọi 119.","Belgilar to'satdan kuchaysa, 119 ga qo'ng'iroq qiling."

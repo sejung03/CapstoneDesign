@@ -2,14 +2,12 @@
 import {readFileSync, mkdirSync, writeFileSync} from 'node:fs';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 import path from 'node:path';
-import {detectRiskSignal, classifySymptomWithRisk} from '../llm/index.mjs';
+import {detectRiskSignal} from '../llm/index.mjs';
 import {getConfig, MODEL_PRICES_USD_PER_1M, RISK_MAX_OUTPUT_TOKENS} from '../llm/config.mjs';
 import {getProvider} from '../llm/provider.mjs';
 import {estimateCostUsd} from '../llm/cost.mjs';
 import {riskSignalSchema} from '../llm/schemas.mjs';
 import riskPrompt from '../llm/prompts/risk_v2.mjs';
-import symptomRiskPrompt from '../llm/prompts/symptom_risk_v3.mjs';
-import {loadRefData} from '../llm/ref-data.mjs';
 import {loadFreeTextRules} from '../engine/free-text.mjs';
 import {evaluateSafety} from '../engine/rules.mjs';
 import {loadIntakeData} from '../engine/intake-data.mjs';
@@ -90,21 +88,13 @@ function summarize(rows, field) {
   };
 }
 
-/**
- * providerFactory는 네트워크 없는 테스트 주입용. noLlm(11/17 LCR1)이면 LLM을 만들지도 부르지도 않고 규칙+강한 단서까지만 낸다.
- * combined(11/18): 위험 전용 호출(detectRiskSignal) 대신, 실서비스에서 사전이 못 찾을 때 쓰는 증상+위험 결합 호출
- *   (classifySymptomWithRisk, symptom_risk 프롬프트)의 risk_signal로 잰다. 비용 상한도 결합 프롬프트 크기로 잡는다.
- */
-export async function runRiskLlmEval({cases, config: inputConfig, providerFactory, budgetUsd = 1, noLlm = false, combined: useCombined = false} = {}) {
+/** providerFactory는 네트워크 없는 테스트 주입용. noLlm(11/17 LCR1)이면 LLM을 만들지도 부르지도 않고 규칙+강한 단서까지만 낸다. */
+export async function runRiskLlmEval({cases, config: inputConfig, providerFactory, budgetUsd = 1, noLlm = false} = {}) {
   const config = inputConfig ?? (noLlm ? {model: 'none'} : getConfig({...process.env, LLM_PROVIDER: 'openai', LLM_EVAL_BUDGET_USD: String(budgetUsd)}));
   const price = noLlm ? {input: 0, output: 0} : MODEL_PRICES_USD_PER_1M[config.model];
   if (!price) throw new Error('가격표에 없는 모델이라 비용 한도를 확인할 수 없음');
-  const refData = useCombined ? loadRefData() : null;
-  // 결합 호출: 증상 목록 전체가 들어간다. 11/18 실측 입력은 호출당 약 5,900토큰 → 8,000토큰으로 위로 잡는다(재시도 포함 2회)
-  const maxPerCall = useCombined
-    ? 2 * (8000 * price.input + 400 * price.output) / 1e6
-    : 2 * ((riskPrompt.system.length + 500 + JSON.stringify(riskSignalSchema()).length) * price.input
-      + RISK_MAX_OUTPUT_TOKENS * price.output) / 1e6;
+  const maxPerCall = 2 * ((riskPrompt.system.length + 500 + JSON.stringify(riskSignalSchema()).length) * price.input
+    + RISK_MAX_OUTPUT_TOKENS * price.output) / 1e6;
   const rules = loadFreeTextRules();
   const data = loadIntakeData();
   const plannedCalls = cases.filter((c) => {
@@ -133,9 +123,7 @@ export async function runRiskLlmEval({cases, config: inputConfig, providerFactor
     if (combined === 'none' && !noLlm) {
       const provider = providerFactory ? providerFactory(c) : getProvider({config});
       const consent = config.devConsent ? undefined : {granted: true, provider: provider.name, version: 'risk-eval-only', healthInfo: true};
-      const r = useCombined
-        ? await classifySymptomWithRisk({text: c.text, riskText: c.text, consent, requestId: c.id, reason: 'eval'}, {provider, config, refData})
-        : await detectRiskSignal({text: c.text, consent, requestId: c.id, reason: 'eval'}, {provider, config});
+      const r = await detectRiskSignal({text: c.text, consent, requestId: c.id, reason: 'eval'}, {provider, config});
       called = r.meta.attempts > 0;
       error = r.meta.error;
       latencyMs = r.meta.latencyMs;
@@ -161,7 +149,7 @@ export async function runRiskLlmEval({cases, config: inputConfig, providerFactor
   const amb = rows.filter((r) => r.ambiguous);
   const latencies = rows.filter((r) => r.called && Number.isFinite(r.latencyMs)).map((r) => r.latencyMs);
   return {
-    createdAt: new Date().toISOString(), noLlm, model: config.model, promptId: useCombined ? symptomRiskPrompt.id : riskPrompt.id,
+    createdAt: new Date().toISOString(), noLlm, model: config.model, promptId: riskPrompt.id,
     casesPlanned: cases.length, casesCompleted: rows.length, plannedCalls, actualCalls: rows.filter((r) => r.called).length,
     budgetUsd, costUsd: Number(totalCost.toFixed(6)), stoppedBy,
     latencyMs: {p50: percentile(latencies, 50), p95: percentile(latencies, 95)},
@@ -182,24 +170,20 @@ function parseArgs(argv) {
   const files = [];
   let noText = false;
   let noLlm = false;
-  let combined = false;
-  let budget = 1;
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === '--cases' && argv[i + 1]) files.push(path.resolve(argv[++i]));
     else if (argv[i] === '--no-text') noText = true;
     else if (argv[i] === '--no-llm') noLlm = true;
-    else if (argv[i] === '--combined') combined = true;
-    else if (argv[i] === '--budget' && argv[i + 1]) budget = Number(argv[++i]);
   }
-  return {files: files.length ? files : DEFAULT_CASES, noText, noLlm, combined, budget};
+  return {files: files.length ? files : DEFAULT_CASES, noText, noLlm};
 }
 
 async function main() {
   // 문장(text)은 어떤 모드에서도 출력·저장하지 않는다. --no-text는 holdout 실행 명령과의 호환·명시용이다.
-  const {files, noLlm, combined, budget} = parseArgs(process.argv.slice(2));
+  const {files, noLlm} = parseArgs(process.argv.slice(2));
   const cases = readRiskLlmCases(files);
-  const result = await runRiskLlmEval({cases, budgetUsd: budget, noLlm, combined});
-  console.log(`위험 LLM 평가(${result.promptId}): ${result.casesCompleted}/${result.casesPlanned}, 호출 ${result.actualCalls}, 비용 $${result.costUsd}`);
+  const result = await runRiskLlmEval({cases, budgetUsd: 1, noLlm});
+  console.log(`위험 LLM 평가: ${result.casesCompleted}/${result.casesPlanned}, 호출 ${result.actualCalls}, 비용 $${result.costUsd}`);
   console.log(`규칙만: ${JSON.stringify(result.ruleOnly)}`);
   console.log(`규칙+단서: ${JSON.stringify(result.ruleCue)} (강한 단서 오탐 ${result.cueFalsePositive})`);
   console.log(`규칙+단서+LLM${noLlm ? '(LLM 끔)' : ''}: ${JSON.stringify(result.combined)}`);

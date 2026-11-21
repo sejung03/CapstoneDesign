@@ -20,6 +20,9 @@ test('adaptive question presents variable options as text and gates skip and ans
  try{
   await act(async()=>render());assert.equal(w.document.querySelectorAll('[data-assistant-option]').length,8);assert.equal(w.document.querySelector('img'),null);assert.equal(w.document.getElementById('assistant-skip'),null);
   state.assistant.answers=[{questionId:'q1',value:'1',label:{ko:'문진 1'},optionLabel:{ko:'선지 1'}}];state.assistant.questions=[{id:'q1'}];update();await act(async()=>render());
+  assert.equal(w.document.querySelector('.assistant-question-step').textContent,'문진 2');
+  assert.equal(w.document.querySelector('.assistant-answer-history').open,false);
+  assert.ok(w.document.querySelector('.active-question').compareDocumentPosition(w.document.querySelector('.assistant-answer-history'))&w.Node.DOCUMENT_POSITION_FOLLOWING);
   assert.ok(w.document.getElementById('assistant-skip'));assert.equal(w.document.querySelector('[data-assistant-answer-edit]').disabled,false);
   state.assistant.status='loading';await act(async()=>render());assert.equal(w.document.getElementById('assistant-skip'),null);assert.equal(w.document.querySelector('[data-assistant-answer-edit]').disabled,true);
   state.assistant.status='ready';state.chat.messages.push({role:'user',text:'변경한 내용'});await act(async()=>render());assert.equal(w.document.querySelector('[data-assistant-option]'),null);assert.equal(w.document.querySelector('[data-assistant-answer-edit]').disabled,true);

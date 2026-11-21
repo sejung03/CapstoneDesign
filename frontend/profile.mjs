@@ -1,13 +1,14 @@
-export const healthProfileFields=['age','allergies','medications','history'];
+import {storedHealthFields,healthSexChoices,healthTextMaxLength} from './health-storage.mjs';
+export const healthProfileFields=storedHealthFields;
 export function normalizeAge(value){const text=String(value??'').trim();return /^\d{1,3}$/.test(text)&&Number(text)<=120?String(Number(text)):'';}
 export function hasProfileChanges(profile,draft){return healthProfileFields.some(key=>String(profile[key]??'')!==String(draft[key]??''));}
 export const PROFILE_KEY='medical-profile-v1'; // Legacy key: remove, never restore health fields.
 export const SETTINGS_KEY='medical-search-settings-v1';
-export function emptyProfile(){return {nickname:'',age:'',region:'',preference:'distance',allergies:'',medications:'',history:''};}
+export function emptyProfile(){return {nickname:'',age:'',sex:'',region:'',preference:'distance',allergies:'',medications:'',history:''};}
 export function cleanProfile(value={}){
  if(!value||typeof value!=='object')value={};
  const text=(key,max)=>String(value[key]??'').trim().slice(0,max);
- return {nickname:text('nickname',40),age:normalizeAge(value.age),region:text('region',80),preference:['distance','open','access'].includes(value.preference)?value.preference:'distance',allergies:text('allergies',500),medications:text('medications',500),history:text('history',500)};
+ return {nickname:text('nickname',40),age:normalizeAge(value.age),sex:typeof value.sex==='string'&&Object.hasOwn(healthSexChoices,value.sex)?value.sex:'',region:text('region',80),preference:['distance','open','access'].includes(value.preference)?value.preference:'distance',allergies:text('allergies',healthTextMaxLength),medications:text('medications',healthTextMaxLength),history:text('history',healthTextMaxLength)};
 }
 export function cleanSearchSettings(value){
  const profile=cleanProfile(value);

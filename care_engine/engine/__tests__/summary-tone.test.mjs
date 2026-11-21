@@ -12,7 +12,7 @@ const lineAfter = (lines, prefix) => lines[lines.findIndex((l) => l.startsWith(p
 const HAEYO = /(에요|어요|예요|아요|해요|여요)[.!)]*$/;
 
 test('요약 말투: templates-v6, 사람이 정한 문구 그대로', () => {
-  assert.equal(TEMPLATE_VERSION, 'templates-v8');
+  assert.equal(TEMPLATE_VERSION, 'templates-v6');
   assert.equal(SUMMARY.header, '입력하신 답을 정리한 참고용 내용입니다. 진단이 아닙니다.');
   assert.equal(SUMMARY.deptNoteStats, '같은 증상으로 진료받는 사람이 많은 진료과 순서입니다. 병원 찾기는 1순위 진료과로 먼저 보여 드립니다.');
   assert.equal(SUMMARY.deptNoteFallback, '증상에 맞는 통계가 없어 일반적으로 먼저 찾는 진료과를 안내합니다. 병원 찾기는 1순위 진료과로 먼저 보여 드립니다.');

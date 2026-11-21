@@ -1,5 +1,5 @@
 // Session-only presentation state. No clinical branching or persistence.
-export function createWorkspace(){return {panel:null,expanded:false,intake:false};}
+export function createWorkspace(){return {panel:null,intake:false};}
 export function intakeSnapshot(questionnaire,answers,draft,{skipped=false,step=0}={}){
  const completed=questionnaire.questions.filter(q=>Object.hasOwn(answers,q.id)&&q.options.some(option=>option.id===answers[q.id])).length;
  return {status:skipped?(completed||draft.symptom?'partial':'skipped'):'complete',stoppedQuestionId:skipped?questionnaire.questions[step]?.id||null:null,answeredCount:completed,totalQuestions:questionnaire.questions.length};

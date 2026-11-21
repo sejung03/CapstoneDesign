@@ -329,7 +329,7 @@ fallback = 증상을 fallback으로 두고 F1~F3(`engine_condition: symptom_is_f
 | `LLM_PROVIDER` | `mock` / `gemini` / `openai` | |
 | `LLM_MODEL` | (버전명) | 별칭 금지 |
 | `GEMINI_API_KEY` / `OPENAI_API_KEY` | | 서버에서만 |
-| `LLM_TIMEOUT_MS` | 6000 | 11/18 4000 → 6000(실측 최대 4.0s, 시간 초과는 재시도 없음) |
+| `LLM_TIMEOUT_MS` | 4000 | |
 | `LLM_BUDGET_MS` | 7000 | |
 | `LLM_CANDIDATE_MODE` | `all`(기본, *(11/15 L4 반영)*) / `retrieve` | |
 | `LLM_CANDIDATE_K` | 40 | retrieve일 때만 |
