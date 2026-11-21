@@ -411,7 +411,6 @@ export const copy=expandLocales({
     "nearerDifference": "더 가까워요",
 
     "assistantLoading": "입력한 내용을 정리하고 있어요.",
-    "assistantSlow": "조금 오래 걸리고 있어요. 잠시만 기다려 주세요.",
     "assistantError": "내용을 정리하지 못했어요. 직접 검색하거나 다시 시도해 주세요.",
     "assistantRetry": "다시 시도",
     "assistantOutdated": "새로 입력한 내용이 있어요. 다음 응답에서 함께 반영할게요.",
@@ -848,7 +847,6 @@ export const copy=expandLocales({
     "nearerDifference": "closer",
 
     "assistantLoading": "Organizing your input.",
-    "assistantSlow": "This is taking a little longer. Please wait a moment.",
     "assistantError": "Could not organize your input. Search directly or try again.",
     "assistantRetry": "Try again",
     "assistantOutdated": "You have provided new information. It will be included in the next response.",
@@ -877,7 +875,7 @@ export const copy=expandLocales({
   }
 });
 
-Object.assign(copy.ko,{"conversationTitle": "대화로 병원과 약국 찾기", "conversationIntro": "불편한 점이나 찾고 싶은 조건을 적어주세요.", "conversationChatTitle": "의료 안내", "conversationNew": "새 대화", "conversationBack": "대화로 돌아가기", "conversationExpand": "크게 보기", "conversationRestore": "나란히 보기", "conversationStartIntake": "문진으로 시작하기", "conversationQuestions": "선택 문진", "conversationResults": "검색 결과", "conversationAllResults": "결과 모두 보기", "conversationMap": "지도에서 보기", "conversationReport": "진료 전에 보여줄 내용", "conversationReportHint": "내용을 확인하고 고치거나 PDF로 저장할 수 있어요.", "conversationReview": "내용 확인", "conversationNewConfirm": "현재 대화와 문진, 분석서를 지우고 새로 시작할까요?"});
+Object.assign(copy.ko,{"conversationTitle": "대화로 병원과 약국 찾기", "conversationIntro": "불편한 점이나 찾고 싶은 조건을 적어주세요.", "conversationChatTitle": "의료 안내", "conversationNew": "새 대화", "conversationBack": "대화로 돌아가기", "conversationStartIntake": "문진으로 시작하기", "conversationQuestions": "선택 문진", "conversationResults": "검색 결과", "conversationAllResults": "결과 모두 보기", "conversationMap": "지도에서 보기", "conversationReport": "진료 전에 보여줄 내용", "conversationReportHint": "내용을 확인하고 고치거나 PDF로 저장할 수 있어요.", "conversationReview": "내용 확인", "conversationNewConfirm": "현재 대화와 문진, 분석서를 지우고 새로 시작할까요?"});
 
-Object.assign(copy.en,{"conversationTitle": "Find care through conversation", "conversationIntro": "Describe what is bothering you or what you are looking for.", "conversationChatTitle": "Medical guide", "conversationNew": "New conversation", "conversationBack": "Back to conversation", "conversationExpand": "Expand workspace", "conversationRestore": "Show side by side", "conversationStartIntake": "Start with questions", "conversationQuestions": "Intake questions", "conversationResults": "Search results", "conversationAllResults": "View all results", "conversationMap": "View on map", "conversationReport": "Pre-visit notes", "conversationReportHint": "Review, edit or save your notes as a PDF.", "conversationReview": "Review notes", "conversationNewConfirm": "Clear this conversation, intake and report and start again?"});
+Object.assign(copy.en,{"conversationTitle": "Find care through conversation", "conversationIntro": "Describe what is bothering you or what you are looking for.", "conversationChatTitle": "Medical guide", "conversationNew": "New conversation", "conversationBack": "Back to conversation", "conversationStartIntake": "Start with questions", "conversationQuestions": "Intake questions", "conversationResults": "Search results", "conversationAllResults": "View all results", "conversationMap": "View on map", "conversationReport": "Pre-visit notes", "conversationReportHint": "Review, edit or save your notes as a PDF.", "conversationReview": "Review notes", "conversationNewConfirm": "Clear this conversation, intake and report and start again?"});
 completeLocales(copy);

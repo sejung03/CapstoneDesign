@@ -4,7 +4,7 @@ import {createHealthProfileHandler} from '../lib/health-profile-api.mjs';
 import {healthStoragePolicyVersion,emptyHealth} from '../health-storage.mjs';
 import {mountApp} from './dom-harness.mjs';
 import {createAccountClient} from '../account-client.mjs';
-const health={age:'32',allergies:'페니실린',medications:'혈압약',history:'직접 입력한 병력'};
+const health={age:'32',sex:'female',allergies:'페니실린',medications:'혈압약',history:'직접 입력한 병력'};
 const req=(method,body,origin='http://local.test')=>new Request('http://local.test/api/health-profile',{method,headers:{origin,'Content-Type':'application/json'},...(body?{body:JSON.stringify(body)}:{})});
 function fixture(){
  const rows=new Map(),consents=new Map();let user='A',fail=false;
@@ -25,6 +25,7 @@ test('guests, foreign origins and caller-supplied account IDs cannot write',asyn
  f.setUser('A');assert.equal((await f.handle(req('DELETE',null,'https://foreign.test'))).status,403);
  const stale=req('DELETE');stale.headers.set('X-Account-Scope','B');assert.equal((await f.handle(stale)).status,409);
  assert.equal((await f.handle(req('PUT',{profile:health,user_id:'B'}))).status,400);
+ assert.equal((await f.handle(req('PUT',{profile:{...health,sex:'invalid'}}))).status,400);
  assert.equal((await f.handle(req('PUT',{profile:{...health,age:'121'}}))).status,400);
  assert.equal((await f.handle(req('PUT',{profile:{...health,allergies:'a'.repeat(501)}}))).status,400);assert.equal(f.rows.size,0);
 });

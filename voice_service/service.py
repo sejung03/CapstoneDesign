@@ -3,6 +3,7 @@
 import asyncio
 import io
 import json
+import logging
 import os
 from functools import lru_cache
 from threading import BoundedSemaphore
@@ -13,6 +14,7 @@ from fastapi import FastAPI, HTTPException, Request, Response
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 stt_slot = BoundedSemaphore(1)
+logger = logging.getLogger('uvicorn.error')
 tts_slot = BoundedSemaphore(1)
 sample_rate = 16000
 max_samples = 30 * sample_rate
@@ -60,17 +62,37 @@ def whisper_model():
     )
 
 
-def recognize(data):
+def transcribe(samples, vad_parameters=None, language="ko"):
+    segments, info = whisper_model().transcribe(
+        samples, language=language, beam_size=3, vad_filter=True,
+        vad_parameters=vad_parameters, condition_on_previous_text=False,
+    )
+    return " ".join(segment.text.strip() for segment in segments).strip(), info.duration_after_vad
+
+
+def recognize(data, language="ko"):
     if not stt_slot.acquire(blocking=False):
         raise HTTPException(429, "stt_busy")
     try:
         samples = decode_recording(data)
-        segments, _ = whisper_model().transcribe(
-            samples, language="ko", beam_size=3, vad_filter=True,
-            condition_on_previous_text=False,
-        )
-        text = " ".join(segment.text.strip() for segment in segments).strip()
+        peak = float(np.max(np.abs(samples)))
+        text, vad_seconds, retry_gain = "", 0.0, 1.0
+        if peak >= 0.001:
+            text, vad_seconds = transcribe(samples, language=language)
+            if not text:
+                # Keep silence filtering on, but give short or quiet answers one more chance.
+                if vad_seconds == 0.0:
+                    retry_gain = max(1.0, min(8.0, 0.12 / peak))
+                retry_samples = samples * retry_gain if retry_gain > 1.0 else samples
+                text, fallback_seconds = transcribe(
+                    retry_samples, {"threshold": 0.35, "min_speech_duration_ms": 80}, language=language,
+                )
+                vad_seconds = max(vad_seconds, fallback_seconds)
         if not text:
+            logger.warning(
+                "stt_no_speech duration_ms=%d peak=%.4f vad_ms=%d retry_gain=%.1f",
+                round(len(samples) * 1000 / sample_rate), peak, round(vad_seconds * 1000), retry_gain,
+            )
             raise HTTPException(422, "no_speech")
         return {"text": text[:1000]}
     except HTTPException:
@@ -81,7 +103,7 @@ def recognize(data):
         stt_slot.release()
 
 
-async def synthesize(text):
+async def synthesize(text, language="ko"):
     if os.name != "nt":
         raise HTTPException(503, "tts_requires_windows")
 
@@ -89,11 +111,11 @@ async def synthesize(text):
     from winrt.windows.storage.streams import Buffer, InputStreamOptions
 
     voice = next(
-        (voice for voice in SpeechSynthesizer.all_voices if voice.language == "ko-KR"),
+        (voice for voice in SpeechSynthesizer.all_voices if voice.language.lower().split("-")[0] == language),
         None,
     )
     if voice is None:
-        raise HTTPException(503, "korean_voice_missing")
+        raise HTTPException(503, "korean_voice_missing" if language == "ko" else "language_voice_missing")
 
     with SpeechSynthesizer() as speaker:
         speaker.voice = voice
@@ -103,11 +125,11 @@ async def synthesize(text):
             return bytes(memoryview(audio))
 
 
-def render_speech(text):
+def render_speech(text, language="ko"):
     if not tts_slot.acquire(blocking=False):
         raise HTTPException(429, "tts_busy")
     try:
-        return asyncio.run(synthesize(text))
+        return asyncio.run(synthesize(text, language))
     except HTTPException:
         raise
     except Exception as error:
@@ -116,12 +138,19 @@ def render_speech(text):
         tts_slot.release()
 
 
+def voice_language(request):
+    language = request.headers.get("x-voice-language", "ko")
+    if language not in {"ko", "en", "zh", "vi", "uz"}:
+        raise HTTPException(400, "invalid_voice_language")
+    return language
+
+
 @app.post("/stt")
 async def stt(request: Request):
     if request.headers.get("content-type", "").split(";")[0] not in audio_types:
         raise HTTPException(415, "unsupported_audio")
     data = await read_body(request, 4 * 1024 * 1024)
-    return await asyncio.to_thread(recognize, data)
+    return await asyncio.to_thread(recognize, data, voice_language(request))
 
 
 @app.post("/tts")
@@ -135,5 +164,5 @@ async def tts(request: Request):
     text = payload.get("text") if isinstance(payload, dict) else None
     if not isinstance(text, str) or not 1 <= len(text.strip()) <= 1000:
         raise HTTPException(422, "invalid_text")
-    wav = await asyncio.to_thread(render_speech, text.strip())
+    wav = await asyncio.to_thread(render_speech, text.strip(), voice_language(request))
     return Response(wav, media_type="audio/wav", headers={"Cache-Control": "no-store"})

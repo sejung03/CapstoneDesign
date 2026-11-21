@@ -75,9 +75,7 @@ export function normalizeAssistantResponse(raw,questionnaire=null){
  const profileUpdates=raw.profileUpdates==null?null:normalizeHealthUpdates(raw.profileUpdates);
  const emergency=raw.emergency==null?null:normalizeEmergency(raw.emergency);
  if(!summary&&!followUp&&!search&&!emergency&&!profileUpdates?.length)return fail();
- // 11/18 문진 재설계: 증상 확인 뒤 상세 질문의 진행(추가 질문 n/전체). 형식이 맞을 때만 쓰고, 틀려도 응답 전체를 버리지 않는다
- const p=raw.progress,progress=followUp&&p&&typeof p==='object'&&Number.isInteger(p.current)&&Number.isInteger(p.total)&&p.current>=1&&p.current<=p.total&&p.total<=20?{current:p.current,total:p.total}:null;
- return {summary,followUp,search,...(progress?{progress}:{}),...(profileUpdates?{profileUpdates}:{}),...(emergency?{emergency}:{})};
+ return {summary,followUp,search,...(profileUpdates?{profileUpdates}:{}),...(emergency?{emergency}:{})};
 }
 export function assistantReportNotes(state){
  const assistant=state.assistant;
@@ -93,7 +91,7 @@ export function renderAssistant(state,t,escape){
  if(!assistant?.connected)return '';
  const history=assistant.answers.length?'<dl>'+assistant.answers.map(answer=>'<div><dt>'+escape(intakeLabel(answer.label,state.locale))+'</dt><dd>'+escape(intakeLabel(answer.optionLabel,state.locale))+'</dd></div>').join('')+'</dl>':'';
  const wrap=body=>'<section class="chat-intake-context assistant-result" aria-label="'+t('assistantSection')+'">'+history+body+'</section>';
- if(assistant.status==='loading')return wrap('<p role="status">'+t('assistantLoading')+(assistant.slow?' '+t('assistantSlow'):'')+'</p>');
+ if(assistant.status==='loading')return wrap('<p role="status">'+t('assistantLoading')+'</p>');
  if(assistant.status==='error')return wrap('<p role="status">'+t('assistantError')+'</p><button class="secondary-button" id="assistant-retry" type="button">'+t('assistantRetry')+'</button>');
  const response=assistant.response;
  if(!response)return '';
@@ -108,7 +106,6 @@ export function renderAssistant(state,t,escape){
  }
  if(response.followUp){
   const question=response.followUp;
-  if(response.progress)body+='<span class="assistant-progress">'+escape(phrase(state.locale,'Follow-up question {0} of {1}',[response.progress.current,response.progress.total]))+'</span>';
   body+='<strong id="assistant-question">'+escape(intakeLabel(question.label,state.locale))+'</strong><div class="onset-options" role="group" aria-labelledby="assistant-question">'+question.options.map(option=>'<button type="button" data-assistant-option="'+escape(option.id)+'">'+escape(intakeLabel(option.label,state.locale))+'</button>').join('')+'</div>';
  }
  if(response.search){

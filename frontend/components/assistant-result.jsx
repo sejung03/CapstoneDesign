@@ -1,16 +1,17 @@
-import {departmentCatalog} from '../departments.mjs';
 import {voiceEnabled} from '../voice-client.mjs';
-import {SpeakButton} from './voice-controls.jsx';
+import {AutoVoice} from './voice-controls.jsx';
 import {phrase,expandLocales} from '../i18n.mjs';
 import {assistantContentKey,assistantInputKey} from '../assistant.mjs';
 import {intakeLabel} from '../intake-data.mjs';
+import {spokenChoiceNumber} from '../voice-answer.mjs';
 import {Textarea} from './shared.jsx';
-export function AssistantResult({state,t}){
+export function AssistantResult({state,t,voiceVolume=0,voiceFollowups=false,onReadDone}){
  const a=state.assistant;if(!a?.connected)return null;
  if(a.response?.profileUpdates?.length&&!a.response.summary&&!a.response.followUp&&!a.response.search&&a.status==='ready')return null;
  const label=value=>intakeLabel(value,state.locale),r=a.response;
+ const questionNumber=1+a.answers.filter(answer=>answer.value!=null&&answer.questionId!==r?.followUp?.id).length;
  let content;
- if(a.status==='loading')content=<p role="status">{t('assistantLoading')}{a.slow&&<> {t('assistantSlow')}</>}</p>;
+ if(a.status==='loading')content=<p role="status">{t('assistantLoading')}</p>;
  else if(a.status==='error')content=<><p role="status">{t('assistantError')}</p><button className="secondary-button" id="assistant-retry" type="button">{t('assistantRetry')}</button></>;
  else if(!r)return null;
  else if(r.contentKey!==assistantContentKey(state))content=<p>{t('assistantOutdated')}</p>;
@@ -18,18 +19,13 @@ export function AssistantResult({state,t}){
   const plan=r.search,labels=[];
   if(plan){if(Object.hasOwn(plan,'region'))labels.push(plan.region||t('intakeCurrentLocation'));if(plan.type)labels.push(t(plan.type==='all'?'all':plan.type==='hospital'?'hospitals':'pharmacies'));if(plan.department)labels.push(t(plan.department==='all'?'allDepartments':plan.department));if(Object.hasOwn(plan,'openOnly'))labels.push(t(plan.openOnly?'openOnly':'assistantAnyHours'));if(plan.mode)labels.push(t({walk:'assistantWalk',traffic:'assistantTraffic',car:'assistantCar'}[plan.mode]));}
   const current=r.sourceKey===assistantInputKey(state);
-  const department = departmentCatalog.find(item=>item.key===plan?.department)?.keyword;
-  const spoken = voiceEnabled && current && [
-    r.summary && (a.confirmed?.text || intakeLabel(r.summary, 'ko')),
-    r.followUp && [
-      intakeLabel(r.followUp.label, 'ko'),
-      ...r.followUp.options.map(option => intakeLabel(option.label, 'ko')),
-    ].join('. '),
-    department && ('추천 진료과는 ' + department + '입니다.'),
+  const spoken=voiceEnabled&&current&&r.followUp&&[
+    label(r.followUp.label),
+    ...r.followUp.options.map((option,index)=>(voiceFollowups?`${spokenChoiceNumber(index+1,state.locale)}. `:'')+label(option.label)),
   ].filter(Boolean).join('. ');
-  content=<>{r.summary&&<><strong>{t('assistantSummary')}</strong>{a.editing?<><label className="sr-only" htmlFor="assistant-summary">{t('assistantSummary')}</label><Textarea id="assistant-summary" value={a.summaryDraft} maxLength={2000} rows={4} /></>:<p className="assistant-summary-text">{a.confirmed?.text||label(r.summary)}</p>}<div className="assistant-actions">{a.confirmed&&!a.editing?<span role="status">{t('assistantConfirmed')}</span>:<button id="assistant-confirm" className="secondary-button" type="button">{t('assistantConfirm')}</button>}<button id="assistant-edit" className="text-button" type="button">{t(a.editing?'assistantCancel':'assistantEdit')}</button></div></>}
-  {r.followUp&&<>{r.progress&&<span className="assistant-progress">{phrase(state.locale,"Follow-up question {0} of {1}",[r.progress.current,r.progress.total])}</span>}<strong id="assistant-question" tabIndex={-1}>{label(r.followUp.label)}</strong><div className="onset-options" role="group" aria-labelledby="assistant-question">{r.followUp.options.map(option=><button key={option.id} type="button" data-assistant-option={option.id}>{label(option.label)}</button>)}</div>{a.answers.some(answer=>answer.value!=null)&&<button id="assistant-skip" type="button" className="text-button">{phrase(state.locale,"Find care with these answers")}</button>}</>}
-  {spoken&&<SpeakButton key={spoken} text={spoken} />}{plan&&<><strong>{t('assistantSearch')}</strong><div className="suggestion-chips">{labels.map((value,i)=><span key={i}>{value}</span>)}</div><p>{t(a.applied?'assistantApplied':current?'assistantSearchHelp':'assistantSearchOutdated')}</p><button id="assistant-apply" type="button" className="primary-button" disabled={!current||a.applied}>{t('assistantApply')}</button></>}</>;
+  content=<>{r.followUp&&<section className="active-question" aria-labelledby="assistant-question"><p className="assistant-question-step">{phrase(state.locale,"Question {0}",[questionNumber])}</p><h3 id="assistant-question" tabIndex={-1}>{label(r.followUp.label)}</h3><div className="onset-options" role="group" aria-labelledby="assistant-question">{r.followUp.options.map((option,index)=><button key={option.id} type="button" data-assistant-option={option.id}>{voiceFollowups?index+1+'. ':''}{label(option.label)}</button>)}</div>{a.answers.some(answer=>answer.value!=null)&&<button id="assistant-skip" type="button" className="text-button">{phrase(state.locale,"Find care with these answers")}</button>}</section>}{r.summary&&<><strong>{t('assistantSummary')}</strong>{a.editing?<><label className="sr-only" htmlFor="assistant-summary">{t('assistantSummary')}</label><Textarea id="assistant-summary" value={a.summaryDraft} maxLength={2000} rows={4} /></>:<p className="assistant-summary-text">{a.confirmed?.text||label(r.summary)}</p>}<div className="assistant-actions">{a.confirmed&&!a.editing?<span role="status">{t('assistantConfirmed')}</span>:<button id="assistant-confirm" className="secondary-button" type="button">{t('assistantConfirm')}</button>}<button id="assistant-edit" className="text-button" type="button">{t(a.editing?'assistantCancel':'assistantEdit')}</button></div></>}
+
+  {spoken&&<AutoVoice key={r.followUp.id} text={spoken} locale={state.locale} turn={r.followUp} volume={voiceVolume} onDone={voiceFollowups?()=>onReadDone?.(r.followUp):undefined} />}{plan&&<><strong>{t('assistantSearch')}</strong><div className="suggestion-chips">{labels.map((value,i)=><span key={i}>{value}</span>)}</div><p>{t(a.applied?'assistantApplied':current?'assistantSearchHelp':'assistantSearchOutdated')}</p><button id="assistant-apply" type="button" className="primary-button" disabled={!current||a.applied}>{t('assistantApply')}</button></>}</>;
  }
- return <section className="chat-intake-context assistant-result" aria-label={t('assistantSection')}>{a.answers.length>0&&<dl>{a.answers.map(answer=><div key={answer.questionId}><dt>{label(answer.label)}</dt><dd>{label(answer.optionLabel)}</dd>{a.questions?.some(question=>question.id===answer.questionId)&&<button type="button" className="text-button" data-assistant-answer-edit={answer.questionId} disabled={a.status==='loading'||r?.contentKey!==assistantContentKey(state)}>{phrase(state.locale,"Edit answer")}</button>}</div>)}</dl>}{content}</section>;
+ return <section className="chat-intake-context assistant-result" aria-label={t('assistantSection')}>{content}{a.answers.length>0&&<details className="assistant-answer-history" open={a.status==='ready'&&r?.contentKey===assistantContentKey(state)&&!r.followUp?true:undefined}><summary>{phrase(state.locale,"Previous answers")}</summary><dl>{a.answers.map(answer=><div key={answer.questionId}><dt>{label(answer.label)}</dt><dd>{label(answer.optionLabel)}</dd>{a.questions?.some(question=>question.id===answer.questionId)&&<button type="button" className="text-button" data-assistant-answer-edit={answer.questionId} disabled={a.status==='loading'||r?.contentKey!==assistantContentKey(state)}>{phrase(state.locale,"Edit answer")}</button>}</div>)}</dl></details>}</section>;
 }

@@ -108,8 +108,8 @@ test('다국어: 검토된 응급 안내는 언어마다 같은 순서로 덧붙
 });
 
 test('다국어 원칙 3: 요약은 언어마다 따로 만들고 섞이지 않으며, 번역이 하나라도 없으면 그 언어 요약은 만들지 않는다', async () => {
-  const answers = {...SAFE_BASE, SYM_DICT_CONFIRM: 'sym_R05', 'N5-1': 'onset_1_3d', N12: 'impact_little', N7: 'no'}; // 11/18 재설계(기침은 통증 아님)
-  // 11/18 재설계: N7~N13 '아니요' 채우기는 뺐다(N12는 불편 정도 선택지, 나머지 문항은 없어짐)
+  const answers = {...SAFE_BASE, SYM_DICT_CONFIRM: 'sym_R05', N5: 'no', 'N5-1': 'onset_1_3d', N6: 'yes', P0: 'no'};
+  for (let i = 7; i <= 13; i += 1) answers[`N${i}`] = 'no';
   const done = await call({reason: 'followup', messages: ['기침이 나요'], answers});
   assert.equal(done.out.trace.phase, 'complete');
   const s = done.out.response.summary;

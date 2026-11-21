@@ -10,10 +10,8 @@ import {KO_TEXT} from './summary.mjs';
 function engineQuestionPrefix(id) {
   if (/^RISK_CONFIRM_\d{1,4}$/.test(id)) return 'q.risk_confirm';
   if (/^SENSITIVE_CHOICE_\d{1,4}$/.test(id)) return 'q.sensitive_choice';
-  if (/^SYM_RETRY_\d{1,4}$/.test(id)) return 'q.sym_retry'; // 11/18 되묻기
   return {SYM_DICT_CONFIRM: 'q.sym_dict_confirm', SYM_NOT_FOUND: 'q.sym_not_found', ASK_START: 'q.ask_start',
-    MED_CHOICE: 'q.med_choice', SYM_CONFIRM: 'q.sym_confirm', SYM_AREA_PICK: 'q.sym_area_pick',
-    SYM_REWRITE_CONFIRM: 'q.sym_dict_confirm'}[id] ?? null; // 11/18 절충 1: 사전 확인 질문과 같은 문구·번역
+    MED_CHOICE: 'q.med_choice', SYM_CONFIRM: 'q.sym_confirm'}[id] ?? null;
 }
 /** 엔진 질문 선택지 ID → 문구 키 뒷부분. */
 const OPTION_SUFFIX = Object.freeze({
@@ -36,7 +34,6 @@ export function localizeFollowUp(f, data) {
     if (item) l = labelFor('option', `${f.id}:${o.id}`, o.label);
     else if (prefix && o.id.startsWith('sym_') && !OPTION_SUFFIX[o.id]) l = labelFor('symptom', o.id.slice(4), o.label);
     else if (prefix && OPTION_SUFFIX[o.id]) l = labelFor('template', `${prefix}.${OPTION_SUFFIX[o.id]}`, o.label);
-    else if (prefix && /^area_[a-z_]+$/.test(o.id)) l = labelFor('template', `${prefix}.${o.id}`, o.label); // 11/18 되묻기 부위
     return {...o, label: l};
   });
   return {...f, label, options};
@@ -95,33 +92,6 @@ export function localizeResponse(response, data) {
   if (out.followUp) out.followUp = localizeFollowUp(out.followUp, data);
   if (out.emergency) out.emergency = localizeEmergency(out.emergency, data);
   return out;
-}
-
-/** 11/18 재설계: 문진 문구의 증상 이름 자리. intake_v1.yaml 문구와 번역(06f가 자리 표시를 검사)에 그대로 들어 있다. */
-export const SYMPTOM_SLOT = '{symptom}';
-
-/**
- * 11/18: 질문 문구의 {symptom}을 확정 증상 이름(언어별)으로 채운다. 번역을 찾은 뒤에 채워야 원문(source_ko)이 맞는다.
- * 증상을 모르면 template 'q.symptom_unknown'('지금 불편한'). 그 언어의 증상 이름이 없으면 그 언어 문구를 뺀다(한국어는 항상 있음).
- * 영어는 자리가 문장 처음이 아니면 첫 글자를 소문자로("When did ankle pain start?").
- * @param {object} response 언어별로 만든 응답 @param {{id:string, nameKo:string}|null} symptom
- */
-export function fillSymptomSlot(response, symptom, data) {
-  const f = response?.followUp;
-  const label = f?.label;
-  if (!label || !Object.values(label).some((t) => typeof t === 'string' && t.includes(SYMPTOM_SLOT))) return response;
-  const index = data?.i18n;
-  const names = symptom?.id
-    ? translate(index, 'symptom', symptom.id, symptom.nameKo)
-    : translate(index, 'template', 'q.symptom_unknown', ENGINE_TEXT['q.symptom_unknown']);
-  const out = {};
-  for (const [loc, text] of Object.entries(label)) {
-    let name = names[loc];
-    if (typeof name !== 'string' || !name) continue;
-    if (loc === 'en' && text.indexOf(SYMPTOM_SLOT) > 0) name = name.charAt(0).toLowerCase() + name.slice(1);
-    out[loc] = text.split(SYMPTOM_SLOT).join(name);
-  }
-  return {...response, followUp: {...f, label: out}};
 }
 
 // 엔진 문구 키가 실제로 있는지(오타 방지) — 테스트에서 쓴다.

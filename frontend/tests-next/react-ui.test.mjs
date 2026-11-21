@@ -86,13 +86,68 @@ test('React components preserve intake, search, maps, chat, report and privacy',
    d.querySelector('.header-profile').click();assert.equal(el('profile-age').value,'0');input('profile-allergies','명시적으로 저장한 수정');click('workspace-close');click('profile-leave-save');assert.equal(el('workspace-panel'),null);d.querySelector('.header-profile').click();assert.equal(el('profile-allergies').value,'명시적으로 저장한 수정');
    assert.ok(!Object.values({...w.localStorage}).some(value=>value.includes('명시적으로 저장한 수정')));click('profile-delete');click('workspace-close');click('health-consent-open');click('health-consent-revoke');
   });
+  await t.test('localized emergency help keeps Korean dialing and shows a Korean handoff',async()=>{
+   for(const locale of ['en','zh','vi','uz']){
+    language(locale);click('emergency-open');
+    await waitFor(()=>el('emergency-card'));
+    const call=el('emergency-card').querySelector('a[href="tel:119"]');
+    assert.match(call.textContent,/119/);
+    assert.equal(el('emergency-card').querySelector('a[href="tel:911"]'),null);
+    assert.match(call.nextElementSibling.textContent,/Interpreter, please/);
+    assert.match(d.querySelector('.emergency-reporting details [lang=ko]').textContent,/구급차/);
+    click('emergency-close');
+   }
+   language('ko');
+  });
+  await t.test('Escape closes emergency help without leaving My information',async()=>{
+   d.querySelector('.header-profile').click();
+   const panel=el('workspace-panel');
+   assert.ok(panel);
+   assert.equal(d.querySelector('.skip-link').getAttribute('href'),'#workspace-panel');
+   click('emergency-open');
+   const dialog=el('emergency-dialog');
+   assert.ok(dialog?.open);
+   const escape=new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true});
+   el('emergency-close').dispatchEvent(escape);
+   assert.equal(escape.defaultPrevented,false);
+   // JSDOM does not dispatch the native dialog cancel event for Escape.
+   dialog.dispatchEvent(new w.Event('cancel',{cancelable:true}));
+   assert.equal(el('emergency-dialog'),null);
+   assert.equal(el('workspace-panel'),panel);
+   assert.equal(d.activeElement,el('emergency-open'));
+   click('workspace-close');
+   assert.equal(d.querySelector('.skip-link').getAttribute('href'),'#main');
+  });
   await t.test('emergency shortcut offers 119 without auto calling, preserves input, and looks up location only on request',async()=>{
    assert.equal(el('composer-input').readOnly,true);click('emergency-open');assert.equal(el('emergency-open').getAttribute('aria-expanded'),'true');click('emergency-open');assert.equal(el('emergency-card'),null);assert.equal(el('emergency-open').getAttribute('aria-expanded'),'false');click('emergency-open');
+   const emergencyButton=el('emergency-open');
+   assert.equal(emergencyButton.parentElement.previousElementSibling,d.querySelector('.care-header'));
+   assert.equal(el('composer-form').contains(emergencyButton),false);
+   assert.equal(emergencyButton.getAttribute('aria-controls'),'emergency-dialog');
+   assert.equal(d.querySelectorAll('#emergency-open').length,1);
+   assert.equal(el('emergency-open').type,'button');
    assert.ok(el('emergency-dialog')?.open);assert.equal(el('chat-messages').contains(el('emergency-card')),false);assert.equal(d.querySelectorAll('[data-emergency-topic]').length,6);
-   assert.equal(el('emergency-card').querySelector('a[href="tel:119"]').textContent.includes('119'),true);
-   assert.equal(el('emergency-card').querySelector('iframe'),null);assert.equal(el('emergency-location-map'),null);assert.equal(el('emergency-location-input'),null);assert.equal(w.__qa.maps,0);assert.equal(el('composer-input').value,'');
+   const call=el('emergency-card').querySelector('a[href="tel:119"]');
+   assert.match(call.textContent,/119/);assert.equal(call.nextElementSibling.className,'emergency-reporting');assert.equal(call.nextElementSibling.querySelectorAll('li').length,3);
+   assert.equal(el('emergency-card').querySelector('iframe'),null);
+   for(const [topic,id] of Object.entries({aed:'b4XAPbxcEZk',choking:'dsiTtEImNmg',seizure:'aLNucite-Hw'})){
+    d.querySelector('[data-emergency-topic='+topic+']').click();
+    await waitFor(()=>d.querySelector('.emergency-video iframe')?.src.includes(id));
+    const player=d.querySelector('.emergency-video iframe');
+    assert.equal(new URL(player.src).pathname,'/embed/'+id);
+    assert.equal(new URL(player.src).searchParams.get('autoplay'),'0');
+    assert.equal(d.querySelectorAll('.emergency-video iframe').length,1);
+    assert.equal(d.querySelector('.emergency-video button'),null);
+   }
+   for(const [topic,[article,id]] of Object.entries({bleeding:['5679','nsEqL5a0Evg'],burns:['6584','mCk_ffvJqAQ']})){
+    d.querySelector('[data-emergency-topic='+topic+']').click();
+    await waitFor(()=>d.querySelector('.emergency-guide-content a')?.href.endsWith('cntnts_sn='+article));
+    assert.ok(d.querySelector('.emergency-guide-content ol li'));
+    assert.equal(new URL(d.querySelector('.emergency-video iframe').src).pathname,'/embed/'+id);
+   }
+   assert.equal(el('emergency-location-map'),null);assert.equal(el('emergency-location-input'),null);assert.equal(w.__qa.maps,0);assert.equal(el('composer-input').value,'');
    assert.ok(d.querySelector('[data-emergency-topic="cpr"]'));
-   d.querySelector('[data-emergency-topic=choking]').click();await delay(0);assert.match(d.querySelector('.emergency-guide-content').textContent,/성인 기도폐쇄/);assert.equal(d.querySelector('.emergency-guide-content iframe'),null);
+   d.querySelector('[data-emergency-topic=choking]').click();await delay(0);assert.match(d.querySelector('.emergency-guide-content').textContent,/성인 기도폐쇄/);assert.ok(d.querySelector('.emergency-guide-content iframe'));
    d.querySelector('[data-emergency-topic="cpr"]').click();await waitFor(()=>d.querySelector('.emergency-video'));
    assert.equal(el('emergency-location-map'),null);assert.equal(w.__qa.routes.length,0);
    await delay(80);click('emergency-locate');await waitFor(()=>d.querySelector('.emergency-address'));
@@ -112,9 +167,8 @@ test('React components preserve intake, search, maps, chat, report and privacy',
    w.__qa.mapEvents.find(e=>e.target===picker&&e.type==='click').fn({latLng:new w.kakao.maps.LatLng(37.9,127.76)});
    await waitFor(()=>el('emergency-manual-result').textContent.includes('테스트아파트'));
    assert.ok(d.querySelector('.emergency-reporting ol li'));assert.ok(d.querySelector('.emergency-video'));
-   d.querySelector('.emergency-video button').click();await waitFor(()=>d.querySelector('.emergency-video iframe'));
    assert.match(d.querySelector('.emergency-video iframe').src,/youtube-nocookie.com\/embed\/CGG9g1pvJ4g/);assert.equal(w.__qa.routes.length,0);
-   const video=d.querySelector('.emergency-video');video.querySelector('button').click();await waitFor(()=>!d.querySelector('.emergency-video iframe'));assert.match(video.textContent,/ユーチューブ|유튜브/);
+   assert.equal(d.querySelector('.emergency-video a').href,'https://www.youtube.com/watch?v=CGG9g1pvJ4g');
    click('emergency-map-toggle');await waitFor(()=>!el('emergency-location-map'));assert.equal(w.__qa.mapEvents.filter(e=>e.target===picker).length,0);assert.equal(el('emergency-location-input').value.includes('한림'),false);
    click('emergency-close');assert.equal(el('emergency-card'),null);
    click('emergency-open');assert.match(el('emergency-manual-result').textContent,/테스트아파트/);click('emergency-location-clear');assert.equal(el('emergency-manual-result'),null);click('emergency-close');assert.equal(el('composer-input').value,'');input('composer-input','');
@@ -130,7 +184,7 @@ test('React components preserve intake, search, maps, chat, report and privacy',
    assert.equal(el('health-consent-card'),null);assert.equal(el('composer-input').readOnly,false);assert.equal(el('intake-wizard'),null);assert.equal(d.activeElement,el('composer-input'));
    input('composer-input','불편한 점을 먼저 적었어요');submit('composer-form');assert.ok(el('intake-wizard'));assert.equal(el('composer-input').value,'');assert.equal(el('workspace-panel'),null);assert.equal(w.__qa.routes.length,0);
    assert.match(d.querySelector('.user-message').textContent,/불편한 점을 먼저/);assert.equal(el('health-consent-card'),null);
-   click('health-consent-open');assert.ok(el('health-consent-card'));assert.equal(el('chat-consent-dialog'),null);click('health-consent-open');assert.equal(el('health-consent-card'),null);
+   click('health-consent-open');assert.ok(el('chat-consent-dialog')?.open);assert.equal(el('chat-messages').contains(el('health-consent-card')),false);click('health-consent-close');assert.equal(el('health-consent-card'),null);
    assert.ok(!Object.values({...w.localStorage}).some(value=>value.includes('local-health-1')));
   });
   await t.test('pasted report is reviewed before use and remains historical context',async()=>{
@@ -205,15 +259,20 @@ test('React components preserve intake, search, maps, chat, report and privacy',
    const key=value=>el('workspace-splitter').dispatchEvent(new w.KeyboardEvent('keydown',{key:value,bubbles:true,cancelable:true}));
    const pointer=(type,x)=>el('workspace-splitter').dispatchEvent(new w.MouseEvent(type,{button:0,clientX:x,bubbles:true,cancelable:true}));
    const maps=w.__qa.maps,searches=w.__qa.searches.length,routes=w.__qa.routes.length;
-   assert.equal(el('workspace-splitter').getAttribute('aria-valuenow'),'40');key('ArrowRight');await delay(0);assert.equal(el('workspace-splitter').getAttribute('aria-valuenow'),'42');
+   assert.equal(el('workspace-splitter').getAttribute('aria-valuenow'),'70');key('ArrowRight');await delay(0);assert.equal(el('workspace-splitter').getAttribute('aria-valuenow'),'72');
    pointer('pointerdown',670);pointer('pointermove',800);pointer('pointerup',800);await delay(0);const changed=el('workspace-splitter').getAttribute('aria-valuenow');assert.ok(Number(changed)>=49&&Number(changed)<=51);
    pointer('pointerdown',800);pointer('pointermove',900);pointer('pointercancel',900);await delay(0);assert.equal(el('workspace-splitter').getAttribute('aria-valuenow'),changed);
    key('Home');await delay(0);assert.equal(el('workspace-splitter').getAttribute('aria-valuenow'),el('workspace-splitter').getAttribute('aria-valuemin'));key('End');await delay(0);assert.equal(el('workspace-splitter').getAttribute('aria-valuenow'),el('workspace-splitter').getAttribute('aria-valuemax'));
-   el('workspace-splitter').dispatchEvent(new w.MouseEvent('dblclick',{bubbles:true}));await delay(0);assert.equal(el('workspace-splitter').getAttribute('aria-valuenow'),'40');
-   key('ArrowLeft');await delay(0);assert.equal(el('workspace-splitter').getAttribute('aria-valuenow'),'38');assert.equal(w.__qa.maps,maps);assert.equal(w.__qa.searches.length,searches);assert.equal(w.__qa.routes.length,routes);
-   key('Enter');await delay(0);assert.equal(el('workspace-splitter'),null);assert.equal(el('workspace-expand').getAttribute('aria-pressed'),'true');click('workspace-expand');await delay(0);assert.equal(el('workspace-splitter').getAttribute('aria-valuenow'),'38');
+   el('workspace-splitter').dispatchEvent(new w.MouseEvent('dblclick',{bubbles:true}));await delay(0);assert.equal(el('workspace-splitter').getAttribute('aria-valuenow'),'70');
+   key('ArrowLeft');await delay(0);assert.equal(el('workspace-splitter').getAttribute('aria-valuenow'),'68');assert.equal(w.__qa.maps,maps);assert.equal(w.__qa.searches.length,searches);assert.equal(w.__qa.routes.length,routes);
+   assert.equal(el('workspace-expand'),null);
+   assert.equal(d.querySelector('.emergency-entry-bar'),null);
+   assert.equal(el('emergency-open').parentElement,el('workspace-close').parentElement);
+   assert.equal(d.querySelectorAll('#emergency-open').length,1);
+   click('emergency-open');assert.ok(el('emergency-dialog')?.open);
+   click('emergency-close');assert.equal(d.activeElement,el('emergency-open'));assert.equal(el('workspace-splitter').getAttribute('aria-valuenow'),'68');
    d.querySelector('.header-nav [data-view=profile]').click();await delay(0);assert.equal(el('workspace-splitter'),null);assert.ok(d.querySelector('.care-shell.info-only'));assert.equal(w.getComputedStyle(el('main')).display,'none');
-   click('workspace-close');assert.equal(el('workspace-splitter'),null);click('conversation-map');await delay(0);assert.equal(el('workspace-splitter').getAttribute('aria-valuenow'),'38');
+   click('workspace-close');assert.equal(el('workspace-splitter'),null);click('conversation-map');await delay(0);assert.equal(el('workspace-splitter').getAttribute('aria-valuenow'),'68');
    d.querySelector('.header-nav [data-view=profile]').click();await delay(0);assert.equal(el('workspace-splitter'),null);click('workspace-close');click('conversation-map');await waitFor(()=>el('kakao-map'));
   });
   await t.test('search suggestions submit immediately and preserve one live map',async()=>{
@@ -225,9 +284,9 @@ test('React components preserve intake, search, maps, chat, report and privacy',
   await t.test('profile exports only saved health information without opening the report',async()=>{
    d.querySelector('button[data-view="profile"]').click();assert.ok(el('profile-form'));assert.equal(el('profile-report-open'),null);assert.equal(el('info-current-report'),null);assert.equal(el('info-settings'),null);assert.equal(el('profile-nickname'),null);
    assert.ok(el('account-open').classList.contains('primary-button'));assert.match(w.getComputedStyle(d.querySelector('.info-health')).gridTemplateColumns,/repeat\(2/);
-   input('profile-age','27');input('profile-allergies','저장한 건강정보');submit('profile-form');
+   input('profile-age','27');input('profile-sex','female');input('profile-allergies','저장한 건강정보');assert.equal(el('profile-count-allergies').textContent,'8 / 500');submit('profile-form');
    input('profile-allergies','아직 저장하지 않은 내용');click('profile-pdf');assert.ok(el('profile-leave-cancel'));assert.equal(w.__qa.prints,0);assert.doesNotMatch(d.querySelector('.health-print-sheet').textContent,/아직 저장하지/);click('profile-leave-cancel');assert.equal(el('profile-allergies').value,'아직 저장하지 않은 내용');
-   click('profile-pdf');click('profile-leave-save');assert.equal(w.__qa.prints,1);assert.ok(el('profile-form'));assert.equal(el('report-heading'),null);assert.match(d.querySelector('.health-print-sheet').textContent,/아직 저장하지 않은 내용/);assert.match(d.querySelector('.health-print-sheet').textContent,/만 27세/);assert.equal(d.querySelector('.health-print-sheet').querySelectorAll('dt').length,4);
+   click('profile-pdf');click('profile-leave-save');assert.equal(w.__qa.prints,1);assert.ok(el('profile-form'));assert.equal(el('report-heading'),null);assert.match(d.querySelector('.health-print-sheet').textContent,/아직 저장하지 않은 내용/);assert.match(d.querySelector('.health-print-sheet').textContent,/만 27세/);assert.equal(d.querySelector('.health-print-sheet').querySelectorAll('dt').length,5);assert.match(d.querySelector('.health-print-sheet').textContent,/여성/);
    input('profile-allergies','버릴 내용');click('profile-pdf');click('profile-leave-discard');assert.equal(w.__qa.prints,2);assert.equal(el('profile-allergies').value,'아직 저장하지 않은 내용');assert.doesNotMatch(d.querySelector('.health-print-sheet').textContent,/버릴 내용|not executable|선지/);
    assert.ok(!Object.values({...w.localStorage}).some(value=>value.includes('저장하지 않은 내용')));
    click('profile-delete');assert.equal(el('profile-allergies').value,'');assert.doesNotMatch(d.querySelector('.health-print-sheet').textContent,/저장하지 않은 내용/);

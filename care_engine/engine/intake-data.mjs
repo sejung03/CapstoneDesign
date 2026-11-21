@@ -24,17 +24,7 @@ const ENABLE_OPERATORS = new Set(['=', '!=', 'exists']);
 const RULE_OPERATORS = new Set(['=', 'in']);
 const RULE_RESULTS = new Set(['EMERGENCY_STOP', 'URGENT_NOTICE']);
 const BEHAVIORS = new Set(['all', 'any']);
-// 11/18 재설계: symptom_is_pain(확정 증상이 통증일 때만 — P3 양상·P1 점수), symptom_not_pain(통증이 아니거나 증상 모름 — N12 불편 정도)
-const ENGINE_CONDITIONS = new Set(['', 'symptom_is_fallback', 'symptom_is_pain', 'symptom_not_pain']);
-
-/**
- * 11/18: 통증 증상인지(이름으로 정함). 괄호 밖에 통증 표현이 있을 때만 — "기타 코 증상(코 통증·후비루 등)"처럼
- * 괄호 안 예시에만 있으면 통증 증상이 아니다. 결과 목록은 engine/__tests__/redesign.test.mjs가 고정한다(43개 → 41개).
- */
-export const PAIN_NAME_RE = /통증|아픔|두통|치통|생리통|근육통|배란통|속쓰림/;
-export function isPainSymptomName(nameKo) {
-  return PAIN_NAME_RE.test(String(nameKo ?? '').replace(/\([^)]*\)/g, ''));
-}
+const ENGINE_CONDITIONS = new Set(['', 'symptom_is_fallback']);
 const UI_VALUES = new Set(['', 'frontend']);
 const MAX_OPTIONS = 12;
 
@@ -325,7 +315,6 @@ function buildIntakeData(readRows, source, refDataIn) {
     departments,
     variants,
     symptomDept,
-    painSymptomIds: new Set([...refData.symptoms.values()].filter((s) => isPainSymptomName(s.nameKo)).map((s) => s.id)), // 11/18 재설계
     fallbackDepartments,
     appConfig,
     refData,

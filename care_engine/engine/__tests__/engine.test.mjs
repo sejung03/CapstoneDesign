@@ -11,7 +11,7 @@ import {data, SAFE_BASE, fakeLlm, confirmFor, call} from './helpers.mjs';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const testRules = loadFreeTextRules(path.join(HERE, 'fixtures', 'free_text_test.json'));
 const PHARMACY_TEXT = readFileSync(path.resolve(HERE, '../../../frontend/care-context.mjs'), 'utf8').match(/id:'pharmacy'[^\n]*?text:(?:expandLocales\()?\{ko:'([^']+)'/)[1];
-const DETAIL_SAFE = {'N5-1': 'onset_today', P3: 'pq_dull', P1: 'pain_2', N12: 'impact_little', N7: 'no'} // 11/18 재설계;
+const DETAIL_SAFE = {N5: 'yes', 'N5-1': 'onset_today', N6: 'yes', N7: 'no', N8: 'no', N9: 'no', N10: 'no', N11: 'no', N12: 'no', N13: 'no', P0: 'no'};
 
 const ok = (out) => {
   assert.ok(out.response, `오류: ${out.error} ${JSON.stringify(out.trace?.warnings)}`);
@@ -98,13 +98,13 @@ test('자유 입력 규칙(테스트 규칙): Q0 미응답이면 E 문항이 보
   assert.equal(ok(out).search, undefined);
 });
 
-test('T3까지 답함 + 사전 후보 → SYM_DICT_CONFIRM, 고르면 N5-1', async () => {
+test('T3까지 답함 + 사전 후보 → SYM_DICT_CONFIRM, 고르면 N5', async () => {
   let {out, calls} = await call({reason: 'followup', messages: ['기침이 나요'], answers: SAFE_BASE});
   assert.equal(ok(out).followUp.id, 'SYM_DICT_CONFIRM');
   assert.equal(out.trace.phase, 'identify');
   assert.equal(calls.classify.length, 0);
   ({out} = await call({reason: 'followup', messages: ['기침이 나요'], answers: {...SAFE_BASE, SYM_DICT_CONFIRM: 'sym_R05'}}));
-  assert.equal(ok(out).followUp.id, 'N5-1');
+  assert.equal(ok(out).followUp.id, 'N5');
   assert.deepEqual(out.trace.symptom, {id: 'R05', source: 'dict_confirm', fallback: false, fallbackGroup: null});
 });
 
@@ -124,8 +124,7 @@ test('완료: 요약 + 진료과 search + (본인) profileUpdates', async () => 
   assert.ok(lines.includes('상담 대상: 본인'));
   assert.ok(lines.includes(`주된 증상: ${data.refData.symptoms.get('R05').nameKo}`));
   assert.ok(lines.includes('시작: 오늘'));
-  assert.ok(lines.includes('경과: 점점 심해짐(아니요)')); // 11/18 재설계: 계속 나타남(N6)은 묻지 않음
-  assert.ok(lines.includes('일상생활: 거의 불편하지 않아요'));
+  assert.ok(lines.includes('경과: 계속 나타남(예), 점점 심해짐(아니요)'));
   assert.ok(lines.some((l) => l.startsWith('참고할 진료과: ')));
   assert.ok(lines.includes('복용 중인 약, 기존 질환, 함께 있는 다른 증상은 확인하지 않았습니다. 해당되면 진료 때 꼭 알려 주세요.'));
   assert.equal(lines.at(-1), '증상이 갑자기 심해지면 119에 연락하세요.');
@@ -171,7 +170,7 @@ test('LLM 경로: 사전 0개 → classifySymptom 1회 → SYM_CONFIRM, 답하�
   assert.equal(out.trace.llm.classify.status, 'confirm');
   const llm2 = fakeLlm({classify: confirmFor(['D01'])});
   ({out, calls} = await call({reason: 'followup', messages: ['속이 영 이상하고 불편해요'], answers: {...SAFE_BASE, SYM_CONFIRM: 'sym_D01'}, llm: llm2}));
-  assert.equal(ok(out).followUp.id, 'N5-1');
+  assert.equal(ok(out).followUp.id, 'N5');
   assert.equal(calls.classify.length, 0);
 });
 
@@ -183,7 +182,7 @@ test('약 의도 3갈래와 시작 선택 답', async () => {
   r = ok((await call({reason: 'followup', messages: ['이 약 궁금해요'], answers: {...base, MED_CHOICE: 'med_pharmacy'}})).out);
   assert.deepEqual(r, {search: {type: 'pharmacy', department: 'pharmacy'}});
   const {out, calls} = await call({reason: 'followup', messages: ['이 약 궁금해요'], answers: {...base, MED_CHOICE: 'med_symptom'}});
-  assert.equal(ok(out).followUp.id, 'N5-1');
+  assert.equal(ok(out).followUp.id, 'N5');
   assert.equal(out.trace.symptom.source, 'med_symptom');
   assert.equal(calls.classify.length, 0);
   r = ok((await call({reason: 'followup', answers: {...base, ASK_START: 'find_hospital'}})).out);

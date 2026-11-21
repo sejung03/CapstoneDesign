@@ -12,3 +12,5 @@ coverage/
 
 /public/pdfjs/
 .local-data/
+
+/public/licenses/

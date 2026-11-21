@@ -1,5 +1,6 @@
 import {localizedLabels} from './i18n.mjs';
 import {loadKakaoSdk} from './kakao-client.mjs';
+export const emergencyDialogOpenedEvent='capstone:emergency-dialog-opened';
 export function createEmergency(){return {manual:false,notice:null,locationDraft:'',manualLocation:'',selectedPoint:null,locationSource:'',locationError:false,location:{phase:'idle',point:null,address:''}};}
 export function normalizeEmergency(raw){
  const fail=()=>{throw new TypeError('Invalid emergency notice');};

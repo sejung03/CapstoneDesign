@@ -1,22 +1,21 @@
 // 브라우저 → /api/care(문진 엔진) 연결.
 // connectCare({requestAssistant: createCareAssistant(), rankFacilities: createCareRanking(), healthNotice: careHealthNotice})로 쓴다.
-import {careAiHealthNotice} from './health-consent.mjs';
+import {localHealthNotice} from './health-consent.mjs';
 
-// 11/18 SYM_RETRY_<n>: 증상을 못 찾았을 때 되묻기. 버튼 대신 대화창에 더 적으면 답이 없으므로 value:null로 계속 보내 엔진이 "이미 되물었음"을 안다
-const RISK_QUESTION_RE=/^(RISK_CONFIRM|SENSITIVE_CHOICE|SYM_RETRY)_(\d{1,4})$/;
+const RISK_QUESTION_RE=/^(RISK_CONFIRM|SENSITIVE_CHOICE)_(\d{1,4})$/;
 
 /**
  * OpenAI 전송을 허용하는 처리 안내 버전. 서버(lib/care-engine-server.mjs)는 이 버전을 확인한 요청에만 외부 AI 동의를 넘긴다.
- * 11/18: 이 버전의 외부 AI 안내(health-consent.mjs careAiHealthNotice)를 쓴다 → 사용자가 동의하면 OpenAI가 호출된다.
- * 실제 서비스로 내보내기 전에 안내 문구의 법적 검토가 필요하다. 끄려면 careHealthNotice를 localHealthNotice로 되돌린다.
+ * 지금은 이 버전의 안내를 쓰지 않는다: 원래 안내를 유지하기로 했으므로 OpenAI는 호출되지 않는다.
+ * OpenAI를 쓰려면 외부 전송을 고지하는 안내를 이 버전으로 만들어 careHealthNotice로 바꾼다(법적 검토 필요).
  */
 export const CARE_CONSENT_VERSION='care-openai-1';
 
 /**
- * 건강정보 처리 안내: 11/18부터 외부 AI(OpenAI) 처리를 알리는 안내. 이 안내를 확인한 요청만 서버가 외부 AI 동의로 넘긴다.
- * 서버에 LLM_PROVIDER=openai와 OPENAI_API_KEY가 없으면 동의해도 OpenAI를 부르지 않는다(규칙·사전·되묻기로 문진).
+ * 건강정보 처리 안내: 원래 화면 안내(localHealthNotice) 그대로. 이 안내는 "외부 AI 업체에 제공하지 않습니다"이므로,
+ * 이 안내에 동의한 요청은 서버에서 외부 AI 동의가 없는 것으로 처리된다(규칙·사전만으로 문진, OpenAI 0회).
  */
-export const careHealthNotice=careAiHealthNotice;
+export const careHealthNotice=localHealthNotice;
 
 async function post(fetchImpl,endpoint,body,signal){
  const response=await fetchImpl(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal,credentials:'same-origin'});

@@ -9,7 +9,7 @@ import {checkFollowUpContract} from '../confirm-question.mjs';
 
 const ref = loadRefData();
 // 1차 테스트는 retrieve 동작(후보 0개 → all 재시도 등)을 검사하므로 retrieve로 고정한다(L4 기본값은 all)
-const config = getConfig({LLM_SYMPTOM_MODE: 'full', LLM_CANDIDATE_MODE: 'retrieve'});
+const config = getConfig({LLM_CANDIDATE_MODE: 'retrieve'});
 const consent = {granted: true, provider: 'mock', version: 'test-v1', healthInfo: true};
 // 고유 표지 문자열: 로그 어디에도 나오면 안 된다
 const MARK = '표지QZ7';
@@ -44,11 +44,11 @@ test('classifySymptom: picks → confirm(계약 통과), meta 채움, 로그에 
   assert.equal(checkFollowUpContract(r.followUp).ok, true);
   assert.deepEqual(r.followUp.options.slice(0, 2).map((o) => o.id), [`sym_${ids[1]}`, `sym_${ids[0]}`]);
   assert.deepEqual(Object.keys(r.meta).sort(), ['attempts', 'candidateCount', 'candidateMode', 'dataVersion', 'error', 'latencyMs', 'model', 'promptId', 'provider', 'schemaId',
-    'consentSource', 'modelWarning', 'tokens', 'providerError', 'symptomPath'].sort());
+    'consentSource', 'modelWarning', 'tokens', 'providerError'].sort());
   assert.equal(r.meta.consentSource, 'request');
   assert.deepEqual(r.meta.tokens, {input: 0, cachedInput: 0, output: 0, reasoning: 0});
   assert.equal(r.meta.provider, 'mock');
-  assert.equal(r.meta.promptId, 'symptom_v2');
+  assert.equal(r.meta.promptId, 'symptom_v1');
   assert.equal(r.meta.schemaId, 'symptom_pick_v1');
   assert.equal(r.meta.dataVersion, 'v2.1-20261113');
   assert.equal(r.meta.candidateMode, 'retrieve');
@@ -295,15 +295,15 @@ test('resolveConsent: 없음+devConsent → dev 동의, 실제 값이 오면 그
 
 test('개발용 동의: devConsent false + consent 없음 → no_consent, 호출 0회', async () => {
   const {deps, provider} = setup({data: {intent: 'symptom', status: 'matched', picks: [ids[0]]}});
-  const r = await classifySymptom({text: TEXT}, {...deps, config: getConfig({LLM_SYMPTOM_MODE: 'full', LLM_CANDIDATE_MODE: 'retrieve'})});
+  const r = await classifySymptom({text: TEXT}, {...deps, config: getConfig({LLM_CANDIDATE_MODE: 'retrieve'})});
   assert.deepEqual([r.status, r.reason, r.meta.consentSource], ['fallback', 'no_consent', null]);
-  const p = await extractProfileUpdates({messages: ['저는 32살이에요']}, {...deps, config: getConfig({LLM_SYMPTOM_MODE: 'full'})});
+  const p = await extractProfileUpdates({messages: ['저는 32살이에요']}, {...deps, config: getConfig({})});
   assert.deepEqual([p.items, p.meta.error], [[], 'no_consent']);
   assert.equal(provider.callCount, 0);
 });
 
 test('개발용 동의: devConsent true + consent 없음 → 호출됨, meta.consentSource=dev', async () => {
-  const cfg = getConfig({LLM_SYMPTOM_MODE: 'full', LLM_CANDIDATE_MODE: 'retrieve', LLM_DEV_CONSENT: 'true'});
+  const cfg = getConfig({LLM_CANDIDATE_MODE: 'retrieve', LLM_DEV_CONSENT: 'true'});
   const {deps, provider, logs} = setup({data: {intent: 'symptom', status: 'matched', picks: [ids[0]]}});
   const r = await classifySymptom({text: TEXT}, {...deps, config: cfg});
   assert.equal(r.status, 'confirm');
@@ -318,7 +318,7 @@ test('개발용 동의: devConsent true + consent 없음 → 호출됨, meta.con
 });
 
 test('개발용 동의: 실제 consent 값이 오면 devConsent는 무시하고 엄격하게 검사', async () => {
-  const cfg = getConfig({LLM_SYMPTOM_MODE: 'full', LLM_CANDIDATE_MODE: 'retrieve', LLM_DEV_CONSENT: 'true'});
+  const cfg = getConfig({LLM_CANDIDATE_MODE: 'retrieve', LLM_DEV_CONSENT: 'true'});
   for (const c of [true, false, {granted: true, provider: 'gemini', version: 'v'}, {granted: false, provider: 'mock', version: 'v'}]) {
     const {deps, provider} = setup({data: {intent: 'symptom', status: 'matched', picks: [ids[0]]}});
     const r = await classifySymptom({text: TEXT, consent: c}, {...deps, config: cfg});
@@ -331,8 +331,8 @@ test('개발용 동의: 실제 consent 값이 오면 devConsent는 무시하고 
 });
 
 test('LLM_DEV_CONSENT는 정확히 "true"일 때만 켜진다', () => {
-  for (const v of [undefined, '', 'TRUE', '1', 'yes', 'false']) assert.equal(getConfig({LLM_SYMPTOM_MODE: 'full', LLM_DEV_CONSENT: v}).devConsent, false, String(v));
-  assert.equal(getConfig({LLM_SYMPTOM_MODE: 'full', LLM_DEV_CONSENT: 'true'}).devConsent, true);
+  for (const v of [undefined, '', 'TRUE', '1', 'yes', 'false']) assert.equal(getConfig({LLM_DEV_CONSENT: v}).devConsent, false, String(v));
+  assert.equal(getConfig({LLM_DEV_CONSENT: 'true'}).devConsent, true);
 });
 
 test('토큰 합계·providerError가 meta에 남는다(재시도 포함), 본문 없음', async () => {

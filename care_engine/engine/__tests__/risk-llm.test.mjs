@@ -8,8 +8,8 @@ const CUE = '누군가 저를 협박해요';
 
 test('LC5: 위험 전용 호출 뒤 완료해도 건강정보 LLM을 다시 부르지 않는다', async () => {
   const llm = fakeLlm();
-  const answers = {...SAFE_BASE, SYM_DICT_CONFIRM: 'sym_R05', 'N5-1': 'onset_1_3d', N12: 'impact_little', N7: 'no'}; // 11/18 재설계(기침은 통증 아님)
-  // 11/18 재설계: N7~N13 '아니요' 채우기는 뺐다
+  const answers = {...SAFE_BASE, SYM_DICT_CONFIRM: 'sym_R05', N5: 'no', 'N5-1': 'onset_1_3d', N6: 'yes', P0: 'no'};
+  for (let i = 7; i <= 13; i += 1) answers[`N${i}`] = 'no';
   const {out} = await call({messages: ['기침이 나요'], answers, llm});
   assert.equal(out.trace.phase, 'complete');
   assert.equal(llm.calls.risk.length, 1);
@@ -86,7 +86,7 @@ test('LC3: 규칙 hit·민감 단서·followup에서는 위험 LLM을 부르지 
 test('LC3: 증상 분류도 필요한 message 요청은 결합 호출 한 번만 한다', async () => {
   const llm = fakeLlm({combined: {status: 'fallback', reason: 'no_match', riskSignal: 'none', meta: {attempts: 1}}});
   const {out} = await call({reason: 'message', messages: [PLAIN], answers: {...SAFE_BASE}, llm});
-  assert.equal(out.response.followUp.id, 'SYM_RETRY_1'); // 11/18: 첫 실패는 되묻기
+  assert.equal(out.response.followUp.id, 'SYM_NOT_FOUND');
   assert.equal(llm.calls.combined.length, 1);
   assert.equal(llm.calls.risk.length + llm.calls.classify.length + llm.calls.profile.length, 0);
 });

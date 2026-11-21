@@ -1,10 +1,10 @@
 import {phrase,expandLocales} from './i18n.mjs';
 import {departmentCatalog} from './departments.mjs';
-// Frontend simulation only: explicit search preferences, no inference from symptoms.
+const areas=[['춘천','춘천'],['chuncheon','춘천'],['효자동','효자동'],['hyoja','효자동'],['석사동','석사동'],['seoksa','석사동'],['후평동','후평동'],['hupyeong','후평동'],['서울','서울'],['seoul','서울'],['부산','부산'],['busan','부산'],['인천','인천'],['대구','대구'],['대전','대전'],['광주','광주']];
+// Frontend parsing of explicit search preferences, with no inference from symptoms.
 export function buildSuggestion(message,profile={},previous={}){
  const text=String(message).toLowerCase();
  const plan={region:previous.region||profile.region||'',type:previous.type||'all',department:previous.department||'all',openOnly:!!previous.openOnly,priority:previous.priority||profile.preference||'distance'};
- const areas=[['춘천','춘천'],['chuncheon','춘천'],['효자동','효자동'],['hyoja','효자동'],['석사동','석사동'],['seoksa','석사동'],['후평동','후평동'],['hupyeong','후평동'],['서울','서울'],['seoul','서울'],['부산','부산'],['busan','부산'],['인천','인천'],['대구','대구'],['대전','대전'],['광주','광주']];
  let areaIndex=-1;
  for(const [term,region] of areas){const index=text.lastIndexOf(term);if(index>=0&&index>=areaIndex){areaIndex=index;plan.region=region;}}
  const matches=[];
@@ -20,12 +20,34 @@ export function buildSuggestion(message,profile={},previous={}){
  if(/전체\s*진료과|모든\s*진료과|all departments/.test(text)){plan.department='all';plan.type='all';}
  if(deptIndex<0&&/병원|의원|hospital|clinic/.test(text)&&!/병원\s*말고/.test(text)){plan.type='hospital';if(plan.department==='pharmacy')plan.department='all';}
  if(/전체\s*(기관|병원|유형)|all facilities/.test(text)){plan.type='all';plan.department='all';}
- if(/문\s*연|운영\s*중|진료\s*중|영업\s*중|open only|open now/.test(text)){plan.openOnly=true;}
+ if(/문\s*연|(?:운영|진료|영업)\s*(?:중|하는)|open only|open now/.test(text)){plan.openOnly=true;}
  if(/운영\s*(여부|시간).*상관|영업\s*(여부|시간).*상관|운영\s*조건\s*해제|any hours/.test(text)){plan.openOnly=false;}
  if(/가까운|거리\s*우선|가까이|nearest|nearby/.test(text))plan.priority='distance';
  if(/운영\s*우선|영업\s*우선|open first/.test(text))plan.priority='open';
  if(/휠체어|접근성|단차|wheelchair|accessible/.test(text))plan.priority='access';
  return {...plan,hasConditions:!!(plan.region||plan.type!=='all'||plan.department!=='all'||plan.openOnly||plan.priority!=='distance')};
+}
+// Only short commands made up of known regions, filters and provider types
+// bypass intake. Mixed messages with symptoms still go to the assistant.
+export function directCareSearch(message,profile={},previous={}){
+ const text=String(message).normalize('NFKC').toLowerCase().trim().replace(/[.!?。？！]+$/u,'');
+ const command=text.match(/^(.*?)\s*(?:(?:찾아|검색해|추천해)\s*(?:줘(?:요)?|주세요|주실래요|줄래요)?|검색)$/u);
+ if(!command)return null;
+ let target=command[1].trim().replace(/(?:을|를)$/u,'').trim();
+ // Strip known search qualifiers, never arbitrary prose.
+ const qualifier=/^(?:지금|현재|오늘|근처(?:의)?|주변(?:의)?|가까운|문\s*연|(?:운영|진료|영업)\s*(?:중(?:인)?|하는))\s*/u;
+ for(;;){
+  const reduced=target.replace(qualifier,'').trim();
+  if(reduced!==target){target=reduced;continue;}
+  const area=areas.find(([term])=>target===term||target.startsWith(term+' ')||target.startsWith(term+'에서 ')||target.startsWith(term+'에 있는 '));
+  if(!area)break;
+  target=target.slice(area[0].length).replace(/^(?:에서|에 있는)\s+/u,'').trim();
+ }
+ const dept=departmentCatalog.find(item=>item.aliases.includes(target)||item.aliases.some(alias=>target===alias+' 병원'||target===alias+' 의원'));
+ if(!dept&&!['병원','의원','약국'].includes(target))return null;
+ const type=(dept?.key==='pharmacy'||target==='약국')?'pharmacy':'hospital';
+ const plan=buildSuggestion(text,profile,{region:previous.region,priority:previous.priority});
+ return {...plan,type,department:dept?.key||(type==='pharmacy'?'pharmacy':'all'),hasConditions:true};
 }
 export function suggestionLabels(plan,t){
  if(!plan)return [];

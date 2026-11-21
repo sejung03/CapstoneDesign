@@ -11,7 +11,7 @@ const URGENT2 = '갑자기 한쪽 팔에 힘이 없어요'; // FT-STROKE-01
 const ES = '아기가 숨을 안 쉬어요'; // FT-APNEA-01(EMERGENCY_STOP)
 const PLAIN = '배가 살살 아파요';
 const SAFE = {Q0: 'no', N1: 'yes', N2: 'yes', N3: 'no', T1: 'other', T2: 'female', T3: 'age_19_64'};
-const DETAIL = {'N5-1': 'onset_1_3d', P3: 'pq_dull', P1: 'pain_3', N12: 'impact_little', N7: 'no', F2: 'no'} // 11/18 재설계 상세 문항;
+const DETAIL = {N5: 'no', 'N5-1': 'onset_1_3d', N6: 'yes', N7: 'no', N8: 'no', N9: 'no', N10: 'no', N11: 'no', N12: 'no', N13: 'no', P0: 'no', F2: 'no'};
 
 async function run(messages, answers = {}, reason = 'followup', llm = fakeLlm()) {
   const out = await runCare({reason, locale: 'ko', messages, followUpAnswers: toAnswers(answers)},

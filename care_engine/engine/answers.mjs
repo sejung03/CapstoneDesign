@@ -1,14 +1,9 @@
 // 답 정리와 보이는 문항(설계 §4-5, §4-1). FHIR R4 enableWhen 의미를 따른다.
 // 미응답을 'no'로 바꾸지 않는다. 답 값(사용자가 고른 code)은 warning에 남기지 않는다.
-import {RISK_CONFIRM_ID_RE, RISK_ANSWERS, SENSITIVE_CHOICE_ID_RE, SENSITIVE_ANSWERS, SYM_RETRY_ID_RE} from './constants.mjs';
+import {RISK_CONFIRM_ID_RE, RISK_ANSWERS, SENSITIVE_CHOICE_ID_RE, SENSITIVE_ANSWERS} from './constants.mjs';
 
 /** 데이터 문항이 아닌 엔진 질문(설계 §4-4). 답은 engine Map에 넣는다. */
-export const ENGINE_QUESTION_IDS = Object.freeze(['SYM_DICT_CONFIRM', 'SYM_CONFIRM', 'SYM_NOT_FOUND', 'ASK_START', 'MED_CHOICE', 'SYM_AREA_PICK', 'SYM_REWRITE_CONFIRM']);
-/**
- * 11/18 되묻기 SYM_RETRY_<n>은 engine Map의 이 키에 {n, value}로 둔다(value null = 아직 답 없음). 여러 개면 n이 가장 큰 것.
- * 다른 엔진 답(문자열)과 달리 객체다. identify.mjs의 symRetryOf로만 읽는다.
- */
-export const SYM_RETRY_KEY = 'SYM_RETRY';
+export const ENGINE_QUESTION_IDS = Object.freeze(['SYM_DICT_CONFIRM', 'SYM_CONFIRM', 'SYM_NOT_FOUND', 'ASK_START', 'MED_CHOICE']);
 const ENGINE_SET = new Set(ENGINE_QUESTION_IDS);
 const ID_RE = /^[A-Za-z0-9_-]{1,80}$/;
 const MAX_DEPTH = 20;
@@ -46,14 +41,6 @@ export function normalizeAnswers(followUpAnswers, data) {
       if (value === undefined) continue;
       if (Object.values(SENSITIVE_ANSWERS).includes(value)) sensitiveChoices.push({n: Number(sm[1]), value});
       else warnings.push('invalid_answer:SENSITIVE_CHOICE');
-      continue;
-    }
-    const ym = SYM_RETRY_ID_RE.exec(qid);
-    if (ym) {
-      if (value !== null && typeof value !== 'string') { warnings.push('invalid_answer:SYM_RETRY'); continue; }
-      const n = Number(ym[1]);
-      const prev = engine.get(SYM_RETRY_KEY);
-      if (!prev || n > prev.n) engine.set(SYM_RETRY_KEY, {n, value: value ?? null});
       continue;
     }
     const known = data.itemById.has(qid);

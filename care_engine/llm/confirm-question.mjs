@@ -93,26 +93,3 @@ export function checkFollowUpContract(followUp) {
   }
   return {ok: errors.length === 0, errors};
 }
-
-/**
- * 11/18 절충 1: 고쳐 쓰기 → 사전에서 찾은 후보의 확인 질문. SYM_CONFIRM과 ID를 나눈다:
- * 고쳐 쓴 표현이 엉뚱한 사전 항목에 맞을 수 있으므로 "다른 증상이에요"(sym_other)를 두고, 고르면 엔진이 원래 문장으로 전체 목록 호출을 한 번 한다
- * (그 결과는 SYM_CONFIRM → ID가 겹치지 않음). 문구는 사전 확인 질문(engine/templates.mjs q.sym_dict_confirm)과 같아 번역을 함께 쓴다.
- */
-export const REWRITE_CONFIRM_ID = 'SYM_REWRITE_CONFIRM';
-const REWRITE_TEXT = Object.freeze({label: '말씀하신 증상이 이 중에 있나요?', other: '다른 증상이에요', unsure: '잘 모르겠어요'});
-export const REWRITE_MAX_OPTIONS = 5;
-
-/** @returns {object|null} */
-export function buildRewriteConfirm(picks, refData) {
-  const base = buildSymptomConfirm((picks ?? []).slice(0, REWRITE_MAX_OPTIONS * 2), refData, 'ko');
-  if (!base) return null;
-  const symptoms = base.options.filter((o) => o.id !== SYM_NONE_ID && o.id !== SYM_UNSURE_ID).slice(0, REWRITE_MAX_OPTIONS);
-  return {
-    id: REWRITE_CONFIRM_ID,
-    type: 'singleChoice',
-    required: true,
-    label: {ko: REWRITE_TEXT.label},
-    options: [...symptoms, {id: 'sym_other', label: {ko: REWRITE_TEXT.other}}, {id: SYM_UNSURE_ID, label: {ko: REWRITE_TEXT.unsure}}],
-  };
-}

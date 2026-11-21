@@ -23,7 +23,7 @@ export async function POST(request){
  if(provided.size!==items.length||items.some(x=>!provided.has(x.id)||x.required&&!provided.get(x.id)||x.dependsOn&&provided.get(x.id)&&!provided.get(x.dependsOn)))
   return Response.json({error:'invalid_decisions'},{status:400});
  try{
-  const {error}=await account.client.rpc('capstone_record_consents',{version:data.policyVersion,decisions:items.map(x=>({id:x.id,agreed:provided.get(x.id)}))});
+  const {error}=await account.client.rpc('capstone_record_consents',{version:data.policyVersion,decisions:items.map(x=>({id:x.id,agreed:!x.reserved&&provided.get(x.id)}))});
   if(error)throw error;
   return NextResponse.json({ok:true},{headers:{'Cache-Control':'no-store'}});
  }catch{return Response.json({error:'signup_failed'},{status:500});}

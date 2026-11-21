@@ -1,11 +1,11 @@
 import {phrase,expandLocales,localizedObject} from './i18n.mjs';
-import {emptyHealth,validateStoredHealth,healthStorageMessage} from './health-storage.mjs';
+import {emptyHealth,storedHealthFields,validateStoredHealth,healthStorageMessage} from './health-storage.mjs';
 import {createAccountSession,normalizeAccountSession} from './account-session.mjs';
 import {createFavorites,favoriteRecord,normalizeFavorites,FAVORITES_LIMIT} from './favorites.mjs';
 import {createHealthUpdates,normalizeHealthUpdates,validateHealthUpdateEvidence,applyHealthUpdateSelection,healthUpdateFields} from './health-updates.mjs';
 import {defaultEmergencyGuides} from './emergency-resources.mjs';
 import {createReportImport,canUsePreviousReport,reviewedPreviousReport} from './report-import.mjs';
-import {createHealthConsent,normalizeHealthNotice,healthConsentKey,hasHealthConsent} from './health-consent.mjs';
+import {createHealthConsent,normalizeHealthNotice,healthConsentKey,hasHealthConsent,rememberAccountHealthConsent,restoreAccountHealthConsent,forgetAccountHealthConsent} from './health-consent.mjs';
 import {createEmergency,normalizeEmergency,normalizeEmergencyGuides,visibleEmergency,requestEmergencyPosition,lookupEmergencyAddress} from './emergency.mjs';
 import {createRecommendations,recommendationSnapshot,normalizeRecommendations} from './recommendations.mjs';
 import {createWorkspace,intakeSnapshot} from './workspace-model.mjs';
@@ -22,7 +22,7 @@ import {enrichPublicHours} from './public-hours.mjs';
 import {facilityAddress,createLiveState,liveQueryKey,liveCriteria,displayedFacilities,resetLiveRequest,acceptLiveResponse} from './live-data.mjs';
 import {searchKakao,suggestKakaoPlaces,mountKakaoMap,releaseKakaoMap,requestLocation,getKakaoMapCenter,validCenter} from './kakao-client.mjs';
 import {emptyProfile,cleanProfile,loadProfile,persistProfile,renderProfile,normalizeAge,hasProfileChanges} from './profile.mjs';
-import {buildSuggestion,conversationStarters} from './care-context.mjs';
+import {buildSuggestion,directCareSearch,conversationStarters} from './care-context.mjs';
 import {createConversation,appendChat,chatNotes,setChatOpen} from './chat-model.mjs';
 import {renderEntry,renderChat,robotIcon} from './chat-view.mjs';
 import {emptyDraft,prepareDraft,appendSymptom,buildIntakeContext} from './flow.mjs';
@@ -31,7 +31,7 @@ import {renderExplore,positionMarkers} from './facilities-view.mjs';
 
 let appMounted=false,appGeneration=0,configController=null,configSequence=0,clockTimer=null;
 const activeRouteControllers=new Set();
-let viewRenderer=null;
+let viewRenderer=null,conversationVersion=0;
 const bindingCleanups=[];
 function listen(node,type,handler){
  if(!node)return;
@@ -123,12 +123,13 @@ function toggleIntake(){
  if(closePendingHealthAccess('intake')||!requestHealthAccess('intake'))return;
  state.workspace.intake=true;render();document.querySelector('.wizard-question')?.focus();
 }
-function clearHealthAccess(){
+function clearHealthAccess({forget=true}={}){
+ if(forget)try{forgetAccountHealthConsent(state,localStorage);}catch{}
  saveInputs();resetAssistant(true);recommendationController?.abort();recommendationSequence++;state.recommendations=createRecommendations();
  state.healthConsent.acceptedKey='';state.healthConsent.acceptedAt=null;state.healthConsent.open=false;state.healthConsent.checked=false;state.healthConsent.pending='';state.healthConsent.starter='';
  state.healthUpdates=createHealthUpdates();state.reportImport=createReportImport();state.chat={...createConversation(),open:true};state.intakeAnswers={};state.intakeStep=0;if(state.workspace)state.workspace.intake=false;
  state.draft={...emptyDraft(),region:state.draft.region};state.suggestion=null;state.report={saved:null,draft:null,editing:false,signature:'',updatedAt:Date.now()};state.emergency.notice=null;
- for(const key of ['age','allergies','medications','history']){state.profile[key]='';state.profileDraft[key]='';}
+ for(const key of storedHealthFields){state.profile[key]='';state.profileDraft[key]='';}
  state.profileConfirmedAt=null;state.profileError=false;state.search.origin='manual';render();
 }
 let emergencyLocationController=null,emergencyLocationSequence=0;
@@ -214,7 +215,7 @@ async function persistAccountHealth(remove=false){
  if(!remove&&storage?.error==='loadError')return false;
  if(!remove&&!hasHealthConsent(state))return false;
  saveInputs();let profile;
- if(!remove){try{profile=validateStoredHealth(Object.fromEntries(['age','allergies','medications','history'].map(k=>[k,state.profileDraft[k]||''])));}catch{state.profileError=true;render();return false;}}
+ if(!remove){try{profile=validateStoredHealth(Object.fromEntries(storedHealthFields.map(k=>[k,state.profileDraft[k]||''])));}catch{state.profileError=true;render();return false;}}
  const grant=!!document.getElementById('profile-storage-consent')?.checked||storage?.grant===true;
  if(!remove&&!storage?.consented&&!grant){state.healthStorage={...storage,error:'consentRequired'};render();return false;}
  healthStorageController?.abort();const controller=new AbortController();healthStorageController=controller;const token=++healthStorageSequence;
@@ -234,7 +235,8 @@ async function applyAccountSession(session,token){
  const changed=state.account.accountId!==session.accountId;state.account=session;
  if(changed){
   resetHealthStorage();
-  if(!viewRenderer)clearHealthAccess();
+  if(!viewRenderer)clearHealthAccess({forget:false});
+  try{restoreAccountHealthConsent(state,localStorage);}catch{}
   void setFavoritesAdapter(session.accountId?accountAdapter?.favorites||null:null,{scope:session.accountId?'account:'+session.accountId:'guest'});
  }
  if(session.accountId&&accountAdapter?.healthProfile&&(changed||!state.healthStorage||state.healthStorage.error==='loadError'))await loadAccountHealth();
@@ -268,7 +270,7 @@ let favoritesAdapter=null,favoritesController=null,favoritesSequence=0;
 export async function setFavoritesAdapter(adapter=null,{scope='guest'}={}){
  if(adapter!==null&&(typeof adapter.list!=='function'||typeof adapter.set!=='function'))throw new TypeError('Invalid favorites adapter');
  if(typeof scope!=='string'||!scope||scope.length>128)throw new TypeError('Invalid favorites scope');
- if(viewRenderer&&state.favorites.scope!==scope && !scope.startsWith('demo:')){clearHealthAccess();state.profileExit=false;pendingProfileExit=null;state.profileConfirmedAt=null;emergencyLocationController?.abort();emergencyLocationSequence++;state.emergency=createEmergency();}
+ if(viewRenderer&&state.favorites.scope!==scope && !scope.startsWith('demo:')){clearHealthAccess({forget:false});state.profileExit=false;pendingProfileExit=null;state.profileConfirmedAt=null;emergencyLocationController?.abort();emergencyLocationSequence++;state.emergency=createEmergency();}
  favoritesController?.abort();const token=++favoritesSequence;favoritesAdapter=adapter;
  state.favorites={...createFavorites(),scope,phase:adapter?'loading':'ready'};render();if(!adapter)return;
  const controller=new AbortController();favoritesController=controller;
@@ -375,7 +377,7 @@ function useSavedBehaviorRegion(){
  saveInputs();state.draft.region=region;
  state.behaviorDemo.regionApplied=true;
  // Fill the search field but do not run a search or persist a new value.
- if(viewRenderer){state.workspace.panel='explore';state.workspace.expanded=false;}
+ if(viewRenderer)state.workspace.panel='explore';
  state.view='explore';state.search.initialized=true;state.search.origin='manual';
  render();document.getElementById('search-region')?.focus({preventScroll:true});
 }
@@ -402,8 +404,6 @@ async function requestAssistant(reason='message'){
  const payload=JSON.parse(JSON.stringify({reason,locale:state.locale,...assistantContent(state),search:assistantSearchContext(state)}));
  state.assistant.status='loading';state.assistant.lastReason=reason;render();
  let timer;
- // 11/18: 응답이 2.5초 넘게 걸리면 "조금 오래 걸리고 있어요"를 더 보여 준다(멈춘 것처럼 보이지 않게). 같은 요청이 아직 기다리는 중일 때만.
- const slowTimer=setTimeout(()=>{if(token===assistantSequence&&state.assistant.status==='loading'){state.assistant.slow=true;render();}},2500);
  try{
   const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>{reject(new Error('timeout'));controller.abort();},8000);});
   const raw=await Promise.race([Promise.resolve().then(()=>{if(controller.signal.aborted)throw new Error('cancelled');return adapter(payload,{signal:controller.signal});}),timeout]);
@@ -418,8 +418,13 @@ async function requestAssistant(reason='message'){
   if(token!==assistantSequence)return;
   state.assistant.status=sourceKey===assistantInputKey(state)?'error':'ready';
  }finally{
-  clearTimeout(timer);clearTimeout(slowTimer);
-  if(token===assistantSequence){state.assistant.slow=false;saveInputs();render();}
+  clearTimeout(timer);
+  if(token===assistantSequence){
+   saveInputs();render();
+   if(viewRenderer&&!visibleEmergency(state,assistantContentKey(state))&&!state.emergency.manual){
+    document.querySelector('.active-question')?.scrollIntoView({block:'start'});
+   }
+  }
  }
 }
 function captureAssistant(){
@@ -893,6 +898,7 @@ function explore(){return renderExplore(state,t,icon,escape);}
 function toast(message){clearTimeout(toastTimer);const node=document.getElementById('toast');node.textContent=message;node.hidden=false;toastTimer=setTimeout(()=>{node.hidden=true;},6000);}
 function render(focus=false){
  if(!appMounted)return;
+ if(viewRenderer)try{restoreAccountHealthConsent(state,localStorage);}catch{}
  if(state.source==='live'){state.search.criteria=liveCriteria(state.search.criteria);}
  const chatScroll=document.getElementById('chat-messages')?.scrollTop||0;
  document.body.dataset.view=state.view;document.body.dataset.chat=state.view==='entry'?'entry':state.chat.open?'open':'closed';
@@ -901,7 +907,7 @@ function render(focus=false){
  document.querySelector('.skip-link').textContent=t('skipLink');
  const isEntry=state.view==='entry';
  clearBindings();
- if(viewRenderer){viewRenderer({state,t,onEmergencyLocation:selectEmergencyLocation,onPreviousReport:changePreviousReport,onHealthUpdates:reviewHealthUpdates});}
+ if(viewRenderer){viewRenderer({state,t,conversationVersion,onEmergencyLocation:selectEmergencyLocation,onPreviousReport:changePreviousReport,onHealthUpdates:reviewHealthUpdates});}
  else{
  const navigation=(isEntry?[['profile','myInfo']]:[['explore','navExplore'],['report','contextReport'],['profile','myInfo']]).map(([view,label])=>'<button class="header-route'+((state.view===view||(view==='report'&&state.view==='intake'))?' active':'')+'" data-view="'+view+'"'+(state.view===view?' aria-current="page"':'')+'>'+icon({explore:'map',report:'document',profile:'user'}[view])+'<span>'+t(label)+'</span></button>').join('');
  const header='<header class="header"><button class="brand brand-button" data-view="entry"><span class="brand-symbol">'+icon('plus')+'</span>'+t('brand')+'</button><nav class="header-nav" aria-label="'+t('navLabel')+'">'+navigation+'</nav><div class="header-actions"><button id="language" class="text-button" aria-label="'+(state.locale==='ko'?'Switch to English':'한국어로 전환')+'">'+(state.locale==='ko'?'EN':'한국어')+'</button><button id="theme" class="icon-button" aria-label="'+t(state.theme==='light'?'themeDark':'themeLight')+'" aria-pressed="'+(state.theme==='dark')+'">'+icon(state.theme==='light'?'moon':'sun')+'</button></div></header>';
@@ -920,7 +926,7 @@ function navigate(view){
   saveInputs();
   if(view==='entry'){closeWorkspace();return;}
   if(['profile','report'].includes(view))state.chatReturnScroll=document.getElementById('chat-messages')?.scrollTop||state.chatReturnScroll;
-  state.workspace.panel=view;state.workspace.expanded=false;
+  state.workspace.panel=view;
  }
  if(view!=='explore')locationController?.abort();
  saveInputs();
@@ -952,6 +958,7 @@ function applySuggestion(){
  const plan=state.suggestion;
  state.draft.region=plan.region;state.type=plan.type;state.search.department=plan.department;state.search.openOnly=plan.openOnly;
  state.search.criteria={...emptyCriteria(),region:plan.region,type:plan.type,department:plan.department,openOnly:plan.openOnly,priority:plan.priority,sort:'recommended'};
+ if(!plan.region&&validCenter(state.live.position))state.search.criteria.center={lat:state.live.position.lat,lng:state.live.position.lng};
  if(state.source==='live'){state.search.criteria=liveCriteria(state.search.criteria);}
  state.search.selectedId=null;state.search.initialized=true;state.search.origin='chat';state.search.resultsScroll=0;
  state.chat=setChatOpen(state.chat,true);state.view='explore';if(state.workspace)state.workspace.panel=null;render(true);
@@ -966,7 +973,7 @@ function bindFacilityActions(){
   const item=displayedFacilities(state,searchFacilities).find(item=>item.id===button.dataset.copyId);
   if(!item)return;
   const field=button.dataset.copyFacility;
-  const value=field==='address'?facilityAddress(item,state.locale):field==='phone'?item.phone:'';
+  const value=field==='address'?facilityAddress(item,'ko'):field==='phone'?item.phone:'';
   if(!value)return;
   try{await navigator.clipboard.writeText(value);toast(t(field==='address'?'addressCopied':'phoneCopied'));}
   catch{toast(t('facilityCopyFailed'));}
@@ -1026,7 +1033,7 @@ function bindProfile(){
   const question=viewRenderer&&state.account.accountId?healthStorageMessage(state.locale,'deleteConfirm'):viewRenderer?(phrase(state.locale,"Clear health information? Edited consultation notes will be kept.")):t('profileDeleteConfirm');
   if(!window.confirm(question))return;
   if(viewRenderer&&state.account.accountId){await persistAccountHealth(true);return;}
-  if(viewRenderer){const cleared={age:'',allergies:'',medications:'',history:''};state.profile={...state.profile,...cleared};state.profileDraft={...state.profile};state.profileError=false;state.profileConfirmedAt=null;render();toast(t('profileDeleted'));return;}
+  if(viewRenderer){const cleared=emptyHealth();state.profile={...state.profile,...cleared};state.profileDraft={...state.profile};state.profileError=false;state.profileConfirmedAt=null;render();toast(t('profileDeleted'));return;}
   const oldRegion=state.profile.region;const removed=persistProfile(profileStorage(),emptyProfile(),false);
   state.profile=emptyProfile();state.profileDraft=emptyProfile();state.profileRemember=false;state.profileStorageNotice=!removed;state.suggestion=null;
   if(state.search.origin==='profile'){
@@ -1074,7 +1081,7 @@ function bind(){
   const input=document.getElementById('composer-input'),text=state.chat.input;
   const {status,response}=state.assistant;
   const currentQuestion=status==='ready'&&response?.contentKey===assistantContentKey(state)?response.followUp:null;
-  const option=consumeSpokenAnswer(input,text,currentQuestion);
+  const option=consumeSpokenAnswer(input,text,currentQuestion,state.locale);
   if(option&&hasHealthConsent(state)){
    input.value='';
    state.chat.input='';
@@ -1090,8 +1097,16 @@ function submitChatText(text,starter=null){
  saveInputs();const result=appendChat(state.chat,text);
  if(!result.ok){if(result.reason==='limit')toast(t('noteLimit'));document.getElementById('composer-input')?.focus();return;}
  state.chat=result.conversation;
+ if(viewRenderer){
+  const search=directCareSearch(text,state.profile,state.search.criteria);
+  if(search||starter?.search){
+   const input=document.getElementById('composer-input');if(input)input.value='';
+   resetAssistant();state.workspace.intake=false;
+   state.suggestion=search||{...buildSuggestion(text,state.profile,state.search.criteria),...starter.search,hasConditions:true};
+   applySuggestion();return;
+  }
+ }
  if(viewRenderer&&assistantAdapter){state.workspace.intake=false;render();void requestAssistant('message');return;}
- if(viewRenderer&&starter?.search){state.suggestion={...buildSuggestion(text,state.profile,state.search.criteria),...starter.search,hasConditions:true};applySuggestion();return;}
  if(viewRenderer&&!state.chat.intakeContext){resetAssistant();state.workspace.intake=true;state.workspace.panel=null;render();document.querySelector('.wizard-question')?.focus();return;}
  state.suggestion=buildSuggestion(text,state.profile,state.suggestion||state.search.criteria);render();document.getElementById('composer-input')?.focus({preventScroll:true});
  const messages=document.getElementById('chat-messages');if(messages)messages.scrollTop=messages.scrollHeight;
@@ -1100,7 +1115,7 @@ function submitChatText(text,starter=null){
 function closeWorkspace(){
  if(viewRenderer&&state.workspace?.panel==='report'){navigate('profile');return;}
  if(requestProfileExit(closeWorkspace))return;
- saveInputs();state.workspace.panel=null;state.workspace.expanded=false;state.routing.openId=null;
+ saveInputs();state.workspace.panel=null;state.routing.openId=null;
  state.view=state.search.initialized?'explore':'entry';state.chat.open=true;render();
  const log=document.getElementById('chat-messages');if(log)log.scrollTop=state.chatReturnScroll||0;
  if(hasHealthConsent(state))document.getElementById('composer-input')?.focus({preventScroll:true});
@@ -1135,6 +1150,7 @@ function bindWorkspace(){
  }));
  const composer=document.getElementById('composer-input');
  const enterChat=()=>{if(!hasHealthConsent(state)&&!state.healthConsent.open)requestHealthAccess('chat');};
+ listen(document.getElementById('voice-entry-record'),'medical:request-voice-consent',()=>{if(!state.healthConsent.open)requestHealthAccess('voice-entry');});
  listen(composer,'focus',()=>{Promise.resolve().then(()=>{if(document.activeElement===composer)enterChat();});});listen(composer,'click',enterChat);
  listen(document.getElementById('previous-report-intake'),'click',toggleIntake);
  listen(document.getElementById('start-health-chat'),'click',()=>{if(closePendingHealthAccess('chat'))return;if(requestHealthAccess('chat'))document.getElementById('composer-input')?.focus();});
@@ -1144,15 +1160,17 @@ function bindWorkspace(){
   if(!key||!document.getElementById('health-consent-check')?.checked)return;
   const starter=conversationStarters.find(item=>item.id===c.starter);c.starter='';
   const pending=c.pending;c.acceptedKey=key;c.acceptedAt=new Date().toISOString();c.open=false;c.checked=false;c.pending='';
+  if(viewRenderer)try{rememberAccountHealthConsent(state,localStorage);}catch{}
   if(pending==='intake'){state.workspace.intake=true;state.intakeStep=0;}
   if(pending==='reportImport')state.reportImport.open=true;
   render();if(pending==='chat'&&starter){submitChatText(starter.text[state.locale]||starter.text.ko,starter);return;}
+  if(pending==='voice-entry')document.getElementById('voice-entry-record')?.click();
   if(pending==='chat')document.getElementById('composer-input')?.focus();
   if(pending==='profile')document.getElementById('profile-age')?.focus();
   if(pending==='reportImport')document.getElementById(state.reportImport.mode==='pdf'?'previous-report-file':'previous-report-text')?.focus();
  });
- listen(document.getElementById('health-consent-open'),'click',()=>{saveInputs();const c=state.healthConsent;c.open=!c.open;c.checked=false;if(!c.open)c.pending='';render();if(c.open)document.getElementById('health-consent-card')?.scrollIntoView({block:'nearest'});});
- listen(document.getElementById('health-consent-close'),'click',()=>{const pending=state.healthConsent.pending;state.healthConsent.open=false;state.healthConsent.pending='';state.healthConsent.starter='';render();if(pending==='chat')document.getElementById('composer-attach')?.focus({preventScroll:true});if(pending==='profile')document.getElementById('profile-health-start')?.focus({preventScroll:true});});
+ listen(document.getElementById('app'),'click',event=>{if(!event.target.closest?.('#health-consent-open'))return;saveInputs();const c=state.healthConsent;c.open=!c.open;c.checked=false;if(!c.open)c.pending='';render();if(c.open&&!viewRenderer)document.getElementById('health-consent-card')?.scrollIntoView({block:'nearest'});});
+ listen(document.getElementById('health-consent-close'),'click',()=>{const pending=state.healthConsent.pending;state.healthConsent.open=false;state.healthConsent.pending='';state.healthConsent.starter='';render();if(!pending)document.getElementById('health-consent-open')?.focus({preventScroll:true});if(pending==='voice-entry')document.getElementById('voice-entry-record')?.focus({preventScroll:true});if(pending==='chat')document.getElementById('composer-attach')?.focus({preventScroll:true});if(pending==='profile')document.getElementById('profile-health-start')?.focus({preventScroll:true});});
  listen(document.getElementById('health-consent-revoke'),'click',clearHealthAccess);
  listen(document.getElementById('emergency-open'),'click',toggleEmergencyHelp);
  listen(document.getElementById('emergency-close'),'click',closeEmergencyHelp);
@@ -1160,7 +1178,6 @@ function bindWorkspace(){
  listen(document.getElementById('workspace-close'),'click',closeWorkspace);
  listen(document.getElementById('inline-facility-close'),'click',()=>{saveInputs();state.workspace.panel=null;state.routing.openId=null;render();});
  listen(document.getElementById('recommendations-retry'),'click',()=>{state.recommendations.key='';syncRecommendations();});
- listen(document.getElementById('workspace-expand'),'click',()=>{saveInputs();state.workspace.expanded=!state.workspace.expanded;render();});
  listen(document.getElementById('start-intake'),'click',toggleIntake);
  listen(document.getElementById('new-conversation'),'click',function beginNewConversation(){
   if(requestProfileExit(beginNewConversation))return;
@@ -1176,17 +1193,25 @@ function bindWorkspace(){
   state.search={criteria:emptyCriteria(),department:'all',openOnly:false,selectedId:null,display:'map',initialized:false};state.type='all';
   state.routing.openId=null;state.discovery={key:'',phase:'idle',items:[]};
   const config=state.live;state.live={...createLiveState(),configured:config.configured,key:config.key,hoursConfigured:config.hoursConfigured,routingConfigured:config.routingConfigured,token:(config.token||0)+1};
-  state.view='entry';render();document.querySelector('.conversation-heading h1')?.focus({preventScroll:true});
+  conversationVersion++;state.view='entry';render();
+  (document.getElementById('voice-entry-record')||document.querySelector('.conversation-heading h1'))?.focus({preventScroll:true});
  });
  document.querySelectorAll('[data-workspace-facility]').forEach(button=>listen(button,'click',()=>{
   saveInputs();
   const card=button.closest('.conversation-facility');
   if(card&&!button.closest('.conversation-facility-expanded')){state.workspace.anchorId=card.dataset.conversationFacility;state.workspace.resultIds=[...document.querySelectorAll('[data-conversation-facility]')].map(node=>node.dataset.conversationFacility);}
-  state.workspace.panel=button.dataset.workspaceRoute!==undefined?'route':'detail';state.workspace.expanded=false;state.search.selectedId=button.dataset.workspaceFacility;
+  state.workspace.panel=button.dataset.workspaceRoute!==undefined?'route':'detail';state.search.selectedId=button.dataset.workspaceFacility;
   state.routing.openId=button.dataset.workspaceRoute!==undefined?button.dataset.workspaceFacility:null;state.view='explore';render();document.querySelector('.conversation-facility-expanded')?.scrollIntoView({block:'nearest'});
  }));
 }
-function onDocumentKeydown(event){if(viewRenderer&&state.workspace){if(event.key==='Escape'&&state.workspace.panel){event.preventDefault();closeWorkspace();}return;}if(event.key==='Escape'&&state.view!=='entry'&&state.chat.open){event.preventDefault();toggleChat(false);}}
+function onDocumentKeydown(event){
+ if(event.key!=='Escape'||event.defaultPrevented||document.querySelector('dialog[open]'))return;
+ if(viewRenderer&&state.workspace){
+  if(state.workspace.panel){event.preventDefault();closeWorkspace();}
+  return;
+ }
+ if(state.view!=='entry'&&state.chat.open){event.preventDefault();toggleChat(false);}
+}
 export function mountMedicalApp({renderView=null}={}){
  if(appMounted)throw new Error('Medical app is already mounted');
  viewRenderer=renderView;

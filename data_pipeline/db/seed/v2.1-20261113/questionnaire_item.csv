@@ -18,11 +18,30 @@ T1,intake-v1,300,누구의 증상인가요?,,choice,true,,target,,added,false,,v
 T2,intake-v1,310,진료과 추천에 쓸 신체 기준 성별을 알려주세요.,,choice,true,,target,,added,false,,v2.1-20261113
 T3,intake-v1,320,나이는 어떻게 되나요?,,choice,true,,target,,added,false,,v2.1-20261113
 N4,intake-v1,400,현재 가장 불편한 증상은 무엇인가요?,,string,true,,detail,,team_pdf,false,,v2.1-20261113
-N5-1,intake-v1,420,{symptom} 증상은 언제부터 있었나요?,,choice,false,,detail,,added,false,,v2.1-20261113
-P3,intake-v1,430,어떻게 아픈가요? 가장 가까운 것을 골라 주세요.,,choice,false,,pain,,added,false,symptom_is_pain,v2.1-20261113
-P1,intake-v1,440,"통증은 0~10점 중 몇 점인가요? (0 = 통증 없음, 10 = 상상할 수 있는 가장 심한 통증)",,choice,false,,pain,,added,false,symptom_is_pain,v2.1-20261113
-N12,intake-v1,450,{symptom} 증상 때문에 일상생활이 얼마나 불편한가요?,,choice,false,,detail,,team_pdf,false,symptom_not_pain,v2.1-20261113
+N5,intake-v1,410,이 증상이 오늘 처음 시작되었나요?,,choice,false,,detail,,team_pdf,false,,v2.1-20261113
+N5-1,intake-v1,420,증상은 언제 시작되었나요?,,choice,false,,detail,,added,false,,v2.1-20261113
+N6,intake-v1,430,증상이 계속 나타나고 있나요?,,choice,false,,detail,,team_pdf,false,,v2.1-20261113
+N6-1,intake-v1,440,증상이 얼마나 자주 나타나나요?,,choice,false,,detail,,added,false,,v2.1-20261113
+N6-2,intake-v1,450,증상이 한 번 나타나면 얼마나 지속되나요?,,choice,false,,detail,,added,true,,v2.1-20261113
 N7,intake-v1,460,시간이 지나면서 증상이 심해지고 있나요?,,choice,false,,detail,,team_pdf,false,,v2.1-20261113
+N7-1,intake-v1,470,언제부터 심해졌나요?,,choice,false,,detail,,added,false,,v2.1-20261113
+N8,intake-v1,480,이전에도 비슷한 증상을 경험한 적이 있나요?,,choice,false,,detail,,team_pdf,false,,v2.1-20261113
+N8-1,intake-v1,490,이전과 다른 점이 있나요?,,string,false,,detail,,added,false,,v2.1-20261113
+N9,intake-v1,500,특정 행동이나 상황에서 증상이 심해지나요?,,choice,false,,detail,,team_pdf,false,,v2.1-20261113
+N9-1,intake-v1,510,어떤 때 증상이 심해지나요?,,choice,false,,detail,,added,true,,v2.1-20261113
+N10,intake-v1,520,특정 행동이나 상황에서 증상이 완화되나요?,,choice,false,,detail,,team_pdf,false,,v2.1-20261113
+N10-1,intake-v1,530,어떤 때 증상이 나아지나요?,,choice,false,,detail,,added,true,,v2.1-20261113
+N11,intake-v1,540,증상을 줄이기 위해 약을 먹거나 처치를 했나요?,,choice,false,,detail,,team_pdf,false,,v2.1-20261113
+N11-1,intake-v1,550,어떤 약이나 처치를 했나요?,,string,false,,detail,,added,false,,v2.1-20261113
+N11-2,intake-v1,560,약이나 처치 후 증상은 어땠나요?,,choice,false,,detail,,added,false,,v2.1-20261113
+N12,intake-v1,570,현재 증상으로 일상생활에 어려움이 있나요?,,choice,false,,detail,,team_pdf,false,,v2.1-20261113
+N12-1,intake-v1,580,가장 불편한 것 하나를 골라 주세요.,,choice,false,,detail,,added,false,,v2.1-20261113
+N13,intake-v1,590,현재 증상과 관련된 기존 질환이 있나요?,,choice,false,,detail,,team_pdf,false,,v2.1-20261113
+N13-1,intake-v1,600,어떤 질환인가요?,,string,false,,detail,,added,false,,v2.1-20261113
+P0,intake-v1,700,통증이 있나요?,,choice,false,,pain,,added,false,,v2.1-20261113
+P1,intake-v1,710,"통증은 0~10점 중 몇 점인가요? (0 = 통증 없음, 10 = 상상할 수 있는 가장 심한 통증)",,choice,false,,pain,,added,false,,v2.1-20261113
+P2,intake-v1,720,어디가 아픈가요?,,choice,false,,pain,,added,true,,v2.1-20261113
+P3,intake-v1,730,어떻게 아픈가요?,,choice,false,,pain,,added,true,,v2.1-20261113
 F1,intake-v1,800,불편한 곳이 몸의 어느 부위인가요?,,choice,false,,fallback,,added,true,symptom_is_fallback,v2.1-20261113
 F2,intake-v1,810,다쳐서 생긴 증상인가요?,,choice,false,,fallback,,added,false,symptom_is_fallback,v2.1-20261113
 F3,intake-v1,820,같이 있는 다른 증상이 있나요?,,string,false,,fallback,,added,false,symptom_is_fallback,v2.1-20261113

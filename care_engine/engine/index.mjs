@@ -1,12 +1,11 @@
 // 문진 엔진 공개 함수 runCare(설계 §2·§4). 상태 없는 함수: 프론트가 매번 보내는 메시지·답만으로 다시 계산한다.
 // 예외를 밖으로 던지지 않는다. trace·로그에는 사용자 원문을 넣지 않는다.
-import {classifySymptom, classifySymptomWithRisk, detectRiskSignal, extractProfileUpdates, warmSymptomRisk} from '../llm/index.mjs';
+import {classifySymptom, classifySymptomWithRisk, detectRiskSignal, extractProfileUpdates} from '../llm/index.mjs';
 import {loadIntakeData} from './intake-data.mjs';
 import {normalizeAnswers, visibleCodes} from './answers.mjs';
 import {evaluateSafety, safetyCheckItemIds} from './rules.mjs';
 import {loadFreeTextRules} from './free-text.mjs';
-import {nextQuestion, itemToFollowUp, detailProgress} from './flow.mjs';
-import {painQualityFromMessages, PAIN_QUALITY_ITEM_ID} from './pain-quality.mjs';
+import {nextQuestion, itemToFollowUp} from './flow.mjs';
 import {applyMappings} from './slots.mjs';
 import {matchSymptoms as defaultMatchSymptoms} from './dictionary-match.mjs';
 import {evaluateFacilityKeywords, loadFacilityKeywords, messageCues} from './facility-keywords.mjs';
@@ -20,7 +19,7 @@ import {collectSensitiveEvents, resolveSensitiveChoice} from './sensitive-choice
 
 const CRISIS_KEY = 'crisis_notice_109';
 import {checkResponseContract} from './contract.mjs';
-import {localizeResponse, localizedSummary, fillSymptomSlot} from './localize.mjs';
+import {localizeResponse, localizedSummary} from './localize.mjs';
 import {TARGET_ITEM_ID, TARGET_SELF, INJURY_ITEM_ID, INJURY_YES, AGE_ITEM_ID, ageBandCode} from './constants.mjs';
 
 export const ENGINE_VERSION = 'care-engine-v1';
@@ -276,9 +275,7 @@ async function core(payload, ctx, deps, trace, now, log) {
     setSlots();
     if (responseKo.followUp) trace.nextQuestionId = responseKo.followUp.id;
     // 11/17 다국어: 질문·응급 안내를 언어별 문구로(번역이 없으면 한국어만)
-    // 11/18 재설계: 그다음 질문 문구의 {symptom}을 확정 증상 이름으로(번역을 찾은 뒤에 채움)
-    const sym = symptom?.kind === 'symptom' ? data.refData.symptoms.get(symptom.symptomId) : null;
-    const response = fillSymptomSlot(localizeResponse(responseKo, data), sym ? {id: sym.id, nameKo: sym.nameKo} : null, data);
+    const response = localizeResponse(responseKo, data);
     const check = checkResponseContract(response);
     if (!check.ok) {
       trace.warnings.push(`contract:${check.errors.slice(0, 3).join('|')}`);
@@ -370,7 +367,6 @@ async function core(payload, ctx, deps, trace, now, log) {
       text: combine ? messages.join('\n') : messages.at(-1), riskText: messages.at(-1),
       sex: applyMappings({codes: vis, data}).filter.sex.value,
       consent: ctx.consent, signal, deadlineAt, requestId: ctx.requestId ?? null, reason,
-      ...(combine && fromAnswers?.forceFull ? {forceFull: true} : {}), // 11/18 절충 1: 고쳐 쓰기 후보에서 '다른 증상' 뒤
     };
     const fallback = combine
       ? {status: 'fallback', reason: 'timeout', riskSignal: 'none', meta: {error: 'timeout', attempts: 0}}
@@ -456,20 +452,17 @@ async function core(payload, ctx, deps, trace, now, log) {
   // 증상 상태(답만으로, LLM 없음)
   if (!symptom) {
     const r = resolveFromAnswers(engine, data.refData);
-    // needLlm·areaPick(11/18 되묻기에서 부위만 고름)은 아직 증상 미정 → identify가 질문을 낸다
-    if (r && r.kind !== 'needLlm' && r.kind !== 'areaPick') symptom = guardSex(r);
+    if (r && r.kind !== 'needLlm') symptom = guardSex(r);
   }
   const stateOf = () => {
     if (!symptom) return 'pending';
     if (symptom.kind === 'unknown') return 'unknown';
     return data.refData.symptoms.get(symptom.symptomId)?.isFallback ? 'fallback' : 'known';
   };
-  // 11/18 재설계: 확정 증상이 통증이면 양상·점수, 아니면 불편 정도(flow.mjs engine_condition)
-  const isPain = () => symptom?.kind === 'symptom' && data.painSymptomIds?.has(symptom.symptomId) === true;
 
   // 4~6. 다음 문항(skip이면 묻지 않고 완료)
   if (reason !== 'skip') {
-    let nq = nextQuestion({codes, data, mode: 'normal', symptomState: stateOf(), symptomIsPain: isPain()});
+    let nq = nextQuestion({codes, data, mode: 'normal', symptomState: stateOf()});
     if (nq.kind === 'identify') {
       const r = await identify({
         engineAnswers: engine, messages, codes: vis, data, // 11/17 EF(G4): 성별은 보이는 답에서만
@@ -484,24 +477,10 @@ async function core(payload, ctx, deps, trace, now, log) {
       if (r.kind === 'search') return finish(withEmergency({search: r.search}), 'identify');
       if (r.kind === 'medInfo') return finish(withEmergency({summary: localizedSummary((tx) => buildMedInfoSummary({tx}), data), search: {...PHARMACY_SEARCH}}), 'identify');
       symptom = r.kind === 'symptom' ? guardSex(r) : {kind: 'unknown', source: r.source ?? 'unknown'};
-      nq = nextQuestion({codes, data, mode: 'normal', symptomState: stateOf(), symptomIsPain: isPain()});
-    }
-    // 11/18 재설계: 통증 양상(P3)을 사용자가 이미 말했으면(한 갈래로만) 묻지 않고 채운다(pain-quality.mjs). 요약에만 쓴다
-    if (nq.kind === 'item' && nq.item.linkId === PAIN_QUALITY_ITEM_ID) {
-      const code = painQualityFromMessages(messages);
-      if (code && (data.optionsById.get(PAIN_QUALITY_ITEM_ID) ?? []).some((o) => o.code === code)) {
-        codes.set(PAIN_QUALITY_ITEM_ID, code);
-        vis.set(PAIN_QUALITY_ITEM_ID, code);
-        trace.prefilled.push(PAIN_QUALITY_ITEM_ID);
-        nq = nextQuestion({codes, data, mode: 'normal', symptomState: stateOf(), symptomIsPain: isPain()});
-      }
+      nq = nextQuestion({codes, data, mode: 'normal', symptomState: stateOf()});
     }
     trace.skippedItems = nq.skippedItems;
-    if (nq.kind === 'item') {
-      // 11/18 재설계: 증상 확인 뒤 상세 질문이면 진행(n/전체)을 함께 보낸다
-      const progress = detailProgress({itemId: nq.item.linkId, codes, data, symptomState: stateOf(), symptomIsPain: isPain()});
-      return finish(withEmergency({followUp: itemToFollowUp(nq.item, data, locale), ...(progress ? {progress} : {})}), 'question');
-    }
+    if (nq.kind === 'item') return finish(withEmergency({followUp: itemToFollowUp(nq.item, data, locale)}), 'question');
   } else if (!symptom) {
     symptom = {kind: 'unknown', source: 'skip'}; // 증상 확인 전 skip(또는 sym_other 뒤 skip): LLM 부르지 않고 증상 모름
   }
@@ -519,7 +498,7 @@ async function core(payload, ctx, deps, trace, now, log) {
   trace.symptom.fallbackGroup = rec.group;
   // 11/17 EF(G6): 안전 미응답 판단 문항은 답 규칙이 가리키는 문항 전체(데이터에서 만듦)
   const safetyUnanswered = safetyCheckItemIds(data).some((id) => !vis.has(id));
-  const summary = localizedSummary((tx) => buildSummary({slots: trace.slots, codes: vis, symptom: symptomObj, departments: rec.departments, data, safetyUnanswered, riskUnconfirmed: risk.state === 'unsure', group: rec.group, tx, profileInfo: vis.get(TARGET_ITEM_ID) === TARGET_SELF ? payload.profile : null}), data); // 11/18 재설계: 본인 상담이면 저장한 건강정보 / 11/17 RG1: RF 판단 #11(지나간 사건 '아니요' 경고) 삭제 — 질문 기준이 '오늘'이 되어 필요 없음
+  const summary = localizedSummary((tx) => buildSummary({slots: trace.slots, codes: vis, symptom: symptomObj, departments: rec.departments, data, safetyUnanswered, riskUnconfirmed: risk.state === 'unsure', group: rec.group, tx}), data); // 11/17 RG1: RF 판단 #11(지나간 사건 '아니요' 경고) 삭제 — 질문 기준이 '오늘'이 되어 필요 없음
   const response = withEmergency({summary, search: rec.search});
 
   // 건강정보 후보: 상담 대상이 본인일 때만, 요청당 LLM 1번(이미 증상 분류를 불렀으면 건너뜀)
@@ -546,18 +525,4 @@ async function core(payload, ctx, deps, trace, now, log) {
     }
   }
   return finish(response, 'complete');
-}
-
-/**
- * 11/18: 서버 시작 시 LLM 예열(llm/index.mjs warmSymptomRisk). runCare와 같은 데이터(deps.refStore)의 후보 목록을 쓴다.
- * 프론트 instrumentation.js가 부르고 기다리지 않는다. 예외를 던지지 않는다.
- * @param {{refStore?:object|Function, log?:Function}} [deps]
- */
-export async function warmLlm(deps = {}) {
-  try {
-    const data = resolveData(deps);
-    return await warmSymptomRisk({refData: data.refData, log: typeof deps.log === 'function' ? deps.log : noop});
-  } catch {
-    return {skipped: 'error', results: []};
-  }
 }

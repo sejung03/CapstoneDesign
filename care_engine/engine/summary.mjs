@@ -57,7 +57,7 @@ function orNull(fn) {
  *   group: recommend()의 group. null이면 증상 통계(variant) 경로, 문자열이면 fallback 그룹 경로, 생략(undefined)이면 순위 설명 줄을 넣지 않는다.
  * @returns {string|null} 한국어(tx 생략)는 항상 문자열. 다른 언어는 번역이 모자라면 null
  */
-export function buildSummary({slots, codes, symptom, departments = [], data, safetyUnanswered = false, riskUnconfirmed = false, group, tx = KO_TEXT, profileInfo = null}) {
+export function buildSummary({slots, codes, symptom, departments = [], data, safetyUnanswered = false, riskUnconfirmed = false, group, tx = KO_TEXT}) {
   return orNull(() => {
     const {need, tpl, show} = texts(tx);
     const lines = [];
@@ -84,14 +84,6 @@ export function buildSummary({slots, codes, symptom, departments = [], data, saf
     if (course.length) lines.push(`${tpl('summary.course', SUMMARY.course)}: ${course.join(', ')}`);
     const pain = slotEntries(slots, 'detail.pain_score').map((e) => show(displayRef(e, data))).filter(Boolean);
     if (pain.length) lines.push(fillText(tpl('summary.pain', SUMMARY_FORMAT.pain), [pain[0]]));
-    // 11/18 문진 재설계: 통증 양상(P3), 일상생활 불편 정도(N12)
-    const quality = slotEntries(slots, 'detail.pain_quality').map((e) => show(displayRef(e, data))).filter(Boolean);
-    if (quality.length) lines.push(`${tpl('summary.painQuality', SUMMARY.painQuality)}: ${quality[0]}`);
-    const impact = slotEntries(slots, 'detail.daily_impact').map((e) => show(displayRef(e, data))).filter(Boolean);
-    if (impact.length) lines.push(`${tpl('summary.dailyImpact', SUMMARY.dailyImpact)}: ${impact[0]}`);
-    // 11/18: 본인 상담이면 사용자가 저장한 건강정보(약·기존 질환·알레르기)를 그대로 적는다(문진에서 묻지 않음)
-    const saved = savedHealthLines(profileInfo);
-    for (const [key, value] of saved) lines.push(`${tpl(`summary.${key}`, SUMMARY[key])}: ${value}`);
     // 11/17 요약 말투: 진료과는 순위를 붙여(2개 이상), 1개뿐이면 순위 없이. 바로 다음 줄에 경로별 순위 설명
     if (departments.length) {
       const name = (d) => (d.deptId ? need('department', d.deptId, d.nameKo) : need('department', '', d.nameKo));
@@ -100,23 +92,10 @@ export function buildSummary({slots, codes, symptom, departments = [], data, saf
       lines.push(`${tpl('summary.departments', SUMMARY.departments)}: ${names}`);
       if (group !== undefined) lines.push(group === null ? tpl('summary.deptNoteStats', SUMMARY.deptNoteStats) : tpl('summary.deptNoteFallback', SUMMARY.deptNoteFallback));
     }
-    lines.push(saved.length ? tpl('summary.uncheckedWithProfile', SUMMARY.uncheckedWithProfile) : tpl('summary.unchecked', SUMMARY.unchecked));
+    lines.push(tpl('summary.unchecked', SUMMARY.unchecked));
     lines.push(tpl('summary.footer', SUMMARY.footer));
     return clip(lines);
   });
-}
-
-/** 저장한 건강정보 한 칸의 최대 길이(요약 2000자 안에 들게) */
-export const SAVED_HEALTH_MAX = 200;
-/**
- * 11/18: 요약에 넣을 저장한 건강정보 [키, 값] 목록. 빈 값은 뺀다. 줄바꿈은 공백으로, 길이는 SAVED_HEALTH_MAX자까지.
- * @param {{medications?:string, history?:string, allergies?:string}|null} profileInfo 본인 상담일 때만 넘긴다(runCare)
- */
-export function savedHealthLines(profileInfo) {
-  if (!profileInfo || typeof profileInfo !== 'object') return [];
-  const clean = (v) => (typeof v === 'string' ? v.replace(/[\r\n]+/g, ' ').trim().slice(0, SAVED_HEALTH_MAX) : '');
-  return [['profileMedications', clean(profileInfo.medications)], ['profileHistory', clean(profileInfo.history)], ['profileAllergies', clean(profileInfo.allergies)]]
-    .filter(([, v]) => v);
 }
 
 /**

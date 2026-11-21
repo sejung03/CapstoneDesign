@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createWorkspace,intakeSnapshot,conversationFacilities} from '../workspace-model.mjs';
 import {mockIntakeQuestionnaire as q} from '../intake-data.mjs';
-test('workspace defaults to conversation without storage or an open panel',()=>assert.deepEqual(createWorkspace(),{panel:null,expanded:false,intake:false}));
+test('workspace defaults to conversation without storage or an open panel',()=>assert.deepEqual(createWorkspace(),{panel:null,intake:false}));
 test('skipped intake preserves unanswered status and counts only real selected options',()=>{
  const answers={[q.questions[0].id]:q.questions[0].options[0].id};
  assert.deepEqual(intakeSnapshot(q,answers,{symptom:''},{skipped:true,step:1}),{status:'partial',stoppedQuestionId:q.questions[1].id,answeredCount:1,totalQuestions:2});
