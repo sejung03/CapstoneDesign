@@ -3,29 +3,28 @@ import assert from 'node:assert/strict';
 import {loadIntakeData} from '../intake-data.mjs';
 import {visibleCodes} from '../answers.mjs';
 import {evaluateSafety} from '../rules.mjs';
-import {nextQuestion, itemToFollowUp, neverAskedItems} from '../flow.mjs';
+import {nextQuestion, itemToFollowUp, neverAskedItems, detailProgress} from '../flow.mjs';
 import {applyMappings, slotEntries} from '../slots.mjs';
 import {checkFollowUpContract} from '../../llm/confirm-question.mjs';
 
 const data = loadIntakeData();
-const NEVER = ['E3', 'N4', 'N6-2', 'N8-1', 'N9-1', 'N10-1', 'N11-1', 'N13-1', 'P2', 'P3', 'F1', 'F3'];
+// 11/18 재설계: 상세 문항을 줄여 엔진이 묻지 않는 문항은 E3(프론트)·N4·F3(입력)·F1(선택지 미정)만 남았다
+const NEVER = ['E3', 'N4', 'F1', 'F3'];
 
 // 상세 문항까지 "더 묻게 되는" 답(조건부 문항이 모두 열린다)
 const OPEN_ALL = {
   Q0: 'no', N1: 'yes', N2: 'yes', N3: 'no', T1: 'self', T2: 'female', T3: 'age_19_64',
-  N5: 'yes', 'N5-1': 'onset_today', N6: 'no', 'N6-1': 'freq_daily', N7: 'yes', 'N7-1': 'onset_1_3d',
-  N8: 'yes', N9: 'yes', N10: 'yes', N11: 'yes', 'N11-2': 'better', N12: 'yes', 'N12-1': 'sleep', N13: 'yes',
-  P0: 'yes', P1: 'pain_5', F2: 'no',
+  'N5-1': 'onset_today', P3: 'pq_stabbing', P1: 'pain_5', N12: 'impact_some', N7: 'yes', F2: 'no',
   E1: 'yes', E2: 'yes', E4: 'yes', E5: 'yes', E6: 'no', E7: 'no', E8: 'yes', 'E8-1': 'count_2', E9: 'yes', 'E9-1': 'onset_1_6h',
 };
 
 /** 정해진 답으로 끝까지 걸어가며 묻는 순서를 기록한다. identify 자리에서 symptomState를 바꾼다. */
-function walk({answers = OPEN_ALL, start = {}, mode = 'normal', after = 'unknown'} = {}) {
+function walk({answers = OPEN_ALL, start = {}, mode = 'normal', after = 'unknown', pain = false} = {}) {
   const codes = new Map(Object.entries(start));
   const asked = [];
   let state = 'pending';
   for (let guard = 0; guard < 100; guard += 1) {
-    const r = nextQuestion({codes, data, mode, symptomState: state});
+    const r = nextQuestion({codes, data, mode, symptomState: state, symptomIsPain: pain});
     if (r.kind === 'done') return {asked, codes, last: r};
     if (r.kind === 'identify') { asked.push('<identify>'); state = after; continue; }
     asked.push(r.item.linkId);
@@ -35,17 +34,34 @@ function walk({answers = OPEN_ALL, start = {}, mode = 'normal', after = 'unknown
   throw new Error('끝나지 않음');
 }
 
-test('실제 질문 순서: Q0 → N1~N3 → T1~T3 → 증상 확인 → N5…P1 → F2(증상 모름)', () => {
-  const {asked, last} = walk({after: 'unknown'});
-  assert.deepEqual(asked, ['Q0', 'N1', 'N2', 'N3', 'T1', 'T2', 'T3', '<identify>',
-    'N5', 'N5-1', 'N6', 'N6-1', 'N7', 'N7-1', 'N8', 'N9', 'N10', 'N11', 'N11-2', 'N12', 'N12-1', 'N13', 'P0', 'P1', 'F2']);
-  assert.ok(last.skippedItems.includes('N8-1') && last.skippedItems.includes('F3'));
+// 11/18 재설계: 증상 확인 뒤 3~4개. 통증이면 언제부터·양상·점수·악화, 아니면 언제부터·불편 정도·악화, 모르면 + F2
+const COMMON = ['Q0', 'N1', 'N2', 'N3', 'T1', 'T2', 'T3', '<identify>'];
+test('실제 질문 순서(11/18 재설계): 공통 Q0~T3 → 증상 확인 → 증상에 맞춘 상세 3~4개', () => {
+  const r = walk({after: 'unknown'});
+  assert.deepEqual(r.asked, [...COMMON, 'N5-1', 'N12', 'N7', 'F2']);
+  assert.ok(r.last.skippedItems.includes('F3') && r.last.skippedItems.includes('P3') && r.last.skippedItems.includes('P1'));
+  assert.deepEqual(walk({after: 'known', pain: false}).asked, [...COMMON, 'N5-1', 'N12', 'N7']);
+  assert.deepEqual(walk({after: 'known', pain: true}).asked, [...COMMON, 'N5-1', 'P3', 'P1', 'N7']);
+  assert.deepEqual(walk({after: 'fallback', pain: true}).asked, [...COMMON, 'N5-1', 'P3', 'P1', 'N7', 'F2']);
+  assert.deepEqual(walk({after: 'fallback', pain: false}).asked, [...COMMON, 'N5-1', 'N12', 'N7', 'F2']);
 });
 
-test('증상이 정해지면(known) F2는 묻지 않는다', () => {
-  const {asked} = walk({after: 'known'});
-  assert.ok(!asked.includes('F2'));
-  assert.equal(asked.at(-1), 'P1');
+test('증상이 정해지면(known) F2는 묻지 않는다, 증상을 모르면 통증 문항(P3·P1)을 묻지 않는다', () => {
+  for (const pain of [true, false]) assert.ok(!walk({after: 'known', pain}).asked.includes('F2'));
+  const unknown = walk({after: 'unknown', pain: true}).asked; // 증상 모름은 통증 여부와 상관없이 불편 정도
+  assert.ok(!unknown.includes('P3') && !unknown.includes('P1') && unknown.includes('N12'));
+});
+
+test('detailProgress(11/18): 상세 문항의 n번째/전체, 상세가 아니면 null, 답·미리 채움과 상관없이 전체 수는 그대로', () => {
+  const base = {Q0: 'no', N1: 'yes', N2: 'yes', N3: 'no', T1: 'self', T2: 'female', T3: 'age_19_64'};
+  const at = (itemId, extra = {}, symptomState = 'known', symptomIsPain = true) =>
+    detailProgress({itemId, codes: new Map(Object.entries({...base, ...extra})), data, symptomState, symptomIsPain});
+  assert.deepEqual(at('N5-1'), {current: 1, total: 4});
+  assert.deepEqual(at('P1', {'N5-1': 'onset_today', P3: 'pq_dull'}), {current: 3, total: 4});
+  assert.deepEqual(at('N7', {}, 'known', false), {current: 3, total: 3});
+  assert.deepEqual(at('F2', {}, 'unknown', false), {current: 4, total: 4});
+  assert.equal(at('T3'), null);
+  assert.equal(at('P3', {}, 'known', false), null); // 통증이 아니면 P3는 계획에 없음
 });
 
 test('증상 확인 자리는 N4의 order(데이터)로 정한다: T3 미응답이면 T3 먼저', () => {
@@ -54,7 +70,7 @@ test('증상 확인 자리는 N4의 order(데이터)로 정한다: T3 미응답�
   codes.set('T3', 'unknown');
   assert.equal(nextQuestion({codes, data}).kind, 'identify');
   // 상세 문항에 이미 답이 있어도 증상이 정해지지 않았으면 identify
-  codes.set('N5', 'no');
+  codes.set('N5-1', 'onset_today');
   assert.equal(nextQuestion({codes, data}).kind, 'identify');
 });
 
@@ -73,16 +89,16 @@ test('응급 모드: E1, E2, E4~E9-1만(E3은 프론트)', () => {
   assert.equal(nextQuestion({codes: new Map(), data, mode: 'stopped'}).kind, 'done');
 });
 
-test('엔진이 절대 묻지 않는 문항 12개', () => {
+test('엔진이 절대 묻지 않는 문항 4개(11/18 재설계)', () => {
   assert.deepEqual(neverAskedItems(data).sort(), [...NEVER].sort());
   const askedAll = new Set([
-    ...walk({after: 'unknown'}).asked, ...walk({after: 'known'}).asked,
+    ...walk({after: 'unknown'}).asked, ...walk({after: 'known'}).asked, ...walk({after: 'known', pain: true}).asked,
     ...walk({after: 'fallback'}).asked, ...walk({start: {Q0: 'yes'}, mode: 'emergency'}).asked,
   ]);
   for (const id of NEVER) assert.ok(!askedAll.has(id), `${id}가 나옴`);
-  // 엔진이 묻는 문항 34개가 위 경로에서 모두 나온다
+  // 엔진이 묻는 문항 23개가 위 경로에서 모두 나온다(11/18 재설계 전 34개)
   const askable = data.items.filter((it) => !NEVER.includes(it.linkId)).map((it) => it.linkId);
-  assert.equal(askable.length, 34);
+  assert.equal(askable.length, 23);
   for (const id of askable) assert.ok(askedAll.has(id), `${id}가 안 나옴`);
 });
 
@@ -107,8 +123,8 @@ test('itemToFollowUp: 묻는 문항 모두 followUp 계약 통과, id = link_id,
 });
 
 test('applyMappings: filter·report·detail·flow 값과 원래 문항 ID', () => {
-  const codes = new Map(Object.entries({Q0: 'no', N1: 'no', T2: 'female', T3: 'age_1_12', 'N5': 'yes', 'N5-1': 'onset_today',
-    N6: 'no', 'N6-1': 'freq_daily', N7: 'yes', 'N7-1': 'onset_1_3d', N9: 'no', P0: 'yes', P1: 'pain_7'}));
+  const codes = new Map(Object.entries({Q0: 'no', N1: 'no', T2: 'female', T3: 'age_1_12', 'N5-1': 'onset_today',
+    N7: 'yes', N12: 'impact_some', P3: 'pq_dull', P1: 'pain_7'}));
   const vis = visibleCodes(codes, data);
   const {hits} = evaluateSafety({codes: vis, data});
   const s = applyMappings({codes: vis, ruleHits: hits, data, symptom: {id: 'R05', nameKo: '기침'}});
@@ -116,9 +132,10 @@ test('applyMappings: filter·report·detail·flow 값과 원래 문항 ID', () =
   assert.deepEqual(s.filter.age_band, {value: 'child', question: 'T3'});
   assert.deepEqual(s.filter.infant, {value: 'false', question: 'T3'});
   assert.deepEqual(s.report.onset, {value: 'onset_today', question: 'N5-1'});
-  assert.deepEqual(slotEntries(s, 'report.notes'), [{value: 'freq_daily', question: 'N6-1'}, {value: 'onset_1_3d', question: 'N7-1'}]);
-  assert.deepEqual(s.detail.continuous, {value: 'no', question: 'N6'});
-  assert.deepEqual(s.detail.aggravating, {value: 'none', question: 'N9'});
+  assert.deepEqual(slotEntries(s, 'report.notes'), []);
+  assert.deepEqual(s.detail.worsening, {value: 'yes', question: 'N7'});
+  assert.deepEqual(s.detail.daily_impact, {value: 'impact_some', question: 'N12'});
+  assert.deepEqual(s.detail.pain_quality, {value: 'pq_dull', question: 'P3'});
   assert.deepEqual(s.detail.pain_score, {value: 'pain_7', question: 'P1'});
   assert.deepEqual(s.flow.urgent_notice, {value: 'true', question: 'R-N1-CONSCIOUSNESS'});
   assert.deepEqual(s.report.symptom, {value: '기침', question: 'N4', symptomId: 'R05'});

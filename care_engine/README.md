@@ -106,7 +106,7 @@ node eval/candidate_loo.mjs               # 후보 생성 Recall@k (사전 leave
 | `LLM_TEMPERATURE` | 빈 값이면 요청에 넣지 않음. `0`~`2` | 넣지 않음 |
 | `LLM_CANDIDATE_MODE` | `all`(증상 전부) / `retrieve`(사전 유사도 상위 K) | `all` |
 | `LLM_CANDIDATE_K` | retrieve 후보 수 | 40 |
-| `LLM_TIMEOUT_MS` | LLM 1회 제한 | 4000 |
+| `LLM_TIMEOUT_MS` | LLM 1회 제한 | 6000 (11/18, 이전 4000) |
 | `LLM_BUDGET_MS` | 서버 전체 시간 예산 | 7000 |
 | `LLM_MAX_CONCURRENCY` | 값만 읽음(동시성 제한 미구현) | 2 |
 | `LLM_EVAL_BUDGET_USD` | 평가 1회 비용 상한 | 2 |

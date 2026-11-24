@@ -1,6 +1,6 @@
 // 설정. 설계 8절 값들 + L4-MVP(11/15). 환경변수가 없거나 잘못되면 기본값.
 // API 키(OPENAI_API_KEY)는 여기서 읽지 않는다. 어댑터(providers/openai.mjs)가 process.env에서 직접 읽는다.
-import {SYMPTOM_SCHEMA_NAME, PROFILE_SCHEMA_NAME, RISK_SCHEMA_NAME, SYMPTOM_RISK_SCHEMA_NAME} from './schemas.mjs';
+import {SYMPTOM_SCHEMA_NAME, PROFILE_SCHEMA_NAME, RISK_SCHEMA_NAME, SYMPTOM_RISK_SCHEMA_NAME, REWRITE_SCHEMA_NAME} from './schemas.mjs';
 
 /**
  * 건강정보 추출 신호어 패턴(설계 6-1, L4-MVP M3에서 단어 → 정규식으로 좁힘).
@@ -23,24 +23,30 @@ export const PROFILE_VALUE_MAX = 500;
 export const PROFILE_QUOTE_MAX = 500;
 
 export const VERSIONS = Object.freeze({
-  promptSymptom: 'symptom_v1',
+  promptSymptom: 'symptom_v2',
   promptProfile: 'profile_v1',
   schemaSymptom: SYMPTOM_SCHEMA_NAME,
   schemaProfile: PROFILE_SCHEMA_NAME,
   promptRisk: 'risk_v2',
-  promptSymptomRisk: 'symptom_risk_v2',
+  promptSymptomRisk: 'symptom_risk_v3',
   schemaRisk: RISK_SCHEMA_NAME,
   schemaSymptomRisk: SYMPTOM_RISK_SCHEMA_NAME,
+  promptRewrite: 'symptom_rewrite_v1', // 11/18 절충 1: 고쳐 쓰기(목록 없이) → DB 재검색
+  schemaRewrite: REWRITE_SCHEMA_NAME,
 });
 
 export const DEFAULTS = Object.freeze({
   provider: 'mock',
   model: null,            // mock이면 'mock-v0'. 실제 업체는 버전명 필수(별칭 금지)
-  timeoutMs: 4000,        // LLM 1회 제한
+  timeoutMs: 6000,        // LLM 1회 제한. 11/18: 4000 → 6000(실측 p50 1.3s·최대 4.0s, 시간 초과는 재시도하지 않으므로 예산 7초 안에서 넉넉히)
   budgetMs: 7000,         // 서버 전체 예산(프론트 8초 제한 안쪽)
   retryMinRemainingMs: 3000, // 남은 시간이 이 이상일 때만 재시도
   candidateMode: 'all',    // L4-MVP 11/15: retrieve가 바꿔 말한 표현을 놓쳐 all로. retrieve는 LLM_CANDIDATE_MODE로
   candidateK: 40,
+  // 11/18 절충 1: 'full' = 증상 목록 전체에서 고르기(1회), 'rewrite' = 목록 없이 표준 표현으로 고쳐 쓰기 → 사전 재검색 → 못 찾으면 full.
+  //   11/18 측정(368문장·위험 552건) 뒤 기본을 rewrite로: 입력 토큰 −69%, 최종 정확도 98.1%(full 97.3%), 위험 신호 놓침 0. 되돌리려면 LLM_SYMPTOM_MODE=full
+  symptomMode: 'rewrite',
+  rewriteTimeoutMs: 3000, // 고쳐 쓰기 1회 제한. 실패해도 full 호출에 쓸 시간을 남긴다
   maxConcurrency: 2,
   openaiModel: 'gpt-5.4-mini-2026-03-17', // 날짜 고정 스냅샷(L4-MVP 팀 결정)
   reasoningEffort: 'none',
@@ -59,6 +65,7 @@ export const MODEL_PRICES_USD_PER_1M = Object.freeze({
 
 const PROVIDERS = ['mock', 'gemini', 'openai'];
 const MODES = ['retrieve', 'all'];
+export const SYMPTOM_MODES = Object.freeze(['full', 'rewrite']);
 export const REASONING_EFFORTS = Object.freeze(['none', 'low', 'medium', 'high']);
 /** 날짜 고정 스냅샷 이름(끝이 -YYYY-MM-DD). 아니면 별칭으로 보고 경고만 남긴다. */
 const SNAPSHOT_RE = /-\d{4}-\d{2}-\d{2}$/;
@@ -86,6 +93,7 @@ export function getConfig(env = process.env) {
   const model = (env.LLM_MODEL ?? '').trim()
     || (provider === 'mock' ? 'mock-v0' : provider === 'openai' ? DEFAULTS.openaiModel : DEFAULTS.model);
   const mode = (env.LLM_CANDIDATE_MODE ?? '').trim().toLowerCase();
+  const symptomMode = (env.LLM_SYMPTOM_MODE ?? '').trim().toLowerCase();
   const effort = (env.LLM_REASONING_EFFORT ?? '').trim().toLowerCase();
   const temperatureRaw = (env.LLM_TEMPERATURE ?? '').trim();
   const temperature = temperatureRaw === '' ? null : nonNegNumber(temperatureRaw, null);
@@ -104,6 +112,8 @@ export function getConfig(env = process.env) {
     retryMinRemainingMs: DEFAULTS.retryMinRemainingMs,
     candidateMode: MODES.includes(mode) ? mode : DEFAULTS.candidateMode,
     candidateK: posInt(env.LLM_CANDIDATE_K, DEFAULTS.candidateK),
+    symptomMode: SYMPTOM_MODES.includes(symptomMode) ? symptomMode : DEFAULTS.symptomMode,
+    rewriteTimeoutMs: posInt(env.LLM_REWRITE_TIMEOUT_MS, DEFAULTS.rewriteTimeoutMs),
     maxConcurrency: posInt(env.LLM_MAX_CONCURRENCY, DEFAULTS.maxConcurrency),
     versions: VERSIONS,
   });

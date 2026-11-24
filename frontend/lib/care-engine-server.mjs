@@ -40,7 +40,7 @@ export function loadEngine(env = process.env) {
     const dir = engineDir(env);
     const load = (file) => import(/* webpackIgnore: true */ /* turbopackIgnore: true */ pathToFileURL(path.join(dir, 'engine', file)).href);
     enginePromise = Promise.all([load('index.mjs'), load('intake-data.mjs')])
-      .then(([index, data]) => ({runCare: index.runCare, loadIntakeDataFromRows: data.loadIntakeDataFromRows}))
+      .then(([index, data]) => ({runCare: index.runCare, warmLlm: index.warmLlm, loadIntakeDataFromRows: data.loadIntakeDataFromRows}))
       .catch((e) => { enginePromise = null; throw e; });
   }
   return enginePromise;
@@ -74,6 +74,27 @@ export function createRefStore({supabaseConfig, loadEngine: load = loadEngine, l
   /** 서버가 뜰 때 한 번 불러 첫 사용자 요청 전에 읽기를 시작한다. */
   getData.warm = () => getData().then(() => store.ready()).catch(() => {});
   return getData;
+}
+
+/**
+ * 11/18: 서버 시작 시 LLM 예열(instrumentation.js에서 기다리지 않고 부른다). 처음 쓰는 응답 형식은 업체 쪽 준비 때문에
+ * 첫 요청이 느리므로(실측 3.8~4초) 사용자 요청 전에 고정 문장으로 한 번씩 보낸다. 엔진 warmLlm이 mock이면 건너뛴다.
+ * 사용자 요청과 같은 데이터(refStore: Supabase 또는 시드 CSV)의 후보 목록을 쓴다. 예외를 던지지 않고 개수·지연만 로그에 남긴다.
+ */
+export async function warmCareLlm({loadEngine: load = loadEngine, refStore = async () => null, log = (msg) => console.info(msg)} = {}) {
+  try {
+    const engine = await load();
+    if (typeof engine.warmLlm !== 'function') return null;
+    let data = null;
+    try { data = await refStore(); } catch { data = null; }
+    const r = await engine.warmLlm(data ? {refStore: data} : {});
+    if (r && !r.skipped && Array.isArray(r.results)) {
+      const ok = r.results.filter((x) => x.ok).length;
+      const errors = [...new Set(r.results.map((x) => x.error).filter(Boolean))];
+      log(`[care] LLM 예열 ${ok}/${r.results.length} (${r.results.map((x) => x.latencyMs).join('/')}ms)${errors.length ? ` 오류 ${errors.join(',')}` : ''}`);
+    }
+    return r;
+  } catch { return null; }
 }
 
 /**

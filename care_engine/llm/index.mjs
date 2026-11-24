@@ -6,15 +6,18 @@ import {loadRefData} from './ref-data.mjs';
 import {maskPii} from './pii.mjs';
 import {tailChars, INPUT_MAX_CHARS} from './normalize.mjs';
 import {buildCandidates, formatCandidatesForPrompt} from './candidates.mjs';
-import {symptomPickSchema, symptomRiskSchema, riskSignalSchema, profileExtractSchema} from './schemas.mjs';
-import {validateSymptomPick, validateSymptomRisk, validateRiskSignal, validateProfileItems} from './validate.mjs';
-import {buildSymptomConfirm} from './confirm-question.mjs';
+import {symptomPickSchema, symptomRiskSchema, riskSignalSchema, profileExtractSchema, rewriteSchema, REWRITE_SCHEMA_NAME, REWRITE_RISK_SCHEMA_NAME} from './schemas.mjs';
+import {validateSymptomPick, validateSymptomRisk, validateRiskSignal, validateProfileItems, validateRewrite} from './validate.mjs';
+import {buildSymptomConfirm, buildRewriteConfirm} from './confirm-question.mjs';
 import {hasProfileSignal} from './profile-trigger.mjs';
-import {isRetryable} from './errors.mjs';
-import symptomPrompt from './prompts/symptom_v1.mjs';
+import {isRetryable, STOP_ERRORS} from './errors.mjs';
+import {matchSymptoms} from '../engine/dictionary-match.mjs';
+import symptomPrompt from './prompts/symptom_v2.mjs';
 import profilePrompt from './prompts/profile_v1.mjs';
 import riskPrompt from './prompts/risk_v2.mjs';
-import symptomRiskPrompt from './prompts/symptom_risk_v2.mjs';
+import symptomRiskPrompt from './prompts/symptom_risk_v3.mjs';
+import rewritePrompt from './prompts/symptom_rewrite_v1.mjs';
+import rewriteRiskPrompt from './prompts/symptom_rewrite_risk_v1.mjs';
 
 const noop = () => {};
 
@@ -135,7 +138,8 @@ export async function classifySymptomWithRisk(input = {}, deps = {}) {
   return classifySymptomInternal(input, deps, true);
 }
 
-async function classifySymptomInternal({text, riskText = null, sex = null, consent, signal, deadlineAt, requestId = null, reason = null} = {}, deps = {}, includeRisk = false) {
+// forceFull(11/18 절충 1): 고쳐 쓰기 후보 확인(SYM_REWRITE_CONFIRM)에서 '다른 증상이에요'를 고른 뒤라 고쳐 쓰기를 건너뛰고 전체 목록 호출만 한다.
+async function classifySymptomInternal({text, riskText = null, sex = null, consent, signal, deadlineAt, requestId = null, reason = null, forceFull = false} = {}, deps = {}, includeRisk = false) {
   const d = resolveDeps(deps);
   const refData = d.refData ?? loadRefData();
   const start = d.now();
@@ -154,6 +158,9 @@ async function classifySymptomInternal({text, riskText = null, sex = null, conse
     modelWarning: d.config.modelWarning ?? null,
     tokens: emptyTokens(),
     providerError: null,
+    // 11/18 절충 1: 어느 길로 끝났는지(원문 없음). full = 목록 전체 호출만 / rewrite_hit = 고쳐 쓰기 → 사전에서 찾음 /
+    //   rewrite_route = 고쳐 쓰기에서 증상 아닌 의도 / rewrite_miss·rewrite_bad·rewrite_fail → 목록 전체 호출로 넘어감
+    symptomPath: 'full',
   };
   let picks = [];
   let intent = null;
@@ -161,6 +168,7 @@ async function classifySymptomInternal({text, riskText = null, sex = null, conse
   let dropped = null;
   let tokens = null;
   let riskSignal = 'none';
+  let rewriteRisk = null; // 고쳐 쓰기 호출이 본 위험 신호(전체 목록 호출이 실패·none이어도 놓치지 않게)
 
   const finish = (result) => {
     meta.latencyMs = d.now() - start;
@@ -181,10 +189,16 @@ async function classifySymptomInternal({text, riskText = null, sex = null, conse
       inputTokens: tokens?.input ?? null, cachedInputTokens: tokens?.cachedInput ?? null,
       outputTokens: tokens?.output ?? null, reasoningTokens: tokens?.reasoning ?? null,
       providerError: meta.providerError,
+      symptomPath: meta.symptomPath,
     });
     return out;
   };
   const fallback = (why, error = why) => { meta.error = error; return finish({status: 'fallback', reason: why}); };
+  const addUsage = (res) => {
+    meta.attempts += res.attempts ?? 0;
+    for (const k of Object.keys(meta.tokens)) meta.tokens[k] += res.tokens?.[k] ?? 0;
+    tokens = {...meta.tokens};
+  };
 
   // 1. 동의(개발용 동의 포함)
   const c = resolveConsent(consent, d.provider.name, d.config);
@@ -196,6 +210,53 @@ async function classifySymptomInternal({text, riskText = null, sex = null, conse
   const masked = maskPii(String(text ?? ''));
   const llmText = tailChars(masked.text.trim(), INPUT_MAX_CHARS);
   if (!llmText.trim()) return fallback('no_match', null);
+  const riskLlmText = tailChars(maskPii(String(riskText ?? text ?? '')).text.trim(), INPUT_MAX_CHARS);
+
+  // 2-1. 11/18 절충 1(LLM_SYMPTOM_MODE=rewrite): 목록 없이 표준 표현으로 고쳐 쓰기 → 사전 재검색.
+  //   찾으면 여기서 끝(호출 1번, 입력 수백 토큰). 못 찾음·형식 오류·실패면 아래 전체 목록 호출로 넘어간다(원래 문장 그대로 → 정확도 최저선은 full과 같다).
+  //   고쳐 쓰기 시간 제한은 짧게(rewriteTimeoutMs) 두어 전체 목록 호출에 쓸 시간을 남긴다. 인증·잔액 오류는 다음 호출도 같으므로 바로 멈춘다.
+  //   위험 신호는 원래 문장(riskText)으로 본다. 고쳐 쓴 표현(terms)은 검색에만 쓰고 결과·로그에 남기지 않는다.
+  if (d.config.symptomMode === 'rewrite' && !forceFull) {
+    const rPrompt = includeRisk ? rewriteRiskPrompt : rewritePrompt;
+    const rwReq = {
+      system: rPrompt.system,
+      user: rPrompt.buildUser({text: llmText, riskText: riskLlmText}),
+      schema: rewriteSchema({risk: includeRisk}),
+      schemaName: includeRisk ? REWRITE_RISK_SCHEMA_NAME : REWRITE_SCHEMA_NAME,
+    };
+    const rwConfig = {...d.config, timeoutMs: Math.min(d.config.rewriteTimeoutMs, d.config.timeoutMs)};
+    const rwRes = await callProvider(d.provider, rwReq, {config: rwConfig, signal, deadline: deadlineFrom(start, d.config, deadlineAt), now: d.now});
+    addUsage(rwRes);
+    meta.providerError = rwRes.providerError ?? null;
+    if (!rwRes.ok) {
+      if (STOP_ERRORS.includes(rwRes.error) || rwRes.error === 'aborted') return fallback(rwRes.error);
+      meta.symptomPath = 'rewrite_fail';
+    } else {
+      const rv = validateRewrite(rwRes.data, {risk: includeRisk});
+      if (!rv.ok) {
+        meta.symptomPath = 'rewrite_bad';
+      } else {
+        if (includeRisk) { rewriteRisk = rv.riskSignal; riskSignal = rv.riskSignal; meta.riskError = rv.riskError; }
+        if (rv.intent !== 'symptom') {
+          intent = rv.intent;
+          meta.symptomPath = 'rewrite_route';
+          return finish({status: 'route', intent: rv.intent});
+        }
+        let ids = [];
+        try { ids = rv.terms.length ? matchSymptoms(rv.terms.join('\n'), refData, {sex}) : []; } catch { ids = []; }
+        const followUp = ids.length ? buildRewriteConfirm(ids, refData) : null;
+        if (followUp) {
+          intent = 'symptom';
+          pickStatus = 'matched';
+          picks = ids;
+          meta.symptomPath = 'rewrite_hit';
+          return finish({status: 'confirm', followUp});
+        }
+        meta.symptomPath = 'rewrite_miss';
+      }
+    }
+    if (signal?.aborted) return fallback('aborted');
+  }
 
   // 3. 후보
   let mode = d.config.candidateMode;
@@ -214,23 +275,22 @@ async function classifySymptomInternal({text, riskText = null, sex = null, conse
   const schema = includeRisk ? symptomRiskSchema(candidateIds) : symptomPickSchema(candidateIds);
   const req = {
     system: prompt.system,
-    user: prompt.buildUser({text: llmText, riskText: tailChars(maskPii(String(riskText ?? text ?? '')).text.trim(), INPUT_MAX_CHARS), candidatesText: formatCandidatesForPrompt(candidates, refData)}),
+    user: prompt.buildUser({text: llmText, riskText: riskLlmText, candidatesText: formatCandidatesForPrompt(candidates, refData)}),
     schema,
     schemaName: meta.schemaId,
   };
 
-  // 5. 호출
+  // 5. 호출 (rewrite 모드에서 넘어온 경우 토큰·시도 수는 더한다)
   const res = await callProvider(d.provider, req, {config: d.config, signal, deadline: deadlineFrom(start, d.config, deadlineAt), now: d.now});
-  meta.attempts = res.attempts;
-  tokens = res.tokens;
-  meta.tokens = {...res.tokens};
-  meta.providerError = res.providerError ?? null;
-  if (!res.ok) return fallback(res.error);
+  addUsage(res);
+  meta.providerError = res.providerError ?? meta.providerError;
+  if (!res.ok) return fallback(res.error); // rewriteRisk가 있으면 riskSignal에 이미 들어 있다
 
   // 6. 검사
   const v = includeRisk ? validateSymptomRisk(res.data, candidateIds, refData) : validateSymptomPick(res.data, candidateIds, refData);
   if (includeRisk) {
-    riskSignal = v.riskSignal;
+    // 11/18: 두 호출 중 하나라도 위험 신호를 냈으면 그것을 쓴다(전체 목록 호출 것이 우선)
+    riskSignal = v.riskSignal !== 'none' ? v.riskSignal : (rewriteRisk ?? 'none');
     meta.riskError = v.riskError;
   }
   dropped = v.dropped;
@@ -376,4 +436,48 @@ export async function extractProfileUpdates({messages, consent, signal, deadline
 
 function safeLog(log, event) {
   try { log(event); } catch { /* 로그 실패가 응답을 막지 않는다 */ }
+}
+
+/** 예열에 쓰는 고정 문장. 사용자 데이터가 아니다. */
+export const WARMUP_TEXT = '머리가 아파요';
+/** 예열 대상 성별. 성별에 따라 후보 목록(=응답 형식의 증상 ID 목록과 프롬프트 앞부분)이 달라진다. */
+export const WARMUP_SEXES = Object.freeze([null, 'female', 'male']);
+const WARMUP_TIMEOUT_MS = 20000;
+
+/**
+ * 11/18: 증상+위험 결합 호출 예열. 서버가 뜰 때 한 번 부른다(사용자 요청을 기다리게 하지 않는다).
+ * 이유: 처음 쓰는 응답 형식(JSON 스키마)과 프롬프트 앞부분은 업체 쪽 준비·캐시가 없어 첫 요청이 느리다
+ *   (11/18 실측: 첫 요청 3.8~4.0초, 이후 p50 1.3초). 실서비스와 같은 후보 목록으로 성별 3가지를 한 번씩 보낸다.
+ * 고정 문장(WARMUP_TEXT)만 보내므로 사용자 동의가 필요한 데이터가 없다 → 이 호출 전용 consent(version 'warmup')를 쓴다.
+ * mock이면 부르지 않는다. 예외를 던지지 않는다. 결과에는 성공 여부·지연·오류 코드만 있다.
+ * @param {{refData?:object, config?:object, provider?:object, log?:Function, sexes?:Array}} [deps]
+ * @returns {Promise<{skipped:string|null, results:Array<{sex:string|null, ok:boolean, latencyMs:number, error:string|null}>}>}
+ */
+export async function warmSymptomRisk({refData, config: baseConfig, provider, log = noop, sexes = WARMUP_SEXES} = {}) {
+  try {
+    const base = baseConfig ?? getConfig();
+    // 전체 목록 호출은 항상 예열한다(rewrite 모드에서도 못 찾으면 쓰인다). 11/18 절충 1: rewrite 모드면 고쳐 쓰기 호출도 한 번
+    //   (고쳐 쓰기 응답 형식은 성별과 무관. 첫 요청이 3초 제한을 넘어 실패하는 것을 실측함)
+    const fullConfig = {...base, symptomMode: 'full', timeoutMs: WARMUP_TIMEOUT_MS, budgetMs: WARMUP_TIMEOUT_MS};
+    const p = provider ?? getProvider({config: fullConfig});
+    if (p.name === 'mock') return {skipped: 'mock', results: []};
+    const consent = {granted: true, provider: p.name, version: 'warmup', healthInfo: false};
+    const jobs = sexes.map((sex) => ({sex, mode: 'full'}));
+    if (base.symptomMode === 'rewrite') jobs.push({sex: null, mode: 'rewrite'});
+    const results = await Promise.all(jobs.map(async ({sex, mode}) => {
+      try {
+        const config = mode === 'rewrite'
+          ? {...fullConfig, symptomMode: 'rewrite', rewriteTimeoutMs: WARMUP_TIMEOUT_MS}
+          : fullConfig;
+        const r = await classifySymptomWithRisk({text: WARMUP_TEXT, riskText: WARMUP_TEXT, sex, consent, requestId: null, reason: 'warmup'},
+          {provider: p, refData, config, log});
+        return {sex, mode, ok: !r.meta.error, latencyMs: r.meta.latencyMs, error: r.meta.error ?? null};
+      } catch {
+        return {sex, mode, ok: false, latencyMs: 0, error: 'internal'};
+      }
+    }));
+    return {skipped: null, results};
+  } catch {
+    return {skipped: 'error', results: []};
+  }
 }

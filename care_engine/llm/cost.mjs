@@ -6,7 +6,7 @@ import {maskPii} from './pii.mjs';
 import {tailChars, INPUT_MAX_CHARS} from './normalize.mjs';
 import {buildCandidates, formatCandidatesForPrompt} from './candidates.mjs';
 import {symptomPickSchema, profileExtractSchema} from './schemas.mjs';
-import symptomPrompt from './prompts/symptom_v1.mjs';
+import symptomPrompt from './prompts/symptom_v2.mjs';
 import profilePrompt from './prompts/profile_v1.mjs';
 
 const fin = (v) => (Number.isFinite(v) && v > 0 ? v : 0);

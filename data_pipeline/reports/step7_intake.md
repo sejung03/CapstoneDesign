@@ -11,12 +11,12 @@
 | 테이블 | 시드 | DB | 일치 |
 |---|---|---|---|
 | questionnaire | 1 | 1 | 예 |
-| questionnaire_item | 46 | 46 | 예 |
-| questionnaire_answer_option | 114 | 114 | 예 |
-| questionnaire_enable_when | 45 | 45 | 예 |
+| questionnaire_item | 27 | 27 | 예 |
+| questionnaire_answer_option | 89 | 89 | 예 |
+| questionnaire_enable_when | 26 | 26 | 예 |
 | safety_rule | 4 | 4 | 예 |
 | safety_rule_condition | 4 | 4 | 예 |
-| output_mapping | 54 | 54 | 예 |
+| output_mapping | 37 | 37 | 예 |
 | item_topic | 15 | 15 | 예 |
 
 - RLS 켜진 문진 테이블: 8 / 8, anon·authenticated 권한: SELECT
@@ -46,10 +46,10 @@
 
 ## 3. D5 검사 재실행 (`pipeline/intake_check.py`)
 
-- **config/intake_v1.yaml**: 통과 — 문항 46개, 안전 규칙 4개, 결과 매핑 54개, 질문 주제 15개
-- **DB에서 다시 만든 문서**: 통과 — 문항 46개, 안전 규칙 4개, 결과 매핑 54개, 질문 주제 15개
-  - flow별 문항: {'detail': 21, 'emergency': 11, 'fallback': 3, 'pain': 4, 'safety': 3, 'start': 1, 'target': 3}
-  - todo 문항(선택지 비움, v1 엔진은 건너뜀): N6-2, N9-1, N10-1, P2, P3, F1
+- **config/intake_v1.yaml**: 통과 — 문항 27개, 안전 규칙 4개, 결과 매핑 37개, 질문 주제 15개
+- **DB에서 다시 만든 문서**: 통과 — 문항 27개, 안전 규칙 4개, 결과 매핑 37개, 질문 주제 15개
+  - flow별 문항: {'detail': 4, 'emergency': 11, 'fallback': 3, 'pain': 2, 'safety': 3, 'start': 1, 'target': 3}
+  - todo 문항(선택지 비움, v1 엔진은 건너뜀): F1
   - 위험 답 → 안전 규칙: Q0=yes → R-Q0-EMERGENCY; N1=no → R-N1-CONSCIOUSNESS; N1=unknown → R-N1-CONSCIOUSNESS; N2=no → R-N2-BREATHING; N2=unknown → R-N2-BREATHING; N3=yes → R-N3-RED-FLAGS; N3=unknown → R-N3-RED-FLAGS
 
 ## 결과

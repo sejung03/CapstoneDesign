@@ -404,6 +404,8 @@ async function requestAssistant(reason='message'){
  const payload=JSON.parse(JSON.stringify({reason,locale:state.locale,...assistantContent(state),search:assistantSearchContext(state)}));
  state.assistant.status='loading';state.assistant.lastReason=reason;render();
  let timer;
+ // 11/18: 응답이 2.5초 넘게 걸리면 "조금 오래 걸리고 있어요"를 더 보여 준다(멈춘 것처럼 보이지 않게). 같은 요청이 아직 기다리는 중일 때만.
+ const slowTimer=setTimeout(()=>{if(token===assistantSequence&&state.assistant.status==='loading'){state.assistant.slow=true;render();}},2500);
  try{
   const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>{reject(new Error('timeout'));controller.abort();},8000);});
   const raw=await Promise.race([Promise.resolve().then(()=>{if(controller.signal.aborted)throw new Error('cancelled');return adapter(payload,{signal:controller.signal});}),timeout]);
@@ -418,9 +420,9 @@ async function requestAssistant(reason='message'){
   if(token!==assistantSequence)return;
   state.assistant.status=sourceKey===assistantInputKey(state)?'error':'ready';
  }finally{
-  clearTimeout(timer);
+  clearTimeout(timer);clearTimeout(slowTimer);
   if(token===assistantSequence){
-   saveInputs();render();
+   state.assistant.slow=false;saveInputs();render();
    if(viewRenderer&&!visibleEmergency(state,assistantContentKey(state))&&!state.emergency.manual){
     document.querySelector('.active-question')?.scrollIntoView({block:'start'});
    }

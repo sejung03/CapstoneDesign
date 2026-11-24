@@ -1,6 +1,6 @@
 import {phrase,expandLocales,localizedObject} from '../i18n.mjs';
 import {useLayoutEffect,useRef} from 'react';
-import {localHealthNotice,localHealthNoticeEn,healthConsentKey,hasHealthConsent} from '../health-consent.mjs';
+import {localHealthNotice,healthConsentKey,hasHealthConsent,healthNoticeEnByVersion,healthNoticeKoByVersion} from '../health-consent.mjs';
 function ChatConsentDialog({children}){
  const ref=useRef(null);
  useLayoutEffect(()=>{const node=ref.current;if(typeof node.showModal==='function')node.showModal();else node.setAttribute('open','');return()=>{if(node.open&&typeof node.close==='function')node.close();};},[]);
@@ -9,8 +9,9 @@ function ChatConsentDialog({children}){
 export function HealthConsent({state}){
  const c=state.healthConsent;if(!c?.open)return null;
  // 문진 엔진 연결 뒤에도 원래 안내(localHealthNotice)를 넘기면 원래처럼 언어별 문구(한국어/영어)를 보여 준다
- const original=!c.notice||c.notice.version===localHealthNotice.version;
- const ko=state.locale==='ko',notice=original?(ko?localHealthNotice:localizedObject(localHealthNoticeEn,state.locale)):localizedObject(c.notice,state.locale),ready=!!healthConsentKey(state),accepted=hasHealthConsent(state);
+ // 11/18: 외부 AI 안내(careAiHealthNotice)도 같은 방식(한국어는 그대로, 다른 언어는 영어 원본을 번역)
+ const version=c.notice?.version??localHealthNotice.version,known=Object.hasOwn(healthNoticeEnByVersion,version);
+ const ko=state.locale==='ko',notice=known?(ko?healthNoticeKoByVersion[version]:localizedObject(healthNoticeEnByVersion[version],state.locale)):localizedObject(c.notice,state.locale),ready=!!healthConsentKey(state),accepted=hasHealthConsent(state);
  const content=<section id="health-consent-card" className="health-consent-card" aria-labelledby="health-consent-heading"><h3 id="health-consent-heading" tabIndex={-1}>{phrase(state.locale,!c.pending?"Health information notice":"Consent to collect and use health information")}</h3><p>{phrase(state.locale,"The following health information is collected and used for the questionnaire and symptom chat. Review the details and choose whether to consent.")}</p><dl><div><dt>{phrase(state.locale,"Operator")}</dt><dd>{notice.controller}</dd></div><div><dt>{phrase(state.locale,"Purpose")}</dt><dd>{notice.purpose}</dd></div><div><dt>{phrase(state.locale,"Information")}</dt><dd>{notice.items.join(', ')}</dd></div><div><dt>{phrase(state.locale,"Processing and retention")}</dt><dd>{notice.retention}</dd></div><div><dt>{phrase(state.locale,"External processing")}</dt><dd>{notice.processing}</dd></div></dl><p>{phrase(state.locale,"You may decline consent. The questionnaire and symptom chat require consent, while hospital search and 119 contact remain available.")}</p>{!ready&&<p role="status">{phrase(state.locale,"External API processing details have not been configured. Health information cannot be sent yet.")}</p>}{!accepted&&<form id="health-consent-form"><label className="health-consent-choice"><input key={healthConsentKey(state)} id="health-consent-check" type="checkbox" defaultChecked={c.checked} disabled={!ready} required /><span>{phrase(state.locale,"I have reviewed the details and consent to the collection and use of health information (sensitive personal information).")}</span></label><button className="primary-button" disabled={!ready}>{phrase(state.locale,"Agree and continue")}</button></form>}<div className="health-consent-actions">{accepted&&<button id="health-consent-revoke" className="text-button">{phrase(state.locale,"Withdraw consent and clear health inputs")}</button>}<button id="health-consent-close" className="text-button">{phrase(state.locale,"Close")}</button></div></section>;
  return !c.pending || ['chat','profile','voice-entry'].includes(c.pending)?<ChatConsentDialog>{content}</ChatConsentDialog>:content;
 }

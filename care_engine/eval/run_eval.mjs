@@ -67,7 +67,8 @@ const round6 = (v) => (v === null ? null : Math.round(v * 1e6) / 1e6);
  */
 export async function runEval({cases, fixtures = {}, providerName = 'mock', repeat = 1, config: baseConfig, refData = loadRefData(),
   budgetUsd, prices, providerFactory}) {
-  const config = baseConfig ?? getConfig({...process.env, LLM_PROVIDER: providerName});
+  // 11/18: 이 평가는 증상 목록 전체 분류(full)를 잰다. 고쳐 쓰기(rewrite)는 eval/symptom_phrases_llm.mjs. 환경변수로 바꿀 수 있다
+  const config = baseConfig ?? getConfig({LLM_SYMPTOM_MODE: 'full', ...process.env, LLM_PROVIDER: providerName});
   const budget = Number.isFinite(budgetUsd) ? budgetUsd : config.evalBudgetUsd;
   // LLM_DEV_CONSENT=true면 consent를 넘기지 않아 개발용 동의 경로를 쓴다. 아니면 평가 전용 동의 객체.
   const consentFor = (name) => (config.devConsent ? undefined : {granted: true, provider: name, version: 'eval-only', healthInfo: true});
@@ -291,7 +292,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   if (!args.cases) throw new Error('--cases 가 필요하다');
   const cases = readCases(args.cases);
   const fixtures = args.fixtures ? JSON.parse(readFileSync(args.fixtures, 'utf8')) : {};
-  const config = getConfig({...process.env, LLM_PROVIDER: args.provider});
+  const config = getConfig({LLM_SYMPTOM_MODE: 'full', ...process.env, LLM_PROVIDER: args.provider});
   let maxCostEstimateUsd = null;
   if (config.provider === 'openai') {
     maxCostEstimateUsd = estimateMaxCostUsd({cases, config, refData: loadRefData(), repeat: args.repeat});

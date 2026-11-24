@@ -14,23 +14,24 @@
 | department | 28 | 28 | 예 |
 | triage_category | 33 | 33 | 예 |
 | symptom | 197 | 197 | 예 |
-| symptom_synonym | 1173 | 1173 | 예 |
+| symptom_synonym | 1598 | 1598 | 예 |
 | symptom_department | 197 | 197 | 예 |
 | symptom_department_variant | 3016 | 3016 | 예 |
 | fallback_department | 5 | 5 | 예 |
 | app_config | 13 | 13 | 예 |
 | questionnaire | 1 | 1 | 예 |
-| questionnaire_item | 46 | 46 | 예 |
-| questionnaire_answer_option | 114 | 114 | 예 |
-| questionnaire_enable_when | 45 | 45 | 예 |
+| questionnaire_item | 27 | 27 | 예 |
+| questionnaire_answer_option | 89 | 89 | 예 |
+| questionnaire_enable_when | 26 | 26 | 예 |
 | safety_rule | 4 | 4 | 예 |
 | safety_rule_condition | 4 | 4 | 예 |
-| output_mapping | 54 | 54 | 예 |
+| output_mapping | 37 | 37 | 예 |
 | item_topic | 15 | 15 | 예 |
+| text_i18n | 1760 | 1760 | 예 |
 
 ## 2. 표본 조회 (DB)
 
-- **D02 명치 통증**: 동의어 = 상복부 통증, 속 불편감, 포만감, 상복부 불편감, 상복부불편감, 위통, 조기 포만감, 상복부 불쾌감, 상부 복통
+- **D02 명치 통증**: 동의어 = 상복부 통증, 속 불편감, 포만감, 상복부 불편감, 상복부불편감, 위통, 조기 포만감, 상복부 불쾌감, 상부 복통, 명치
   - 추천(path_used=B+A): 내과 / 산부인과 / —
 - **span 표현 "목 통증"**: span_group 9 → L01 목(뒷목) 통증·불편, R21 목 안 통증·이물감
 - **fallback 증상 A16 심하게 보채는 아기**: fallback_group=pediatric → fallback 진료과 소아청소년과
@@ -115,6 +116,7 @@
 - `ref.symptom_department`: symptom_id, path_used, rec1_dept_id, rec1_level, rec1_share, rec2_dept_id, rec2_level, rec2_share, rec3_dept_id, rec3_level, rec3_share, clinic_ranking, hospital_ranking, dept_rule, fallback, pediatric_top, er_share, hira_indistinct, top_a, top_b, agree, data_version
 - `ref.symptom_department_variant`: symptom_id, sex, age_band, rank, dept_id, level, share, data_version
 - `ref.symptom_synonym`: id, symptom_id, term, term_norm, term_type, span_group, source_id, data_version
+- `ref.text_i18n`: target, key, locale, text, source_ko, review_status, data_version
 - `ref.triage_category`: id, name_ko, grp, page_start, page_end, data_version
 
 사용자 입력·대화 원문을 담는 컬럼은 없다. `term`은 사전 표현이다(30자 이하 CHECK).
@@ -124,7 +126,7 @@
 - `ref.recommend_departments`: security invoker, volatility s, 설정 `search_path=""`, anon 실행 True, authenticated 실행 True
 - `anon`의 ref 테이블 권한: SELECT
 - `authenticated`의 ref 테이블 권한: SELECT
-- RLS 켜진 테이블: 18 / 18
+- RLS 켜진 테이블: 19 / 19
 
 ## 결과
 

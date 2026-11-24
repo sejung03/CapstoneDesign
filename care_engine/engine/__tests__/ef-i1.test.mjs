@@ -13,7 +13,7 @@ import {simulate, makeLlm, TEXT} from '../../eval/engine_scenarios.mjs';
 const ENGINE_SET = new Set(ENGINE_QUESTION_IDS);
 // 건강정보 추출(본인일 때만)이 섞이지 않게 상담 대상은 '다른 사람'
 const BASE = {Q0: 'no', N1: 'yes', N2: 'yes', N3: 'no', T1: 'other', T2: 'female', T3: 'age_19_64'};
-const DETAIL = {N5: 'no', 'N5-1': 'onset_1_3d', N6: 'yes', N7: 'no', N8: 'no', N9: 'no', N10: 'no', N11: 'no', N12: 'no', N13: 'no', P0: 'no', F2: 'no'};
+const DETAIL = {'N5-1': 'onset_1_3d', P3: 'pq_dull', P1: 'pain_3', N12: 'impact_little', N7: 'no', F2: 'no'} // 11/18 재설계 상세 문항;
 
 const VALUES = {
   SYM_CONFIRM: [undefined, 'sym_A11', 'sym_none', 'sym_unsure', 'sym_ZZZ'],
@@ -95,16 +95,17 @@ test('F2 I1: 엔진 질문 답 조합 전부(5×3×5) × LLM 결과 5종 × 메�
   assert.equal(paths, 75 * 5 * 2);
 });
 
-test('F2 I1: 시뮬레이터 — sym_other → LLM 실패 → SYM_NOT_FOUND 답 → 다음 질문 N5 … 끝까지(LLM 1번)', async () => {
+// 11/18: LLM 첫 실패는 SYM_NOT_FOUND 대신 되묻기(SYM_RETRY_<메시지 수>). 가짜 사용자는 '잘 모르겠어요'를 고른다(→ 증상 모름).
+test('F2 I1: 시뮬레이터 — sym_other → LLM 실패 → 되묻기(SYM_RETRY_1) 잘 모르겠어요 → 다음 질문 N5-1 … 끝까지(LLM 1번)', async () => {
   const r = await simulate({name: 'i1_regression', messages: [TEXT.dictPartial],
     answers: {...BASE, T1: 'self', SYM_DICT_CONFIRM: 'sym_other', ...DETAIL},
     llm: makeLlm({classify: LLMS.fallback})});
-  const i = r.asked.indexOf('SYM_NOT_FOUND');
-  assert.deepEqual(r.asked.slice(0, i + 1), ['Q0', 'N1', 'N2', 'N3', 'T1', 'T2', 'T3', 'SYM_DICT_CONFIRM', 'SYM_NOT_FOUND']);
-  assert.equal(r.asked[i + 1], 'N5');
-  assert.equal(r.asked.filter((id) => id === 'SYM_NOT_FOUND').length, 1);
+  const i = r.asked.indexOf('SYM_RETRY_1');
+  assert.deepEqual(r.asked.slice(0, i + 1), ['Q0', 'N1', 'N2', 'N3', 'T1', 'T2', 'T3', 'SYM_DICT_CONFIRM', 'SYM_RETRY_1']);
+  assert.equal(r.asked[i + 1], 'N5-1'); // 11/18 재설계: 상세 첫 문항
+  assert.equal(r.asked.filter((id) => id === 'SYM_RETRY_1').length, 1);
   assert.equal(r.llmCalls.classify, 1);
   assert.equal(r.resultKind, 'recommend');
-  assert.equal(r.finalTrace.symptom.source, 'not_found');
+  assert.equal(r.finalTrace.symptom.source, 'retry_skip');
   assert.equal(r.contractErrors.length, 0);
 });
