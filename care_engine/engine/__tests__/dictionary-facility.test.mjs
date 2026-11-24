@@ -61,6 +61,13 @@ test('matchSymptoms: 한 글자 표현은 바로 뒤가 이·가·을·를일 �
   assert.ok(!matchSymptoms(`${syn.termNorm}도 있어요`, ref).includes(syn.symptomId));
 });
 
+test('matchSymptoms: 약 이름 안의 증상 단어는 세지 않고, 약 이름 밖에서 다시 말하면 맞는다(11/24)', () => {
+  assert.deepEqual(matchSymptoms('타이레놀이랑 감기약 같이 먹어도 돼요?', ref), []);
+  assert.deepEqual(matchSymptoms('두통약은 몇 알 먹어요?', ref), []);
+  assert.ok(matchSymptoms('감기 기운이 있어요', ref).length > 0);
+  assert.ok(matchSymptoms('두통약 먹어도 두통이 안 나아요', ref).includes('N01'));
+});
+
 test('matchSymptoms: 최대 5개, 맞은 표현 길이 내림차순 → id 오름차순', () => {
   const picked = [];
   const seen = new Set();

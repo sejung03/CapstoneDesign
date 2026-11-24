@@ -22,7 +22,7 @@ test('loadRefData: 시드 v2.1-20261113 개수와 버전', () => {
   const ref = loadRefData();
   assert.equal(ref.dataVersion, 'v2.1-20261113');
   assert.equal(ref.symptoms.size, 197);
-  assert.equal(ref.synonyms.length, 1598); // 11/18 일상 표현 425행 추가(1173 → 1598)
+  assert.equal(ref.synonyms.length, 1613); // 11/18 일상 표현 425행 추가(1173 → 1598), 11/24 사전 틀림 5건 보강 15행(→ 1613)
   assert.deepEqual(ref.warnings, []);
 });
 
