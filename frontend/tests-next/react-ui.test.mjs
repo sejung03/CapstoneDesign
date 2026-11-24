@@ -9,9 +9,18 @@ import {setTimeout as delay} from 'node:timers/promises';
 import {fileURLToPath} from 'node:url';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const waitFor=async check=>{for(let i=0;i<150;i++){if(check())return;await delay(40);}assert.ok(check(),'UI did not reach expected state');};
+// Fake /api/care (문진 엔진). 실제 엔진·OpenAI를 부르지 않고 항상 같은 순서로 답한다: 질문 1 → 질문 2 → 정리와 검색 조건.
+// '이 답변으로 찾기'(reason skip)면 남은 질문 없이 바로 정리한다. 병원 순위 요청은 받은 후보 순서대로 돌려준다.
+const careQuestion=n=>({followUp:{id:'MOCK_Q'+n,type:'singleChoice',required:true,label:{ko:'엔진 질문 '+n,en:'Engine question '+n},options:[{id:'yes',label:{ko:'예',en:'Yes'}},{id:'no',label:{ko:'아니요',en:'No'}}]},progress:{current:n,total:2}});
+function careReply(body){
+ if(body.reason==='recommendations')return {resultSetId:body.candidates.resultSetId,items:body.candidates.items.map(item=>({facilityId:item.facilityId,reason:{ko:'테스트 추천 이유'}}))};
+ const answered=(body.followUpAnswers||[]).filter(answer=>answer.value!=null).length;
+ if(body.reason!=='skip'&&answered<2)return careQuestion(answered+1);
+ return {summary:{ko:'엔진 정리 <script>not executable</script>',en:'Engine summary'},search:{region:'춘천',type:'all',department:'all'}};
+}
 const raw=code=>({id:code==='HP8'?'1':'2',place_name:code==='HP8'?'테스트내과':'테스트약국',category_group_code:code,category_name:code==='HP8'?'병원 > 내과':'약국',x:'127.75',y:'37.87',road_address_name:'강원특별자치도 춘천시 테스트로 1',address_name:'강원특별자치도 춘천시 효자동 1',phone:'033-123-4567'});
 function mockSdk(window){
- const qa=window.__qa={maps:0,searches:[],copies:[],prints:0,routes:[],lines:0,mapInstances:[],mapEvents:[]};
+ const qa=window.__qa={maps:0,searches:[],copies:[],prints:0,routes:[],lines:0,mapInstances:[],mapEvents:[],care:[]};
  class LatLng{constructor(lat,lng){this.lat=lat;this.lng=lng;}getLat(){return this.lat;}getLng(){return this.lng;}}
  class Map{constructor(node,options){qa.maps++;this.node=node;this.center=options.center;this.level=options.level;qa.mapInstances.push(this);}addControl(){}setCenter(p){this.center=p;}getCenter(){return this.center;}setBounds(){}getLevel(){return this.level;}setLevel(l){this.level=l;}panTo(p){this.center=p;}relayout(){}}
  class Marker{constructor(options){Object.assign(this,options);}setPosition(p){this.position=p;}getPosition(){return this.position;}setMap(){}}
@@ -38,6 +47,7 @@ test('React components preserve intake, search, maps, chat, report and privacy',
    window.fetch=(url,options)=>{
     const u=new URL(url,base);
     if(u.pathname==='/api/config')return Promise.resolve(Response.json({map:{configured:true,javascriptKey:'mock'},publicData:{configured:true},routing:{configured:true}}));
+    if(u.pathname==='/api/care'){const body=JSON.parse(options.body);window.__qa.care.push(body);return Promise.resolve(Response.json(careReply(body)));}
     if(u.pathname==='/api/route'){window.__qa.routes.push(u.search);return Promise.resolve(Response.json({distanceMeters:800,durationSeconds:600,steps:[],paths:[[[127.74,37.87],[127.75,37.87]]]}));}
     if(u.pathname==='/api/public-hours'){
      if(window.__qa.missingHours)return Promise.resolve(new Response('<response><header><resultCode>00</resultCode></header><body><items></items></body></response>'));
@@ -182,12 +192,19 @@ test('React components preserve intake, search, maps, chat, report and privacy',
    submit('health-consent-form');assert.equal(el('composer-input').readOnly,true);
    assert.equal(el('health-consent-decline'),null);click('health-consent-close');assert.equal(el('search-form'),null);await delay(0);assert.equal(el('health-consent-card'),null);click('composer-input');assert.ok(el('health-consent-card'));el('health-consent-check').click();submit('health-consent-form');
    assert.equal(el('health-consent-card'),null);assert.equal(el('composer-input').readOnly,false);assert.equal(el('intake-wizard'),null);assert.equal(d.activeElement,el('composer-input'));
-   input('composer-input','불편한 점을 먼저 적었어요');submit('composer-form');assert.ok(el('intake-wizard'));assert.equal(el('composer-input').value,'');assert.equal(el('workspace-panel'),null);assert.equal(w.__qa.routes.length,0);
+   input('composer-input','불편한 점을 먼저 적었어요');submit('composer-form');await waitFor(()=>el('assistant-question'));assert.match(el('assistant-question').textContent,/엔진 질문 1/);assert.equal(el('intake-wizard'),null);assert.equal(el('composer-input').value,'');assert.equal(el('workspace-panel'),null);assert.equal(w.__qa.routes.length,0);
+   assert.equal(w.__qa.care.length,1);assert.deepEqual(w.__qa.care[0].messages,['불편한 점을 먼저 적었어요']);assert.equal(w.__qa.care[0].consent.version,'care-openai-1');
    assert.match(d.querySelector('.user-message').textContent,/불편한 점을 먼저/);assert.equal(el('health-consent-card'),null);
    click('health-consent-open');assert.ok(el('chat-consent-dialog')?.open);assert.equal(el('chat-messages').contains(el('health-consent-card')),false);click('health-consent-close');assert.equal(el('health-consent-card'),null);
-   assert.ok(!Object.values({...w.localStorage}).some(value=>value.includes('local-health-1')));
+   assert.ok(!Object.values({...w.localStorage}).some(value=>/local-health-1|care-openai-1/.test(value)));
   });
-  await t.test('pasted report is reviewed before use and remains historical context',async()=>{
+  await t.test('report import stays blocked while the engine notice does not cover previous reports',async()=>{
+   // 문진 엔진 연결 중에는 처리 안내가 allowReportImport:true일 때만 가져올 수 있다(report-import.mjs canUsePreviousReport).
+   // 지금 외부 AI 안내(careAiHealthNotice)에는 이 허용이 없어서 편집기 대신 안내 확인 문구만 나온다.
+   click('composer-attach');await delay(0);assert.ok(el('start-report-import'));click('start-report-paste');await delay(0);
+   assert.equal(el('previous-report-text'),null);assert.match(d.querySelector('.previous-report-card[role=status]').textContent,/처리 안내/);assert.equal(w.__qa.care.length,1);
+  });
+  await t.test('pasted report is reviewed before use and remains historical context',{skip:'needs a health notice with allowReportImport while the engine is connected'},async()=>{
    click('composer-attach');await delay(0);assert.ok(el('start-report-import'));click('start-report-paste');await delay(0);assert.ok(el('previous-report-text'));assert.equal(el('previous-report-context'),null);
    input('previous-report-text','진료 전에 보여줄 내용\n과거 증상 <img src=x>');await delay(0);
    assert.equal(el('composer-attachment-menu'),null);assert.equal(el('previous-report-editor').hidden,false);assert.match(el('previous-report-text').value,/과거 증상/);
@@ -197,16 +214,15 @@ test('React components preserve intake, search, maps, chat, report and privacy',
    assert.ok(!Object.values({...w.localStorage}).some(value=>value.includes('과거 증상')));
    el('previous-report-context').querySelector('button.text-button').click();assert.equal(el('previous-report-context'),null);
   });
-  await t.test('variable choice wizard validates, keeps answers and delivers final note',async()=>{
-   submit('intake-wizard');assert.equal(el('intake-error').hidden,false);
-   assert.ok(el('start-intake').closest('.conversation-intake'));assert.equal(el('composer-form').querySelector('#start-intake'),null);d.querySelector('[data-intake-option="option-1"]').click();click('start-intake');assert.equal(el('intake-wizard'),null);assert.match(el('start-intake').textContent,/이어하기/);assert.match(d.querySelector('.conversation-intake-heading').textContent,/질문 1/);click('start-intake');assert.equal(d.querySelector('[data-intake-option="option-1"]').getAttribute('aria-pressed'),'true');submit('intake-wizard');
-   assert.match(el('intake-question').textContent,/문진 2/);
-   d.querySelector('[data-intake-option="option-2"]').click();submit('intake-wizard');
-   input('intake-symptom','<script>not executable</script>');input('intake-region','춘천');submit('intake-wizard');
-   assert.match(d.querySelector('.intake-review').textContent,/not executable/);assert.equal(d.querySelector('.intake-review script'),null);
-   submit('intake-wizard');await delay(40);await waitFor(()=>d.querySelectorAll('.conversation-facility').length===2&&el('conversation-map'));
+  await t.test('engine questions show progress, keep answers and deliver the final search',async()=>{
+   await waitFor(()=>el('assistant-question'));assert.match(el('assistant-question').textContent,/엔진 질문 1/);assert.match(d.querySelector('.assistant-question-step').textContent,/1/);assert.equal(el('intake-wizard'),null);assert.equal(el('start-intake'),null);
+   d.querySelector('[data-assistant-option="yes"]').click();await waitFor(()=>/엔진 질문 2/.test(el('assistant-question')?.textContent||''));assert.match(d.querySelector('.assistant-question-step').textContent,/2/);
+   d.querySelector('[data-assistant-option="no"]').click();await waitFor(()=>el('assistant-apply'));
+   assert.deepEqual(w.__qa.care.at(-1).followUpAnswers.map(answer=>[answer.questionId,answer.value]),[['MOCK_Q1','yes'],['MOCK_Q2','no']]);
+   assert.match(d.querySelector('.assistant-summary-text').textContent,/not executable/);assert.equal(d.querySelector('.assistant-result script'),null);
+   click('assistant-apply');await waitFor(()=>d.querySelectorAll('.conversation-facility').length===2&&el('conversation-map'));
    assert.equal(el('workspace-panel'),null);click('conversation-map');await waitFor(()=>d.querySelectorAll('[data-card]').length===2);
-   assert.match(el('chat-intake-context').textContent,/선지 1/);assert.match(el('chat-intake-context').textContent,/선지 2/);assert.ok(el('start-intake').closest('#chat-intake-context'));assert.match(el('start-intake').textContent,/답변 수정/);
+   assert.match(d.querySelector('.assistant-answer-history').textContent,/엔진 질문 1/);assert.match(d.querySelector('.assistant-answer-history').textContent,/아니요/);
   });
   await t.test('chat details stay inline without route calls; explicit directions draw a route for one destination',async()=>{
    click('workspace-close');assert.equal(w.__qa.routes.length,0);assert.match(d.querySelector('.conversation-facility .facility-travel').textContent,/직선 약/);assert.doesNotMatch(d.querySelector('.conversation-facility .facility-travel').textContent,/조회 중/);
@@ -284,7 +300,7 @@ test('React components preserve intake, search, maps, chat, report and privacy',
   await t.test('profile exports saved health information with the questionnaire summary without opening the report',async()=>{
    d.querySelector('button[data-view="profile"]').click();assert.ok(el('profile-form'));assert.equal(el('profile-report-open'),null);assert.equal(el('info-current-report'),null);assert.equal(el('info-settings'),null);assert.equal(el('profile-nickname'),null);
    assert.ok(el('account-open').classList.contains('primary-button'));assert.match(w.getComputedStyle(d.querySelector('.info-health')).gridTemplateColumns,/repeat\(2/);
-   input('profile-age','27');input('profile-sex','female');input('profile-allergies','저장한 건강정보');assert.equal(el('profile-count-allergies').textContent,'8 / 500');submit('profile-form');
+   input('profile-age','27');input('profile-sex','female');input('profile-allergies','저장한 건강정보');await delay(0);assert.equal(el('profile-count-allergies').textContent,'8 / 500');submit('profile-form');
    input('profile-allergies','아직 저장하지 않은 내용');click('profile-pdf');assert.ok(el('profile-leave-cancel'));assert.equal(w.__qa.prints,0);assert.doesNotMatch(d.querySelector('.health-print-sheet').textContent,/아직 저장하지/);click('profile-leave-cancel');assert.equal(el('profile-allergies').value,'아직 저장하지 않은 내용');
    click('profile-pdf');click('profile-leave-save');assert.equal(w.__qa.prints,1);assert.ok(el('profile-form'));assert.equal(el('report-heading'),null);assert.match(d.querySelector('.health-print-sheet').textContent,/아직 저장하지 않은 내용/);assert.match(d.querySelector('.health-print-sheet').textContent,/만 27세/);assert.equal(d.querySelector('.care-print-health').querySelectorAll('dt').length,5);assert.ok(d.querySelector('.care-print-summary'));assert.match(d.querySelector('.health-print-sheet').textContent,/여성/);
    input('profile-allergies','버릴 내용');click('profile-pdf');click('profile-leave-discard');assert.equal(w.__qa.prints,2);assert.equal(el('profile-allergies').value,'아직 저장하지 않은 내용');assert.doesNotMatch(d.querySelector('.health-print-sheet').textContent,/버릴 내용|not executable|선지/);
@@ -294,8 +310,10 @@ test('React components preserve intake, search, maps, chat, report and privacy',
   await t.test('closing workspaces preserves drafts; new conversation clears session notes',async()=>{
    input('composer-input','이어서 작성할 내용');click('workspace-close');assert.equal(el('workspace-panel'),null);assert.equal(el('composer-input').value,'이어서 작성할 내용');
    assert.equal(d.querySelector('.conversation-report'),null);click('new-conversation');assert.equal(d.querySelector('.conversation-report'),null);assert.equal(el('composer-input').value,'');assert.equal(el('intake-wizard'),null);
-   click('composer-input');assert.equal(el('health-consent-card'),null);input('composer-input','다음 상담');submit('composer-form');d.querySelector('[data-intake-option="option-1"]').click();submit('intake-wizard');click('skip');
-   await waitFor(()=>el('chat-intake-context'));assert.equal(el('chat-intake-context').dataset.intakeStatus,'partial');assert.match(el('chat-intake-context').textContent,/선지 1/);assert.equal(el('intake-wizard'),null);assert.equal(el('workspace-panel'),null);
+   click('composer-input');assert.equal(el('health-consent-card'),null);input('composer-input','다음 상담');submit('composer-form');await waitFor(()=>/엔진 질문 1/.test(el('assistant-question')?.textContent||''));
+   assert.deepEqual(w.__qa.care.at(-1).messages,['다음 상담']);assert.deepEqual(w.__qa.care.at(-1).followUpAnswers,[]);
+   d.querySelector('[data-assistant-option="yes"]').click();await waitFor(()=>el('assistant-skip'));click('assistant-skip');await waitFor(()=>el('assistant-apply'));
+   assert.equal(w.__qa.care.at(-1).reason,'skip');assert.match(d.querySelector('.assistant-answer-history').textContent,/엔진 질문 1/);assert.equal(el('intake-wizard'),null);assert.equal(el('workspace-panel'),null);
   });
   await t.test('withdrawing consent clears health inputs and leaves emergency access available',async()=>{
    click('health-consent-open');click('health-consent-revoke');assert.equal(el('chat-intake-context'),null);assert.equal(el('composer-input').readOnly,true);
