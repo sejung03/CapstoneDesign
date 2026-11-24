@@ -43,3 +43,11 @@ test('estimateMaxCostUsd: 반복에 비례, 신호어 사례는 추출 호출까
   // all 모드 1건 상한은 대략 몇 센트 이하
   assert.ok(one < 0.05, String(one));
 });
+
+test('estimateCostUsd: fast 등급이면 fast 가격, fast 가격을 모르는 모델은 추정하지 않음(11/24)', () => {
+  const tokens = {input: 1_000_000, cachedInput: 0, output: 1_000_000, reasoning: 0};
+  close(estimateCostUsd({model: 'gpt-6-luna', tokens}), 0.10 + 0.50);
+  close(estimateCostUsd({model: 'gpt-6-luna', serviceTier: 'fast', tokens}), 0.20 + 1.00);
+  close(estimateCostUsd({model: 'gpt-6-luna', serviceTier: 'fast', servedTier: 'default', tokens}), 0.10 + 0.50); // 실제로 Standard 처리됨
+  assert.equal(estimateCostUsd({model: MODEL, serviceTier: 'fast', tokens}), null);
+});

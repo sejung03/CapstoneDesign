@@ -108,6 +108,9 @@ node eval/candidate_loo.mjs               # 후보 생성 Recall@k (사전 leave
 | `LLM_CANDIDATE_K` | retrieve 후보 수 | 40 |
 | `LLM_TIMEOUT_MS` | LLM 1회 제한 | 6000 (11/18, 이전 4000) |
 | `LLM_BUDGET_MS` | 서버 전체 시간 예산 | 7000 |
+| `LLM_SYMPTOM_MODE` | `rewrite`(고쳐 쓰기 → 사전 재검색 → 못 찾으면 전체 목록) / `full`(전체 목록 1회) | `rewrite` |
+| `LLM_REWRITE_TIMEOUT_MS` | 고쳐 쓰기 1회 제한. 실패하면 남은 예산으로 전체 목록 호출 | 4000 (11/24, 이전 3000) |
+| `LLM_SERVICE_TIER` | OpenAI `service_tier`. `fast`(= `priority`)는 더 빠르고 일정한 처리, 가격 2배. 비우면 보내지 않음(Standard). 실제 적용 등급은 meta `servedTier` | 보내지 않음 |
 | `LLM_MAX_CONCURRENCY` | 값만 읽음(동시성 제한 미구현) | 2 |
 | `LLM_EVAL_BUDGET_USD` | 평가 1회 비용 상한 | 2 |
 

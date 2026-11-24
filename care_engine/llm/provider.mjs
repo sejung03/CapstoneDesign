@@ -34,6 +34,7 @@ export function getProvider({config = getConfig(), fixtures = {}, mockOptions = 
       model: config.model,
       reasoningEffort: config.reasoningEffort ?? 'none',
       temperature: config.temperature ?? null,
+      serviceTier: config.serviceTier ?? null,
       maxOutputTokens: OPENAI_MAX_OUTPUT_TOKENS,
       ...openaiOptions,           // 테스트에서 fetchImpl·apiKey 주입용
     });

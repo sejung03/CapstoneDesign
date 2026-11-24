@@ -1,6 +1,6 @@
 // 비용 계산(L4-MVP M4). 가격은 config.mjs의 MODEL_PRICES_USD_PER_1M(공식 가격표)만 쓴다.
 // 모르는 모델이면 null(추정하지 않음).
-import {MODEL_PRICES_USD_PER_1M, OPENAI_MAX_OUTPUT_TOKENS} from './config.mjs';
+import {MODEL_PRICES_USD_PER_1M, MODEL_PRICES_FAST_USD_PER_1M, FAST_TIERS, OPENAI_MAX_OUTPUT_TOKENS} from './config.mjs';
 import {hasProfileSignal} from './profile-trigger.mjs';
 import {maskPii} from './pii.mjs';
 import {tailChars, INPUT_MAX_CHARS} from './normalize.mjs';
@@ -18,8 +18,10 @@ const fin = (v) => (Number.isFinite(v) && v > 0 ? v : 0);
  * - 출력 = output_tokens × 출력 단가. OpenAI의 output_tokens에는 추론 토큰이 이미 들어 있으므로 따로 더하지 않는다.
  * @returns {number|null}
  */
-export function estimateCostUsd(meta, prices = MODEL_PRICES_USD_PER_1M) {
-  const p = prices?.[meta?.model];
+export function estimateCostUsd(meta, prices = MODEL_PRICES_USD_PER_1M, fastPrices = MODEL_PRICES_FAST_USD_PER_1M) {
+  // 11/24: 실제 처리 등급(servedTier, 없으면 요청한 serviceTier)이 fast면 fast 가격. fast 가격을 모르면 추정하지 않는다
+  const fast = FAST_TIERS.includes(meta?.servedTier ?? meta?.serviceTier);
+  const p = (fast ? fastPrices : prices)?.[meta?.model];
   if (!p) return null;
   const t = meta.tokens ?? {
     input: meta.inputTokens, cachedInput: meta.cachedInputTokens, output: meta.outputTokens, reasoning: meta.reasoningTokens,
@@ -38,7 +40,7 @@ export function estimateCostUsd(meta, prices = MODEL_PRICES_USD_PER_1M) {
  * 모르는 모델이면 null → 호출하는 쪽에서 실행하지 않는다.
  */
 export function estimateMaxCostUsd({cases, config, refData, repeat = 1, prices = MODEL_PRICES_USD_PER_1M, maxOutputTokens = OPENAI_MAX_OUTPUT_TOKENS}) {
-  const p = prices?.[config.model];
+  const p = (FAST_TIERS.includes(config.serviceTier) ? MODEL_PRICES_FAST_USD_PER_1M : prices)?.[config.model];
   if (!p) return null;
   const callCost = (chars) => 2 * (chars * p.input + maxOutputTokens * p.output) / 1e6;
   let total = 0;

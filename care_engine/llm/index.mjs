@@ -68,10 +68,11 @@ async function callProvider(provider, req, {config, signal, deadline, now}) {
   let attempts = 0;
   const tokens = emptyTokens();
   let providerError = null;
+  let servedTier = null; // 11/24: 응답이 알려 준 실제 처리 등급(service_tier)
   for (;;) {
-    if (signal?.aborted) return {ok: false, error: 'aborted', attempts, tokens, providerError};
+    if (signal?.aborted) return {ok: false, error: 'aborted', attempts, tokens, providerError, servedTier};
     const remaining = deadline - now();
-    if (remaining <= 0) return {ok: false, error: 'timeout', attempts, tokens, providerError};
+    if (remaining <= 0) return {ok: false, error: 'timeout', attempts, tokens, providerError, servedTier};
     const timeoutMs = Math.min(config.timeoutMs, remaining);
     attempts += 1;
     const res = await callOnce(provider, {...req, timeoutMs}, signal);
@@ -79,7 +80,8 @@ async function callProvider(provider, req, {config, signal, deadline, now}) {
     if (Number.isFinite(res.meta?.cachedInputTokens)) tokens.cachedInput += res.meta.cachedInputTokens;
     if (Number.isFinite(res.meta?.outputTokens)) tokens.output += res.meta.outputTokens;
     if (Number.isFinite(res.meta?.reasoningTokens)) tokens.reasoning += res.meta.reasoningTokens;
-    if (res.ok) return {ok: true, data: res.data, attempts, tokens, providerError: null};
+    if (typeof res.meta?.serviceTier === 'string') servedTier = res.meta.serviceTier;
+    if (res.ok) return {ok: true, data: res.data, attempts, tokens, providerError: null, servedTier};
     // 어댑터가 이미 형식 검사한 짧은 code·param·HTTP 상태만(본문 없음)
     providerError = {
       httpStatus: Number.isFinite(res.meta?.httpStatus) ? res.meta.httpStatus : null,
@@ -88,7 +90,7 @@ async function callProvider(provider, req, {config, signal, deadline, now}) {
     };
     const left = deadline - now();
     if (attempts === 1 && isRetryable(res.error) && left >= config.retryMinRemainingMs && !signal?.aborted) continue;
-    return {ok: false, error: res.error, attempts, tokens, providerError};
+    return {ok: false, error: res.error, attempts, tokens, providerError, servedTier};
   }
 }
 
@@ -146,6 +148,7 @@ async function classifySymptomInternal({text, riskText = null, sex = null, conse
   const meta = {
     provider: d.provider.name,
     model: d.provider.model ?? null,
+    serviceTier: d.provider.serviceTier ?? null, servedTier: null,
     promptId: includeRisk ? symptomRiskPrompt.id : symptomPrompt.id,
     schemaId: includeRisk ? d.config.versions.schemaSymptomRisk : d.config.versions.schemaSymptom,
     dataVersion: refData.dataVersion,
@@ -197,6 +200,7 @@ async function classifySymptomInternal({text, riskText = null, sex = null, conse
   const addUsage = (res) => {
     meta.attempts += res.attempts ?? 0;
     for (const k of Object.keys(meta.tokens)) meta.tokens[k] += res.tokens?.[k] ?? 0;
+    if (res.servedTier) meta.servedTier = res.servedTier;
     tokens = {...meta.tokens};
   };
 
@@ -312,7 +316,7 @@ export async function detectRiskSignal({text, consent, signal, deadlineAt, reque
   const d = resolveDeps(deps);
   const start = d.now();
   const meta = {
-    provider: d.provider.name, model: d.provider.model ?? null, promptId: riskPrompt.id,
+    provider: d.provider.name, model: d.provider.model ?? null, serviceTier: d.provider.serviceTier ?? null, servedTier: null, promptId: riskPrompt.id,
     schemaId: d.config.versions.schemaRisk, latencyMs: 0, attempts: 0, error: null,
     consentSource: null, modelWarning: d.config.modelWarning ?? null, tokens: emptyTokens(), providerError: null,
   };
@@ -339,6 +343,7 @@ export async function detectRiskSignal({text, consent, signal, deadlineAt, reque
   }, {config: d.config, signal, deadline: deadlineFrom(start, d.config, deadlineAt), now: d.now});
   meta.attempts = res.attempts;
   meta.tokens = {...res.tokens};
+  if (res.servedTier) meta.servedTier = res.servedTier;
   meta.providerError = res.providerError ?? null;
   if (!res.ok) { meta.error = res.error; return finish('none'); }
   const v = validateRiskSignal(res.data);
@@ -358,6 +363,7 @@ export async function extractProfileUpdates({messages, consent, signal, deadline
   const meta = {
     provider: d.provider.name,
     model: d.provider.model ?? null,
+    serviceTier: d.provider.serviceTier ?? null, servedTier: null,
     promptId: profilePrompt.id,
     schemaId: d.config.versions.schemaProfile,
     dataVersion: d.refData?.dataVersion ?? null,
@@ -422,6 +428,7 @@ export async function extractProfileUpdates({messages, consent, signal, deadline
   meta.attempts = res.attempts;
   tokens = res.tokens;
   meta.tokens = {...res.tokens};
+  if (res.servedTier) meta.servedTier = res.servedTier;
   meta.providerError = res.providerError ?? null;
   if (!res.ok) { meta.error = res.error; return finish([]); }
 

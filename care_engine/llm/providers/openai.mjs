@@ -51,6 +51,7 @@ export function createOpenAiProvider({
   fetchImpl = globalThis.fetch,
   reasoningEffort = 'none',
   temperature = null,
+  serviceTier = null,
   maxOutputTokens = 400,
   baseUrl = null,
 } = {}) {
@@ -70,6 +71,8 @@ export function createOpenAiProvider({
       store: false,
     };
     if (temperature !== null && temperature !== undefined && Number.isFinite(temperature)) body.temperature = temperature;
+    // 11/24: LLM_SERVICE_TIER(예: fast). 없으면 넣지 않는다(Standard)
+    if (typeof serviceTier === 'string' && serviceTier) body.service_tier = serviceTier;
     return body;
   }
 
@@ -128,6 +131,8 @@ export function createOpenAiProvider({
       meta.cachedInputTokens = num(usage?.input_tokens_details?.cached_tokens);
       meta.outputTokens = num(usage?.output_tokens);
       meta.reasoningTokens = num(usage?.output_tokens_details?.reasoning_tokens);
+      // 실제로 적용된 처리 등급(요청한 등급과 다를 수 있다: fast 한도를 넘으면 Standard로 처리됨)
+      meta.serviceTier = safeCode(json?.service_tier);
 
       if (!(status >= 200 && status < 300)) {
         const code = safeCode(json?.error?.code) ?? safeCode(json?.error?.type);
@@ -150,5 +155,5 @@ export function createOpenAiProvider({
     }
   }
 
-  return {name: 'openai', model, generateStructured, buildBody};
+  return {name: 'openai', model, serviceTier, generateStructured, buildBody};
 }

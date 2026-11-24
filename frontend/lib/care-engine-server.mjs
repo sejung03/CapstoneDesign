@@ -12,7 +12,8 @@ const MAX_BODY = 64 * 1024;
 const SERVER_BUDGET_MS = 7000; // 프론트 8초 제한 안쪽(엔진 README)
 // 엔진 LLM 설정 중 개발 환경에서 care_engine/.env로부터 채워 넣는 키(이미 있는 값은 덮지 않음)
 const ENGINE_ENV_KEYS = ['OPENAI_API_KEY', 'LLM_PROVIDER', 'LLM_MODEL', 'LLM_DEV_CONSENT', 'LLM_REASONING_EFFORT',
-  'LLM_TEMPERATURE', 'LLM_CANDIDATE_MODE', 'LLM_CANDIDATE_K', 'LLM_TIMEOUT_MS', 'LLM_BUDGET_MS'];
+  'LLM_TEMPERATURE', 'LLM_CANDIDATE_MODE', 'LLM_CANDIDATE_K', 'LLM_TIMEOUT_MS', 'LLM_BUDGET_MS',
+  'LLM_REWRITE_TIMEOUT_MS', 'LLM_SERVICE_TIER']; // 11/24 추가
 const ERROR_STATUS = {unsupported_reason: 400, aborted: 499, data: 503, contract: 500, internal: 500};
 
 export function engineDir(env = process.env) {

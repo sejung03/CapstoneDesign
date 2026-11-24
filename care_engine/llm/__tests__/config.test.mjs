@@ -17,7 +17,8 @@ test('getConfig: 환경변수가 없으면 설계 8절 기본값(+L4: 후보 기
   assert.equal(c.candidateMode, 'all');
   assert.equal(c.candidateK, 40);
   assert.equal(c.symptomMode, 'rewrite'); // 11/18 절충 1: 측정 뒤 기본은 rewrite
-  assert.equal(c.rewriteTimeoutMs, 3000);
+  assert.equal(c.rewriteTimeoutMs, 4000); // 11/24: 3000 → 4000
+  assert.equal(c.serviceTier, null);
   assert.equal(c.maxConcurrency, 2);
   assert.equal(c.reasoningEffort, 'none');
   assert.equal(c.temperature, null);
@@ -47,7 +48,7 @@ test('getConfig: 환경변수 반영, 잘못된 값은 기본값', () => {
   assert.equal(getConfig({LLM_REWRITE_TIMEOUT_MS: '2000'}).rewriteTimeoutMs, 2000);
   assert.equal(getConfig({LLM_SYMPTOM_MODE: 'both', LLM_REWRITE_TIMEOUT_MS: '-1'}).symptomMode, 'rewrite');
   assert.equal(getConfig({LLM_SYMPTOM_MODE: 'full'}).symptomMode, 'full');
-  assert.equal(getConfig({LLM_REWRITE_TIMEOUT_MS: '-1'}).rewriteTimeoutMs, 3000);
+  assert.equal(getConfig({LLM_REWRITE_TIMEOUT_MS: '-1'}).rewriteTimeoutMs, 4000);
   assert.equal(getConfig({LLM_CANDIDATE_MODE: 'everything'}).candidateMode, 'all');
   assert.equal(getConfig({LLM_CANDIDATE_MODE: 'retrieve'}).candidateMode, 'retrieve');
   assert.equal(getConfig({LLM_PROVIDER: 'gemini'}).model, null);
@@ -84,4 +85,11 @@ test('L4: 가격표는 공식 표 값, 모르는 모델은 없음', async () => 
   assert.deepEqual({...MODEL_PRICES_USD_PER_1M['gpt-6-luna']}, {input: 0.10, cachedInput: 0.01, output: 0.50});
   assert.deepEqual({...MODEL_PRICES_USD_PER_1M['gpt-5.4-mini-2026-03-17']}, {input: 0.75, cachedInput: 0.075, output: 4.50});
   assert.equal(MODEL_PRICES_USD_PER_1M['gpt-5.4-mini'], undefined);
+});
+
+test('getConfig: LLM_SERVICE_TIER는 아는 값만(대소문자 무시), 모르면 보내지 않음(11/24)', () => {
+  assert.equal(getConfig({LLM_SERVICE_TIER: 'Fast'}).serviceTier, 'fast');
+  assert.equal(getConfig({LLM_SERVICE_TIER: 'priority'}).serviceTier, 'priority');
+  assert.equal(getConfig({LLM_SERVICE_TIER: 'turbo'}).serviceTier, null);
+  assert.equal(getConfig({LLM_SERVICE_TIER: ''}).serviceTier, null);
 });

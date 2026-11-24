@@ -46,7 +46,12 @@ export const DEFAULTS = Object.freeze({
   // 11/18 절충 1: 'full' = 증상 목록 전체에서 고르기(1회), 'rewrite' = 목록 없이 표준 표현으로 고쳐 쓰기 → 사전 재검색 → 못 찾으면 full.
   //   11/18 측정(368문장·위험 552건) 뒤 기본을 rewrite로: 입력 토큰 −69%, 최종 정확도 98.1%(full 97.3%), 위험 신호 놓침 0. 되돌리려면 LLM_SYMPTOM_MODE=full
   symptomMode: 'rewrite',
-  rewriteTimeoutMs: 3000, // 고쳐 쓰기 1회 제한. 실패해도 full 호출에 쓸 시간을 남긴다
+  // 고쳐 쓰기 1회 제한. 실패해도 full 호출에 쓸 시간을 남긴다.
+  //   11/24: 3000 → 4000. gpt-6-luna는 고쳐 쓰기가 3초를 넘는 경우가 늘었다(368문장 중 9건, 이전 모델 4건·p95 3.0 → 3.8초)
+  rewriteTimeoutMs: 4000,
+  // 11/24: OpenAI service_tier. null이면 보내지 않음(Standard). 'fast'(= priority)는 더 빠르고 일정한 처리, 가격 2배
+  //   (https://openai.com/api-fast-mode/ 2026-11-24 확인). LLM_SERVICE_TIER로 켠다.
+  serviceTier: null,
   maxConcurrency: 2,
   // 11/23: gpt-5.4-mini-2026-03-17 → gpt-6-luna. 공식 모델 문서(developers.openai.com/api/docs/models/gpt-6-luna)에
   //   날짜 붙은 스냅샷이 없고 기본 스냅샷 이름이 gpt-6-luna 그대로다(UNDATED_SNAPSHOTS). reasoning.effort none 지원
@@ -67,6 +72,14 @@ export const MODEL_PRICES_USD_PER_1M = Object.freeze({
   'gpt-6-luna': Object.freeze({input: 0.10, cachedInput: 0.01, output: 0.50}),
   'gpt-5.4-mini-2026-03-17': Object.freeze({input: 0.75, cachedInput: 0.075, output: 4.50}),
 });
+
+/** 11/24: service_tier fast(= priority) 가격. https://openai.com/api-fast-mode/ (2026-11-24 확인, short context). 없는 모델은 추정하지 않는다. */
+export const MODEL_PRICES_FAST_USD_PER_1M = Object.freeze({
+  'gpt-6-luna': Object.freeze({input: 0.20, cachedInput: 0.02, output: 1.00}),
+});
+export const SERVICE_TIERS = Object.freeze(['default', 'flex', 'fast', 'priority']);
+/** 응답의 service_tier가 이 값이면 fast 가격으로 센다. */
+export const FAST_TIERS = Object.freeze(['fast', 'priority']);
 
 const PROVIDERS = ['mock', 'gemini', 'openai'];
 const MODES = ['retrieve', 'all'];
@@ -102,6 +115,7 @@ export function getConfig(env = process.env) {
   const mode = (env.LLM_CANDIDATE_MODE ?? '').trim().toLowerCase();
   const symptomMode = (env.LLM_SYMPTOM_MODE ?? '').trim().toLowerCase();
   const effort = (env.LLM_REASONING_EFFORT ?? '').trim().toLowerCase();
+  const serviceTier = (env.LLM_SERVICE_TIER ?? '').trim().toLowerCase();
   const temperatureRaw = (env.LLM_TEMPERATURE ?? '').trim();
   const temperature = temperatureRaw === '' ? null : nonNegNumber(temperatureRaw, null);
   return Object.freeze({
@@ -121,6 +135,7 @@ export function getConfig(env = process.env) {
     candidateK: posInt(env.LLM_CANDIDATE_K, DEFAULTS.candidateK),
     symptomMode: SYMPTOM_MODES.includes(symptomMode) ? symptomMode : DEFAULTS.symptomMode,
     rewriteTimeoutMs: posInt(env.LLM_REWRITE_TIMEOUT_MS, DEFAULTS.rewriteTimeoutMs),
+    serviceTier: SERVICE_TIERS.includes(serviceTier) ? serviceTier : DEFAULTS.serviceTier,
     maxConcurrency: posInt(env.LLM_MAX_CONCURRENCY, DEFAULTS.maxConcurrency),
     versions: VERSIONS,
   });

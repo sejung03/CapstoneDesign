@@ -53,11 +53,11 @@ async function main() {
   const baseRef = {...refData, synonyms: refData.synonyms.filter((s) => s.id <= BASE_MAX_SYN_ID)};
   const consent = config.devConsent ? undefined : {granted: true, provider: 'openai', version: 'eval-only', healthInfo: true};
   const budget = config.evalBudgetUsd;
-  console.log(`model ${config.model} · candidateMode ${config.candidateMode} · 예산 $${budget} · 동시 ${concurrency}`);
+  console.log(`model ${config.model} · service_tier ${config.serviceTier ?? 'standard'} · rewrite 제한 ${config.rewriteTimeoutMs}ms · candidateMode ${config.candidateMode} · 예산 $${budget} · 동시 ${concurrency}`);
 
   let cost = 0;
   let stop = null;
-  const report = {createdAt: new Date().toISOString(), model: config.model, candidateMode: config.candidateMode, sets: {}};
+  const report = {createdAt: new Date().toISOString(), model: config.model, serviceTier: config.serviceTier, rewriteTimeoutMs: config.rewriteTimeoutMs, candidateMode: config.candidateMode, sets: {}};
 
   for (const set of sets) {
     const cases = loadPhrases(set).slice(0, limit);
@@ -84,7 +84,7 @@ async function main() {
           llm: {status: res.status, reason: res.reason ?? null, intent: ev.intent ?? null, picks: llmGot, ok: llmOk,
             error: res.meta.error, riskSignal: res.riskSignal ?? null, latencyMs: res.meta.latencyMs, attempts: res.meta.attempts,
             symptomPath: res.meta.symptomPath ?? 'full',
-            tokens: res.meta.tokens, costUsd: callCost},
+            servedTier: res.meta.servedTier ?? null, tokens: res.meta.tokens, costUsd: callCost},
           dictBase, dictFull,
           pipeBase: pipeline(c, dictBase, llmOk),
           pipeFull: pipeline(c, dictFull, llmOk),

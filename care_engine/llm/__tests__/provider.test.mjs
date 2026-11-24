@@ -110,3 +110,14 @@ test('mock: 배열 entry는 호출마다 차례로(재시도용)', async () => {
   assert.deepEqual((await p.generateStructured(req('x'))).data, {n: 2});
   assert.equal(p.callCount, 3);
 });
+
+test('getProvider(openai): LLM_SERVICE_TIER가 있을 때만 service_tier를 보내고, 응답의 실제 등급을 meta.serviceTier로 남긴다(11/24)', async () => {
+  const plain = getProvider({config: getConfig({LLM_PROVIDER: 'openai'})});
+  assert.equal('service_tier' in plain.buildBody({system: 's', user: 'u', schema: {}, schemaName: 'n'}), false);
+  const fetchImpl = async () => new Response(JSON.stringify({status: 'completed', service_tier: 'fast', output_text: '{"a":1}', usage: {input_tokens: 10, output_tokens: 2}}), {status: 200});
+  const fast = getProvider({config: getConfig({LLM_PROVIDER: 'openai', LLM_SERVICE_TIER: 'fast'}), openaiOptions: {apiKey: 'k', fetchImpl}});
+  assert.equal(fast.buildBody({system: 's', user: 'u', schema: {}, schemaName: 'n'}).service_tier, 'fast');
+  const r = await fast.generateStructured({system: 's', user: 'u', schema: {}, schemaName: 'n', timeoutMs: 1000});
+  assert.equal(r.ok, true);
+  assert.equal(r.meta.serviceTier, 'fast');
+});

@@ -44,7 +44,7 @@ test('classifySymptom: picks → confirm(계약 통과), meta 채움, 로그에 
   assert.equal(checkFollowUpContract(r.followUp).ok, true);
   assert.deepEqual(r.followUp.options.slice(0, 2).map((o) => o.id), [`sym_${ids[1]}`, `sym_${ids[0]}`]);
   assert.deepEqual(Object.keys(r.meta).sort(), ['attempts', 'candidateCount', 'candidateMode', 'dataVersion', 'error', 'latencyMs', 'model', 'promptId', 'provider', 'schemaId',
-    'consentSource', 'modelWarning', 'tokens', 'providerError', 'symptomPath'].sort());
+    'consentSource', 'modelWarning', 'tokens', 'providerError', 'symptomPath', 'serviceTier', 'servedTier'].sort());
   assert.equal(r.meta.consentSource, 'request');
   assert.deepEqual(r.meta.tokens, {input: 0, cachedInput: 0, output: 0, reasoning: 0});
   assert.equal(r.meta.provider, 'mock');
