@@ -6,7 +6,7 @@
 > ⚠️ **운영 전 반드시: `LLM_DEV_CONSENT`를 끄고 팀원 3의 동의 기능과 연결해야 한다.**
 > `LLM_DEV_CONSENT=true`이면 `consent`가 없는 요청을 "동의한 것"으로 간주해 사용자 문장을 OpenAI로 보낸다(MVP 개발용, 가짜 문장만).
 
-- 업체: **OpenAI Responses API**, 모델 `gpt-5.4-mini-2026-03-17`(날짜 고정 스냅샷), 추론 강도 `none`, `store: false`.
+- 업체: **OpenAI Responses API**, 모델 `gpt-6-luna`(11/23 변경, 이전 `gpt-5.4-mini-2026-03-17`. 공식 문서에 날짜 스냅샷이 없어 이 이름이 스냅샷), 추론 강도 `none`, `store: false`.
 - 기본 제공업체는 `mock`(네트워크 없음). `LLM_PROVIDER=openai`일 때만 실제 API를 부른다. `gemini`는 자리만 있다.
 - `npm test`는 네트워크를 쓰지 않는다(OpenAI 어댑터 테스트는 가짜 fetch).
 
@@ -100,7 +100,7 @@ node eval/candidate_loo.mjs               # 후보 생성 Recall@k (사전 leave
 |---|---|---|
 | `OPENAI_API_KEY` | OpenAI API 키. 서버에서만 | 없으면 호출 안 함(`auth`) |
 | `LLM_PROVIDER` | `mock` / `openai` / `gemini`(자리). 모르는 이름은 오류 | `mock` |
-| `LLM_MODEL` | 모델 **날짜 고정 스냅샷 이름**. 날짜 없는 별칭이면 meta에 `modelWarning:'model_alias'` | openai면 `gpt-5.4-mini-2026-03-17` |
+| `LLM_MODEL` | 모델 **날짜 고정 스냅샷 이름**. 날짜 없는 별칭이면 meta에 `modelWarning:'model_alias'`(`gpt-6-luna`처럼 날짜 스냅샷이 없는 모델은 `UNDATED_SNAPSHOTS`로 예외) | openai면 `gpt-6-luna` |
 | `LLM_DEV_CONSENT` | `true`일 때만 개발용 동의 켜짐. **운영 전 끈다** | 꺼짐 |
 | `LLM_REASONING_EFFORT` | `none` / `low` / `medium` / `high` | `none` |
 | `LLM_TEMPERATURE` | 빈 값이면 요청에 넣지 않음. `0`~`2` | 넣지 않음 |

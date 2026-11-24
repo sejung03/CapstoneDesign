@@ -25,8 +25,9 @@ test('My information owns export controls and shows logout only for a verified a
  state.account={...state.account,phase:'loggingOut'};dom=inspect();assert.equal(dom.window.document.getElementById('account-logout').disabled,true);dom.window.close();
 });
 
-test('health PDF includes committed health fields only, including age zero',()=>{
- const state={locale:'ko',profile:{...emptyProfile(),age:'0',allergies:'저장한 알레르기',medications:'복용약',history:'기저질환'},profileDraft:{...emptyProfile(),allergies:'저장하지 않은 내용'},healthConsent:createHealthConsent(true),favorites:createFavorites(),account:createAccountSession(),chat:{messages:[{text:'대화 원문'}]},report:{saved:{notes:'분석서 메모'}}};
+// 11/23: one PDF = saved health information + questionnaire summary (notes from My report), never unsaved drafts
+test('PDF combines committed health fields (including age zero) with the questionnaire summary',()=>{
+ const state={locale:'ko',profile:{...emptyProfile(),age:'0',allergies:'저장한 알레르기',medications:'복용약',history:'기저질환'},profileDraft:{...emptyProfile(),allergies:'저장하지 않은 내용'},healthConsent:createHealthConsent(true),favorites:createFavorites(),account:createAccountSession(),chat:{messages:[{text:'대화 원문'}]},draft:{symptom:'',onset:''},report:{saved:{notes:'분석서 메모'}}};
  const dom=new JSDOM(renderToStaticMarkup(React.createElement(Profile,{state,t:key=>copy.ko[key]})));
- const sheet=dom.window.document.querySelector('.health-print-sheet');assert.equal(sheet.querySelector('h1').textContent,'건강정보');assert.equal(sheet.querySelectorAll('dt').length,4);assert.match(sheet.textContent,/만 0세/);assert.match(sheet.textContent,/저장한 알레르기/);assert.match(sheet.textContent,/복용약/);assert.match(sheet.textContent,/기저질환/);assert.doesNotMatch(sheet.textContent,/저장하지 않은 내용|대화 원문|분석서 메모/);dom.window.close();
+ const sheet=dom.window.document.querySelector('.health-print-sheet');assert.equal(sheet.querySelector('h1').textContent,'건강정보와 문진 정리');const health=sheet.querySelector('.care-print-health'),summary=sheet.querySelector('.care-print-summary');assert.equal(health.querySelectorAll('dt').length,5);assert.match(health.textContent,/만 0세/);assert.match(health.textContent,/저장한 알레르기/);assert.match(health.textContent,/복용약/);assert.match(health.textContent,/기저질환/);assert.doesNotMatch(sheet.textContent,/저장하지 않은 내용/);assert.equal(summary.querySelector('h2').textContent,'문진 정리');assert.match(summary.textContent,/분석서 메모/);dom.window.close();
 });

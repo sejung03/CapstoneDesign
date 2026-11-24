@@ -500,9 +500,13 @@ html[lang=vi] body,html[lang=uz] body{font-family:Arial,"Segoe UI",sans-serif;le
 .intake-context-heading{margin-bottom:8px;}
 .health-print-sheet{display:none;}
 @media print{
- body[data-view=profile],body[data-view=profile] #app,body[data-view=profile] .care-shell,body[data-view=profile] .care-tool-panel,body[data-view=profile] .workspace-content,body[data-view=profile] .profile-view{display:block!important;height:auto!important;min-height:0!important;max-height:none!important;width:auto!important;max-width:none!important;overflow:visible!important;margin:0!important;padding:0!important;background:white!important;color:#111!important;border:0!important;box-shadow:none!important;}
- body[data-view=profile] .header,body[data-view=profile] .skip-link,body[data-view=profile] .conversation-main,body[data-view=profile] .workspace-toolbar,body[data-view=profile] .toast,body[data-view=profile] .profile-view>:not(.health-print-sheet){display:none!important;}
- body[data-view=profile] .health-print-sheet{display:block!important;font-size:12pt;line-height:1.7;}
+ /* 11/23: one PDF (health information + questionnaire summary) from both My information and My report */
+ body[data-view=profile],body[data-view=profile] #app,body[data-view=profile] .care-shell,body[data-view=profile] .care-tool-panel,body[data-view=profile] .workspace-content,body[data-view=profile] .profile-view,body[data-view=profile] .report-view,body[data-view=report],body[data-view=report] #app,body[data-view=report] .care-shell,body[data-view=report] .care-tool-panel,body[data-view=report] .workspace-content,body[data-view=report] .profile-view,body[data-view=report] .report-view{display:block!important;height:auto!important;min-height:0!important;max-height:none!important;width:auto!important;max-width:none!important;overflow:visible!important;margin:0!important;padding:0!important;background:white!important;color:#111!important;border:0!important;box-shadow:none!important;}
+ body[data-view=profile] .header,body[data-view=profile] .skip-link,body[data-view=profile] .conversation-main,body[data-view=profile] .workspace-toolbar,body[data-view=profile] .toast,body[data-view=report] .header,body[data-view=report] .skip-link,body[data-view=report] .conversation-main,body[data-view=report] .workspace-toolbar,body[data-view=report] .toast,body[data-view=profile] .profile-view>:not(.health-print-sheet),body[data-view=report] .report-view>:not(.health-print-sheet){display:none!important;}
+ body[data-view=profile] .health-print-sheet,body[data-view=report] .health-print-sheet{display:block!important;font-size:12pt;line-height:1.7;}
+ .health-print-sheet h2{font-size:15pt;margin:28px 0 4px;padding-bottom:6px;border-bottom:1px solid #222;break-after:avoid;}
+ .health-print-sheet .care-print-date{margin:-16px 0 8px;color:#444;}
+ .health-print-sheet footer{margin-top:24px;font-size:10pt;color:#444;}
  .health-print-sheet h1{font-size:24pt;margin:0 0 24px;padding-bottom:12px;border-bottom:2px solid #222;}
  .health-print-sheet dl{margin:0;}
  .health-print-sheet dl>div{padding:14px 0;border-bottom:1px solid #ddd;}

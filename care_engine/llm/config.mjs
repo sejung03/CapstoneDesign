@@ -48,7 +48,9 @@ export const DEFAULTS = Object.freeze({
   symptomMode: 'rewrite',
   rewriteTimeoutMs: 3000, // 고쳐 쓰기 1회 제한. 실패해도 full 호출에 쓸 시간을 남긴다
   maxConcurrency: 2,
-  openaiModel: 'gpt-5.4-mini-2026-03-17', // 날짜 고정 스냅샷(L4-MVP 팀 결정)
+  // 11/23: gpt-5.4-mini-2026-03-17 → gpt-6-luna. 공식 모델 문서(developers.openai.com/api/docs/models/gpt-6-luna)에
+  //   날짜 붙은 스냅샷이 없고 기본 스냅샷 이름이 gpt-6-luna 그대로다(UNDATED_SNAPSHOTS). reasoning.effort none 지원
+  openaiModel: 'gpt-6-luna',
   reasoningEffort: 'none',
   temperature: null,      // null = 요청에 넣지 않음
   devConsent: false,      // LLM_DEV_CONSENT=true일 때만 true. 운영 전 반드시 끈다
@@ -58,8 +60,11 @@ export const DEFAULTS = Object.freeze({
 /**
  * 모델 가격(USD / 100만 토큰). 모르는 모델은 비용을 null로 둔다(추정하지 않음).
  * 출처: https://developers.openai.com/api/docs/pricing (Standard, 2026-11-15 확인)
+ *       gpt-6-luna: https://developers.openai.com/api/docs/models/gpt-6-luna (Standard, 2026-11-23 확인. 272K 토큰 넘는 입력은 할증 — 이 서비스 입력은 500자라 해당 없음)
+ * gpt-5.4-mini는 예전 평가 결과(eval/out) 비용 계산용으로 남긴다.
  */
 export const MODEL_PRICES_USD_PER_1M = Object.freeze({
+  'gpt-6-luna': Object.freeze({input: 0.10, cachedInput: 0.01, output: 0.50}),
   'gpt-5.4-mini-2026-03-17': Object.freeze({input: 0.75, cachedInput: 0.075, output: 4.50}),
 });
 
@@ -69,6 +74,8 @@ export const SYMPTOM_MODES = Object.freeze(['full', 'rewrite']);
 export const REASONING_EFFORTS = Object.freeze(['none', 'low', 'medium', 'high']);
 /** 날짜 고정 스냅샷 이름(끝이 -YYYY-MM-DD). 아니면 별칭으로 보고 경고만 남긴다. */
 const SNAPSHOT_RE = /-\d{4}-\d{2}-\d{2}$/;
+/** 공식 문서에 날짜 붙은 스냅샷이 없고 이 이름이 곧 스냅샷인 모델(별칭 경고를 내지 않는다). */
+export const UNDATED_SNAPSHOTS = Object.freeze(['gpt-6-luna']);
 
 function nonNegNumber(v, def) {
   if (v === undefined || v === null || String(v).trim() === '') return def;
@@ -102,7 +109,7 @@ export function getConfig(env = process.env) {
     providerKnown: PROVIDERS.includes(provider),
     model,
     // 실제 업체인데 날짜 없는 별칭이면 경고(막지는 않는다)
-    modelWarning: provider !== 'mock' && model && !SNAPSHOT_RE.test(model) ? 'model_alias' : null,
+    modelWarning: provider !== 'mock' && model && !SNAPSHOT_RE.test(model) && !UNDATED_SNAPSHOTS.includes(model) ? 'model_alias' : null,
     reasoningEffort: REASONING_EFFORTS.includes(effort) ? effort : DEFAULTS.reasoningEffort,
     temperature: temperature !== null && temperature <= 2 ? temperature : null,
     devConsent: (env.LLM_DEV_CONSENT ?? '').trim() === 'true',

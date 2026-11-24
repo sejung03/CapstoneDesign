@@ -2,7 +2,7 @@
 
 > 2026-11-15 작성. 담당: 팀원 1. 상태: **초안**. 제공업체(Gemini·OpenAI)가 정해지기 전에도 만들 수 있게 썼다.
 > **제공업체 API를 부르는 파일 2개(`providers/gemini.mjs`, `providers/openai.mjs`)만 빼고 나머지는 지금 바로 구현·테스트할 수 있다.** 그 전까지는 `providers/mock.mjs`로 돌린다.
-> *(11/15 L4 반영)* **업체 OpenAI 확정**(팀 결정 11/15). Responses API, 모델 `gpt-5.4-mini-2026-03-17`(날짜 고정 스냅샷), 추론 강도 `none`, `store: false`. `providers/openai.mjs` 연결 완료, `gemini.mjs`는 자리만 남긴다.
+> *(11/15 L4 반영)* **업체 OpenAI 확정**(팀 결정 11/15). Responses API, 모델 `gpt-5.4-mini-2026-03-17`(날짜 고정 스냅샷) → *(11/23)* `gpt-6-luna`(날짜 스냅샷 없음, 가격 입력 $0.10 / 캐시 $0.01 / 출력 $0.50 per 1M), 추론 강도 `none`, `store: false`. `providers/openai.mjs` 연결 완료, `gemini.mjs`는 자리만 남긴다.
 > 맞춘 계약: `frontend/docs/BACKEND.md`(requestAssistant 요청·응답, followUp 0.20.0, profileUpdates 0.18.0, 외부 AI 업체 기준). DB: `ref.symptom`, `ref.symptom_synonym`, `ref.data_version`.
 
 ---

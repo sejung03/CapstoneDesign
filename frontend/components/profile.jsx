@@ -8,6 +8,7 @@ import {HealthConsent} from './health-consent.jsx';
 import {hasHealthConsent} from '../health-consent.mjs';
 import {healthStorageMessage,healthSexChoices,healthTextMaxLength,storedHealthFields} from '../health-storage.mjs';
 import {Textarea,Input,Icon,Select} from './shared.jsx';
+import {CarePrintSheet} from './care-print-sheet.jsx';
 export function Profile({state,t}){
  const [accountOpen,setAccountOpen]=useState(false),[dirty,setDirty]=useState(false),[,refreshFields]=useState(0);
  useLayoutEffect(()=>setDirty(hasProfileChanges(state.profile,state.profileDraft)),[state.profile,state.profileDraft]);
@@ -25,8 +26,8 @@ export function Profile({state,t}){
    <p className="profile-help">{phrase(state.locale,"Leave age blank if unknown. For other fields, use “None” if not applicable and “Unknown” if unsure.")}</p>
   </section>
   <div className="profile-save">{state.profileError&&<p role="alert" className="field-error">{phrase(state.locale,"Enter a whole age from 0 to 120.")}</p>}{dirty&&<p className="profile-dirty" role="status">{phrase(state.locale,"You have unsaved changes.")}</p>}<p className="info-session-note">{sw(signedIn?'member':'guest')}</p>{signedIn&&!storage.consented&&<label className="health-consent-choice"><input id="profile-storage-consent" type="checkbox" defaultChecked={!!storage.grant} disabled={busy} /><span>{sw('consent')}</span></label>}{['loading','saving','deleting'].includes(storage.phase)&&<p role="status">{sw(storage.phase)}</p>}{storage.error&&<p role="alert" className="field-error">{sw(storage.error)}{storage.error==='loadError'&&<button id="profile-storage-retry" type="button" className="text-button">{sw('retry')}</button>}</p>}<div><button className="primary-button" type="submit" disabled={!editable}>{phrase(state.locale,"Save health information")}</button><button id="profile-delete" className="text-button danger" type="button" disabled={busy}>{phrase(state.locale,"Clear health information")}</button></div></div></form>
-  <div className="profile-export-actions"><button id="profile-pdf" type="button" className="secondary-button"><Icon name="print" />{phrase(state.locale,"Save health information as PDF")}</button></div>
-  <article className="health-print-sheet" aria-label={phrase(state.locale,"Health information PDF")}><h1>{phrase(state.locale,"Health information")}</h1><dl>{[['age','profileAge'],['sex',null],['allergies','profileAllergies'],['medications','profileMedications'],['history','profileHistory']].map(([key,label])=><div key={key}><dt>{label?t(label):phrase(state.locale,'Sex')}</dt><dd>{state.profile[key]!==''&&state.profile[key]!=null?(key==='age'?(phrase(state.locale,"{0} years", [state.profile[key]])):key==='sex'?phrase(state.locale,healthSexChoices[state.profile.sex]):state.profile[key]):(phrase(state.locale,"Not provided"))}</dd></div>)}</dl></article>
+  <div className="profile-export-actions"><button id="profile-pdf" type="button" className="secondary-button"><Icon name="print" />{phrase(state.locale,"Save health information and questionnaire summary as PDF")}</button></div>
+  <CarePrintSheet state={state} t={t} />
   {signedIn&&<DeleteAccount locale={state.locale} disabled={busy} />}
   {state.healthConsent.pending==='profile' &&<HealthConsent state={state} />}
   {state.profileExit&&<ProfileExit locale={state.locale} />}

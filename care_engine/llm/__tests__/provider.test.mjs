@@ -21,7 +21,7 @@ test('getProvider: 기본은 mock, 이름으로 고름, 모르는 이름은 오�
 
 test('getProvider(openai): 설정(모델·추론 강도·temperature)을 어댑터로 넘긴다, 키 없으면 호출 안 함', async () => {
   const p = getProvider({config: getConfig({LLM_PROVIDER: 'openai', LLM_REASONING_EFFORT: 'low', LLM_TEMPERATURE: '0'})});
-  assert.equal(p.model, 'gpt-5.4-mini-2026-03-17');
+  assert.equal(p.model, 'gpt-6-luna');
   const body = p.buildBody({system: 's', user: 'u', schema: {}, schemaName: 'n'});
   assert.deepEqual(body.reasoning, {effort: 'low'});
   assert.equal(body.temperature, 0);

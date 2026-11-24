@@ -60,11 +60,14 @@ test('config.mjs는 API 키 변수를 읽지 않는다', () => {
 });
 
 test('L4: openai 기본 모델·별칭 경고·추론 강도·temperature·예산', () => {
-  assert.equal(getConfig({LLM_PROVIDER: 'openai'}).model, 'gpt-5.4-mini-2026-03-17');
+  assert.equal(getConfig({LLM_PROVIDER: 'openai'}).model, 'gpt-6-luna');
   assert.equal(getConfig({LLM_PROVIDER: 'openai'}).modelWarning, null);
   assert.equal(getConfig({LLM_PROVIDER: 'openai', LLM_MODEL: 'gpt-5.4-mini'}).model, 'gpt-5.4-mini');
   assert.equal(getConfig({LLM_PROVIDER: 'openai', LLM_MODEL: 'gpt-5.4-mini'}).modelWarning, 'model_alias');
   assert.equal(getConfig({LLM_PROVIDER: 'mock', LLM_MODEL: 'x'}).modelWarning, null);
+  // 11/23: 날짜 스냅샷이 없는 모델(UNDATED_SNAPSHOTS)은 경고하지 않는다. 날짜 스냅샷은 그대로 경고 없음
+  assert.equal(getConfig({LLM_PROVIDER: 'openai', LLM_MODEL: 'gpt-6-luna'}).modelWarning, null);
+  assert.equal(getConfig({LLM_PROVIDER: 'openai', LLM_MODEL: 'gpt-5.4-mini-2026-03-17'}).modelWarning, null);
   assert.equal(getConfig({LLM_REASONING_EFFORT: 'LOW'}).reasoningEffort, 'low');
   assert.equal(getConfig({LLM_REASONING_EFFORT: 'extreme'}).reasoningEffort, 'none');
   assert.equal(getConfig({LLM_TEMPERATURE: '0'}).temperature, 0);
@@ -78,6 +81,7 @@ test('L4: openai 기본 모델·별칭 경고·추론 강도·temperature·예�
 
 test('L4: 가격표는 공식 표 값, 모르는 모델은 없음', async () => {
   const {MODEL_PRICES_USD_PER_1M} = await import('../config.mjs');
+  assert.deepEqual({...MODEL_PRICES_USD_PER_1M['gpt-6-luna']}, {input: 0.10, cachedInput: 0.01, output: 0.50});
   assert.deepEqual({...MODEL_PRICES_USD_PER_1M['gpt-5.4-mini-2026-03-17']}, {input: 0.75, cachedInput: 0.075, output: 4.50});
   assert.equal(MODEL_PRICES_USD_PER_1M['gpt-5.4-mini'], undefined);
 });
