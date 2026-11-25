@@ -1,4 +1,8 @@
 import {FACILITY_TYPES, FAVORITES_LIMIT, SORT_VALUES} from './model.js';
+import {departmentCatalog} from '../../departments.mjs';
+
+// 'pharmacy' is a facility type in the catalog, not a department.
+export const DEPARTMENT_KEYS = Object.freeze(departmentCatalog.map(item => item.key).filter(key => key !== 'pharmacy'));
 
 export class BehaviorValidationError extends Error {
   constructor(message) { super(message); this.name = 'BehaviorValidationError'; this.status = 400; }
@@ -55,6 +59,21 @@ export function validateFavoriteMutation(payload) {
   keys(payload, ['facility', 'favorite'], 'favorite mutation');
   if (typeof payload.favorite !== 'boolean') fail('favorite must be boolean');
   return {facility: validateFavorite(payload.facility), favorite: payload.favorite};
+}
+
+/** One counted action on a facility. Only id, type and name: no address, coordinates or contact details. */
+export function validateFacilityChoice(payload) {
+  keys(payload, ['facility'], 'facility choice');
+  keys(payload.facility, ['id', 'type', 'name'], 'facility');
+  const {id, type, name} = validateFavorite(payload.facility);
+  return {id, type, name};
+}
+
+/** One department applied to a search. Must be a search key from departments.mjs. */
+export function validateDepartmentChoice(payload) {
+  keys(payload, ['department'], 'department choice');
+  if (typeof payload.department !== 'string' || !DEPARTMENT_KEYS.includes(payload.department)) fail('department must be a known search key');
+  return payload.department;
 }
 
 export function requireVerifiedUser(session) {

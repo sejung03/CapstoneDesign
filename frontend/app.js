@@ -2,6 +2,7 @@ import {phrase,expandLocales,localizedObject} from './i18n.mjs';
 import {emptyHealth,storedHealthFields,validateStoredHealth,healthStorageMessage} from './health-storage.mjs';
 import {createAccountSession,normalizeAccountSession} from './account-session.mjs';
 import {createFavorites,favoriteRecord,normalizeFavorites,FAVORITES_LIMIT} from './favorites.mjs';
+import {createChoices,normalizeChoices,choiceFacility,isChoiceDepartment} from './choices.mjs';
 import {createHealthUpdates,normalizeHealthUpdates,validateHealthUpdateEvidence,applyHealthUpdateSelection,healthUpdateFields} from './health-updates.mjs';
 import {defaultEmergencyGuides} from './emergency-resources.mjs';
 import {createReportImport,canUsePreviousReport,reviewedPreviousReport} from './report-import.mjs';
@@ -238,6 +239,7 @@ async function applyAccountSession(session,token){
   if(!viewRenderer)clearHealthAccess({forget:false});
   try{restoreAccountHealthConsent(state,localStorage);}catch{}
   void setFavoritesAdapter(session.accountId?accountAdapter?.favorites||null:null,{scope:session.accountId?'account:'+session.accountId:'guest'});
+  void setChoicesAdapter(session.accountId?accountAdapter?.choices||null:null);
  }
  if(session.accountId&&accountAdapter?.healthProfile&&(changed||!state.healthStorage||state.healthStorage.error==='loadError'))await loadAccountHealth();
  if(token===accountSequence)render();
@@ -291,6 +293,44 @@ async function toggleFavorite(id){
  }catch{if(token===favoritesSequence&&!controller.signal.aborted){state.favorites.error='update';toast(phrase(state.locale,"Could not update favorites. Please try again."));}}
  finally{if(token===favoritesSequence){state.favorites.pendingId='';render();}}
 }
+// Choice counts (signed-in accounts only). Each facility / department is counted at most once per page load,
+// so opening and closing directions repeatedly does not inflate the count. Recording never blocks the screen.
+let choicesAdapter=null,choicesSequence=0,countedFacilities=new Set(),countedDepartments=new Set();
+async function setChoicesAdapter(adapter=null){
+ if(adapter!==null&&['recordFacility','recordDepartment','list','clear'].some(key=>typeof adapter[key]!=='function'))throw new TypeError('Invalid choices adapter');
+ choicesAdapter=adapter;countedFacilities=new Set();countedDepartments=new Set();
+ await loadChoices();
+}
+async function loadChoices(){
+ const token=++choicesSequence,adapter=choicesAdapter;
+ if(!adapter){state.choices=createChoices();render();return;}
+ state.choices={...state.choices,phase:'loading',error:''};render();
+ try{const data=normalizeChoices(await adapter.list());if(token===choicesSequence)state.choices={...createChoices(),...data,phase:'ready'};}
+ catch{if(token===choicesSequence)state.choices={...createChoices(),phase:'error',error:'load'};}
+ finally{if(token===choicesSequence)render();}
+}
+function recordFacilityChoice(id){
+ const adapter=choicesAdapter;
+ if(!adapter||!id||countedFacilities.has(id))return;
+ const item=displayedFacilities(state,searchFacilities).find(value=>value.id===id)||state.live.items.find(value=>value.id===id)||state.discovery.items.find(value=>value.id===id)||state.favorites.items.find(value=>value.id===id);
+ let facility;try{facility=choiceFacility(item);}catch{return;}
+ countedFacilities.add(id);
+ void adapter.recordFacility(facility).then(result=>{if(result?.recorded&&adapter===choicesAdapter)void loadChoices();}).catch(()=>{countedFacilities.delete(id);});
+}
+function recordDepartmentChoice(key){
+ const adapter=choicesAdapter;
+ if(!adapter||!isChoiceDepartment(key)||countedDepartments.has(key))return;
+ countedDepartments.add(key);
+ void adapter.recordDepartment(key).then(result=>{if(result?.recorded&&adapter===choicesAdapter)void loadChoices();}).catch(()=>{countedDepartments.delete(key);});
+}
+async function clearChoices(){
+ const adapter=choicesAdapter;
+ if(!adapter||state.choices.busy)return;
+ if(!window.confirm(phrase(state.locale,"Delete all place and department counts? Favorites and health information are kept.")))return;
+ state.choices={...state.choices,busy:true,error:''};render();
+ try{await adapter.clear();if(adapter!==choicesAdapter)return;countedFacilities=new Set();countedDepartments=new Set();await loadChoices();toast(phrase(state.locale,"Records deleted."));}
+ catch{if(adapter===choicesAdapter){state.choices={...state.choices,busy:false,error:'delete'};render();}}
+}
 // This adapter is only installed in Next.js development mode with fictional accounts.
 // Production account sessions and RLS must replace it; no real authentication is implied.
 let behaviorDemoAdapter=null,behaviorDemoSequence=0;
@@ -317,6 +357,7 @@ async function loadBehaviorDemo(token,{loadFavorites=true}={}){
   if(token!==behaviorDemoSequence)return;
   state.behaviorDemo={...blankBehaviorDemo(session.account,'loading')};render();
   if(loadFavorites)await setFavoritesAdapter(adapter.favorites,{scope:'demo:'+session.account});
+  if(adapter.choices)void setChoicesAdapter(adapter.choices);
   const [settings,signal,statements]=await Promise.all([adapter.settings.get(),adapter.signal(),adapter.statements()]);
   if(token!==behaviorDemoSequence)return;
   state.behaviorDemo={...state.behaviorDemo,phase:'ready',settings,signal,statements,
@@ -328,7 +369,8 @@ async function loadBehaviorDemo(token,{loadFavorites=true}={}){
 }
 export async function setBehaviorDemoAdapter(adapter=null){
  if(adapter!==null&&(!adapter.demo||!adapter.settings||!adapter.favorites||typeof adapter.signal!=='function'||typeof adapter.statements!=='function'))throw new TypeError('Invalid demo behavior adapter');
- const token=++behaviorDemoSequence;behaviorDemoAdapter=adapter;
+ const previous=behaviorDemoAdapter,token=++behaviorDemoSequence;behaviorDemoAdapter=adapter;
+ if(previous?.choices&&choicesAdapter===previous.choices)await setChoicesAdapter(null);
  state.behaviorDemo=blankBehaviorDemo('a',adapter?'loading':'idle');render();
  if(adapter&&!accountAdapter)await loadBehaviorDemo(token);
 }
@@ -361,6 +403,7 @@ async function updateBehaviorDemo(action){
   if(token!==behaviorDemoSequence)return;
   if(action==='delete'){state.behaviorDemo.regionApplied=false;}
   if(action==='delete'||action==='sample')await setFavoritesAdapter(adapter.favorites,{scope:'demo:'+demo.account});
+  if((action==='delete'||action==='toggle')&&choicesAdapter===adapter.choices)void loadChoices();
   const [settings,signal,statements]=await Promise.all([adapter.settings.get(),adapter.signal(),adapter.statements()]);
   if(token!==behaviorDemoSequence)return;
   state.behaviorDemo={...state.behaviorDemo,phase:'ready',settings,signal,statements,
@@ -785,8 +828,8 @@ function bindSearch(){
  listen(document.getElementById('nearer-retry'),'click',()=>{discoveryController?.abort();state.discovery.key='';syncDiscovery();});
  listen(document.getElementById('route-toggle'),'click',()=>{
   saveInputs();const id=state.search.selectedId;
-  if(viewRenderer&&state.workspace?.panel==='detail'){state.workspace.panel='route';state.routing.openId=id;render();document.getElementById('route-heading')?.scrollIntoView({block:'nearest'});return;}
-  state.routing.openId=state.routing.openId===id?null:id;renderLiveProgress();
+  if(viewRenderer&&state.workspace?.panel==='detail'){state.workspace.panel='route';state.routing.openId=id;recordFacilityChoice(id);render();document.getElementById('route-heading')?.scrollIntoView({block:'nearest'});return;}
+  state.routing.openId=state.routing.openId===id?null:id;if(state.routing.openId)recordFacilityChoice(id);renderLiveProgress();
   document.getElementById(state.routing.openId?'route-heading':'route-toggle')?.focus({preventScroll:true});
   if(state.routing.openId)document.getElementById('route-heading')?.scrollIntoView({block:'nearest'});
  });
@@ -873,7 +916,7 @@ function bindSearch(){
 
 function profileStorage(){try{return localStorage;}catch{return null;}}
 const restored=loadProfile(profileStorage());
-const state={account:createAccountSession(),behaviorDemo:blankBehaviorDemo(),favorites:createFavorites(),healthUpdates:createHealthUpdates(),emergencyGuides:defaultEmergencyGuides,reportImport:createReportImport(),healthConsent:createHealthConsent(),rankingConnected:false,emergency:createEmergency(),recommendations:createRecommendations(),discovery:{key:'',phase:'idle',items:[]},assistant:createAssistantState(),intakeStep:0,intakeQuestionnaire:mockIntakeQuestionnaire,intakeAnswers:{},routing:{mode:'walk',cache:{},openId:null},report:{saved:null,draft:null,editing:false,signature:'',updatedAt:Date.now()},source:'live',live:createLiveState(),profile:restored.profile,profileDraft:{...restored.profile},profileRemember:restored.remember,profileStorageNotice:restored.storageError,suggestion:null,view:'entry',locale:'ko',theme:'light',draft:emptyDraft(),type:'all',searchStatus:'',chat:{...createConversation(),open:true},chatReturnScroll:0,search:{criteria:emptyCriteria(),department:'all',openOnly:false,selectedId:null,display:'map',initialized:false}};
+const state={account:createAccountSession(),behaviorDemo:blankBehaviorDemo(),favorites:createFavorites(),choices:createChoices(),healthUpdates:createHealthUpdates(),emergencyGuides:defaultEmergencyGuides,reportImport:createReportImport(),healthConsent:createHealthConsent(),rankingConnected:false,emergency:createEmergency(),recommendations:createRecommendations(),discovery:{key:'',phase:'idle',items:[]},assistant:createAssistantState(),intakeStep:0,intakeQuestionnaire:mockIntakeQuestionnaire,intakeAnswers:{},routing:{mode:'walk',cache:{},openId:null},report:{saved:null,draft:null,editing:false,signature:'',updatedAt:Date.now()},source:'live',live:createLiveState(),profile:restored.profile,profileDraft:{...restored.profile},profileRemember:restored.remember,profileStorageNotice:restored.storageError,suggestion:null,view:'entry',locale:'ko',theme:'light',draft:emptyDraft(),type:'all',searchStatus:'',chat:{...createConversation(),open:true},chatReturnScroll:0,search:{criteria:emptyCriteria(),department:'all',openOnly:false,selectedId:null,display:'map',initialized:false}};
 state.draft.region=state.profile.region;
 try{state.theme=localStorage.getItem('medical-theme')==='dark'?'dark':'light';const language=localStorage.getItem('medical-language');state.locale=Object.hasOwn(copy,language)?language:'ko';}catch{}
 let toastTimer;
@@ -963,6 +1006,7 @@ function applySuggestion(){
  if(!plan.region&&validCenter(state.live.position))state.search.criteria.center={lat:state.live.position.lat,lng:state.live.position.lng};
  if(state.source==='live'){state.search.criteria=liveCriteria(state.search.criteria);}
  state.search.selectedId=null;state.search.initialized=true;state.search.origin='chat';state.search.resultsScroll=0;
+ if(plan.type!=='pharmacy')recordDepartmentChoice(plan.department);
  state.chat=setChatOpen(state.chat,true);state.view='explore';if(state.workspace)state.workspace.panel=null;render(true);
 }
 function bindFacilityActions(){
@@ -977,7 +1021,7 @@ function bindFacilityActions(){
   const field=button.dataset.copyFacility;
   const value=field==='address'?facilityAddress(item,'ko'):field==='phone'?item.phone:'';
   if(!value)return;
-  try{await navigator.clipboard.writeText(value);toast(t(field==='address'?'addressCopied':'phoneCopied'));}
+  try{await navigator.clipboard.writeText(value);toast(t(field==='address'?'addressCopied':'phoneCopied'));if(field==='phone')recordFacilityChoice(item.id);}
   catch{toast(t('facilityCopyFailed'));}
  }));
 }
@@ -1143,6 +1187,8 @@ function bindWorkspace(){
  listen(document.getElementById('favorites-clear-filter'),'click',()=>{state.search.favoritesOnly=false;render();});
  listen(document.getElementById('favorites-only'),'change',event=>{saveInputs();state.search.favoritesOnly=event.target.checked;state.search.selectedId=null;render();});
  listen(document.getElementById('favorites-retry'),'click',()=>{if(favoritesAdapter)void setFavoritesAdapter(favoritesAdapter,{scope:state.favorites.scope});});
+ listen(document.getElementById('choices-retry'),'click',()=>{void loadChoices();});
+ listen(document.getElementById('choices-clear'),'click',()=>{void clearChoices();});
  document.querySelectorAll('[data-favorite-find]').forEach(button=>listen(button,'click',()=>{
   const item=state.favorites.items.find(value=>value.id===button.dataset.favoriteFind);if(!item)return;
   saveInputs();state.search.favoritesOnly=false;state.draft.region=item.name[state.locale]||item.name.ko;state.type=item.type;state.search.department='all';state.search.openOnly=false;
@@ -1203,7 +1249,7 @@ function bindWorkspace(){
   const card=button.closest('.conversation-facility');
   if(card&&!button.closest('.conversation-facility-expanded')){state.workspace.anchorId=card.dataset.conversationFacility;state.workspace.resultIds=[...document.querySelectorAll('[data-conversation-facility]')].map(node=>node.dataset.conversationFacility);}
   state.workspace.panel=button.dataset.workspaceRoute!==undefined?'route':'detail';state.search.selectedId=button.dataset.workspaceFacility;
-  state.routing.openId=button.dataset.workspaceRoute!==undefined?button.dataset.workspaceFacility:null;state.view='explore';render();document.querySelector('.conversation-facility-expanded')?.scrollIntoView({block:'nearest'});
+  state.routing.openId=button.dataset.workspaceRoute!==undefined?button.dataset.workspaceFacility:null;if(state.routing.openId)recordFacilityChoice(state.routing.openId);state.view='explore';render();document.querySelector('.conversation-facility-expanded')?.scrollIntoView({block:'nearest'});
  }));
 }
 function onDocumentKeydown(event){

@@ -41,7 +41,7 @@ export function createBehaviorDemoHandler({enabled = process.env.NODE_ENV === 'd
         'Set-Cookie': `${COOKIE}=${payload.account}; HttpOnly; Path=/api/behavior-demo; SameSite=Strict; Max-Age=86400`,
       });
     }
-    if(!['favorites','settings','signal','statements','all'].includes(action))return json({error:'not_found'},404);
+    if(!['favorites','settings','signal','statements','all','facility-choice','department-choice','choices'].includes(action))return json({error:'not_found'},404);
     return api(request,action);
   };
 }

@@ -1,8 +1,11 @@
-import {BEHAVIOR_MODEL, REASON_MAX_LENGTH} from './model.js';
+import {BEHAVIOR_MODEL, REASON_MAX_LENGTH, FREQUENT_CHOICE_MIN} from './model.js';
 import {
   requireVerifiedUser, validateFavoriteMutation, validateSettingPatch,
   validateStoredSetting, BehaviorValidationError,
+  validateFacilityChoice, validateDepartmentChoice,
 } from './validation.js';
+
+const CHOICE_METHODS = ['recordFacilityChoice', 'recordDepartmentChoice', 'listFacilityChoices', 'listDepartmentChoices', 'deleteFacilityChoices', 'deleteDepartmentChoices'];
 
 const SORT_REASONS = Object.freeze({
   distance: '거리순으로 정렬했습니다',
@@ -28,6 +31,12 @@ export function createBehaviorService({repository}) {
   if (!repository || ['readSettings', 'patchSettings', 'listFavorites', 'setFavorite', 'deleteAll'].some(k => typeof repository[k] !== 'function')) {
     throw new TypeError('repository must implement the behavior repository contract');
   }
+  const choices = () => {
+    if (CHOICE_METHODS.some(k => typeof repository[k] !== 'function')) throw new TypeError('repository does not support choice counts');
+    return repository;
+  };
+  // Personalization OFF stops counting. A missing settings row means the default (on).
+  const personalizationOn = async userId => validateStoredSetting(await repository.readSettings(userId))?.personalization_enabled !== false;
   return Object.freeze({
     async getSettings(session) {
       const userId = requireVerifiedUser(session);
@@ -54,6 +63,53 @@ export function createBehaviorService({repository}) {
     async deleteAll(session) {
       const userId = requireVerifiedUser(session);
       return repository.deleteAll(userId);
+    },
+    /** Counts one directions view or phone-number copy. Returns {recorded, count}. */
+    async recordFacilityChoice(session, body) {
+      const userId = requireVerifiedUser(session);
+      const facility = validateFacilityChoice(body);
+      if (!await personalizationOn(userId)) return {recorded: false, count: null};
+      const count = await choices().recordFacilityChoice(userId, facility);
+      return {recorded: Number.isInteger(count), count: Number.isInteger(count) ? count : null};
+    },
+    /** Counts one department applied to a search. Not recorded without health storage consent (DB decides). */
+    async recordDepartmentChoice(session, body) {
+      const userId = requireVerifiedUser(session);
+      const key = validateDepartmentChoice(body);
+      if (!await personalizationOn(userId)) return {recorded: false, count: null};
+      const count = await choices().recordDepartmentChoice(userId, key);
+      return {recorded: Number.isInteger(count), count: Number.isInteger(count) ? count : null};
+    },
+    /** What the user can see and delete in My info. */
+    async listChoices(session) {
+      const userId = requireVerifiedUser(session);
+      const repo = choices();
+      const facilities = (await repo.listFacilityChoices(userId)).map(({id, type, name, count}) => ({id, type, name, count}));
+      // The department table may be missing until migration 007 runs; facilities still work.
+      let departments = [], departmentsAvailable = true;
+      try { departments = (await repo.listDepartmentChoices(userId)).map(({key, count}) => ({key, count})); }
+      catch { departmentsAvailable = false; }
+      // The screen may reorder only while personalization is on; the records stay visible either way.
+      return {facilities, departments, departmentsAvailable, personalization: await personalizationOn(userId)};
+    },
+    async deleteChoices(session) {
+      const userId = requireVerifiedUser(session);
+      const repo = choices();
+      const facilities = await repo.deleteFacilityChoices(userId);
+      let departments = 0;
+      try { departments = await repo.deleteDepartmentChoices(userId); } catch { /* table not migrated: nothing stored */ }
+      return {facility_choices: facilities, department_choices: departments};
+    },
+    /**
+     * For ranking: facility ID → count, only for facilities used at least FREQUENT_CHOICE_MIN times.
+     * null for guests or when personalization is off.
+     */
+    async getFrequentFacilityCounts(session) {
+      if (!session?.user?.id) return null;
+      const userId = requireVerifiedUser(session);
+      if (!await personalizationOn(userId)) return null;
+      const rows = await choices().listFacilityChoices(userId);
+      return new Map(rows.filter(row => row.count >= FREQUENT_CHOICE_MIN).map(row => [row.id, row.count]));
     },
     async getBehaviorStatements(session) {
       const userId = requireVerifiedUser(session);

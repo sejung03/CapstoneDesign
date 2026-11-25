@@ -104,7 +104,7 @@ export async function warmCareLlm({loadEngine: load = loadEngine, refStore = asy
  *          now?:()=>number, newId?:()=>string}} deps
  */
 export function createCareHandler({loadEngine: load = loadEngine, sameOrigin, refStore = async () => null, env = process.env,
-  now = Date.now, newId = () => crypto.randomUUID()}) {
+  now = Date.now, newId = () => crypto.randomUUID(), frequentCounts = async () => null}) {
   const headers = {'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff'};
   const reply = (data, status = 200) => Response.json(data, {status, headers});
   return async (request) => {
@@ -121,7 +121,10 @@ export function createCareHandler({loadEngine: load = loadEngine, sameOrigin, re
     if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return reply({error: 'invalid_payload'}, 400);
     // 추천 순위는 엔진·LLM을 부르지 않는다(대화 내용을 쓰지 않음)
     if (payload.reason === 'recommendations') {
-      try { return reply(rankFacilities(payload)); } catch (e) { return reply({error: e instanceof RankingInputError ? 'invalid_candidates' : 'internal'}, e instanceof RankingInputError ? 400 : 500); }
+      // 로그인 사용자의 길찾기·전화번호 복사 횟수(서버 세션으로만 읽음). 못 읽으면 횟수 없이 순위를 낸다.
+      let counts = null;
+      try { counts = await frequentCounts(request); } catch { counts = null; }
+      try { return reply(rankFacilities(payload, {frequentCounts: counts})); } catch (e) { return reply({error: e instanceof RankingInputError ? 'invalid_candidates' : 'internal'}, e instanceof RankingInputError ? 400 : 500); }
     }
     let runCare;
     try { ({runCare} = await load()); } catch { return reply({error: 'engine_unavailable'}, 503); }

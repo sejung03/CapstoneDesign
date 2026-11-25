@@ -102,11 +102,11 @@ test('full delete covers only this user, both settings and favorites, and is rep
   await service.saveSettings(userA, {region: '가상시'});
   await service.saveFavorite(userA, {favorite: true, facility: sampleFacility()});
   await service.saveSettings(userB, {region: '가상시 다른구'});
-  assert.deepEqual(await service.deleteAll(userA), {favorites: 1, search_settings: 1});
+  assert.deepEqual(await service.deleteAll(userA), {favorites: 1, search_settings: 1, facility_choices: 0});
   assert.equal(await service.getSettings(userA), null);
   assert.deepEqual(await service.getFavorites(userA), []);
   assert.equal(await service.getPreferenceSignal(userA), null);
-  assert.deepEqual(await service.deleteAll(userA), {favorites: 0, search_settings: 0});
+  assert.deepEqual(await service.deleteAll(userA), {favorites: 0, search_settings: 0, facility_choices: 0});
   assert.equal((await service.getSettings(userB)).region, '가상시 다른구');
 });
 test('behavior statements connect user, relation, object and direct evidence, no health inference', async () => {

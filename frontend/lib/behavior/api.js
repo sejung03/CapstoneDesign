@@ -26,7 +26,7 @@ export function createBehaviorApi({repository, resolveSession, expectedOrigin = 
     try {
       const session = await resolveSession(request); // server-authenticated, never from body
       requireVerifiedUser(session);
-      if (['PATCH', 'PUT', 'DELETE'].includes(request.method)) {
+      if (['POST', 'PATCH', 'PUT', 'DELETE'].includes(request.method)) {
         const origin = request.headers.get('origin');
         const site = request.headers.get('sec-fetch-site');
         // Next may expose an internal hostname in request.url. The application
@@ -40,6 +40,10 @@ export function createBehaviorApi({repository, resolveSession, expectedOrigin = 
       if (action === 'signal' && request.method === 'GET') return json({signal: await service.getPreferenceSignal(session)});
       if (action === 'statements' && request.method === 'GET') return json({statements: await service.getBehaviorStatements(session)});
       if (action === 'all' && request.method === 'DELETE') return json({deleted: await service.deleteAll(session)});
+      if (action === 'facility-choice' && request.method === 'POST') return json(await service.recordFacilityChoice(session, await body(request)));
+      if (action === 'department-choice' && request.method === 'POST') return json(await service.recordDepartmentChoice(session, await body(request)));
+      if (action === 'choices' && request.method === 'GET') return json(await service.listChoices(session));
+      if (action === 'choices' && request.method === 'DELETE') return json({deleted: await service.deleteChoices(session)});
       return json({error: 'method_not_allowed'}, 405);
     } catch (error) {
       if (error?.name === 'AuthenticationError') return json({error: 'authentication_required'}, 401);

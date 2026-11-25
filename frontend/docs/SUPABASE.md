@@ -12,6 +12,8 @@
 ## 대시보드에서 필요한 작업
 
 1. Supabase SQL Editor에서 `supabase/migrations/202611150001_capstone_behavior.sql` 전체를 실행합니다. 새 테이블 3개, 사용자 소유 RLS 정책, 원자적 설정 변경·동의 저장·행동정보 삭제 함수와 즐겨찾기 20개 제한을 생성합니다. 기존 테이블은 수정하지 않습니다. 재실행 시 이미 존재한다는 오류가 나도록 구성했습니다.
+   - 이어서 `supabase/migrations/202611250001_capstone_facility_choice.sql`을 실행합니다(2026-11-25). 기관별 길찾기·전화번호 복사 횟수 표와 횟수 기록 함수를 만들고, 행동정보 전체 삭제 함수가 이 횟수도 지우도록 바꿉니다.
+   - 진료과 횟수는 `app` 스키마에 있습니다. `data_pipeline`에서 `python pipeline/06c_run_migrations.py db/migrations/007_app_department_choice.sql`로 적용합니다(002 이후). 적용 전에는 진료과 횟수만 기록되지 않고 나머지 기능은 그대로 동작합니다. 자세한 내용은 [행동 온톨로지 §9](BEHAVIOR_ONTOLOGY.md#9-2026-11-25-최소-행동-횟수-기록).
 2. Authentication → Sign In / Providers → Kakao에서 공급자를 활성화하고 카카오 REST API 키 및 Client Secret을 등록합니다. 기존 `.env`에 카카오 키가 있어도 Supabase 설정으로 자동 반영되지는 않습니다. 키를 채팅에 붙이지 마세요.
 3. Kakao Developers → 카카오 로그인 → Redirect URI에 다음을 등록합니다.
 

@@ -29,6 +29,13 @@ export function createBehaviorClient({fetchImpl = fetch, base = '/api/behavior'}
       disable: async ({signal} = {}) => (await call('settings', {method: 'PATCH', body: {personalization_enabled: false}, signal})).settings,
       deleteAll: async ({signal} = {}) => (await call('all', {method: 'DELETE', signal})).deleted,
     },
+    // Counts only. The server decides whether to record (login, personalization, health storage consent).
+    choices: Object.freeze({
+      recordFacility: async (facility, {signal} = {}) => call('facility-choice', {method: 'POST', body: {facility}, signal}),
+      recordDepartment: async (department, {signal} = {}) => call('department-choice', {method: 'POST', body: {department}, signal}),
+      list: async ({signal} = {}) => call('choices', {signal}),
+      clear: async ({signal} = {}) => (await call('choices', {method: 'DELETE', signal})).deleted,
+    }),
     signal: async ({signal} = {}) => (await call('signal', {signal})).signal,
     statements: async ({signal} = {}) => (await call('statements', {signal})).statements,
   });
