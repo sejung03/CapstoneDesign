@@ -1208,7 +1208,9 @@ function bindWorkspace(){
   state.search.criteria={...emptyCriteria(),region:state.draft.region,type:item.type,targetFacilityId:item.id,targetQuery:query};state.search.initialized=true;state.search.selectedId=null;navigate('explore');
  }));
  const composer=document.getElementById('composer-input');
- const enterChat=()=>{if(!hasHealthConsent(state)&&!state.healthConsent.open)requestHealthAccess('chat');};
+ // iOS Safari: 읽기 전용일 때 포커스를 받은 입력창은 포커스가 빠졌다 다시 들어오기 전까지 키보드를 띄우지 않는다.
+ // 동의 전 입력창을 누르면 포커스를 먼저 빼고 동의 창을 연다(동의 창이 닫힐 때 읽기 전용 입력창으로 포커스가 돌아오지 않게).
+ const enterChat=()=>{if(!hasHealthConsent(state)&&!state.healthConsent.open){const input=document.getElementById('composer-input');if(input&&document.activeElement===input)input.blur();requestHealthAccess('chat');}};
  listen(document.getElementById('voice-entry-record'),'medical:request-voice-consent',()=>{if(!state.healthConsent.open)requestHealthAccess('voice-entry');});
  listen(composer,'focus',()=>{Promise.resolve().then(()=>{if(document.activeElement===composer)enterChat();});});listen(composer,'click',enterChat);
  listen(document.getElementById('previous-report-intake'),'click',toggleIntake);
@@ -1224,7 +1226,7 @@ function bindWorkspace(){
   if(pending==='reportImport')state.reportImport.open=true;
   render();if(pending==='chat'&&starter){submitChatText(starter.text[state.locale]||starter.text.ko,starter);return;}
   if(pending==='voice-entry')document.getElementById('voice-entry-record')?.click();
-  if(pending==='chat')document.getElementById('composer-input')?.focus();
+  if(pending==='chat'){const input=document.getElementById('composer-input');if(input){if(document.activeElement===input)input.blur();input.focus();}} // iOS: 뺐다가 다시 넣어야 키보드가 뜬다
   if(pending==='profile')document.getElementById('profile-age')?.focus();
   if(pending==='reportImport')document.getElementById(state.reportImport.mode==='pdf'?'previous-report-file':'previous-report-text')?.focus();
  });
@@ -1238,9 +1240,10 @@ function bindWorkspace(){
  listen(document.getElementById('inline-facility-close'),'click',()=>{saveInputs();state.workspace.panel=null;state.routing.openId=null;render();});
  listen(document.getElementById('recommendations-retry'),'click',()=>{state.recommendations.key='';syncRecommendations();});
  listen(document.getElementById('start-intake'),'click',toggleIntake);
- listen(document.getElementById('new-conversation'),'click',function beginNewConversation(){
-  if(requestProfileExit(beginNewConversation))return;
-  if(!window.confirm(t('conversationNewConfirm')))return;
+ // ask=false: 지울 대화가 없을 때(로고로 첫 화면에 돌아갈 때) 확인 없이 초기화한다
+ function beginNewConversation({ask=true}={}){
+  if(requestProfileExit(()=>beginNewConversation({ask})))return;
+  if(ask&&!window.confirm(t('conversationNewConfirm')))return;
   saveInputs();resetAssistant(true);hoursController?.abort();discoveryController?.abort();locationController?.abort();
   releaseSearchSuggestions();releaseKakaoMap();routeBatchToken++;routeBatch='';
   recommendationController?.abort();recommendationSequence++;state.recommendations=createRecommendations();
@@ -1254,6 +1257,16 @@ function bindWorkspace(){
   const config=state.live;state.live={...createLiveState(),configured:config.configured,key:config.key,hoursConfigured:config.hoursConfigured,routingConfigured:config.routingConfigured,token:(config.token||0)+1};
   conversationVersion++;state.view='entry';render();
   (document.getElementById('voice-entry-record')||document.getElementById('conversation-title'))?.focus({preventScroll:true});
+ }
+ listen(document.getElementById('new-conversation'),'click',()=>beginNewConversation());
+ // 왼쪽 위 HearO 로고: 다른 웹처럼 첫 화면으로. 새로고침하면 동의·대화가 모두 사라지므로 페이지는 다시 불러오지 않고
+ // 새 대화와 같은 초기화를 한다. 진행 중인 대화가 있을 때만 확인을 묻는다. 새 탭으로 열기(Ctrl·가운데 클릭)는 그대로 둔다.
+ listen(document.getElementById('brand-home'),'click',event=>{
+  if(event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+  event.preventDefault();
+  const a=state.assistant;
+  const work=state.chat.messages.length>0||!!state.chat.intakeContext||!!a.response||(a.answers?.length||0)>0||!!state.workspace?.intake||state.reportImport.open||!!state.reportImport.confirmed||!!state.report?.saved;
+  beginNewConversation({ask:work});window.scrollTo({top:0,behavior:'instant'});
  });
  document.querySelectorAll('[data-workspace-facility]').forEach(button=>listen(button,'click',()=>{
   saveInputs();
