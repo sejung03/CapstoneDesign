@@ -900,7 +900,7 @@ function bindSearch(){
   });
  });
  document.querySelectorAll('[data-facility]').forEach(button=>listen(button,'click',()=>{
-  saveInputs();if(!state.search.selectedId)state.search.resultsScroll=document.querySelector('.facility-results')?.scrollTop||0;state.search.selectedId=button.dataset.facility;state.routing.openId=button.dataset.routeJump!==undefined?button.dataset.facility:null;rerenderSearch('detail-heading');
+  saveInputs();if(!state.search.selectedId)state.search.resultsScroll=document.querySelector('.facility-results')?.scrollTop||0;state.search.selectedId=button.dataset.facility;state.routing.openId=button.dataset.routeJump!==undefined?button.dataset.facility:null;if(state.routing.openId)recordFacilityChoice(state.routing.openId);rerenderSearch('detail-heading');
   const list=document.querySelector('.facility-results');if(list)list.scrollTop=0;
   if(button.dataset.routeJump!==undefined){document.getElementById('route-heading')?.focus({preventScroll:true});document.getElementById('route-heading')?.scrollIntoView({block:'nearest'});}
  }));

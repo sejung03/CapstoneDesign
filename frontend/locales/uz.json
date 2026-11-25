@@ -828,5 +828,7 @@
   "Departments applied to searches": "Qidiruvga qo‘llangan bo‘limlar",
   "Delete records": "Yozuvlarni o‘chirish",
   "Delete all place and department counts? Favorites and health information are kept.": "Barcha muassasa va bo‘lim hisoblarini o‘chirasizmi? Sevimlilar va sog‘liq ma’lumotlari saqlanib qoladi.",
-  "Records deleted.": "Yozuvlar o‘chirildi."
+  "Records deleted.": "Yozuvlar o‘chirildi.",
+  "Today is a public holiday ({0}). Opening status uses registered holiday hours.": "Bugun dam olish kuni ({0}). Ish holati ro‘yxatdan o‘tgan bayram kuni ish vaqti bo‘yicha ko‘rsatiladi.",
+  "Holiday data for this year is missing, so opening status uses weekday hours.": "Bu yil uchun bayram ma’lumotlari yo‘q, shuning uchun ish holati hafta kuni ish vaqti bo‘yicha ko‘rsatiladi."
 }

@@ -1,3 +1,4 @@
+import {isPublicHoliday} from './holidays.mjs';
 export function parsePublicHours(xml,Parser=globalThis.DOMParser){
  if(typeof xml!=='string'||xml.length>2000000||/<!DOCTYPE|<!ENTITY/i.test(xml))throw Error('hoursInvalidResponse');
  const doc=new Parser().parseFromString(xml,'application/xml');
@@ -37,13 +38,17 @@ function interval(slot){
  if(start===null||rawEnd===null||rawEnd===start)return null;
  return {start,end:rawEnd<start?rawEnd+1440:rawEnd};
 }
-export function evaluateSchedule(schedule,now=new Date(),{holiday=false}={}){
+// 공휴일(오늘·어제)은 holidays.mjs로 판정한다. 공휴일이면 공휴일 진료시간(8번)을 쓰고, 공휴일 시간이 등록되지 않은 기관은
+// 평일 시간으로 대신하지 않고 'unknown'(방문 전 확인)으로 둔다. 자정을 넘는 영업은 "어제"가 공휴일이었는지로 어제 칸을 고른다.
+// holiday·previousHoliday를 넘기면 그 값을 쓴다(테스트용). 목록에 없는 해(null)는 공휴일이 아닌 것으로 계산하고, 화면이 따로 안내한다.
+export function evaluateSchedule(schedule,now=new Date(),{holiday,previousHoliday}={}){
  const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',weekday:'short',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(now).map(p=>[p.type,p.value]));
  const weekday={Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6,Sun:7}[parts.weekday];
- const day=holiday?8:weekday,minute=Number(parts.hour)*60+Number(parts.minute);
+ const todayHoliday=(holiday??isPublicHoliday(now))===true,yesterdayHoliday=(previousHoliday??isPublicHoliday(now,-1))===true;
+ const day=todayHoliday?8:weekday,previousDay=yesterdayHoliday?8:(weekday===1?7:weekday-1),minute=Number(parts.hour)*60+Number(parts.minute);
  const current=interval(schedule.find(s=>s.day===day));
- const previous=holiday?null:interval(schedule.find(s=>s.day===(weekday===1?7:weekday-1)));
- if(previous&&previous.end>1440&&minute<previous.end-1440)return {status:'open',hours:formatSlot(schedule.find(s=>s.day===(weekday===1?7:weekday-1)))};
+ const previous=interval(schedule.find(s=>s.day===previousDay));
+ if(previous&&previous.end>1440&&minute<previous.end-1440)return {status:'open',hours:formatSlot(schedule.find(s=>s.day===previousDay))};
  if(!current)return {status:'unknown',hours:null};
  return {status:minute>=current.start&&minute<current.end?'open':'closed',hours:formatSlot(schedule.find(s=>s.day===day))};
 }

@@ -1,5 +1,6 @@
 import {renderNearerHospitals} from './discovery.mjs';
 import {departmentCatalog} from './departments.mjs';
+import {isPublicHoliday} from './holidays.mjs';
 import {renderFacilityIllustration} from './facility-art.mjs';
 import {uiIcon} from './ui-icons.mjs';
 import {renderRoutePanel,routeEntry,routeDistance} from './routing.mjs';
@@ -17,7 +18,7 @@ export function renderFacilityPhoto(item,t,escape,{detail=false,locale='ko'}={})
 export function renderWeeklyHours(schedule,locale,t,escape,{now=new Date()}={}){
  if(!schedule)return '';
  const weekday=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',weekday:'short'}).format(now);
- const today={Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6,Sun:7}[weekday];
+ const today=isPublicHoliday(now)===true?8:{Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6,Sun:7}[weekday];
  const labels=locale==='ko'?['','월','화','수','목','금','토','일','공휴일']:['','Mon','Tue','Wed','Thu','Fri','Sat','Sun','Holiday'];
  return '<div class="weekly-hours">'+schedule.map(slot=>'<span'+(slot.day===today?' class="is-today" aria-current="date"':'')+'>'+labels[slot.day]+' '+escape(formatSlot(slot)||t('unknown'))+'</span>').join('')+'</div>';
 }

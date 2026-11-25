@@ -831,5 +831,7 @@
   "Departments applied to searches": "Chuyên khoa đã áp dụng vào tìm kiếm",
   "Delete records": "Xóa bản ghi",
   "Delete all place and department counts? Favorites and health information are kept.": "Xóa toàn bộ số lần của cơ sở và chuyên khoa? Mục yêu thích và thông tin sức khỏe vẫn được giữ lại.",
-  "Records deleted.": "Đã xóa bản ghi."
+  "Records deleted.": "Đã xóa bản ghi.",
+  "Today is a public holiday ({0}). Opening status uses registered holiday hours.": "Hôm nay là ngày lễ ({0}). Trạng thái mở cửa được hiển thị theo giờ làm việc ngày lễ đã đăng ký.",
+  "Holiday data for this year is missing, so opening status uses weekday hours.": "Thiếu dữ liệu ngày lễ của năm nay nên trạng thái mở cửa được hiển thị theo giờ làm việc trong tuần."
 }

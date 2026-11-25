@@ -828,5 +828,7 @@
   "Departments applied to searches": "在搜索中应用的科室",
   "Delete records": "删除记录",
   "Delete all place and department counts? Favorites and health information are kept.": "要删除所有机构和科室的次数记录吗？收藏和健康信息将保留。",
-  "Records deleted.": "已删除记录。"
+  "Records deleted.": "已删除记录。",
+  "Today is a public holiday ({0}). Opening status uses registered holiday hours.": "今天是公休日（{0}）。营业状态按登记的公休日时间显示。",
+  "Holiday data for this year is missing, so opening status uses weekday hours.": "缺少今年的公休日信息，因此营业状态按星期时间显示。"
 }

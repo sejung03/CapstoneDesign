@@ -3,6 +3,7 @@ import {phrase} from '../i18n.mjs';
 import {useState} from 'react';
 import {renderFacilityIllustration} from '../facility-art.mjs';
 import {formatSlot} from '../public-hours.mjs';
+import {isPublicHoliday} from '../holidays.mjs';
 import {facilityAddress,facilityDistanceKm} from '../live-data.mjs';
 import {routeEntry,routeDistance} from '../routing.mjs';
 import {recommendationReasons} from '../care-context.mjs';
@@ -33,7 +34,8 @@ export function FacilityCard({state,item,index,focusedId,t}){
 }
 export const hasHours=item=>!!item?.schedule?.some(slot=>formatSlot(slot));
 export function WeeklyHours({schedule,locale,t,now=new Date()}){
- const weekday=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',weekday:'short'}).format(now),today={Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6,Sun:7}[weekday];
+ // 공휴일에는 요일 대신 '공휴일' 줄이 오늘이다(운영 여부 판단과 같은 기준, public-hours.mjs)
+ const weekday=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',weekday:'short'}).format(now),today=isPublicHoliday(now)===true?8:{Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6,Sun:7}[weekday];
  const labels=locale==='ko'?['','월','화','수','목','금','토','일','공휴일']:['','Mon','Tue','Wed','Thu','Fri','Sat','Sun','Holiday'].map(value=>value?phrase(locale,value):'');
  return <div className="weekly-hours">{schedule.map((slot,i)=><span key={slot.day+':'+i} className={slot.day===today?'is-today':undefined} aria-current={slot.day===today?'date':undefined}>{labels[slot.day]} {formatSlot(slot)||t('unknown')}</span>)}</div>;
 }

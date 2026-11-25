@@ -828,5 +828,7 @@
   "Departments applied to searches": "검색에 적용한 진료과",
   "Delete records": "기록 지우기",
   "Delete all place and department counts? Favorites and health information are kept.": "기관·진료과 횟수 기록을 모두 지울까요? 즐겨찾기와 건강정보는 지우지 않습니다.",
-  "Records deleted.": "기록을 지웠어요."
+  "Records deleted.": "기록을 지웠어요.",
+  "Today is a public holiday ({0}). Opening status uses registered holiday hours.": "오늘은 공휴일({0})이에요. 등록된 공휴일 진료시간으로 운영 여부를 표시해요.",
+  "Holiday data for this year is missing, so opening status uses weekday hours.": "올해 공휴일 정보가 없어 요일별 진료시간으로 운영 여부를 표시해요."
 }
