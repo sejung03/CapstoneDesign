@@ -523,6 +523,7 @@ function bindAssistant(){
   if(!response?.search||a.applied||response.sourceKey!==assistantInputKey(state))return;
   const {mode,...plan}=response.search,criteria={...state.search.criteria,targetFacilityId:null,targetQuery:null,...plan,sort:'distance'};
   if(Object.hasOwn(plan,'type')&&plan.type!==state.type&&!Object.hasOwn(plan,'department'))criteria.department='all';
+  if(!Object.hasOwn(plan,'departments'))delete criteria.departments; // 이전 문진의 2순위 진료과를 남기지 않는다
   if(Object.hasOwn(plan,'region')){
    delete criteria.center;
    if(!plan.region&&state.live.position)criteria.center={lat:state.live.position.lat,lng:state.live.position.lng};
@@ -874,7 +875,7 @@ function bindSearch(){
   saveInputs();state.search.origin='manual';state.search.criteria.targetFacilityId=null;state.search.criteria.targetQuery=null;state.search.focusedId=null;const key=button.dataset.removeFilter;
   if(key==='region'){state.draft.region='';state.search.criteria.region='';}
   if(key==='type'){state.type='all';state.search.criteria.type='all';}
-  if(key==='department'){state.search.department='all';state.search.criteria.department='all';}
+  if(key==='department'){state.search.department='all';state.search.criteria.department='all';delete state.search.criteria.departments;}
   if(key==='openOnly'){state.search.openOnly=false;state.search.criteria.openOnly=false;}
   const results=displayedFacilities(state,searchFacilities);
   if(!results.some(item=>item.id===state.search.selectedId))state.search.selectedId=null;

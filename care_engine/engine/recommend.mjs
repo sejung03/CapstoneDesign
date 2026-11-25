@@ -60,6 +60,9 @@ export function recommend({symptom, filter, injuryAnswer = false, data}) {
       departments = pick(data.fallbackDepartments.get('general') ?? []);
     }
   }
-  const search = departments.length > 0 ? {type: 'hospital', department: departments[0].searchKey} : {type: 'hospital'};
+  // 11/25: 1·2순위 진료과를 함께 검색하도록 departments에 담는다(검색 키가 다를 때만). department는 1순위 그대로.
+  const searchKeys = [...new Set(departments.map((d) => d.searchKey))].slice(0, 2);
+  const search = departments.length > 0 ? {type: 'hospital', department: searchKeys[0]} : {type: 'hospital'};
+  if (searchKeys.length > 1) search.departments = searchKeys;
   return {departments, group, search};
 }

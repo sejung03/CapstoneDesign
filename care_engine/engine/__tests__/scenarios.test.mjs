@@ -69,7 +69,7 @@ test('경로 결과: 약국 키워드·사전·LLM·LLM 실패·약 의도·기�
   assert.equal(area.finalTrace.symptom.source, 'area_pick');
   assert.equal(fail.finalTrace.symptom.fallbackGroup, 'general');
   assert.ok(fail.final.summary.ko.includes('주된 증상: 목록에서 찾지 못함'));
-  assert.deepEqual((await get('fallback_injury')).final.search, {type: 'hospital', department: 'orthopedics'});
+  assert.deepEqual((await get('fallback_injury')).final.search, {type: 'hospital', department: 'orthopedics', departments: ['orthopedics', 'dermatology']});
   assert.ok((await get('keyword_symptom_cue')).asked[0] === 'Q0');
   assert.deepEqual((await get('med_pharmacy')).final, {search: {type: 'pharmacy', department: 'pharmacy'}});
   assert.ok((await get('med_info')).final.summary.ko.includes('약사나 의사에게'));
@@ -111,7 +111,7 @@ test('응급: Q0=예 → E 문항 → emergency + 119 정리, N1 모름 → 긴�
 });
 
 test('대상: 아이 → 소아청소년과, 남성 → 산부인과 없음(같은 증상 여성은 있음), 아이 + 증상 모름 → general', async () => {
-  assert.deepEqual((await get('child_known')).final.search, {type: 'hospital', department: 'pediatrics'});
+  assert.deepEqual((await get('child_known')).final.search, {type: 'hospital', department: 'pediatrics', departments: ['pediatrics', 'internal']});
   const male = await get('male');
   assert.ok(!male.final.summary.ko.includes('산부인과'));
   assert.ok((await get('female_adult')).final.summary.ko.includes('산부인과'));

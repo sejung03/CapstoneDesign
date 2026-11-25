@@ -3,6 +3,7 @@ import {normalizeHealthUpdates} from './health-updates.mjs';
 import {canUsePreviousReport} from './report-import.mjs';
 import {normalizeEmergency} from './emergency.mjs';
 import {departmentCatalog} from './departments.mjs';
+import {searchDepartments} from './facilities.mjs';
 import {travelModes} from './routing.mjs';
 import {normalizeIntakeQuestionnaire,intakeLabel} from './intake-data.mjs';
 export function createAssistantState(connected=false){
@@ -21,7 +22,8 @@ export function assistantContent(state){
 export function assistantContentKey(state){return JSON.stringify(assistantContent(state));}
 export function assistantSearchContext(state){
  const criteria=state.search?.criteria||{};
- return {region:criteria.region||'',type:criteria.type||'all',department:criteria.department||'all',openOnly:!!criteria.openOnly,mode:state.routing?.mode||'walk'};
+ const departments=searchDepartments(criteria);
+ return {region:criteria.region||'',type:criteria.type||'all',department:criteria.department||'all',...(departments.length>1?{departments}:{}),openOnly:!!criteria.openOnly,mode:state.routing?.mode||'walk'};
 }
 export function assistantInputKey(state){return JSON.stringify([assistantContent(state),assistantSearchContext(state)]);}
 export function normalizeAssistantResponse(raw,questionnaire=null){
@@ -43,7 +45,7 @@ export function normalizeAssistantResponse(raw,questionnaire=null){
  }
  if(raw.search!=null){
   const plan=raw.search;
-  if(typeof plan!=='object'||Array.isArray(plan)||Object.keys(plan).some(key=>!['region','type','department','openOnly','mode'].includes(key)))return fail();
+  if(typeof plan!=='object'||Array.isArray(plan)||Object.keys(plan).some(key=>!['region','type','department','departments','openOnly','mode'].includes(key)))return fail();
   search={};
   if(Object.hasOwn(plan,'region')){
    if(typeof plan.region!=='string'||plan.region.length>80)return fail();
@@ -61,6 +63,12 @@ export function normalizeAssistantResponse(raw,questionnaire=null){
     if(search.type&&search.type!==type)return fail();
     search.type=type;
    }
+  }
+  // 11/25 함께 검색할 1·2순위 진료과. 맨 앞은 department와 같고, 병원 진료과 2개만
+  if(Object.hasOwn(plan,'departments')){
+   const list=plan.departments;
+   if(!Array.isArray(list)||list.length!==2||new Set(list).size!==2||list[0]!==search.department||list.some(key=>key==='all'||key==='pharmacy'||!departmentCatalog.some(item=>item.key===key)))return fail();
+   search.departments=[...list];
   }
   if(Object.hasOwn(plan,'openOnly')){
    if(typeof plan.openOnly!=='boolean')return fail();
@@ -115,7 +123,7 @@ export function renderAssistant(state,t,escape){
   const plan=response.search,labels=[];
   if(Object.hasOwn(plan,'region'))labels.push(plan.region||t('intakeCurrentLocation'));
   if(plan.type)labels.push(t(plan.type==='all'?'all':plan.type==='hospital'?'hospitals':'pharmacies'));
-  if(plan.department)labels.push(t(plan.department==='all'?'allDepartments':plan.department));
+  if(plan.department)labels.push(plan.departments?plan.departments.map(key=>t(key)).join(' · '):t(plan.department==='all'?'allDepartments':plan.department));
   if(Object.hasOwn(plan,'openOnly'))labels.push(t(plan.openOnly?'openOnly':'assistantAnyHours'));
   if(plan.mode)labels.push(t({walk:'assistantWalk',traffic:'assistantTraffic',car:'assistantCar'}[plan.mode]));
   const current=response.sourceKey===assistantInputKey(state);

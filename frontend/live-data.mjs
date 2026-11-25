@@ -1,8 +1,9 @@
 import {phrase,expandLocales} from './i18n.mjs';
 import {departmentByKey,departmentFromCategory} from './departments.mjs';
 import {withCurrentHours} from './public-hours.mjs';
+import {searchDepartments} from './facilities.mjs';
 export function createLiveState(){return {configured:false,key:'',phase:'idle',items:[],error:'',hasMore:false,nextCategories:[],page:0,queryKey:'',token:0};}
-export function liveQueryKey(criteria){return JSON.stringify([String(criteria.region||'').trim(),criteria.type,criteria.department,criteria.center?.lat,criteria.center?.lng,criteria.targetFacilityId||null,criteria.targetQuery||null]);}
+export function liveQueryKey(criteria){return JSON.stringify([String(criteria.region||'').trim(),criteria.type,searchDepartments(criteria).join(','),criteria.center?.lat,criteria.center?.lng,criteria.targetFacilityId||null,criteria.targetQuery||null]);}
 export function liveCriteria(criteria){return {...criteria,openOnly:!!criteria.openOnly,priority:'provider',sort:['name','distance'].includes(criteria.sort)?criteria.sort:'recommended'};}
 export function placeQueries(criteria,categories){
  if(criteria.targetFacilityId&&criteria.targetQuery)return [{code:criteria.type==='pharmacy'?'PM9':'HP8',keyword:String(criteria.targetQuery).trim().slice(0,500)}];
@@ -12,7 +13,9 @@ export function placeQueries(criteria,categories){
  if(selected&&((selected.key==='pharmacy'&&criteria.type==='hospital')||(selected.key!=='pharmacy'&&criteria.type==='pharmacy')))return [];
  const departmentType=selected?[selected.key==='pharmacy'?'PM9':'HP8']:null;
  const kinds=categories||departmentType||(['hospital','pharmacy'].includes(criteria.type)?[criteria.type==='pharmacy'?'PM9':'HP8']:['HP8','PM9']);
- return kinds.map(code=>({code,keyword:region+' '+(code==='PM9'?'약국':selected?.keyword||'병원')}));
+ // 함께 찾는 진료과가 있으면 병원은 진료과마다 따로 검색해 결과를 합친다(kakao-client.mjs searchKakao)
+ const keywords=selected&&selected.key!=='pharmacy'?searchDepartments(criteria).map(key=>departmentByKey[key]?.keyword).filter(Boolean):[selected?.keyword||'병원'];
+ return kinds.flatMap(code=>code==='PM9'?[{code,keyword:region+' 약국'}]:keywords.map(keyword=>({code,keyword:region+' '+keyword})));
 }
 export function facilityAddress(item,locale='ko'){
  const road=String(item.roadAddress||'').trim(),registered=String(item.registeredAddress||'').trim();

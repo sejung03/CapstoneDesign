@@ -37,11 +37,18 @@ export function rankFacilities(payload,{frequentCounts=null}={}){
  const target=payload?.search?.department;
  const name=typeof target==='string'?departmentName(target):null;
  if(!name||target==='pharmacy'||payload?.search?.type==='pharmacy')return counts.size?byFrequencyOnly():empty;
+ // 11/25 1·2순위 진료과를 함께 검색했으면 1순위 무리(0·1) 뒤에 2순위 무리(2·3)를 둔다
+ const also=payload?.search?.departments;
+ const targets=Array.isArray(also)&&also.length===2&&also[0]===target&&also[1]!==target&&also[1]!=='pharmacy'&&departmentName(also[1])?[target,also[1]]:[target];
  const scored=[];
  for(const {item,order} of open){
   const departments=Array.isArray(item.departments)?item.departments:[];
-  if(item.department===target)scored.push({group:0,order,facilityId:item.facilityId,reason:`문진에서 안내한 ${name}가 대표 진료과인 곳이에요.`});
-  else if(departments.includes(target))scored.push({group:1,order,facilityId:item.facilityId,reason:`${name} 진료가 확인된 곳이에요.`});
+  const main=targets.findIndex(key=>item.department===key),confirmed=targets.findIndex(key=>departments.includes(key));
+  const rank=main>=0&&(confirmed<0||main<=confirmed)?main:confirmed;
+  if(rank<0)continue;
+  const label=departmentName(targets[rank]),guide=rank===0?'문진에서 안내한':'문진에서 함께 안내한';
+  if(rank===main)scored.push({group:rank*2,order,facilityId:item.facilityId,reason:`${guide} ${label}가 대표 진료과인 곳이에요.`});
+  else scored.push({group:rank*2+1,order,facilityId:item.facilityId,reason:`${label} 진료가 확인된 곳이에요.`});
  }
  // 진료과에 맞는 곳이 없으면 무리가 하나뿐이다 → 횟수로만
  if(!scored.length)return counts.size?byFrequencyOnly():empty;

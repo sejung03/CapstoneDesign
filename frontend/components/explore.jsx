@@ -3,7 +3,7 @@ import {departmentCatalog} from '../departments.mjs';
 import {orderedDepartments} from '../choices.mjs';
 import {isPublicHoliday,publicHolidayName} from '../holidays.mjs';
 import {displayedFacilities} from '../live-data.mjs';
-import {searchFacilities,selectedFacility} from '../facilities.mjs';
+import {searchFacilities,selectedFacility,searchDepartments} from '../facilities.mjs';
 import {Icon,Input,Select,Check} from './shared.jsx';
 import {FacilityCard,FacilityDetail,hasHours} from './facility.jsx';
 export function KakaoMap({state,t}){
@@ -30,7 +30,7 @@ function SearchContext({state,t}){
 }
 function SearchTools({state,t}){
  const search=state.search,c=search.criteria,chips=[];
- if(c.region)chips.push(['region',c.region]);if(c.type!=='all')chips.push(['type',t(c.type==='pharmacy'?'pharmacies':'hospitals')]);if(c.department!=='all')chips.push(['department',t(c.department)]);if(c.openOnly)chips.push(['openOnly',t('openOnly')]);
+ if(c.region)chips.push(['region',c.region]);if(c.type!=='all')chips.push(['type',t(c.type==='pharmacy'?'pharmacies':'hospitals')]);if(c.department!=='all')chips.push(['department',searchDepartments(c).map(key=>t(key)).join(' · ')]);if(c.openOnly)chips.push(['openOnly',t('openOnly')]);
  const near=state.source==='live'&&c.center&&!c.region;
  return <div className="finder-tools"><div className="filter-chips" aria-label={t('activeFilters')}>{near&&<span className="all-conditions">{t(search.origin==='location'?'nearbyArea':'mapAreaSearch')}</span>}{chips.map(([key,label])=><button key={key} type="button" className="filter-chip" data-remove-filter={key} aria-label={t('removeFilter')+' '+label}>{label}<span aria-hidden="true">×</span></button>)}{!near&&!chips.length&&<span className="all-conditions">{t('allConditions')}</span>}</div><button className="text-button reset-filters" data-reset="">{t('resetShort')}</button><div className="display-tabs" role="group" aria-label={t('displayMode')}><button id="display-map" className={search.display==='map'?'active':''} aria-pressed={search.display==='map'}><Icon name="map" />{t('mapTab')}</button><button id="display-list" className={search.display==='list'?'active':''} aria-pressed={search.display==='list'}>{t('listTab')}</button></div></div>;
 }

@@ -12,7 +12,7 @@ export const FRONTEND_DEPARTMENT_KEYS = Object.freeze([
   'radiation', 'pathology', 'laboratory', 'occupational', 'nuclear', 'preventive', 'tuberculosis', 'dental', 'korean', 'pharmacy',
 ]);
 const TRAVEL_MODES = ['walk', 'traffic', 'car'];
-const SEARCH_KEYS = ['region', 'type', 'department', 'openOnly', 'mode'];
+const SEARCH_KEYS = ['region', 'type', 'department', 'departments', 'openOnly', 'mode'];
 // 11/18 재설계: progress = 증상 확인 뒤 상세 질문의 진행 {current, total}(followUp과 함께만)
 const RESPONSE_KEYS = ['summary', 'followUp', 'search', 'emergency', 'profileUpdates', 'progress'];
 const ID_RE = /^[a-zA-Z0-9_-]{1,80}$/;
@@ -56,6 +56,12 @@ function checkSearch(s, errors) {
       const type = s.department === 'pharmacy' ? 'pharmacy' : 'hospital';
       if ('type' in s && s.type !== type) errors.push('search: type과 department 불일치');
     }
+  }
+  // 11/25 departments: 함께 검색할 진료과(1순위가 맨 앞, 2개). 병원 진료과만, 겹치지 않게
+  if ('departments' in s) {
+    const d = s.departments;
+    if (!Array.isArray(d) || d.length !== 2 || new Set(d).size !== d.length || d[0] !== s.department
+      || d.some((k) => k === 'all' || k === 'pharmacy' || !FRONTEND_DEPARTMENT_KEYS.includes(k))) errors.push('search.departments');
   }
   if ('openOnly' in s && typeof s.openOnly !== 'boolean') errors.push('search.openOnly');
   if ('mode' in s && !TRAVEL_MODES.includes(s.mode)) errors.push('search.mode');

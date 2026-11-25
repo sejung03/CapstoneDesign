@@ -9,6 +9,12 @@ export const facilities = [
  {id:'sample-f',name:expandLocales({ko:'예시 내과 F',en:'Sample Internal Medicine F'}),type:'hospital',department:'internal',area:expandLocales({ko:'춘천시 후평동',en:'Hupyeong-dong, Chuncheon'}),region:'강원특별자치도 춘천시 후평동',distance:2.8,status:'closed',hours:'09:00–18:00',x:83,y:25,access:expandLocales({ko:'건물 1층 예시',en:'Sample ground-floor location'})}
 ];
 export const emptyCriteria = () => ({region:'',type:'all',department:'all',openOnly:false,sort:'distance'});
+// 11/25 문진이 안내한 1·2순위 진료과를 함께 검색한다(criteria.departments). 맨 앞이 지금 진료과(department)일 때만 쓴다:
+// 사용자가 진료과를 바꾸면 자동으로 한 과 검색으로 돌아간다.
+export function searchDepartments(criteria){
+ const list=criteria?.departments,department=criteria?.department||'all';
+ return Array.isArray(list)&&list.length>1&&list[0]===department&&department!=='all'&&department!=='pharmacy'?list:[department];
+}
 const normalize = value => String(value).toLocaleLowerCase().replace(/\s+/g,'');
 export function searchFacilities(criteria,items=facilities){
  const terms=String(criteria.region??'').trim().split(/\s+/).filter(Boolean).map(normalize);
@@ -16,7 +22,7 @@ export function searchFacilities(criteria,items=facilities){
   const haystack=normalize(item.region+' '+item.name.ko+' '+item.name.en+' '+item.area.en);
   return terms.every(term=>haystack.includes(term))
    && (criteria.type==='all'||item.type===criteria.type)
-   && (criteria.department==='all'||item.department===criteria.department)
+   && (criteria.department==='all'||searchDepartments(criteria).includes(item.department))
    && (!criteria.openOnly||item.status==='open');
  });
  return results.sort((a,b)=>{

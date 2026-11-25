@@ -17,7 +17,7 @@ export function AssistantResult({state,t,voiceVolume=0,voiceFollowups=false,onRe
  else if(r.contentKey!==assistantContentKey(state))content=<p>{t('assistantOutdated')}</p>;
  else{
   const plan=r.search,labels=[];
-  if(plan){if(Object.hasOwn(plan,'region'))labels.push(plan.region||t('intakeCurrentLocation'));if(plan.type)labels.push(t(plan.type==='all'?'all':plan.type==='hospital'?'hospitals':'pharmacies'));if(plan.department)labels.push(t(plan.department==='all'?'allDepartments':plan.department));if(Object.hasOwn(plan,'openOnly'))labels.push(t(plan.openOnly?'openOnly':'assistantAnyHours'));if(plan.mode)labels.push(t({walk:'assistantWalk',traffic:'assistantTraffic',car:'assistantCar'}[plan.mode]));}
+  if(plan){if(Object.hasOwn(plan,'region'))labels.push(plan.region||t('intakeCurrentLocation'));if(plan.type)labels.push(t(plan.type==='all'?'all':plan.type==='hospital'?'hospitals':'pharmacies'));if(plan.department)labels.push(plan.departments?plan.departments.map(key=>t(key)).join(' · '):t(plan.department==='all'?'allDepartments':plan.department));if(Object.hasOwn(plan,'openOnly'))labels.push(t(plan.openOnly?'openOnly':'assistantAnyHours'));if(plan.mode)labels.push(t({walk:'assistantWalk',traffic:'assistantTraffic',car:'assistantCar'}[plan.mode]));}
   const current=r.sourceKey===assistantInputKey(state);
   const spoken=voiceEnabled&&current&&r.followUp&&[
     label(r.followUp.label),

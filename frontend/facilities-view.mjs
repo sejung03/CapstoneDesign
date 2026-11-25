@@ -7,7 +7,7 @@ import {renderRoutePanel,routeEntry,routeDistance} from './routing.mjs';
 import {formatSlot} from './public-hours.mjs';
 import {displayedFacilities,facilityAddress,distanceInKm} from './live-data.mjs';
 import {recommendationReasons} from './care-context.mjs';
-import {searchFacilities,selectedFacility} from './facilities.mjs';
+import {searchFacilities,selectedFacility,searchDepartments} from './facilities.mjs';
 
 export function renderFacilityPhoto(item,t,escape,{detail=false,locale='ko'}={}){
  const src=typeof item.photo?.src==='string'&&(/^(?:\.\/)?[\w/-]+\.(?:png|jpe?g|webp)$/i.test(item.photo.src)||/^https:\/\/[a-z0-9.-]+(?:\/[^\s<>\x22\x27\\]*)?$/i.test(item.photo.src))?item.photo.src:'';
@@ -68,7 +68,7 @@ export function renderExplore(state,t,icon,escape){
  if(isLive&&criteria.center&&!criteria.region)chips.push('<span class="all-conditions">'+t(search.origin==='location'?'nearbyArea':'mapAreaSearch')+'</span>');
  if(criteria.region)chips.push(chip('region',criteria.region));
  if(criteria.type!=='all')chips.push(chip('type',t(criteria.type==='pharmacy'?'pharmacies':'hospitals')));
- if(criteria.department!=='all')chips.push(chip('department',t(criteria.department)));
+ if(criteria.department!=='all')chips.push(chip('department',searchDepartments(criteria).map(key=>t(key)).join(' · ')));
  if(criteria.openOnly)chips.push(chip('openOnly',t('openOnly')));
  const appliedContext=(search.origin==='chat'||search.origin==='profile')?'<div class="recommendation-context"><span class="context-dot"></span><strong>'+t(search.origin==='chat'?'chatApplied':'profileApplied')+'</strong><span>'+t(isLive?'liveOrderNote':search.criteria.sort==='recommended'?'recommendationNote':'appliedConditionsCopy')+'</span>'+(state.suggestion?.hasConditions?'<button id="review-conditions" class="text-button">'+t('reviewConditions')+'</button>':'')+'</div>':'';
  const context=state.chat?.intakeContext?'<div class="recommendation-context intake-search-context"><span class="context-dot"></span><strong>'+t('intakeDelivered')+'</strong><span>'+t('currentOrder')+' '+t(criteria.sort==='distance'?'distanceSort':criteria.sort==='name'?'nameSort':isLive?'liveSort':'recommendationSort')+'</span><button id="review-intake" class="text-button">'+t('intakeReviewAnswers')+'</button></div>'+appliedContext:appliedContext;

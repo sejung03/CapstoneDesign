@@ -39,7 +39,7 @@ export async function searchKakao(key,criteria,{page=1,categories,api,timeoutMs=
   }else places.keywordSearch(query.keyword,callback,{category_group_code:query.code,size:15,page});}catch{clearTimeout(timer);reject(Error('searchFailed'));}
  })));
  const rows=batches.flatMap(batch=>batch.items),target=criteria.targetFacilityId,items=target?rows.filter(item=>item.id===target):rows;
- return {items,hasMore:(!target||!items.length)&&batches.some(batch=>batch.hasNext),nextCategories:batches.filter(batch=>batch.hasNext).map(batch=>batch.code),page};
+ return {items,hasMore:(!target||!items.length)&&batches.some(batch=>batch.hasNext),nextCategories:[...new Set(batches.filter(batch=>batch.hasNext).map(batch=>batch.code))],page};
 }
 
 export async function suggestKakaoPlaces(key,keyword,{center,signal,api,timeoutMs=5000}={}){

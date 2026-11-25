@@ -154,7 +154,7 @@ test('skip: Q0만 답한 직후 → 요약 첫 줄에 안전 질문 미응답 �
   const r = ok(out);
   assert.ok(r.summary.ko.startsWith('응급 확인 질문에 답하지 않았습니다.'));
   assert.ok(r.summary.ko.includes('주된 증상: 목록에서 찾지 못함'));
-  assert.deepEqual(r.search, {type: 'hospital', department: 'internal'});
+  assert.deepEqual(r.search, {type: 'hospital', department: 'internal', departments: ['internal', 'family']});
   assert.equal(out.trace.symptom.source, 'skip');
   assert.equal(out.trace.symptom.fallbackGroup, 'general');
   assert.equal(calls.classify.length, 0);

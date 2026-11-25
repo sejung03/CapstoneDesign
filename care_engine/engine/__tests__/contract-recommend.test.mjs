@@ -48,6 +48,7 @@ const GOOD = {
 test('계약 검사: 맞는 응답 통과', () => {
   assert.deepEqual(checkResponseContract(GOOD), {ok: true, errors: []});
   assert.ok(checkResponseContract({search: {type: 'pharmacy', department: 'pharmacy'}}).ok);
+  assert.ok(checkResponseContract({search: {type: 'hospital', department: 'internal', departments: ['internal', 'family']}}).ok);
   assert.ok(checkResponseContract({emergency: {active: true}}).ok);
   assert.ok(checkResponseContract({summary: {ko: '가'.repeat(2000)}}).ok);
 });
@@ -64,6 +65,8 @@ test('계약 검사: 위반 응답 거부', () => {
     {search: {}}, {search: {priority: 'distance'}}, {search: {department: 'xyz'}},
     {search: {type: 'pharmacy', department: 'internal'}}, {search: {type: 'hospital', department: 'pharmacy'}},
     {search: {openOnly: 'yes'}}, {search: {mode: 'bike'}}, {search: {region: 'a'.repeat(81)}}, {search: {type: 'clinic'}},
+    {search: {department: 'internal', departments: ['family', 'internal']}}, {search: {department: 'internal', departments: ['internal']}},
+    {search: {department: 'internal', departments: ['internal', 'pharmacy']}}, {search: {department: 'internal', departments: ['internal', 'internal']}},
     {emergency: {title: {ko: 'x'}}}, {emergency: {active: true, videos: []}}, {emergency: {active: true, topicId: 'cpr'}},
     {emergency: {active: true, title: {ko: '가'.repeat(121)}}}, {emergency: {active: true, message: {ko: '가'.repeat(1001)}}},
     {profileUpdates: Array.from({length: 5}, (_, i) => ({...GOOD.profileUpdates[0], id: `a${i}`}))},
@@ -84,7 +87,10 @@ test('추천: variant rank 순 최대 3개, DB 함수와 같은 행', () => {
   assert.deepEqual(r.departments.map((d) => d.deptId), expected);
   assert.deepEqual(r.departments.map((d) => d.rank), expected.map((_, i) => i + 1));
   assert.equal(r.group, null);
-  assert.deepEqual(r.search, {type: 'hospital', department: r.departments[0].searchKey});
+  // 11/25: 1·2순위 진료과를 함께 검색한다(검색 키가 다를 때)
+  const keys = [...new Set(r.departments.map((d) => d.searchKey))].slice(0, 2);
+  assert.deepEqual(r.search, {type: 'hospital', department: keys[0], ...(keys.length > 1 ? {departments: keys} : {})});
+  assert.ok(checkResponseContract({search: r.search}).ok);
 });
 
 test('추천: 남성에게 산부인과 없음, 아이에게 소아청소년과', () => {
@@ -108,7 +114,7 @@ test('추천: fallback 증상·증상 모름·F2=예·소아 fallback, never_rec
   assert.deepEqual(recommend({symptom: null, filter: filter('unknown', 'unknown'), data}).departments.map((d) => d.deptId), ['internal_medicine', 'family_medicine']);
   const inj = recommend({symptom: null, filter: filter('unknown', 'adult'), injuryAnswer: true, data});
   assert.equal(inj.group, 'injury');
-  assert.deepEqual(inj.search, {type: 'hospital', department: 'orthopedics'});
+  assert.deepEqual(inj.search, {type: 'hospital', department: 'orthopedics', departments: ['orthopedics', 'dermatology']});
   const t04 = ref.symptoms.get('T04');
   assert.equal(t04.fallbackGroup, 'pediatric');
   const ped = recommend({symptom: t04, filter: filter('unknown', 'child'), data});
