@@ -67,10 +67,10 @@ test('React components preserve intake, search, maps, chat, report and privacy',
   await waitFor(()=>el('composer-attach'));
   assert.equal(w.medicalDev,undefined);assert.equal(el('intake-wizard'),null);assert.equal(el('workspace-panel'),null);assert.deepEqual([...d.querySelector('.header-actions').children].filter(node=>node.tagName!=='LABEL').map(node=>node.id||node.className),['language-select','header-nav','theme']);
   await t.test('welcome keeps one composer and an independent emergency action; attachment menu supports close and consent',async()=>{
-   assert.ok(d.querySelector('.primary-chat.is-welcome'));assert.equal(w.getComputedStyle(el('chat-messages')).display,'none');
+   assert.ok(d.querySelector('.primary-chat.is-welcome'));assert.equal(w.getComputedStyle(el('chat-messages')).display,'flex');assert.match(d.querySelector('.welcome-message').textContent,/HearO/);assert.equal(d.querySelector('.conversation-heading'),null);assert.ok(d.querySelector('.emergency-entry-bar #new-conversation'));
    assert.equal(el('open-explore'),null);assert.equal(el('start-intake'),null);assert.equal(el('start-health-chat'),null);assert.equal(el('start-report-import'),null);assert.equal(d.querySelectorAll('[data-conversation-starter]').length,4);assert.match(d.querySelector('[data-conversation-starter=pharmacy]').textContent,/약국/);assert.ok(el('emergency-open'));
-   click('composer-attach');await delay(0);assert.ok(el('start-report-import'));assert.ok(el('start-report-paste'));assert.equal(el('health-consent-card'),null);
-   el('start-report-paste').dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));await delay(0);assert.equal(el('composer-attachment-menu'),null);assert.equal(d.activeElement,el('composer-attach'));
+   click('composer-attach');await delay(0);assert.ok(el('start-report-import'));assert.equal(el('start-report-paste'),null);assert.equal(el('health-consent-card'),null);
+   el('start-report-import').dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));await delay(0);assert.equal(el('composer-attachment-menu'),null);assert.equal(d.activeElement,el('composer-attach'));
    click('composer-attach');await delay(0);d.body.dispatchEvent(new w.Event('pointerdown',{bubbles:true}));await delay(0);assert.equal(el('composer-attachment-menu'),null);
    click('composer-attach');await delay(0);click('start-report-import');await delay(0);assert.ok(el('health-consent-card'));assert.equal(el('chat-consent-dialog'),null);assert.equal(el('previous-report-file'),null);assert.equal(el('composer-attachment-menu'),null);
    click('health-consent-close');assert.equal(el('health-consent-card'),null);assert.equal(el('intake-wizard'),null);
@@ -201,11 +201,11 @@ test('React components preserve intake, search, maps, chat, report and privacy',
   await t.test('report import stays blocked while the engine notice does not cover previous reports',async()=>{
    // 문진 엔진 연결 중에는 처리 안내가 allowReportImport:true일 때만 가져올 수 있다(report-import.mjs canUsePreviousReport).
    // 지금 외부 AI 안내(careAiHealthNotice)에는 이 허용이 없어서 편집기 대신 안내 확인 문구만 나온다.
-   click('composer-attach');await delay(0);assert.ok(el('start-report-import'));click('start-report-paste');await delay(0);
+   click('composer-attach');await delay(0);assert.ok(el('start-report-import'));click('start-report-import');await delay(0);
    assert.equal(el('previous-report-text'),null);assert.match(d.querySelector('.previous-report-card[role=status]').textContent,/처리 안내/);assert.equal(w.__qa.care.length,1);
   });
   await t.test('pasted report is reviewed before use and remains historical context',{skip:'needs a health notice with allowReportImport while the engine is connected'},async()=>{
-   click('composer-attach');await delay(0);assert.ok(el('start-report-import'));click('start-report-paste');await delay(0);assert.ok(el('previous-report-text'));assert.equal(el('previous-report-context'),null);
+   click('composer-attach');await delay(0);assert.ok(el('start-report-import'));click('start-report-import');await delay(0);assert.ok(el('previous-report-text'));assert.equal(el('previous-report-context'),null);
    input('previous-report-text','진료 전에 보여줄 내용\n과거 증상 <img src=x>');await delay(0);
    assert.equal(el('composer-attachment-menu'),null);assert.equal(el('previous-report-editor').hidden,false);assert.match(el('previous-report-text').value,/과거 증상/);
    assert.equal(el('previous-report-form').querySelector('button[type="submit"]').disabled,true);
@@ -220,6 +220,10 @@ test('React components preserve intake, search, maps, chat, report and privacy',
    d.querySelector('[data-assistant-option="no"]').click();await waitFor(()=>el('assistant-apply'));
    assert.deepEqual(w.__qa.care.at(-1).followUpAnswers.map(answer=>[answer.questionId,answer.value]),[['MOCK_Q1','yes'],['MOCK_Q2','no']]);
    assert.match(d.querySelector('.assistant-summary-text').textContent,/not executable/);assert.equal(d.querySelector('.assistant-result script'),null);
+   // 문진이 끝나면 정리본 PDF를 받을지 묻는 카드가 나오고, 대화 화면에서 바로 인쇄한다
+   assert.match(el('pdf-offer-title').textContent,/PDF/);const printsBefore=w.__qa.prints;click('care-pdf-print');assert.equal(w.__qa.prints,printsBefore+1);assert.ok(d.body.classList.contains('print-care-sheet'));
+   w.dispatchEvent(new w.Event('afterprint'));assert.equal(d.body.classList.contains('print-care-sheet'),false);assert.ok(d.querySelector('.chat-print-root .health-print-sheet'));
+   click('care-pdf-dismiss');assert.equal(el('pdf-offer-title'),null);assert.ok(el('care-pdf-print'));
    click('assistant-apply');await waitFor(()=>d.querySelectorAll('.conversation-facility').length===2&&el('conversation-map'));
    assert.equal(el('workspace-panel'),null);click('conversation-map');await waitFor(()=>d.querySelectorAll('[data-card]').length===2);
    assert.match(d.querySelector('.assistant-answer-history').textContent,/엔진 질문 1/);assert.match(d.querySelector('.assistant-answer-history').textContent,/아니요/);
@@ -282,7 +286,8 @@ test('React components preserve intake, search, maps, chat, report and privacy',
    el('workspace-splitter').dispatchEvent(new w.MouseEvent('dblclick',{bubbles:true}));await delay(0);assert.equal(el('workspace-splitter').getAttribute('aria-valuenow'),'70');
    key('ArrowLeft');await delay(0);assert.equal(el('workspace-splitter').getAttribute('aria-valuenow'),'68');assert.equal(w.__qa.maps,maps);assert.equal(w.__qa.searches.length,searches);assert.equal(w.__qa.routes.length,routes);
    assert.equal(el('workspace-expand'),null);
-   assert.equal(d.querySelector('.emergency-entry-bar'),null);
+   // 지도 패널이 열리면 응급 도움은 패널 도구줄로 가고, 위 줄에는 새 대화만 남는다
+   assert.equal(d.querySelector('.emergency-entry-bar #emergency-open'),null);assert.ok(d.querySelector('.emergency-entry-bar #new-conversation'));
    assert.equal(el('emergency-open').parentElement,el('workspace-close').parentElement);
    assert.equal(d.querySelectorAll('#emergency-open').length,1);
    click('emergency-open');assert.ok(el('emergency-dialog')?.open);
@@ -297,13 +302,14 @@ test('React components preserve intake, search, maps, chat, report and privacy',
    click('search-suggestion-0');await waitFor(()=>d.querySelectorAll('[data-card]').length>0);
    assert.ok(w.__qa.searches.some(query=>query.includes('테스트')));assert.equal(w.__qa.maps,maps);await delay(350);assert.equal(el('search-suggestions').hidden,true);
   });
-  await t.test('profile exports saved health information with the questionnaire summary without opening the report',async()=>{
+  await t.test('profile print sheet holds saved health information with the questionnaire summary',async()=>{
    d.querySelector('button[data-view="profile"]').click();assert.ok(el('profile-form'));assert.equal(el('profile-report-open'),null);assert.equal(el('info-current-report'),null);assert.equal(el('info-settings'),null);assert.equal(el('profile-nickname'),null);
    assert.ok(el('account-open').classList.contains('primary-button'));assert.match(w.getComputedStyle(d.querySelector('.info-health')).gridTemplateColumns,/repeat\(2/);
    input('profile-age','27');input('profile-sex','female');input('profile-allergies','저장한 건강정보');await delay(0);assert.equal(el('profile-count-allergies').textContent,'8 / 500');submit('profile-form');
-   input('profile-allergies','아직 저장하지 않은 내용');click('profile-pdf');assert.ok(el('profile-leave-cancel'));assert.equal(w.__qa.prints,0);assert.doesNotMatch(d.querySelector('.health-print-sheet').textContent,/아직 저장하지/);click('profile-leave-cancel');assert.equal(el('profile-allergies').value,'아직 저장하지 않은 내용');
-   click('profile-pdf');click('profile-leave-save');assert.equal(w.__qa.prints,1);assert.ok(el('profile-form'));assert.equal(el('report-heading'),null);assert.match(d.querySelector('.health-print-sheet').textContent,/아직 저장하지 않은 내용/);assert.match(d.querySelector('.health-print-sheet').textContent,/만 27세/);assert.equal(d.querySelector('.care-print-health').querySelectorAll('dt').length,5);assert.ok(d.querySelector('.care-print-summary'));assert.match(d.querySelector('.health-print-sheet').textContent,/여성/);
-   input('profile-allergies','버릴 내용');click('profile-pdf');click('profile-leave-discard');assert.equal(w.__qa.prints,2);assert.equal(el('profile-allergies').value,'아직 저장하지 않은 내용');assert.doesNotMatch(d.querySelector('.health-print-sheet').textContent,/버릴 내용|not executable|선지/);
+   // 정리본 PDF는 대화의 카드로 옮겼다. 내 정보에는 버튼이 없고, 인쇄용 시트는 저장한 값만 담는다
+   assert.equal(el('profile-pdf'),null);const sheet=()=>d.querySelector('.profile-view .health-print-sheet');
+   assert.match(sheet().textContent,/저장한 건강정보/);assert.match(sheet().textContent,/만 27세/);assert.equal(sheet().querySelector('.care-print-health').querySelectorAll('dt').length,5);assert.ok(sheet().querySelector('.care-print-summary'));assert.match(sheet().textContent,/여성/);
+   input('profile-allergies','아직 저장하지 않은 내용');await delay(0);assert.doesNotMatch(sheet().textContent,/아직 저장하지/);assert.match(d.querySelector('.chat-print-root').textContent,/저장한 건강정보/);
    assert.ok(!Object.values({...w.localStorage}).some(value=>value.includes('저장하지 않은 내용')));
    click('profile-delete');assert.equal(el('profile-allergies').value,'');assert.doesNotMatch(d.querySelector('.health-print-sheet').textContent,/저장하지 않은 내용/);
   });

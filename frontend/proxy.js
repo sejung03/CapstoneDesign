@@ -24,4 +24,4 @@ export async function proxy(request){
  response.headers.set('Cache-Control','no-store');
  return response;
 }
-export const config={matcher:['/((?!api|_next/static|_next/image|favicon.svg|fonts/|clinic-demo.png).*)']};
+export const config={matcher:['/((?!api|_next/static|_next/image|favicon.svg|favicon.ico|brand-icon.png|apple-icon.png|fonts/|clinic-demo.png).*)']};

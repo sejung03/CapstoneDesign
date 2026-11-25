@@ -626,3 +626,44 @@ body[data-view] #app > .voice-entry{display:flex;align-items:safe center;justify
 .voice-entry-status:empty{position:absolute}
 .voice-entry-preview{border:1px solid var(--line);border-radius:12px;background:var(--soft);padding:12px;overflow-wrap:anywhere}
 .voice-entry-preview p{margin:0 0 8px;color:var(--ink)}
+
+/* 2026-11-25 최종 피드백 UI: HearO 로고, 새 대화는 응급 도움 줄 왼쪽, 고정 머리줄 대신 웰컴 메시지,
+   입력창은 대화 영역 맨 아래, 아래쪽 안내 링크 줄은 최소 높이, 문진 후 PDF 카드. */
+.brand-logo{width:30px;height:30px;flex:none;object-fit:contain;}
+.emergency-entry-bar{justify-content:space-between;align-items:center;gap:12px;}
+.emergency-entry-bar>.emergency-entry-button{margin-left:auto;}
+.text-button.new-conversation-button{display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:7px 4px;font-size:14px;white-space:nowrap;}
+.text-button.new-conversation-button svg{width:16px;height:16px;}
+.care-shell>.conversation-main{padding-top:10px;padding-bottom:4px;}
+/* 대화 내용이 위쪽 공간을 모두 쓰고, 입력창은 항상 맨 아래에 붙는다(빈 대화도 같은 배치). */
+.primary-chat.is-welcome{justify-content:flex-start;padding-top:0;padding-bottom:0;overflow:hidden;}
+.primary-chat.is-welcome>.chat-messages{display:flex;}
+.primary-chat .chat-messages{padding-top:8px;}
+.primary-chat>.chat-form,.primary-chat.is-welcome>.chat-form{margin-top:8px;}
+.primary-chat>.conversation-starters{margin:8px 0 0;}
+/* 웰컴 메시지: 새 대화마다 챗봇이 먼저 보내는 첫 메시지 */
+.primary-chat .welcome-message{display:flex;align-items:flex-start;gap:10px;}
+.primary-chat .welcome-message .chat-bot-avatar{width:36px;height:36px;flex:none;object-fit:contain;}
+.primary-chat .welcome-message .chat-bot-name{display:block;font-size:14px;line-height:1.4;}
+.primary-chat .welcome-message p{margin:2px 0 0;font-size:13px;color:var(--muted);}
+/* 아래쪽 건강정보 처리 안내·이용약관·오픈소스 라이선스 줄: 세로 높이 최소(터치 영역은 24px 유지) */
+.primary-chat>.conversation-legal-links{border-top:0;padding:2px 0 0;margin:0;min-height:0;row-gap:0;}
+.primary-chat>.conversation-legal-links .text-button,.primary-chat>.conversation-legal-links a{min-height:24px;padding:0 2px;font-size:11px;line-height:24px;}
+/* 문진 후 PDF 카드 */
+.pdf-offer .pdf-offer-note{margin:4px 0 0;font-size:12px;color:var(--muted);}
+.pdf-offer .assistant-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px;}
+.pdf-offer .primary-button,.pdf-offer .text-button{display:inline-flex;align-items:center;gap:6px;min-height:44px;}
+.pdf-offer.is-dismissed .text-button{min-height:36px;font-size:13px;}
+.pdf-offer svg{width:16px;height:16px;}
+.chat-print-root{display:none;}
+@media print{
+ body.print-care-sheet .skip-link,body.print-care-sheet #app>:not(.chat-print-root){display:none!important;}
+ body.print-care-sheet,body.print-care-sheet #app{display:block!important;height:auto!important;overflow:visible!important;background:white!important;color:#111!important;}
+ body.print-care-sheet .chat-print-root,body.print-care-sheet .chat-print-root .health-print-sheet{display:block!important;font-size:12pt;line-height:1.7;}
+ /* 내 정보·분석서 화면의 인쇄는 그 화면 안의 시트만 쓴다(대화용 시트와 겹치지 않게) */
+ body:not(.print-care-sheet) .chat-print-root{display:none!important;}
+}
+@media(max-width:760px){
+ .care-shell>.conversation-main{padding-top:6px;}
+ .text-button.new-conversation-button{font-size:13px;}
+}

@@ -17,10 +17,10 @@ try{
  Module._extensions['.jsx']=(module,filename)=>{const compiled=swc.transformSync(fs.readFileSync(filename,'utf8'),{filename,jsc:{parser:{syntax:'ecmascript',jsx:true},transform:{react:{runtime:'automatic'}},target:'es2022'},module:{type:'commonjs'}});module._compile(compiled.code,filename);};
  ({Profile}=require(fileURLToPath(new URL('../components/profile.jsx',import.meta.url))));
 }finally{if(previous)Module._extensions['.jsx']=previous;else delete Module._extensions['.jsx'];}
-test('My information owns export controls and shows logout only for a verified account',()=>{
+test('My information has no PDF button (moved to the chat card) and shows logout only for a verified account',()=>{
  const state={locale:'ko',profile:emptyProfile(),profileDraft:emptyProfile(),healthConsent:createHealthConsent(true),favorites:createFavorites(),report:{editing:false},account:createAccountSession()};
  const inspect=()=>new JSDOM(renderToStaticMarkup(React.createElement(Profile,{state,t:key=>copy.ko[key]})));
- let dom=inspect();assert.ok(dom.window.document.getElementById('account-open'));assert.equal(dom.window.document.getElementById('account-logout'),null);assert.ok(dom.window.document.getElementById('profile-pdf'));assert.equal(dom.window.document.getElementById('profile-report-open'),null);assert.equal(dom.window.document.querySelector('.conversation-report'),null);dom.window.close();
+ let dom=inspect();assert.ok(dom.window.document.getElementById('account-open'));assert.equal(dom.window.document.getElementById('account-logout'),null);assert.equal(dom.window.document.getElementById('profile-pdf'),null);assert.equal(dom.window.document.getElementById('profile-report-open'),null);assert.equal(dom.window.document.querySelector('.conversation-report'),null);dom.window.close();
  state.account=normalizeAccountSession({authenticated:true,accountId:'server-account'});dom=inspect();assert.equal(dom.window.document.getElementById('account-open'),null);assert.ok(dom.window.document.getElementById('account-logout'));assert.match(dom.window.document.querySelector('.info-account').textContent,/로그인되어/);assert.ok(dom.window.document.getElementById('account-delete-open'));assert.equal(dom.window.document.getElementById('saved-behavior-heading'),null);assert.doesNotMatch(dom.window.document.body.textContent,/행동 온톨로지|개인화 설정|direct_setting/);dom.window.close();
  state.account={...state.account,phase:'loggingOut'};dom=inspect();assert.equal(dom.window.document.getElementById('account-logout').disabled,true);dom.window.close();
 });

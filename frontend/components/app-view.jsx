@@ -12,6 +12,7 @@ import {FirstVoicePrompt} from './voice-controls.jsx';
 import {HealthConsent} from './health-consent.jsx';
 import {ConversationLegalLinks} from './legal-dialog.jsx';
 import {EmergencyCard} from './emergency-card.jsx';
+import {CarePrintSheet} from './care-print-sheet.jsx';
 import {visibleEmergency} from '../emergency.mjs';
 import {assistantContentKey} from '../assistant.mjs';
 import {hasHealthConsent} from '../health-consent.mjs';
@@ -44,7 +45,7 @@ function HeaderVoiceVolume({volume,muted,setVolume,setMuted}){
 
 export function Header({state,t,voiceControls}){
 
- return <><header className="header care-header"><button className="brand brand-button" data-view="entry"><span className="brand-symbol"><Icon name="plus" /></span>{t('brand')}</button><div className="header-actions"><label className="sr-only" htmlFor="language-select">{phrase(state.locale,"Language")}</label><select id="language-select" className="language-select" value={state.locale} onChange={()=>{}}>{Object.keys(copy).map(code=><option key={code} value={code}>{languageNames[code]}</option>)}</select><nav className="header-nav" aria-label={t('navLabel')}><button className="icon-button header-profile" data-view="profile" aria-label={t('myInfo')} title={t('myInfo')}><Icon name="user" /></button></nav>{voiceControls&&<HeaderVoiceVolume {...voiceControls} />}<button id="theme" className="icon-button" aria-label={t(state.theme==='light'?'themeDark':'themeLight')} aria-pressed={state.theme==='dark'}><Icon name={state.theme==='light'?'moon':'sun'} /></button></div></header></>;
+ return <><header className="header care-header"><button className="brand brand-button" data-view="entry"><img className="brand-logo" src="/brand-icon.png" alt="" width="30" height="30" />{t('brand')}</button><div className="header-actions"><label className="sr-only" htmlFor="language-select">{phrase(state.locale,"Language")}</label><select id="language-select" className="language-select" value={state.locale} onChange={()=>{}}>{Object.keys(copy).map(code=><option key={code} value={code}>{languageNames[code]}</option>)}</select><nav className="header-nav" aria-label={t('navLabel')}><button className="icon-button header-profile" data-view="profile" aria-label={t('myInfo')} title={t('myInfo')}><Icon name="user" /></button></nav>{voiceControls&&<HeaderVoiceVolume {...voiceControls} />}<button id="theme" className="icon-button" aria-label={t(state.theme==='light'?'themeDark':'themeLight')} aria-pressed={state.theme==='dark'}><Icon name={state.theme==='light'?'moon':'sun'} /></button></div></header></>;
 }
 export function AppView({state,t,revision,conversationVersion=0,onEmergencyLocation,onPreviousReport,onHealthUpdates}){
  const shell=useRef(null),drag=useRef(null),[width,setWidth]=useState(0),[ratios,setRatios]=useState({explore:70,profile:50}),[resizing,setResizing]=useState(false);
@@ -127,7 +128,9 @@ export function AppView({state,t,revision,conversationVersion=0,onEmergencyLocat
  const end=(event,cancel=false)=>{if(!drag.current)return;if(cancel)resize(drag.current.ratio);drag.current=null;setResizing(false);if(event.currentTarget.hasPointerCapture?.(event.pointerId))event.currentTarget.releasePointerCapture(event.pointerId);};
  const emergencyButton=<button id="emergency-open" type="button" className="text-button emergency-entry-button" aria-haspopup="dialog" aria-expanded={emergencyOpen} aria-controls={emergencyOpen?'emergency-dialog':undefined}><Icon name="phone" />{phrase(state.locale,"Emergency help")}</button>;
  return <><Header state={state} t={t} voiceControls={voiceControls} />
- {panel!=='explore'&&<div className="emergency-entry-bar">{emergencyButton}</div>}
+ {/* 새 대화(왼쪽)와 응급 도움(오른쪽)을 한 줄에. 지도 패널이 열리면 응급 도움은 패널 도구줄로 옮겨 간다 */}
+ {!introOpen&&<div className="emergency-entry-bar"><button id="new-conversation" type="button" className="text-button new-conversation-button"><Icon name="plus" />{t('conversationNew')}</button>{panel!=='explore'&&emergencyButton}</div>}
+ {introOpen&&panel!=='explore'&&<div className="emergency-entry-bar">{emergencyButton}</div>}
  {introOpen&&<FirstVoicePrompt locale={state.locale} brand={t('brand')} answerRef={entryAnswer}
   ready={voiceStarted.current&&healthReady&&(!managedVoice||entryGrant)}
   canStartVoice={canStartVoice} onVoiceSubmit={text=>fillVoice(text,true)} onVoiceEdit={text=>fillVoice(text,false)} onSkip={enterText} onEmergency={openEmergency}
@@ -138,7 +141,7 @@ export function AppView({state,t,revision,conversationVersion=0,onEmergencyLocat
  {introOpen&&<ConversationLegalLinks state={state} entry />}
  {introHealthOpen&&<HealthConsent state={state} />}
  <div ref={shell} hidden={introOpen} inert={introOpen} style={{'--conversation-size':ratio+'%','--tool-min':minTool+'px'}} className={'care-shell'+(View?' has-workspace':'')+(resizing?' is-resizing':'')+(View&&kind==='profile'?' info-only':'')}>
- <main id="main" className="conversation-main" tabIndex={-1}><div className={'conversation-heading'+(welcome?' welcome-heading':'')}><div><h1 tabIndex={-1}>{t('conversationTitle')}</h1><p>{t('conversationIntro')}</p></div><button id="new-conversation" className="text-button"><Icon name="plus" />{t('conversationNew')}</button></div><Chat state={state} t={t} primary voiceVolume={voiceVolume} voiceFollowups={voiceFollowups} stopVoiceFollowups={()=>setVoiceFollowups(false)} introOpen={introOpen} entryGrant={entryGrant} emergencyOpen={emergencyOpen} onPreviousReport={onPreviousReport} onHealthUpdates={onHealthUpdates} /></main>
+ <main id="main" className="conversation-main" tabIndex={-1}><h1 id="conversation-title" className="sr-only" tabIndex={-1}>{t('conversationTitle')}</h1><Chat state={state} t={t} primary voiceVolume={voiceVolume} voiceFollowups={voiceFollowups} stopVoiceFollowups={()=>setVoiceFollowups(false)} introOpen={introOpen} entryGrant={entryGrant} emergencyOpen={emergencyOpen} onPreviousReport={onPreviousReport} onHealthUpdates={onHealthUpdates} /></main>
  {panel==='explore'&&<div id="workspace-splitter" className="workspace-splitter" role="separator" tabIndex={0} aria-label={phrase(state.locale,"Resize conversation pane")} aria-orientation="vertical" aria-controls="main" aria-valuemin={Math.round(b.min)} aria-valuemax={Math.round(Math.max(b.min,b.max))} aria-valuenow={Math.round(ratio)} aria-valuetext={phrase(state.locale,"Conversation {0}%", [Math.round(ratio)])} title={phrase(state.locale,"Drag to resize; double-click to reset")}
   onPointerDown={event=>{if(event.button!==0)return;event.preventDefault();drag.current={ratio};setResizing(true);event.currentTarget.setPointerCapture?.(event.pointerId);event.currentTarget.focus();}}
   onPointerMove={event=>{if(!drag.current)return;const rect=shell.current.getBoundingClientRect();resize((event.clientX-rect.left)/bounds().available*100);}}
@@ -151,6 +154,8 @@ export function AppView({state,t,revision,conversationVersion=0,onEmergencyLocat
   }}><svg viewBox="0 0 16 32" aria-hidden="true"><path d="M6 8v16M10 8v16" /></svg></div>}
  {View&&<aside id="workspace-panel" tabIndex={-1} className={'care-tool-panel tool-'+panel} aria-label={t({explore:'navExplore',report:'contextReport',profile:'myInfo',detail:'detail',route:'routeAction'}[panel])}><div className="workspace-toolbar"><button id="workspace-close" className="text-button"><Icon name="back" />{panel==='report'?(phrase(state.locale,"Back to My information")):t('conversationBack')}</button>{panel==='explore'&&emergencyButton}</div><div className="workspace-content"><View state={state} t={t} unified={panel==='report'} /></div></aside>}
  </div>
+ {/* 대화의 PDF 카드가 인쇄하는 정리본. 화면에는 보이지 않고, body.print-care-sheet일 때만 인쇄된다 */}
+ {state.profile&&<div className="chat-print-root" aria-hidden="true"><CarePrintSheet state={state} t={t} /></div>}
  <EmergencyCard state={state} t={t} onEmergencyLocation={onEmergencyLocation} />
  <div key={'toast:'+revision} id="toast" className="toast" role="status" aria-live="polite" hidden /></>;
 }

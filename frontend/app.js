@@ -3,6 +3,7 @@ import {emptyHealth,storedHealthFields,validateStoredHealth,healthStorageMessage
 import {createAccountSession,normalizeAccountSession} from './account-session.mjs';
 import {createFavorites,favoriteRecord,normalizeFavorites,FAVORITES_LIMIT} from './favorites.mjs';
 import {createChoices,normalizeChoices,choiceFacility,isChoiceDepartment} from './choices.mjs';
+import {pdfOfferKey} from './pdf-offer.mjs';
 import {createHealthUpdates,normalizeHealthUpdates,validateHealthUpdateEvidence,applyHealthUpdateSelection,healthUpdateFields} from './health-updates.mjs';
 import {defaultEmergencyGuides} from './emergency-resources.mjs';
 import {createReportImport,canUsePreviousReport,reviewedPreviousReport} from './report-import.mjs';
@@ -948,7 +949,7 @@ function render(focus=false){
  const chatScroll=document.getElementById('chat-messages')?.scrollTop||0;
  document.body.dataset.view=state.view;document.body.dataset.chat=state.view==='entry'?'entry':state.chat.open?'open':'closed';
  document.documentElement.lang=state.locale;document.documentElement.dataset.theme=state.theme;
- document.title=phrase(state.locale,"Medical Guide | Find care nearby");
+ document.title=phrase(state.locale,"HearO | Find care nearby");
  document.querySelector('.skip-link').textContent=t('skipLink');
  const isEntry=state.view==='entry';
  clearBindings();
@@ -1028,6 +1029,14 @@ function bindFacilityActions(){
 function bindFacilityPhotos(){
  document.querySelectorAll('[data-facility-photo]').forEach(img=>listen(img,'error',()=>{img.hidden=true;const fallback=document.getElementById(img.dataset.facilityPhoto+'-fallback');if(fallback)fallback.hidden=false;const badge=document.getElementById(img.dataset.facilityPhoto+'-badge');if(badge)badge.hidden=true;}));
 }
+// 대화의 PDF 카드: 화면 밖에 둔 정리본(.chat-print-root)만 인쇄되도록 인쇄하는 동안 body에 표시를 단다.
+// 인쇄 대화상자가 닫히면(afterprint) 표시를 뗀다. 화면 표시에는 영향이 없다.
+function printCareSheet(){
+ saveInputs();
+ const body=document.body,done=()=>{body.classList.remove('print-care-sheet');window.removeEventListener('afterprint',done);};
+ body.classList.add('print-care-sheet');window.addEventListener('afterprint',done);
+ window.print();
+}
 let pendingProfileExit=null;
 function requestProfileExit(action){
  if(!viewRenderer||state.workspace?.panel!=='profile')return false;
@@ -1055,7 +1064,8 @@ function bindProfile(){
  });
  listen(document.getElementById('account-retry'),'click',()=>{if(accountAdapter)void setAccountAdapter(accountAdapter);});
  listen(document.getElementById('account-logout'),'click',()=>{if(window.confirm(phrase(state.locale,"Log out? Unsaved entries and this conversation will be cleared.")))void logoutAccount();});
- listen(document.getElementById('profile-pdf'),'click',function exportProfilePdf(){if(requestProfileExit(exportProfilePdf))return;window.print();});
+ listen(document.getElementById('care-pdf-print'),'click',printCareSheet);
+ listen(document.getElementById('care-pdf-dismiss'),'click',()=>{state.pdfOfferDismissed=pdfOfferKey(state);render();document.getElementById('care-pdf-print')?.focus({preventScroll:true});});
  listen(document.getElementById('profile-health-start'),'click',()=>{requestHealthAccess('profile');});
  for(const choice of ['save','discard','cancel'])listen(document.getElementById('profile-leave-'+choice),'click',async()=>{
   const action=pendingProfileExit;if(choice==='save'){if(state.account.accountId){if(!await persistAccountHealth())return;}else if(!commitProfile())return;}
@@ -1165,7 +1175,7 @@ function closeWorkspace(){
  state.view=state.search.initialized?'explore':'entry';state.chat.open=true;render();
  const log=document.getElementById('chat-messages');if(log)log.scrollTop=state.chatReturnScroll||0;
  if(hasHealthConsent(state))document.getElementById('composer-input')?.focus({preventScroll:true});
- else document.querySelector('.conversation-heading h1')?.focus({preventScroll:true});
+ else document.getElementById('conversation-title')?.focus({preventScroll:true});
 }
 function skipConversationIntake(){
  saveInputs();
@@ -1242,7 +1252,7 @@ function bindWorkspace(){
   state.routing.openId=null;state.discovery={key:'',phase:'idle',items:[]};
   const config=state.live;state.live={...createLiveState(),configured:config.configured,key:config.key,hoursConfigured:config.hoursConfigured,routingConfigured:config.routingConfigured,token:(config.token||0)+1};
   conversationVersion++;state.view='entry';render();
-  (document.getElementById('voice-entry-record')||document.querySelector('.conversation-heading h1'))?.focus({preventScroll:true});
+  (document.getElementById('voice-entry-record')||document.getElementById('conversation-title'))?.focus({preventScroll:true});
  });
  document.querySelectorAll('[data-workspace-facility]').forEach(button=>listen(button,'click',()=>{
   saveInputs();

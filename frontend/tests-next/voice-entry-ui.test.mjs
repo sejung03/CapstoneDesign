@@ -81,7 +81,7 @@ test('voice entry hides the original main screen until the user enters',async t=
     assert.equal(stage(),null);
     assert.equal(main().hidden,false);
     assert.equal(skipTarget(),document.getElementById('main'));
-    assert.match(main().querySelector('.chat-welcome').textContent,/무엇을|어떤|도움|찾/);
+    assert.match(main().querySelector('.welcome-message').textContent,/conversationChatTitle.*chatSubtitle/); // 이 테스트의 t()는 키를 그대로 돌려준다
     await mount(2);
     assert.equal(stage(),null);
 

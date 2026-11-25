@@ -2,7 +2,8 @@ import {mkdir,copyFile,cp} from 'node:fs/promises';
 const root=new URL('../',import.meta.url),out=new URL('public/',root);
 await mkdir(out,{recursive:true});
 // Explicit asset list: never copy source files, .env, tests or server modules.
-for(const name of ['favicon.svg','clinic-demo.png'])await copyFile(new URL(name,root),new URL(name,out));
+// favicon.svg stays for the legacy static page (index.html); the Next app uses the HearO icons.
+for(const name of ['favicon.svg','favicon.ico','brand-icon.png','apple-icon.png','clinic-demo.png'])await copyFile(new URL(name,root),new URL(name,out));
 await cp(new URL('fonts/',root),new URL('fonts/',out),{recursive:true});
 
 // Self-host PDF text extraction worker and resources; never use a third-party CDN.

@@ -19,7 +19,7 @@ test('running multilingual app changes all five locales, preserves draft, and lo
   for(const locale of ['en','zh','vi','uz','ko']){
    const select=d.getElementById('language-select');select.value=locale;select.dispatchEvent(new w.Event('change',{bubbles:true}));
    await wait(()=>d.documentElement.lang===locale);
-   assert.equal(d.querySelector('.conversation-heading h1').textContent,copy[locale].conversationTitle);
+   assert.equal(d.getElementById('conversation-title').textContent,copy[locale].conversationTitle);
    assert.equal(d.getElementById('composer-input').value,draft);assert.equal(w.localStorage.getItem('medical-language'),locale);
    d.querySelector('.header-profile').click();await wait(()=>d.getElementById('account-open'));
    d.getElementById('account-open').click();await wait(()=>d.getElementById('account-dialog')?.open);
