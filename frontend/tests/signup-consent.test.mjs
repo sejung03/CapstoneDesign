@@ -41,3 +41,13 @@ test('service consent clauses contain concrete choices, purposes, periods and re
  assert.doesNotMatch(text,/검토용|초안|미리보기|확정 전|보관하는 안|Proposed/);
  assert.ok(sections.find(item=>item.id==='terms').details.length>=6);
 });
+test('health information consent names the OpenAI speech recognition and chat processing in every language',()=>{
+ const health=signupConsentPolicy.sections.find(item=>item.id==='healthProcessing');
+ for(const locale of ['ko','en','zh','vi','uz']){
+  assert.match(health.processors[locale],/OpenAI/);assert.match(health.processors[locale],/gpt-transcribe/);
+  assert.doesNotMatch(health.retention[locale],/1 hour|1시간/);
+ }
+ assert.match(health.items.ko,/녹음한 음성/);assert.match(health.refusal.ko,/음성 입력은 선택 기능/);
+ // 업체에 확인하기 전까지 운영 준비가 아니다(음성 원본 보관 기간·처리 위치·학습 이용)
+ assert.equal(signupConsentPolicy.operationalReady,false);assert.ok(signupConsentPolicy.unresolved.includes('voiceProviderAudioRetentionRegionAndTraining'));
+});

@@ -4,9 +4,6 @@ import {verifiedAccount,sameOrigin} from '../../../../lib/supabase/auth.js';
 export const runtime='nodejs';
 export async function POST(request){
  if(!sameOrigin(request))return Response.json({error:'invalid_origin'},{status:403});
- // Demo until the service's legal / privacy documentation is finalized.
- if(process.env.NODE_ENV==='production'&&!signupConsentPolicy.operationalReady)
-  return Response.json({error:'policy_not_ready'},{status:503});
  let account;
  try{account=await verifiedAccount();}catch{return Response.json({error:'supabase_unavailable'},{status:503});}
  if(!account.user)return Response.json({error:'signup_expired'},{status:401});

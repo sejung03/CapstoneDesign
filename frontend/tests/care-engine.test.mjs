@@ -1,7 +1,8 @@
 // /api/care 처리기와 브라우저 어댑터. 실제 문진 엔진(../care_engine)을 LLM 없이(mock provider) 부른다.
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {createCareHandler,loadEngine,loadEngineEnv,engineConsent,createRefStore,warmCareLlm} from '../lib/care-engine-server.mjs';
+import {createCareHandler,loadEngine,loadEngineEnv,engineDir,engineConsent,createRefStore,warmCareLlm} from '../lib/care-engine-server.mjs';
+import path from 'node:path';
 import {createCareAssistant,createCareRanking,careHealthNotice,CARE_CONSENT_VERSION} from '../care-adapter.mjs';
 import {rankFacilities} from '../lib/care-ranking.mjs';
 import {fetchRefTables,createSupabaseRefStore,REF_TABLES} from '../lib/care-data-supabase.mjs';
@@ -13,6 +14,15 @@ const ORIGIN='http://127.0.0.1:3080';
 const handler=createCareHandler({sameOrigin:request=>request.headers.get('origin')===ORIGIN});
 const post=(body,headers={})=>new Request(ORIGIN+'/api/care',{method:'POST',headers:{origin:ORIGIN,'content-type':'application/json',...headers},body:typeof body==='string'?body:JSON.stringify(body)});
 const payload=(over={})=>({reason:'message',locale:'ko',intake:null,messages:['기침이 나요'],followUpAnswers:[],profile:{age:'',allergies:'',medications:'',history:''},search:{region:'',type:'all',department:'all',openOnly:false,mode:'walk'},...over});
+
+test('care: engine resolves from frontend or a function root, with an explicit override taking priority',()=>{
+ const root=path.resolve('deployment-fixture');
+ const deployed=path.join(root,'care_engine');
+ const exists=file=>file===path.join(deployed,'engine','index.mjs');
+ assert.equal(engineDir({}, {cwd:path.join(root,'frontend'),exists}),deployed);
+ assert.equal(engineDir({}, {cwd:root,exists}),deployed);
+ assert.equal(engineDir({CARE_ENGINE_DIR:'custom-engine'}, {cwd:root,exists}),path.join(root,'custom-engine'));
+});
 
 test('care: 엔진이 로드되고 첫 메시지에 질문 하나를 돌려준다(프론트 계약 통과, trace 없음)',async()=>{
  const res=await handler(post(payload()));

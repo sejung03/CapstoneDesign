@@ -2,7 +2,7 @@
   "Keeping health information in your account requires separate storage consent.": "Cần có sự đồng ý riêng để lưu thông tin sức khỏe trong tài khoản.",
   "Age in completed years, sex, allergies, medications and existing conditions": "Tuổi tròn, giới tính, dị ứng, thuốc và bệnh nền",
   "User-approved age in completed years, sex, allergies, medications, existing conditions and last review date; departments you applied to a search and how many times": "Tuổi tròn, giới tính, dị ứng, thuốc, bệnh nền đã được người dùng xác nhận và ngày kiểm tra gần nhất; các chuyên khoa bạn đã áp dụng vào tìm kiếm và số lần",
-  "Age in completed years, sex, symptoms, questionnaire answers, allergies, medications, existing conditions, and user-reviewed previous notes": "Tuổi tròn, giới tính, triệu chứng, câu trả lời, dị ứng, thuốc, bệnh nền và ghi chú trước đây đã được người dùng xác nhận",
+  "Age in completed years, sex, symptoms, questionnaire answers, allergies, medications, existing conditions, user-reviewed previous notes, and your voice recording when you choose voice input (it may contain health information such as the symptoms you describe)": "Tuổi tròn, giới tính, triệu chứng, câu trả lời, dị ứng, thuốc, bệnh nền và ghi chú trước đây đã được người dùng xác nhận, và bản ghi âm giọng nói khi bạn chọn nhập bằng giọng nói (có thể chứa thông tin sức khỏe như triệu chứng bạn mô tả)",
   "Sex": "Giới tính",
   "Female": "Nữ",
   "Male": "Nam",
@@ -105,10 +105,10 @@
   "Declining prevents signup. Guest hospital search and emergency help remain available.": "Từ chối sẽ ngăn cản việc đăng ký. Tìm kiếm bệnh viện cho khách và trợ giúp khẩn cấp vẫn khả dụng.",
   "I consent to the collection and use of health information (sensitive data).": "Tôi đồng ý với việc thu thập và sử dụng thông tin sức khỏe (dữ liệu nhạy cảm).",
   "Required for health consultation": "Bắt buộc để tư vấn sức khỏe",
-  "Questionnaire and chat, situation summaries, care navigation and health note preparation": "Bảng câu hỏi và trò chuyện, tóm tắt tình huống, điều hướng chăm sóc và chuẩn bị ghi chú sức khỏe",
+  "Questionnaire and chat, situation summaries, care navigation and health note preparation, and turning your speech into text when you choose voice input": "Bảng câu hỏi và trò chuyện, tóm tắt tình huống, điều hướng chăm sóc và chuẩn bị ghi chú sức khỏe, và chuyển lời nói thành văn bản khi bạn chọn nhập bằng giọng nói",
   "Age in completed years, symptoms, questionnaire answers, allergies, medications, existing conditions, and user-reviewed previous notes": "Tuổi theo năm hoàn thành, triệu chứng, câu trả lời bảng câu hỏi, dị ứng, thuốc đang dùng, tình trạng bệnh lý hiện có và các ghi chú trước đó đã được người dùng xem xét",
   "Used until the current consultation ends. Account retention follows the separate health information and consultation note storage choices below.": "Được sử dụng cho đến khi tư vấn hiện tại kết thúc. Việc lưu giữ tài khoản tuân theo các lựa chọn lưu trữ thông tin sức khỏe và ghi chú tư vấn riêng biệt bên dưới.",
-  "Declining prevents health questionnaire and symptom chat. General hospital search and emergency help remain available.": "Từ chối sẽ ngăn cản việc sử dụng bảng câu hỏi sức khỏe và trò chuyện triệu chứng. Tìm kiếm bệnh viện chung và trợ giúp khẩn cấp vẫn khả dụng.",
+  "Declining prevents health questionnaire and symptom chat. General hospital search and emergency help remain available. Voice input is optional; you can type instead and use the same consultation.": "Từ chối sẽ ngăn cản việc sử dụng bảng câu hỏi sức khỏe và trò chuyện triệu chứng. Tìm kiếm bệnh viện chung và trợ giúp khẩn cấp vẫn khả dụng. Nhập bằng giọng nói là tùy chọn; bạn có thể gõ chữ thay thế và vẫn sử dụng cùng một buổi tư vấn.",
   "I agree to save health information for future consultations.": "Tôi đồng ý lưu thông tin sức khỏe cho các lần tư vấn trong tương lai.",
   "Optional": "Tùy chọn",
   "Load health information in future consultations, manage reviewed changes, and order the department list by how often you applied each department to a search": "Tải thông tin sức khỏe trong các lần tư vấn tương lai, quản lý các thay đổi đã xem xét và sắp xếp danh sách chuyên khoa theo số lần bạn áp dụng từng chuyên khoa vào tìm kiếm",
@@ -837,5 +837,9 @@
   "Would you like a PDF of your questionnaire answers and health information?": "Bạn có muốn nhận bản PDF tóm tắt câu trả lời phỏng vấn và thông tin sức khỏe không?",
   "You can print it or save it as a PDF to show at the clinic. It is made on this device and is not sent anywhere.": "Bạn có thể in hoặc lưu thành PDF để đưa cho cơ sở y tế xem. Tệp được tạo trên thiết bị này và không được gửi đi đâu cả.",
   "Get PDF": "Nhận PDF",
-  "No thanks": "Không, cảm ơn"
+  "No thanks": "Không, cảm ơn",
+  "Used until the current consultation ends. Keeping health information in your account requires separate storage consent. HearO does not store your voice recordings. The text produced by the speech recognition provider is kept on its servers for 1 hour and then deleted.": "Được sử dụng cho đến khi kết thúc lần tư vấn hiện tại. Để lưu thông tin sức khỏe vào tài khoản cần có sự đồng ý lưu trữ riêng. HearO không lưu bản ghi âm. Kết quả chuyển đổi (văn bản) do nhà cung cấp nhận dạng giọng nói tạo ra được lưu trên máy chủ của họ trong 1 giờ rồi bị xóa.",
+  "If you choose voice input: Mindlogic’s BAZE speech recognition (STT, using the Soniox engine) turns your recording into text. If you confirm the external AI notice during the questionnaire: OpenAI (USA) interprets the sentences you type in the chat (up to the latest 500 characters).": "Khi bạn chọn nhập bằng giọng nói: dịch vụ nhận dạng giọng nói BAZE (STT, dùng công cụ Soniox) của Mindlogic chuyển bản ghi âm của bạn thành văn bản. Khi bạn xác nhận thông báo AI bên ngoài trong quá trình phỏng vấn: AI của OpenAI (Mỹ) diễn giải các câu bạn nhập trong khung trò chuyện (tối đa 500 ký tự gần nhất).",
+  "Processing by other companies": "Bên được ủy thác xử lý",
+  "Your recording is sent to Mindlogic's BAZE speech recognition (Soniox engine) and turned into text. The text result is kept on the provider's servers for 1 hour and then deleted. HearO does not store your voice.": "Bản ghi âm của bạn được gửi đến dịch vụ nhận dạng giọng nói BAZE của Mindlogic (công cụ Soniox) để chuyển thành văn bản. Kết quả văn bản được lưu trên máy chủ của nhà cung cấp trong 1 giờ rồi bị xóa. HearO không lưu giọng nói của bạn."
 }

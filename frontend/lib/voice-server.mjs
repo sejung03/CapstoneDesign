@@ -1,4 +1,5 @@
-import {grantVoice, hasVoiceGrant, transcribeManaged} from './voice-managed.mjs';
+import {grantVoice, hasVoiceGrant, transcribeManaged, voiceGrantKey, VOICE_CONSENT_SCOPES} from './voice-managed.mjs';
+import {transcribeBaze, bazeStatus, createUploadLimiter} from './voice-baze.mjs';
 
 const voiceLanguages=new Set(['ko','en','zh','vi','uz']);
 const audioTypes = new Set(['audio/webm', 'audio/mp4', 'audio/ogg', 'audio/wav']);
@@ -27,22 +28,28 @@ async function readBody(request, limit) {
   }
 }
 
-export async function forwardVoice(request, action, {sameOrigin, fetchImpl = fetch, env = process.env}) {
-  if (env.NEXT_PUBLIC_VOICE_ENABLED !== '1' || !['stt', 'tts', 'consent'].includes(action)) {
+// BAZE 업로드는 비용이 드니 브라우저(음성 동의 쿠키)별로 횟수를 제한한다. 서버 인스턴스마다 따로 센다.
+const bazeUploads = createUploadLimiter();
+
+// 외부 음성 인식(VOICE_STT_PROVIDER=openai|baze)은 배포 환경 구분 없이 설정과 사용자 동의를 확인한다.
+export async function forwardVoice(request, action, {sameOrigin, fetchImpl = fetch, env = process.env, allowUpload = bazeUploads}) {
+  if (env.NEXT_PUBLIC_VOICE_ENABLED !== '1' || !['stt', 'tts', 'consent', 'stt-status'].includes(action)) {
     return error('voice_disabled', 404);
   }
   if (!sameOrigin(request)) return error('invalid_origin', 403);
 
-  const managed = env.VOICE_STT_PROVIDER === 'openai';
-  if (managed && env.VERCEL_ENV !== 'preview') return error('voice_disabled',404);
-  if (action === 'consent') return managed ? grantVoice(request,env.VOICE_CONSENT_SECRET) : error('voice_disabled',404);
+  const provider = env.VOICE_STT_PROVIDER || (env.NEXT_PUBLIC_VOICE_EXTERNAL_STT === '1' ? 'openai' : undefined);
+  const managed = provider === 'openai' || provider === 'baze';
+  const scope = VOICE_CONSENT_SCOPES[provider];
+  if (action === 'consent') return managed ? grantVoice(request,env.VOICE_CONSENT_SECRET,scope) : error('voice_disabled',404);
   if (managed && action === 'tts') return error('voice_disabled',404);
-  if (managed && !hasVoiceGrant(request,env.VOICE_CONSENT_SECRET)) return error('voice_consent_required',403);
+  if (action === 'stt-status' && provider !== 'baze') return error('voice_disabled',404);
+  if (managed && !hasVoiceGrant(request,env.VOICE_CONSENT_SECRET,scope)) return error('voice_consent_required',403);
 
   const contentType = request.headers.get('content-type') || '';
   const mime = contentType.split(';')[0].trim();
   const stt = action === 'stt';
-  if (stt ? !audioTypes.has(mime) : mime !== 'application/json') {
+  if (stt ? !audioTypes.has(mime) || (provider === 'baze' && mime !== 'audio/wav') : mime !== 'application/json') {
     return error('unsupported_media_type', 415);
   }
 
@@ -55,10 +62,17 @@ export async function forwardVoice(request, action, {sameOrigin, fetchImpl = fet
   if (!body) return error('body_too_large', 413);
   if (!body.length) return error('empty_body', 400);
 
+  const bazeOptions = {apiKey:env.BAZE_API_KEY,baseUrl:env.BAZE_BASE_URL||undefined,model:env.BAZE_STT_MODEL||undefined,fetchImpl,secret:env.VOICE_CONSENT_SECRET};
+  if (action === 'stt-status') return bazeStatus(request,body,bazeOptions);
+
   const requestedLanguage=request.headers.get('x-voice-language');
   if(requestedLanguage&&!voiceLanguages.has(requestedLanguage))return error('invalid_voice_language',400);
   const language=requestedLanguage||'ko';
-  if (managed) return transcribeManaged(request,mime,body,{apiKey:env.VOICE_OPENAI_API_KEY,fetchImpl,language});
+  if (provider === 'baze') {
+    if (!allowUpload(voiceGrantKey(request))) return error('stt_busy',429);
+    return transcribeBaze(request,body,{...bazeOptions,language});
+  }
+  if (managed) return transcribeManaged(request,mime,body,{apiKey:env.OPENAI_API_KEY,fetchImpl,language});
 
   const port = Number(env.VOICE_SERVICE_PORT || 3091);
   if (!Number.isInteger(port) || port < 1 || port > 65535) {

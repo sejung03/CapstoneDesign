@@ -16,8 +16,11 @@ const ENGINE_ENV_KEYS = ['OPENAI_API_KEY', 'LLM_PROVIDER', 'LLM_MODEL', 'LLM_DEV
   'LLM_REWRITE_TIMEOUT_MS', 'LLM_SERVICE_TIER']; // 11/24 추가
 const ERROR_STATUS = {unsupported_reason: 400, aborted: 499, data: 503, contract: 500, internal: 500};
 
-export function engineDir(env = process.env) {
-  return path.resolve(env.CARE_ENGINE_DIR || path.join(process.cwd(), '..', 'care_engine'));
+export function engineDir(env = process.env, {cwd = process.cwd(), exists = existsSync} = {}) {
+  if (env.CARE_ENGINE_DIR) return path.resolve(cwd, env.CARE_ENGINE_DIR);
+  // 로컬은 frontend 옆, 서버 함수는 실행 루트 안에 엔진이 배치될 수 있다.
+  const candidates = [path.resolve(cwd, '..', 'care_engine'), path.resolve(cwd, 'care_engine')];
+  return candidates.find(dir => exists(path.join(dir, 'engine', 'index.mjs'))) || candidates[0];
 }
 
 /** 개발 환경에서만 care_engine/.env의 LLM 키를 서버 프로세스에 채운다. 값은 출력하지 않는다. */

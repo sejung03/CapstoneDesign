@@ -102,10 +102,10 @@
   "Declining prevents signup. Guest hospital search and emergency help remain available.": "拒绝将无法注册。访客医院搜索和紧急帮助功能仍然可用。",
   "I consent to the collection and use of health information (sensitive data).": "我同意收集和使用健康信息（敏感数据）。",
   "Required for health consultation": "健康咨询必需",
-  "Questionnaire and chat, situation summaries, care navigation and health note preparation": "问卷与聊天、情况总结、就医导航和健康笔记准备",
-  "Age in completed years, sex, symptoms, questionnaire answers, allergies, medications, existing conditions, and user-reviewed previous notes": "周岁年龄、性别、症状、问卷回答、过敏史、用药情况、既往病史以及用户审核过的过往笔记",
+  "Questionnaire and chat, situation summaries, care navigation and health note preparation, and turning your speech into text when you choose voice input": "问卷与聊天、情况总结、就医导航和健康笔记准备，以及在您选择语音输入时将语音转换为文字",
+  "Age in completed years, sex, symptoms, questionnaire answers, allergies, medications, existing conditions, user-reviewed previous notes, and your voice recording when you choose voice input (it may contain health information such as the symptoms you describe)": "周岁年龄、性别、症状、问卷回答、过敏史、用药情况、既往病史以及用户审核过的过往笔记，以及在您选择语音输入时的录音（可能包含您所描述的症状等健康信息）",
   "Used until the current consultation ends. Account retention follows the separate health information and consultation note storage choices below.": "使用至当前咨询结束。账户保留遵循下方的健康信息和咨询笔记存储选择。",
-  "Declining prevents health questionnaire and symptom chat. General hospital search and emergency help remain available.": "拒绝将无法使用健康问卷和症状聊天。普通医院搜索和紧急帮助功能仍然可用。",
+  "Declining prevents health questionnaire and symptom chat. General hospital search and emergency help remain available. Voice input is optional; you can type instead and use the same consultation.": "拒绝将无法使用健康问卷和症状聊天。普通医院搜索和紧急帮助功能仍然可用。 语音输入为可选功能，不使用也可以通过文字输入进行同样的咨询。",
   "I agree to save health information for future consultations.": "我同意为未来咨询保存健康信息。",
   "Optional": "可选",
   "Load health information in future consultations, manage reviewed changes, and order the department list by how often you applied each department to a search": "在未来咨询中加载健康信息、管理已审核的变更，并根据您在搜索中应用各科室的次数排序科室列表",
@@ -834,5 +834,9 @@
   "Would you like a PDF of your questionnaire answers and health information?": "要将问诊内容和健康信息整理为PDF吗？",
   "You can print it or save it as a PDF to show at the clinic. It is made on this device and is not sent anywhere.": "您可以打印或另存为PDF，在就诊时出示。它在本设备上生成，不会发送到任何地方。",
   "Get PDF": "获取PDF",
-  "No thanks": "不用了"
+  "No thanks": "不用了",
+  "Used until the current consultation ends. Keeping health information in your account requires separate storage consent. HearO does not store your voice recordings. The text produced by the speech recognition provider is kept on its servers for 1 hour and then deleted.": "使用至本次咨询结束。如需在账户中保存健康信息，需另行同意保存。HearO不保存录音。语音识别服务商生成的转换结果（文字）会在其服务器上保存1小时后删除。",
+  "If you choose voice input: Mindlogic’s BAZE speech recognition (STT, using the Soniox engine) turns your recording into text. If you confirm the external AI notice during the questionnaire: OpenAI (USA) interprets the sentences you type in the chat (up to the latest 500 characters).": "选择语音输入时：由Mindlogic的BAZE语音识别（STT，使用Soniox引擎）将您的录音转换为文字。在问诊中确认外部AI处理说明时：由美国OpenAI的AI解读您在聊天框中输入的句子（最近500字以内）。",
+  "Processing by other companies": "委托处理方",
+  "Your recording is sent to Mindlogic's BAZE speech recognition (Soniox engine) and turned into text. The text result is kept on the provider's servers for 1 hour and then deleted. HearO does not store your voice.": "您的录音将发送至Mindlogic的BAZE语音识别（Soniox引擎）转换为文字。转换结果（文字）会在服务商服务器上保存1小时后删除。HearO不保存您的语音。"
 }

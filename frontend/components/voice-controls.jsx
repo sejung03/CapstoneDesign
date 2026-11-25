@@ -1,12 +1,14 @@
 import {emergencyDialogOpenedEvent} from '../emergency.mjs';
 import {useEffect, useLayoutEffect, useRef, useState} from 'react';
-import {createRecorder, grantManagedVoice, speechText, managedVoice, stopAfterSpeechPause, synthesizeSpeech, transcribeRecording} from '../voice-client.mjs';
+import {createRecorder, grantManagedVoice, speechText, managedVoice, voiceSttProvider, stopAfterSpeechPause, synthesizeSpeech, transcribeRecording} from '../voice-client.mjs';
 import {matchSpokenOption, rememberSpokenAnswer} from '../voice-answer.mjs';
 import {requestsEmergencyHelp} from '../emergency-contact.mjs';
 import {phrase,languageTags} from '../i18n.mjs';
 import {intakeLabel} from '../intake-data.mjs';
 import {directCareSearch} from '../care-context.mjs';
 
+// 외부 음성 인식 동의 문구. 업체(voiceSttProvider)마다 받는 곳·보관을 밝힌다(가입 동의서 healthProcessing의 처리 위탁과 같은 내용)
+const externalVoiceNotice=locale=>phrase(locale,voiceSttProvider==='openai'?"Your microphone recording is sent to OpenAI for transcription.":"Your recording is sent to Mindlogic's BAZE speech recognition (Soniox engine) and turned into text. The text result is kept on the provider's servers for 1 hour and then deleted. HearO does not store your voice.");
 const recordingLimit = 25000;
 const entryReviewTime = 2000;
 const choiceReviewTime = 1000;
@@ -102,7 +104,7 @@ export function FirstVoicePrompt({locale='ko',canStartVoice,onVoiceSubmit,onVoic
           buttonRef={answerRef} disabled={voiceBlocked} onBeforeStart={canStartVoice} onEntrySubmit={onVoiceSubmit} onEntryEdit={onVoiceEdit}
           onEntryEmergency={onEmergency} />
         {externalChoice&&<div className="voice-entry-consent" role="group" aria-label={phrase(locale,"External speech recognition consent")}>
-          <p>{phrase(locale,"Your microphone recording is sent to OpenAI for transcription.")}</p>
+          <p>{externalVoiceNotice(locale)}</p>
           {externalError&&<p role="alert">{phrase(locale,"Could not confirm consent. Try again or type instead.")}</p>}
           <button type="button" className="secondary-button" disabled={externalBusy} onClick={onExternalConsent}>{phrase(locale,"Agree")}</button>
           <button type="button" className="text-button" disabled={externalBusy} onClick={onExternalCancel}>{phrase(locale,"Close")}</button>
@@ -378,7 +380,7 @@ export function VoiceInput({locale='ko',question, conversation, permitted, disab
     {entry&&review&&<div className="voice-entry-preview"><p>{entryText}</p><button type="button" className="secondary-button" onClick={()=>{finish(active.current);onEntryEdit?.(entryText);}}>{phrase(locale,"Edit transcript")}</button></div>}
     <span className={entry?"voice-entry-status":"composer-voice-status"} role="status">{message}</span>
     {consent&&<div className="voice-external-consent">
-      <p>{phrase(locale,"Your microphone recording is sent to OpenAI for transcription.")} {phrase(locale,"If you prefer, you can type instead.")}</p>
+      <p>{externalVoiceNotice(locale)} {phrase(locale,"If you prefer, you can type instead.")}</p>
       <button type="button" className="secondary-button" onClick={allowExternalVoice} disabled={saving}>{phrase(locale,"Agree")}</button>
       <button type="button" className="text-button" disabled={saving} onClick={()=>setConsent(false)}>{phrase(locale,"Type instead")}</button>
     </div>}

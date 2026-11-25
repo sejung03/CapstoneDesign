@@ -102,10 +102,10 @@
   "Declining prevents signup. Guest hospital search and emergency help remain available.": "동의를 거부하면 계정 가입은 진행하지 않으며 비회원 병원 찾기와 응급 도움은 이용할 수 있습니다.",
   "I consent to the collection and use of health information (sensitive data).": "건강정보(민감정보) 수집·이용에 동의합니다.",
   "Required for health consultation": "건강 상담 이용 시 필수",
-  "Questionnaire and chat, situation summaries, care navigation and health note preparation": "문진과 대화 진행, 상황 정리, 진료과·의료기관 탐색 보조 및 분석서 작성",
-  "Age in completed years, sex, symptoms, questionnaire answers, allergies, medications, existing conditions, and user-reviewed previous notes": "만 나이, 성별, 증상, 문진 답변, 알레르기, 복용 중인 약, 기저질환, 사용자가 확인한 이전 분석서 내용",
+  "Questionnaire and chat, situation summaries, care navigation and health note preparation, and turning your speech into text when you choose voice input": "문진과 대화 진행, 상황 정리, 진료과·의료기관 탐색 보조 및 분석서 작성, 음성 입력을 선택한 경우 말씀을 글자로 바꾸기",
+  "Age in completed years, sex, symptoms, questionnaire answers, allergies, medications, existing conditions, user-reviewed previous notes, and your voice recording when you choose voice input (it may contain health information such as the symptoms you describe)": "만 나이, 성별, 증상, 문진 답변, 알레르기, 복용 중인 약, 기저질환, 사용자가 확인한 이전 분석서 내용, 음성 입력을 선택한 경우 녹음한 음성(말씀하신 증상 등 건강정보가 담길 수 있음)",
   "Used until the current consultation ends. Account retention follows the separate health information and consultation note storage choices below.": "현재 상담이 종료될 때까지 이용합니다. 계정에 보관할 정보는 아래의 건강정보 저장 및 상담별 분석서 저장 동의를 각각 따릅니다.",
-  "Declining prevents health questionnaire and symptom chat. General hospital search and emergency help remain available.": "동의하지 않으면 건강정보 문진·증상 상담은 이용하지 않으며 일반 병원 찾기와 응급 도움은 이용할 수 있습니다.",
+  "Declining prevents health questionnaire and symptom chat. General hospital search and emergency help remain available. Voice input is optional; you can type instead and use the same consultation.": "동의하지 않으면 건강정보 문진·증상 상담은 이용하지 않으며 일반 병원 찾기와 응급 도움은 이용할 수 있습니다. 음성 입력은 선택 기능으로, 쓰지 않아도 글자로 입력해 같은 상담을 이용할 수 있습니다.",
   "I agree to save health information for future consultations.": "다음 상담을 위한 건강정보 저장에 동의합니다.",
   "Optional": "선택",
   "Load health information in future consultations, manage reviewed changes, and order the department list by how often you applied each department to a search": "다음 상담에서 건강정보를 불러오고 사용자가 확인한 변경 내용을 관리, 검색에 적용한 진료과 횟수를 반영해 진료과 목록을 정렬",
@@ -834,5 +834,9 @@
   "Would you like a PDF of your questionnaire answers and health information?": "문진 내용과 건강정보 정리본을 PDF로 받을까요?",
   "You can print it or save it as a PDF to show at the clinic. It is made on this device and is not sent anywhere.": "인쇄하거나 PDF로 저장해 진료받을 때 보여 줄 수 있어요. 이 기기에서 만들어지며 어디로도 전송되지 않습니다.",
   "Get PDF": "PDF로 받기",
-  "No thanks": "괜찮아요"
+  "No thanks": "괜찮아요",
+  "Used until the current consultation ends. Keeping health information in your account requires separate storage consent. HearO does not store your voice recordings. The text produced by the speech recognition provider is kept on its servers for 1 hour and then deleted.": "현재 상담이 종료될 때까지 이용합니다. 계정에 건강정보를 보관하려면 별도의 저장 동의가 필요합니다. 녹음한 음성은 HearO가 저장하지 않으며, 음성 인식 업체가 만든 변환 결과(글자)는 업체 서버에 1시간 보관된 뒤 삭제됩니다.",
+  "If you choose voice input: Mindlogic’s BAZE speech recognition (STT, using the Soniox engine) turns your recording into text. If you confirm the external AI notice during the questionnaire: OpenAI (USA) interprets the sentences you type in the chat (up to the latest 500 characters).": "음성 입력을 선택한 경우: 마인드로직(Mindlogic)의 BAZE 음성 인식(STT, Soniox 엔진 사용)이 녹음한 음성을 글자로 바꿉니다. 문진 중 외부 AI 처리 안내를 확인한 경우: 대화창에 적은 문장(최근 500자 이내)을 미국 OpenAI의 AI가 해석합니다.",
+  "Processing by other companies": "처리를 맡기는 곳",
+  "Your recording is sent to Mindlogic's BAZE speech recognition (Soniox engine) and turned into text. The text result is kept on the provider's servers for 1 hour and then deleted. HearO does not store your voice.": "녹음한 음성을 마인드로직(Mindlogic)의 BAZE 음성 인식(Soniox 엔진)으로 보내 글자로 바꿔요. 변환 결과(글자)는 업체 서버에 1시간 보관된 뒤 삭제되며, HearO는 음성을 저장하지 않아요."
 }

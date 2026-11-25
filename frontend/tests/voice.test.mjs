@@ -69,8 +69,8 @@ test('voice proxy rejects invalid requests before reaching the local service', a
   assert.equal(forwarded, 1);
 });
 
-test('preview transcription only sends an explicitly authorized request to OpenAI',async()=>{
-  const env={NEXT_PUBLIC_VOICE_ENABLED:'1',VOICE_STT_PROVIDER:'openai',VERCEL_ENV:'preview',VOICE_CONSENT_SECRET:'test-secret',VOICE_OPENAI_API_KEY:'test-key'};
+test('production transcription only sends an explicitly authorized request to OpenAI',async()=>{
+  const env={NEXT_PUBLIC_VOICE_ENABLED:'1',VOICE_STT_PROVIDER:'openai',VERCEL_ENV:'production',NODE_ENV:'production',VOICE_CONSENT_SECRET:'test-secret',OPENAI_API_KEY:'test-key',VOICE_OPENAI_API_KEY:'unused-old-key'};
   const request=(path,headers={},body)=>new Request('https://preview.example/api/voice/'+path,{method:'POST',headers,body});
   const audio=(cookie='',language='en')=>request('stt',{'content-type':'audio/webm;codecs=opus',cookie,'x-voice-language':language},'mock recording');
   let count=0;
@@ -94,11 +94,20 @@ test('preview transcription only sends an explicitly authorized request to OpenA
   assert.match(setCookie,/HttpOnly; Secure; SameSite=Strict/);
   const cookie=setCookie.split(';')[0];
   assert.equal((await forwardVoice(audio(cookie+'f'),'stt',opts)).status,403);
-  assert.equal((await forwardVoice(audio(cookie),'stt',{...opts,env:{...env,VERCEL_ENV:'production'}})).status,404);
+  assert.equal((await forwardVoice(audio(cookie),'stt',{...opts,env:{...env,NEXT_PUBLIC_VOICE_ENABLED:'0'}})).status,404);
+  assert.equal((await forwardVoice(audio(cookie),'stt',{...opts,sameOrigin:()=>false})).status,403);
   assert.equal((await forwardVoice(audio(cookie,'xx'),'stt',opts)).status,400);
   assert.equal(count,0);
   const answer=await forwardVoice(audio(cookie),'stt',opts);
   assert.equal(answer.status,200);
   assert.deepEqual(await answer.json(),{text:'기침이 나요'});
   assert.equal(count,1);
+  const missingKey = await forwardVoice(audio(cookie),'stt',{...opts,env:{...env,OPENAI_API_KEY:undefined}});
+  assert.equal(missingKey.status,503);
+  assert.equal(count,1);
+  const defaultProvider = await forwardVoice(audio(cookie),'stt',{...opts,env:{...env,VOICE_STT_PROVIDER:undefined,NEXT_PUBLIC_VOICE_EXTERNAL_STT:'1'}});
+  assert.equal(defaultProvider.status,200);
+  assert.equal(count,2);
+  assert.equal((await forwardVoice(audio(cookie),'stt',{...opts,env:{...env,VERCEL_ENV:'preview'}})).status,200);
+  assert.equal(count,3);
 });
