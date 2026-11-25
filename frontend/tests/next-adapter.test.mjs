@@ -6,7 +6,7 @@ import {mountApp} from './dom-harness.mjs';
 const request=(path,method='GET')=>new Request('http://localhost'+path,{method});
 
 test('Next config returns only public key and feature availability; HEAD and methods preserve API behavior',async()=>{
- const handle=createApiHandlers({KAKAO_JAVASCRIPT_KEY:'public-js',KAKAO_REST_API_KEY:'private-rest',PUBLIC_DATA_SERVICE_KEY:'private-hours'});
+ const handle=createApiHandlers({KAKAO_JAVASCRIPT_KEY:'public-js',KAKAO_REST_API_KEY:'private-rest',DATA_SERVICE_KEY:'private-hours'});
  const response=await handle('config',request('/api/config'));
  const text=await response.text();assert.match(text,/public-js/);assert.doesNotMatch(text,/private-rest|private-hours/);
  assert.equal(response.headers.get('cache-control'),'no-store');
@@ -17,7 +17,7 @@ test('Next config returns only public key and feature availability; HEAD and met
 test('Next adapter reuses validated hours query, private upstream key, XML and cache',async()=>{
  let calls=0;
  const xml='<response><header><resultCode>00</resultCode></header><body><items></items></body></response>';
- const handle=createApiHandlers({PUBLIC_DATA_SERVICE_KEY:'private-hours'},{fetcher:async url=>{
+ const handle=createApiHandlers({DATA_SERVICE_KEY:'private-hours'},{fetcher:async url=>{
   calls++;assert.equal(url.searchParams.get('serviceKey'),'private-hours');
   return {ok:true,text:async()=>xml};
  }});

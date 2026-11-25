@@ -1,7 +1,7 @@
 // 공휴일 목록 만들기(개발자가 직접 실행). 앱은 실행 중 이 API를 부르지 않고, 만든 holiday-data.mjs만 읽는다.
 // 출처: 공공데이터포털 「한국천문연구원_특일 정보」 getRestDeInfo(공휴일·대체공휴일·임시공휴일·선거일, isHoliday=Y)
 // 실행: node --env-file=.env.local scripts/fetch-holidays.mjs 2026 2027
-// 키: HOLIDAY_DATA_KEY → PUBLIC_DATA_SERVICE_KEY → PUBLIC_DATA_HOSPITAL_KEY 순서로 읽는다(특일 정보 활용 신청이 된 공공데이터포털 키).
+// 키: HOLIDAY_DATA_KEY → DATA_SERVICE_KEY → PUBLIC_DATA_HOSPITAL_KEY 순서로 읽는다(특일 정보 활용 신청이 된 공공데이터포털 키).
 // 키는 출력하지 않는다. 한 해라도 실패하면 파일을 쓰지 않는다.
 import {writeFile} from 'node:fs/promises';
 import path from 'node:path';
@@ -13,7 +13,7 @@ const OUTPUT=new URL('../holiday-data.mjs',import.meta.url);
 const MIN_PER_YEAR=13;
 
 function serviceKey(env){
- let key=String(env.HOLIDAY_DATA_KEY||env.PUBLIC_DATA_SERVICE_KEY||env.PUBLIC_DATA_HOSPITAL_KEY||'').trim();
+ let key=String(env.HOLIDAY_DATA_KEY||env.DATA_SERVICE_KEY||env.PUBLIC_DATA_HOSPITAL_KEY||'').trim();
  if(/%[0-9a-f]{2}/i.test(key)){try{key=decodeURIComponent(key);}catch{}}
  return key;
 }

@@ -12,7 +12,7 @@ const invoke=(proxy,query)=>new Promise(resolve=>proxy(new URL('http://localhost
  end(body){resolve({status:this.status,headers:this.headers,body});}
 }));
 test('Public data key stays server-side, supports per-service keys and URL encoding exactly once',()=>{
- const env={PUBLIC_DATA_SERVICE_KEY:'test%2Bsecret%3D'};
+ const env={DATA_SERVICE_KEY:'test%2Bsecret%3D'};
  assert.equal(publicDataKey(env,'hospital'),'test+secret=');
  assert.equal(publicDataKey({...env,PUBLIC_DATA_PHARMACY_KEY:'separate'},'pharmacy'),'separate');
  assert.deepEqual(publicConfig(env).publicData,{configured:true});
@@ -20,7 +20,7 @@ test('Public data key stays server-side, supports per-service keys and URL encod
 });
 test('Hours proxy uses only documented fixed upstream endpoints and caches schedules',async()=>{
  let calls=0,target;
- const proxy=createPublicDataProxy({PUBLIC_DATA_SERVICE_KEY:'test+secret='},{fetcher:async url=>{
+ const proxy=createPublicDataProxy({DATA_SERVICE_KEY:'test+secret='},{fetcher:async url=>{
   calls++;target=url;return {ok:true,text:async()=>xml};
  }});
  const query=new URLSearchParams({type:'hospital',name:'테스트의원',province:'강원특별자치도',url:'https://evil.example',serviceKey:'injected'});
@@ -40,7 +40,7 @@ test('Missing keys, bad input, auth failures and quota errors never reveal upstr
  assert.equal((await invoke(createPublicDataProxy({}),'type=hospital&name=test')).status,503);
  assert.equal((await invoke(createPublicDataProxy({}),'type=https://evil.example&name=test')).status,400);
  for(const [code,error] of [['30','hoursAuthFailed'],['22','hoursQuotaExceeded']]){
-  const proxy=createPublicDataProxy({PUBLIC_DATA_SERVICE_KEY:'private-key'},{fetcher:async()=>({ok:true,text:async()=>'<response><resultCode>'+code+'</resultCode><resultMsg>private-key</resultMsg></response>'})});
+  const proxy=createPublicDataProxy({DATA_SERVICE_KEY:'private-key'},{fetcher:async()=>({ok:true,text:async()=>'<response><resultCode>'+code+'</resultCode><resultMsg>private-key</resultMsg></response>'})});
   const response=await invoke(proxy,'type=hospital&name=test');
   assert.equal(JSON.parse(response.body).error,error);
   assert.ok(!response.body.includes('private-key'));
@@ -91,7 +91,7 @@ test('Browser exposes live open-only filtering and ignores stale enrichment',asy
  assert.ok(!ui.app.innerHTML.includes('data-card="stale"'));
 });
 test('HTTP hours route integrates proxy; server-only modules and env stay inaccessible',async()=>{
- const server=await startServer({port:0,log:()=>{},env:{PUBLIC_DATA_SERVICE_KEY:'secret'},fetcher:async()=>({ok:true,text:async()=>xml})});
+ const server=await startServer({port:0,log:()=>{},env:{DATA_SERVICE_KEY:'secret'},fetcher:async()=>({ok:true,text:async()=>xml})});
  const req=url=>new Promise(resolve=>server.emit('request',{url,method:'GET'},{
  writeHead(status,headers){this.status=status;this.headers=headers;},
  end(body){resolve({status:this.status,body,headers:this.headers});}

@@ -7,7 +7,7 @@
 ```dotenv
 KAKAO_JAVASCRIPT_KEY=
 KAKAO_REST_API_KEY=
-PUBLIC_DATA_SERVICE_KEY=
+DATA_SERVICE_KEY=
 # 포트 변경: npm run dev -- --port 3081
 ```
 
@@ -15,7 +15,7 @@ PUBLIC_DATA_SERVICE_KEY=
 | --- | --- |
 | KAKAO_JAVASCRIPT_KEY | 지도 SDK와 장소 검색에 사용하는 브라우저 공개 키 |
 | KAKAO_REST_API_KEY | 서버에서만 사용하는 길찾기 키 |
-| PUBLIC_DATA_SERVICE_KEY | 서버에서만 사용하는 공공데이터 공통 인증키 |
+| DATA_SERVICE_KEY | 서버에서만 사용하는 공공데이터 공통 인증키 |
 | 포트 | 기본 3080. Next.js 실행 시 --port로 지정 |
 
 [카카오디벨로퍼스](https://developers.kakao.com/)에서 앱 키를 확인하고, 터미널의 Local 주소를 JavaScript SDK 도메인에 등록합니다. localhost와 127.0.0.1은 서로 다른 주소이며 포트도 일치해야 합니다. 같은 주소와 포트를 사용해야 브라우저의 검색 설정이 유지됩니다. 건강정보는 저장하지 않습니다.
@@ -27,7 +27,7 @@ PUBLIC_DATA_SERVICE_KEY=
 - [전국 병의원 찾기](https://www.data.go.kr/data/15000736/openapi.do)
 - [전국 약국 정보](https://www.data.go.kr/data/15000576/openapi.do)
 
-일반 인증키(Decoding)가 같으면 PUBLIC_DATA_SERVICE_KEY 하나만 사용합니다. 다르면 PUBLIC_DATA_HOSPITAL_KEY와 PUBLIC_DATA_PHARMACY_KEY로 각각 설정합니다.
+일반 인증키(Decoding)가 같으면 DATA_SERVICE_KEY 하나만 사용합니다. 다르면 PUBLIC_DATA_HOSPITAL_KEY와 PUBLIC_DATA_PHARMACY_KEY로 각각 설정합니다.
 
 기관명과 전화번호, 주소 또는 좌표를 대조해 명확하게 한 기관만 일치할 때 시간표를 연결합니다. 같은 이름의 처음 100건을 확인하며, 후보가 너무 많거나 분점 구분이 모호하면 연결하지 않습니다. 원본 시간표는 서버 메모리에 1시간 캐시하고 한국 시간으로 운영 상태를 계산합니다.
 
@@ -38,7 +38,7 @@ PUBLIC_DATA_SERVICE_KEY=
 **공휴일(2026-11-25 추가)**: 오늘이 공휴일이면 요일 대신 등록된 공휴일 시간표로 운영 여부를 판단합니다. 공휴일 시간표가 없는 기관은 평일 시간으로 대신하지 않고 "확인 필요"로 둡니다. 자정을 넘는 영업은 전날이 공휴일이었는지에 따라 전날 시간표를 고릅니다. 검색 조건 옆에 공휴일 안내가 뜨고, 상세의 진료시간 표에서는 "공휴일" 줄이 강조됩니다.
 
 - 공휴일 목록은 `holiday-data.mjs`이며, 공공데이터포털 「한국천문연구원_특일 정보」로 만듭니다. 대체공휴일·임시공휴일·선거일이 포함됩니다. 앱은 실행 중 이 API를 부르지 않습니다.
-- 매년 한 번, 또는 임시공휴일이 발표되면 다시 만듭니다. 키는 `HOLIDAY_DATA_KEY` → `PUBLIC_DATA_SERVICE_KEY` → `PUBLIC_DATA_HOSPITAL_KEY` 순서로 읽고, 특일 정보 활용 신청이 된 키여야 합니다.
+- 매년 한 번, 또는 임시공휴일이 발표되면 다시 만듭니다. 키는 `HOLIDAY_DATA_KEY` → `DATA_SERVICE_KEY` → `PUBLIC_DATA_HOSPITAL_KEY` 순서로 읽고, 특일 정보 활용 신청이 된 키여야 합니다.
 
 ```cmd
 node --env-file=.env.local scripts/fetch-holidays.mjs 2026 2027

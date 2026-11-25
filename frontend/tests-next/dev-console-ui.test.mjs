@@ -9,7 +9,7 @@ import {JSDOM,VirtualConsole} from 'jsdom';
 const root=fileURLToPath(new URL('../',import.meta.url));
 test('development browser console can enter a mock account and exercise the real logout button', {timeout:75000},async()=>{
  const probe=net.createServer();await new Promise(resolve=>probe.listen(0,'127.0.0.1',resolve));const port=probe.address().port;await new Promise(resolve=>probe.close(resolve));
- const base='http://127.0.0.1:'+port,child=spawn(process.execPath,['node_modules/next/dist/bin/next','dev','--hostname','127.0.0.1','--port',String(port)],{cwd:root,env:{...process.env,NODE_ENV:'development',NEXT_TELEMETRY_DISABLED:'1',KAKAO_JAVASCRIPT_KEY:'',KAKAO_REST_API_KEY:'',PUBLIC_DATA_SERVICE_KEY:''},stdio:'ignore'});
+ const base='http://127.0.0.1:'+port,child=spawn(process.execPath,['node_modules/next/dist/bin/next','dev','--hostname','127.0.0.1','--port',String(port)],{cwd:root,env:{...process.env,NODE_ENV:'development',NEXT_TELEMETRY_DISABLED:'1',KAKAO_JAVASCRIPT_KEY:'',KAKAO_REST_API_KEY:'',DATA_SERVICE_KEY:''},stdio:'ignore'});
  let dom;
  const wait=async condition=>{for(let i=0;i<250;i++){if(condition())return;await delay(60);}assert.ok(condition(),'Development UI did not become ready');};
  try{

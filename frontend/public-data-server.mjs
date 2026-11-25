@@ -3,7 +3,7 @@ const endpoints={
  pharmacy:'https://apis.data.go.kr/B552657/ErmctInsttInfoInqireService/getParmacyListInfoInqire'
 };
 export function publicDataKey(env,type){
- let key=String(env[type==='pharmacy'?'PUBLIC_DATA_PHARMACY_KEY':'PUBLIC_DATA_HOSPITAL_KEY']||env.PUBLIC_DATA_SERVICE_KEY||'').trim();
+ let key=String(env[type==='pharmacy'?'PUBLIC_DATA_PHARMACY_KEY':'PUBLIC_DATA_HOSPITAL_KEY']||env.DATA_SERVICE_KEY||'').trim();
  if(/%[0-9a-f]{2}/i.test(key)){try{key=decodeURIComponent(key);}catch{}}
  return key;
 }

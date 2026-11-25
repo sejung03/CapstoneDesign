@@ -13,7 +13,7 @@ test('Built Next.js application serves the preserved app and server APIs', {time
  const probe=net.createServer();probe.listen(0,'127.0.0.1');await once(probe,'listening');
  const port=probe.address().port;await new Promise(resolve=>probe.close(resolve));
  const child=spawn(process.execPath,['node_modules/next/dist/bin/next','start','--hostname','127.0.0.1','--port',String(port)],{
-  cwd:root,env:{...process.env,NODE_ENV:'production',NEXT_TELEMETRY_DISABLED:'1',KAKAO_JAVASCRIPT_KEY:'test-public-js',KAKAO_REST_API_KEY:'',PUBLIC_DATA_SERVICE_KEY:'',PUBLIC_DATA_HOSPITAL_KEY:'',PUBLIC_DATA_PHARMACY_KEY:''},stdio:['ignore','pipe','pipe']
+  cwd:root,env:{...process.env,NODE_ENV:'production',NEXT_TELEMETRY_DISABLED:'1',KAKAO_JAVASCRIPT_KEY:'test-public-js',KAKAO_REST_API_KEY:'',DATA_SERVICE_KEY:'',PUBLIC_DATA_HOSPITAL_KEY:'',PUBLIC_DATA_PHARMACY_KEY:''},stdio:['ignore','pipe','pipe']
  });
  let output='';child.stdout.on('data',data=>{output+=data;});child.stderr.on('data',data=>{output+=data;});
  const base='http://127.0.0.1:'+port;
