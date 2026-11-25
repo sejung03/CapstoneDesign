@@ -1,8 +1,13 @@
 import 'server-only';
 import {createClient} from './server.js';
 import {signupConsentPolicy} from '../../signup-consent.mjs';
-export const appOrigin=()=>new URL(process.env.APP_URL||'http://127.0.0.1:3080').origin;
-export const sameOrigin=request=>request.headers.get('origin')===appOrigin()&&request.headers.get('sec-fetch-site')!=='cross-site';
+import {appOriginFrom,allowedOriginsFrom,isSameOrigin,appUrlInvalid} from '../app-origin.mjs';
+// APP_URL이 잘못되어도 예외를 던지지 않는다(lib/app-origin.mjs). Vercel 배포 주소도 같은 사이트로 인정한다.
+let warned=false;
+const checked=()=>{if(!warned&&appUrlInvalid()){warned=true;console.warn('[config] APP_URL is not a valid URL; using the Vercel deployment address instead.');}};
+export const appOrigin=()=>{checked();return appOriginFrom();};
+export const allowedOrigins=()=>{checked();return allowedOriginsFrom();};
+export const sameOrigin=request=>{checked();return isSameOrigin(request);};
 export async function verifiedAccount(client=null){
  client??=await createClient();
  const {data:{user},error}=await client.auth.getUser();

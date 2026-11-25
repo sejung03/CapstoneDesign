@@ -31,7 +31,9 @@ export function createBehaviorApi({repository, resolveSession, expectedOrigin = 
         const site = request.headers.get('sec-fetch-site');
         // Next may expose an internal hostname in request.url. The application
         // injects its configured public origin; never trust forwarded headers.
-        if (!origin || origin !== (expectedOrigin ?? new URL(request.url).origin) || site === 'cross-site') return json({error: 'invalid_origin'}, 403);
+        // expectedOrigin: 주소 하나 또는 허용 주소 목록(lib/app-origin.mjs allowedOriginsFrom)
+        const allowed = Array.isArray(expectedOrigin) ? expectedOrigin : [expectedOrigin ?? new URL(request.url).origin];
+        if (!origin || !allowed.includes(origin) || site === 'cross-site') return json({error: 'invalid_origin'}, 403);
       }
       if (action === 'settings' && request.method === 'GET') return json({settings: await service.getSettings(session)});
       if (action === 'settings' && request.method === 'PATCH') return json({settings: await service.saveSettings(session, await body(request))});

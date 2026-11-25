@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {forwardVoice} from '../lib/voice-server.mjs';
 import {readWavInfo, signOperation, verifyOperation, createUploadLimiter, transcribeBaze} from '../lib/voice-baze.mjs';
 import {encodeWav, trimAndNormalize, transcribeRecording} from '../voice-client.mjs';
+import {CARE_CONSENT_VERSION} from '../care-adapter.mjs';
 
 const SECRET = 'test-secret';
 const env = {NEXT_PUBLIC_VOICE_ENABLED: '1', VOICE_STT_PROVIDER: 'baze', VERCEL_ENV: 'preview', VOICE_CONSENT_SECRET: SECRET, BAZE_API_KEY: 'baze-key'};
@@ -12,11 +13,8 @@ const speech = (seconds = 1) => Float32Array.from({length: 16000 * seconds}, (_,
 const wav = async (samples = speech()) => Buffer.from(await encodeWav(samples).arrayBuffer());
 const request = (path, headers = {}, body) => new Request('https://preview.example/api/voice/' + path, {method: 'POST', headers, body});
 
-async function consentCookie(opts) {
-  const grant = await forwardVoice(request('consent', {'x-voice-consent': 'baze-stt-v1'}), 'consent', opts);
-  assert.equal(grant.status, 204);
-  return grant.headers.get('set-cookie').split(';')[0];
-}
+// 녹음 전송은 건강정보 수집·이용 동의에 포함된다(따로 받는 음성 동의 없음). 브라우저는 동의한 안내 버전을 헤더로 보낸다
+const CONSENT = {'x-health-consent': CARE_CONSENT_VERSION};
 
 test('browser WAV encoding gives the exact 16kHz mono 16-bit format BAZE needs, trimming silence', async () => {
   const silence = new Float32Array(16000);
@@ -40,17 +38,15 @@ test('operation tokens are signed, expire and cannot be forged for another job',
   assert.equal(verifyOperation(token, 'other-secret', now), null);
 });
 
-test('BAZE needs a BAZE-scoped consent; an OpenAI-era consent cookie does not carry over', async () => {
+test('BAZE needs the current health consent; an older notice version does not carry over', async () => {
   const opts = {env, sameOrigin: () => true, fetchImpl: async () => { throw new Error('must not call BAZE'); }};
   const body = await wav();
-  const audio = cookie => request('stt', {'content-type': 'audio/wav', cookie}, body);
-  assert.equal((await forwardVoice(audio(''), 'stt', opts)).status, 403);
-  assert.equal((await forwardVoice(request('consent', {'x-voice-consent': 'openai-stt-preview-v1'}), 'consent', opts)).status, 403);
-  const openaiCookie = (await forwardVoice(request('consent', {'x-voice-consent': 'openai-stt-preview-v1'}), 'consent', {...opts, env: {...env, VOICE_STT_PROVIDER: 'openai'}})).headers.get('set-cookie').split(';')[0];
-  assert.equal((await forwardVoice(audio(openaiCookie), 'stt', opts)).status, 403);
-  const cookie = await consentCookie(opts);
+  const audio = (headers = {}) => request('stt', {'content-type': 'audio/wav', ...headers}, body);
+  assert.equal((await forwardVoice(audio(), 'stt', opts)).status, 403);
+  assert.equal((await forwardVoice(audio({'x-health-consent': 'care-openai-1'}), 'stt', opts)).status, 403);
+  assert.equal((await forwardVoice(request('consent', {'x-voice-consent': 'baze-stt-v1'}), 'consent', opts)).status, 404); // 따로 받는 음성 동의는 없앴다
   // webm은 BAZE가 거부하므로 서버가 먼저 막는다(비용 청구 전)
-  assert.equal((await forwardVoice(request('stt', {'content-type': 'audio/webm', cookie}, 'webm'), 'stt', opts)).status, 415);
+  assert.equal((await forwardVoice(request('stt', {'content-type': 'audio/webm', ...CONSENT}, 'webm'), 'stt', opts)).status, 415);
   // 운영 주소에서도 사용자 동의가 없으면 거절한다.
   assert.equal((await forwardVoice(audio(), 'stt', {...opts, env: {...env, VERCEL_ENV: 'production', NODE_ENV: 'production'}})).status, 403);
 });
@@ -74,8 +70,7 @@ test('upload sends the BAZE form, waits for the result and returns the text', as
     return Response.json(polls < 2 ? {status: 'processing'} : {status: 'completed', text: ' 기침이 나요 '});
   };
   const opts = {env, sameOrigin: () => true, fetchImpl};
-  const cookie = await consentCookie(opts);
-  const answer = await forwardVoice(request('stt', {'content-type': 'audio/wav', cookie}, await wav()), 'stt', opts);
+  const answer = await forwardVoice(request('stt', {'content-type': 'audio/wav', ...CONSENT}, await wav()), 'stt', opts);
   assert.equal(answer.status, 200);
   assert.deepEqual(await answer.json(), {text: '기침이 나요'});
   assert.equal(polls, 2);
@@ -87,12 +82,11 @@ test('a slow job returns a token; the browser continues with stt-status until it
     if (init.method === 'POST') return Response.json({operation_id: 'op_slow'});
     return Response.json(done ? {status: 'completed', text: '열이 나요'} : {status: 'pending'});
   };
-  const cookie = await consentCookie({env, sameOrigin: () => true});
   // 서버가 기다리는 시간을 0으로: 바로 202
   const pending = await transcribeBaze(request('stt'), await wav(), {apiKey: 'k', secret: SECRET, fetchImpl, waitMs: 0});
   assert.equal(pending.status, 202);
   const {token} = await pending.json();
-  const status = body => forwardVoice(request('stt-status', {'content-type': 'application/json', cookie}, JSON.stringify(body)), 'stt-status', {env, sameOrigin: () => true, fetchImpl});
+  const status = body => forwardVoice(request('stt-status', {'content-type': 'application/json', ...CONSENT}, JSON.stringify(body)), 'stt-status', {env, sameOrigin: () => true, fetchImpl});
   assert.equal((await status({token: 'forged.1234567890.' + 'a'.repeat(64)})).status, 403);
   done = true;
   const answer = await status({token});
@@ -112,7 +106,7 @@ test('failures do not leak details, and no_speech is reported when BAZE hears no
   assert.equal((await transcribeBaze(request('stt'), await wav(speech(31)), {apiKey: 'k', secret: SECRET, fetchImpl: failed})).status, 413);
 });
 
-test('uploads are limited per consent cookie', () => {
+test('uploads are limited per client', () => {
   let t = 0;
   const allow = createUploadLimiter({limit: 2, windowMs: 1000, now: () => t});
   assert.equal(allow('a'), true);assert.equal(allow('a'), true);assert.equal(allow('a'), false);

@@ -1,14 +1,12 @@
 import {emergencyDialogOpenedEvent} from '../emergency.mjs';
 import {useEffect, useLayoutEffect, useRef, useState} from 'react';
-import {createRecorder, grantManagedVoice, speechText, managedVoice, voiceSttProvider, stopAfterSpeechPause, synthesizeSpeech, transcribeRecording} from '../voice-client.mjs';
+import {createRecorder, speechText, managedVoice, stopAfterSpeechPause, synthesizeSpeech, transcribeRecording} from '../voice-client.mjs';
 import {matchSpokenOption, rememberSpokenAnswer} from '../voice-answer.mjs';
 import {requestsEmergencyHelp} from '../emergency-contact.mjs';
 import {phrase,languageTags} from '../i18n.mjs';
 import {intakeLabel} from '../intake-data.mjs';
 import {directCareSearch} from '../care-context.mjs';
 
-// 외부 음성 인식 동의 문구. 업체(voiceSttProvider)마다 받는 곳·보관을 밝힌다(가입 동의서 healthProcessing의 처리 위탁과 같은 내용)
-const externalVoiceNotice=locale=>phrase(locale,voiceSttProvider==='openai'?"Your microphone recording is sent to OpenAI for transcription.":"Your recording is sent to Mindlogic's BAZE speech recognition (Soniox engine) and turned into text. The text result is kept on the provider's servers for 1 hour and then deleted. HearO does not store your voice.");
 const recordingLimit = 25000;
 const entryReviewTime = 2000;
 const choiceReviewTime = 1000;
@@ -91,24 +89,18 @@ export function AutoVoice({text, volume, locale='ko', prompt=false, onDone, turn
   return <div className="assistant-voice" hidden><audio ref={player} src={prompt?'/voice/first-question-ko.wav':undefined} preload={prompt?'auto':'none'} aria-hidden="true" /></div>;
 }
 
-export function FirstVoicePrompt({locale='ko',canStartVoice,onVoiceSubmit,onVoiceEdit,onSkip,onEmergency,brand,answerRef,ready,conversation,permitted,entryGrant,voiceBlocked,externalChoice,externalBusy,externalError,onExternalConsent,onExternalCancel}) {
+export function FirstVoicePrompt({locale='ko',canStartVoice,onVoiceSubmit,onVoiceEdit,onSkip,onEmergency,brand,answerRef,ready,conversation,permitted,voiceBlocked}) {
   const firstQuestion=phrase(locale,"Where does it hurt?");
   return <main id="voice-entry" tabIndex={-1} className="voice-entry" aria-labelledby="voice-entry-heading">
     <div className="first-voice-prompt">
-      <span className="voice-entry-mark" aria-hidden="true"><span className="voice-entry-halo" /><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg></span>
+      <span className="voice-entry-mark" aria-hidden="true"><span className="voice-entry-halo" /><img src="/brand-icon.png" alt="" width="64" height="64" /></span>
       <p className="voice-entry-brand">{brand}</p>
       <h1 id="voice-entry-heading">{firstQuestion}</h1>
       <p>{phrase(locale,ready?'Consent confirmed. You can answer by voice.':'Tell us what is bothering you most.')}</p>
       <div className="voice-entry-actions">
-        <VoiceInput locale={locale} entry={true} question={null} conversation={conversation} permitted={permitted} entryGrant={entryGrant}
+        <VoiceInput locale={locale} entry={true} question={null} conversation={conversation} permitted={permitted}
           buttonRef={answerRef} disabled={voiceBlocked} onBeforeStart={canStartVoice} onEntrySubmit={onVoiceSubmit} onEntryEdit={onVoiceEdit}
           onEntryEmergency={onEmergency} />
-        {externalChoice&&<div className="voice-entry-consent" role="group" aria-label={phrase(locale,"External speech recognition consent")}>
-          <p>{externalVoiceNotice(locale)}</p>
-          {externalError&&<p role="alert">{phrase(locale,"Could not confirm consent. Try again or type instead.")}</p>}
-          <button type="button" className="secondary-button" disabled={externalBusy} onClick={onExternalConsent}>{phrase(locale,"Agree")}</button>
-          <button type="button" className="text-button" disabled={externalBusy} onClick={onExternalCancel}>{phrase(locale,"Close")}</button>
-        </div>}
         <button type="button" className="secondary-button" onClick={onSkip}>{phrase(locale,"Skip and type instead")}</button>
       </div>
     </div>
@@ -128,31 +120,13 @@ function dispose(session) {
   releaseMic(session);
 }
 
-export function VoiceInput({locale='ko',question, conversation, permitted, disabled, buttonRef, entryGrant=false, entry=false, onBeforeStart, onEntrySubmit, onEntryEdit, onEntryEmergency, autoListen=false, autoQuestion=null}) {
+// 녹음의 외부 음성 인식 전송은 건강정보 수집·이용 동의(health-consent.mjs)에 포함되어 있어 따로 묻지 않는다.
+// permitted(건강정보 동의)가 없으면 녹음을 시작하지 않고 동의 창을 연다.
+export function VoiceInput({locale='ko',question, conversation, permitted, disabled, buttonRef, entry=false, onBeforeStart, onEntrySubmit, onEntryEdit, onEntryEmergency, autoListen=false, autoQuestion=null}) {
   const [phase, setPhase] = useState('idle');
   const [status, setStatus] = useState('');
   const [entryText,setEntryText]=useState('');
   const active = useRef(null), lastAutoQuestion=useRef(null);
-  const granted = useRef(false);
-  const [consent,setConsent]=useState(false),[saving,setSaving]=useState(false);
-
-  useEffect(()=>{if(!permitted){granted.current=false;setConsent(false);}},[permitted]);
-  useLayoutEffect(()=>{if(entryGrant&&permitted)granted.current=true;},[entryGrant,permitted]);
-
-  async function allowExternalVoice(){
-    if(!permitted||saving) return;
-    setSaving(true);
-    try {
-      if(!await grantManagedVoice()) throw new Error('grant_failed');
-      granted.current=true;
-      setConsent(false);
-      await startRecording(true);
-    } catch {
-      setStatus(phrase(locale,"Voice recognition is unavailable. Please type instead."));
-    } finally {
-      setSaving(false);
-    }
-  }
 
   useLayoutEffect(() => {
     setPhase('idle');
@@ -204,7 +178,6 @@ export function VoiceInput({locale='ko',question, conversation, permitted, disab
       return;
     }
     if (document.hidden || disabled || (!entry&&!input) || active.current) return;
-    if (managedVoice && !granted.current) { setConsent(true);return; }
     if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
       setStatus(phrase(locale,"This browser cannot record audio. Please type instead."));
       return;
@@ -335,7 +308,8 @@ export function VoiceInput({locale='ko',question, conversation, permitted, disab
           }, option?choiceReviewTime:dictationReviewTime);
         } catch (error) {
           if (error.message==='voice_consent_required') {
-            granted.current=false;setConsent(true);finish(session);
+            // 서버가 아는 동의 안내 버전과 다르다(오래된 화면 등). 건강정보 동의를 다시 확인하게 한다
+            finish(session, phrase(locale,"Please review the health information notice again, then try voice input."));
           } else if (['no_speech', 'invalid_audio', 'empty_body'].includes(error.message)) {
             finish(session, phrase(locale,"No speech detected. Please record again."));
           } else if (['voice_service_unavailable', 'invalid_voice_port', 'stt_unavailable'].includes(error.message)) {
@@ -379,11 +353,6 @@ export function VoiceInput({locale='ko',question, conversation, permitted, disab
     </button>}
     {entry&&review&&<div className="voice-entry-preview"><p>{entryText}</p><button type="button" className="secondary-button" onClick={()=>{finish(active.current);onEntryEdit?.(entryText);}}>{phrase(locale,"Edit transcript")}</button></div>}
     <span className={entry?"voice-entry-status":"composer-voice-status"} role="status">{message}</span>
-    {consent&&<div className="voice-external-consent">
-      <p>{externalVoiceNotice(locale)} {phrase(locale,"If you prefer, you can type instead.")}</p>
-      <button type="button" className="secondary-button" onClick={allowExternalVoice} disabled={saving}>{phrase(locale,"Agree")}</button>
-      <button type="button" className="text-button" disabled={saving} onClick={()=>setConsent(false)}>{phrase(locale,"Type instead")}</button>
-    </div>}
   </>;
 }
 

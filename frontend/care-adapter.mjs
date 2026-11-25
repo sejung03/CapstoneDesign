@@ -10,7 +10,8 @@ const RISK_QUESTION_RE=/^(RISK_CONFIRM|SENSITIVE_CHOICE|SYM_RETRY)_(\d{1,4})$/;
  * 11/18: 이 버전의 외부 AI 안내(health-consent.mjs careAiHealthNotice)를 쓴다 → 사용자가 동의하면 OpenAI가 호출된다.
  * 실제 서비스로 내보내기 전에 안내 문구의 법적 검토가 필요하다. 끄려면 careHealthNotice를 localHealthNotice로 되돌린다.
  */
-export const CARE_CONSENT_VERSION='care-openai-1';
+// 11/25: 음성 입력도 이 안내에 포함되면서 care-openai-2. 버전은 안내 객체 한 곳(health-consent.mjs)에서만 정한다
+export const CARE_CONSENT_VERSION=careAiHealthNotice.version;
 
 /**
  * 건강정보 처리 안내: 11/18부터 외부 AI(OpenAI) 처리를 알리는 안내. 이 안내를 확인한 요청만 서버가 외부 AI 동의로 넘긴다.

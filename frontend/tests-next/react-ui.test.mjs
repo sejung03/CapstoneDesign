@@ -193,10 +193,10 @@ test('React components preserve intake, search, maps, chat, report and privacy',
    assert.equal(el('health-consent-decline'),null);click('health-consent-close');assert.equal(el('search-form'),null);await delay(0);assert.equal(el('health-consent-card'),null);click('composer-input');assert.ok(el('health-consent-card'));el('health-consent-check').click();submit('health-consent-form');
    assert.equal(el('health-consent-card'),null);assert.equal(el('composer-input').readOnly,false);assert.equal(el('intake-wizard'),null);assert.equal(d.activeElement,el('composer-input'));
    input('composer-input','불편한 점을 먼저 적었어요');submit('composer-form');await waitFor(()=>el('assistant-question'));assert.match(el('assistant-question').textContent,/엔진 질문 1/);assert.equal(el('intake-wizard'),null);assert.equal(el('composer-input').value,'');assert.equal(el('workspace-panel'),null);assert.equal(w.__qa.routes.length,0);
-   assert.equal(w.__qa.care.length,1);assert.deepEqual(w.__qa.care[0].messages,['불편한 점을 먼저 적었어요']);assert.equal(w.__qa.care[0].consent.version,'care-openai-1');
+   assert.equal(w.__qa.care.length,1);assert.deepEqual(w.__qa.care[0].messages,['불편한 점을 먼저 적었어요']);assert.equal(w.__qa.care[0].consent.version,'care-openai-2');
    assert.match(d.querySelector('.user-message').textContent,/불편한 점을 먼저/);assert.equal(el('health-consent-card'),null);
    click('health-consent-open');assert.ok(el('chat-consent-dialog')?.open);assert.equal(el('chat-messages').contains(el('health-consent-card')),false);click('health-consent-close');assert.equal(el('health-consent-card'),null);
-   assert.ok(!Object.values({...w.localStorage}).some(value=>/local-health-1|care-openai-1/.test(value)));
+   assert.ok(!Object.values({...w.localStorage}).some(value=>/local-health-\d|care-openai-\d/.test(value)));
   });
   await t.test('report import stays blocked while the engine notice does not cover previous reports',async()=>{
    // 문진 엔진 연결 중에는 처리 안내가 allowReportImport:true일 때만 가져올 수 있다(report-import.mjs canUsePreviousReport).

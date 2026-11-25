@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {emergencyCallHref, emergencySmsHref, requestsEmergencyHelp} from '../emergency-contact.mjs';
 import {forwardVoice} from '../lib/voice-server.mjs';
+import {CARE_CONSENT_VERSION} from '../care-adapter.mjs';
 import {koreanSpeechText,synthesizeSpeech,transcribeRecording} from '../voice-client.mjs';
 
 test('only an explicit spoken request signals the 119 handoff', () => {
@@ -69,10 +70,10 @@ test('voice proxy rejects invalid requests before reaching the local service', a
   assert.equal(forwarded, 1);
 });
 
-test('production transcription only sends an explicitly authorized request to OpenAI',async()=>{
+test('transcription goes to OpenAI only with the current health consent (no separate voice consent)',async()=>{
   const env={NEXT_PUBLIC_VOICE_ENABLED:'1',VOICE_STT_PROVIDER:'openai',VERCEL_ENV:'production',NODE_ENV:'production',VOICE_CONSENT_SECRET:'test-secret',OPENAI_API_KEY:'test-key',VOICE_OPENAI_API_KEY:'unused-old-key'};
   const request=(path,headers={},body)=>new Request('https://preview.example/api/voice/'+path,{method:'POST',headers,body});
-  const audio=(cookie='',language='en')=>request('stt',{'content-type':'audio/webm;codecs=opus',cookie,'x-voice-language':language},'mock recording');
+  const audio=(consent='',language='en')=>request('stt',{'content-type':'audio/webm;codecs=opus',...(consent?{'x-health-consent':consent}:{}),'x-voice-language':language},'mock recording');
   let count=0;
   const opts={env,sameOrigin:()=>true,fetchImpl:async(url,init)=>{
     count++;
@@ -84,30 +85,25 @@ test('production transcription only sends an explicitly authorized request to Op
     assert.equal(await init.body.get('file').text(),'mock recording');
     return Response.json({text:' 기침이 나요 '});
   }};
+  // 녹음 전송은 건강정보 수집·이용 동의에 포함된다: 지금 안내 버전에 동의한 요청만 OpenAI로 보낸다
   assert.equal((await forwardVoice(audio(),'stt',opts)).status,403);
-  assert.equal((await forwardVoice(request('consent'),'consent',opts)).status,403);
-  const choice=request('consent',{'x-voice-consent':'openai-stt-preview-v1'});
-  assert.equal((await forwardVoice(choice,'consent',{...opts,sameOrigin:()=>false})).status,403);
-  const grant=await forwardVoice(choice,'consent',opts);
-  assert.equal(grant.status,204);
-  const setCookie=grant.headers.get('set-cookie');
-  assert.match(setCookie,/HttpOnly; Secure; SameSite=Strict/);
-  const cookie=setCookie.split(';')[0];
-  assert.equal((await forwardVoice(audio(cookie+'f'),'stt',opts)).status,403);
-  assert.equal((await forwardVoice(audio(cookie),'stt',{...opts,env:{...env,NEXT_PUBLIC_VOICE_ENABLED:'0'}})).status,404);
-  assert.equal((await forwardVoice(audio(cookie),'stt',{...opts,sameOrigin:()=>false})).status,403);
-  assert.equal((await forwardVoice(audio(cookie,'xx'),'stt',opts)).status,400);
+  assert.equal((await forwardVoice(audio('care-openai-1'),'stt',opts)).status,403); // 음성이 포함되기 전 안내에 한 동의
+  assert.equal((await forwardVoice(request('consent'),'consent',opts)).status,404); // 따로 받는 음성 동의는 없앴다
+  const consent=CARE_CONSENT_VERSION;
+  assert.equal((await forwardVoice(audio(consent),'stt',{...opts,env:{...env,NEXT_PUBLIC_VOICE_ENABLED:'0'}})).status,404);
+  assert.equal((await forwardVoice(audio(consent),'stt',{...opts,sameOrigin:()=>false})).status,403);
+  assert.equal((await forwardVoice(audio(consent,'xx'),'stt',opts)).status,400);
   assert.equal(count,0);
-  const answer=await forwardVoice(audio(cookie),'stt',opts);
+  const answer=await forwardVoice(audio(consent),'stt',opts);
   assert.equal(answer.status,200);
   assert.deepEqual(await answer.json(),{text:'기침이 나요'});
   assert.equal(count,1);
-  const missingKey = await forwardVoice(audio(cookie),'stt',{...opts,env:{...env,OPENAI_API_KEY:undefined}});
+  const missingKey = await forwardVoice(audio(consent),'stt',{...opts,env:{...env,OPENAI_API_KEY:undefined}});
   assert.equal(missingKey.status,503);
   assert.equal(count,1);
-  const defaultProvider = await forwardVoice(audio(cookie),'stt',{...opts,env:{...env,VOICE_STT_PROVIDER:undefined,NEXT_PUBLIC_VOICE_EXTERNAL_STT:'1'}});
+  const defaultProvider = await forwardVoice(audio(consent),'stt',{...opts,env:{...env,VOICE_STT_PROVIDER:undefined,NEXT_PUBLIC_VOICE_EXTERNAL_STT:'1'}});
   assert.equal(defaultProvider.status,200);
   assert.equal(count,2);
-  assert.equal((await forwardVoice(audio(cookie),'stt',{...opts,env:{...env,VERCEL_ENV:'preview'}})).status,200);
+  assert.equal((await forwardVoice(audio(consent),'stt',{...opts,env:{...env,VERCEL_ENV:'preview'}})).status,200);
   assert.equal(count,3);
 });

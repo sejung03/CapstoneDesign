@@ -7,7 +7,7 @@ import {Explore} from './explore.jsx';
 import {Profile} from './profile.jsx';
 import {Report} from './report.jsx';
 import {flushSync} from 'react-dom';
-import {voiceEnabled,managedVoice,grantManagedVoice} from '../voice-client.mjs';
+import {voiceEnabled} from '../voice-client.mjs';
 import {FirstVoicePrompt} from './voice-controls.jsx';
 import {HealthConsent} from './health-consent.jsx';
 import {ConversationLegalLinks} from './legal-dialog.jsx';
@@ -51,7 +51,6 @@ export function AppView({state,t,revision,conversationVersion=0,onEmergencyLocat
  const shell=useRef(null),drag=useRef(null),[width,setWidth]=useState(0),[ratios,setRatios]=useState({explore:70,profile:50}),[resizing,setResizing]=useState(false);
  const [voiceFollowups,setVoiceFollowups]=useState(false);
  const [entered,setEntered]=useState(false),[volume,setVolume]=useState(0.7),[muted,setMuted]=useState(false);
- const [externalChoice,setExternalChoice]=useState(false),[externalBusy,setExternalBusy]=useState(false),[externalError,setExternalError]=useState(false),[entryGrant,setEntryGrant]=useState(false);
  const healthReady=hasHealthConsent(state),voiceStarted=useRef(false),entryAnswer=useRef(null),activeConversation=useRef(conversationVersion);
  useLayoutEffect(()=>{
   if(activeConversation.current===conversationVersion)return;
@@ -59,11 +58,7 @@ export function AppView({state,t,revision,conversationVersion=0,onEmergencyLocat
   voiceStarted.current=false;
   setEntered(false);
   setVoiceFollowups(false);
-  setExternalChoice(false);
-  setExternalBusy(false);
-  setExternalError(false);
  },[conversationVersion]);
- useEffect(()=>{if(!healthReady){setEntryGrant(false);setExternalChoice(false);}},[healthReady]);
  const voiceControls=voiceEnabled&&state.locale==='ko'?{volume,muted,setVolume,setMuted}:null;
  const voiceVolume=voiceControls&&!muted?volume:0;
  const emergencyOpen=!!state.emergency.manual||!!visibleEmergency(state,assistantContentKey(state));
@@ -78,26 +73,14 @@ export function AppView({state,t,revision,conversationVersion=0,onEmergencyLocat
  useEffect(()=>{
   if(introOpen&&!introHealthOpen&&voiceStarted.current)entryAnswer.current?.focus({preventScroll:true});
  },[introOpen,introHealthOpen]);
- const allowExternal=async()=>{
-  if(!healthReady||externalBusy)return;
-  setExternalBusy(true);setExternalError(false);
-  try{
-   const granted=await grantManagedVoice();
-   if(activeConversation.current!==conversationVersion)return;
-   if(!granted)throw Error('voice_grant_failed');
-   flushSync(()=>{setEntryGrant(true);setExternalChoice(false);});
-   entryAnswer.current?.click();
-  }catch{if(activeConversation.current===conversationVersion)setExternalError(true);}
-  finally{if(activeConversation.current===conversationVersion)setExternalBusy(false);}
- };
  const openEmergency=()=>{
   const button=document.getElementById('emergency-open');
   if(button?.getAttribute('aria-expanded')==='false')button.click();
  };
  const canStartVoice=()=>{
   voiceStarted.current=true;
+  // 녹음의 외부(OpenAI) 전송은 건강정보 수집·이용 동의에 포함되어 있다(health-consent.mjs). 따로 묻지 않는다
   if(!healthReady){entryAnswer.current?.dispatchEvent(new Event('medical:request-voice-consent'));return false;}
-  if(managedVoice&&!entryGrant){setExternalChoice(true);return false;}
   return true;
  };
  const enterText=()=>{
@@ -132,16 +115,14 @@ export function AppView({state,t,revision,conversationVersion=0,onEmergencyLocat
  {!introOpen&&<div className="emergency-entry-bar"><button id="new-conversation" type="button" className="text-button new-conversation-button"><Icon name="plus" />{t('conversationNew')}</button>{panel!=='explore'&&emergencyButton}</div>}
  {introOpen&&panel!=='explore'&&<div className="emergency-entry-bar">{emergencyButton}</div>}
  {introOpen&&<FirstVoicePrompt locale={state.locale} brand={t('brand')} answerRef={entryAnswer}
-  ready={voiceStarted.current&&healthReady&&(!managedVoice||entryGrant)}
+  ready={voiceStarted.current&&healthReady}
   canStartVoice={canStartVoice} onVoiceSubmit={text=>fillVoice(text,true)} onVoiceEdit={text=>fillVoice(text,false)} onSkip={enterText} onEmergency={openEmergency}
-  conversation={state.chat.messages} permitted={healthReady} entryGrant={entryGrant}
-  voiceBlocked={introHealthOpen||emergencyOpen||state.account?.phase==='loading'}
-  externalChoice={externalChoice&&healthReady} externalBusy={externalBusy} externalError={externalError}
-  onExternalConsent={allowExternal} onExternalCancel={()=>{setExternalChoice(false);entryAnswer.current?.focus();}} />}
+  conversation={state.chat.messages} permitted={healthReady}
+  voiceBlocked={introHealthOpen||emergencyOpen||state.account?.phase==='loading'} />}
  {introOpen&&<ConversationLegalLinks state={state} entry />}
  {introHealthOpen&&<HealthConsent state={state} />}
  <div ref={shell} hidden={introOpen} inert={introOpen} style={{'--conversation-size':ratio+'%','--tool-min':minTool+'px'}} className={'care-shell'+(View?' has-workspace':'')+(resizing?' is-resizing':'')+(View&&kind==='profile'?' info-only':'')}>
- <main id="main" className="conversation-main" tabIndex={-1}><h1 id="conversation-title" className="sr-only" tabIndex={-1}>{t('conversationTitle')}</h1><Chat state={state} t={t} primary voiceVolume={voiceVolume} voiceFollowups={voiceFollowups} stopVoiceFollowups={()=>setVoiceFollowups(false)} introOpen={introOpen} entryGrant={entryGrant} emergencyOpen={emergencyOpen} onPreviousReport={onPreviousReport} onHealthUpdates={onHealthUpdates} /></main>
+ <main id="main" className="conversation-main" tabIndex={-1}><h1 id="conversation-title" className="sr-only" tabIndex={-1}>{t('conversationTitle')}</h1><Chat state={state} t={t} primary voiceVolume={voiceVolume} voiceFollowups={voiceFollowups} stopVoiceFollowups={()=>setVoiceFollowups(false)} introOpen={introOpen} emergencyOpen={emergencyOpen} onPreviousReport={onPreviousReport} onHealthUpdates={onHealthUpdates} /></main>
  {panel==='explore'&&<div id="workspace-splitter" className="workspace-splitter" role="separator" tabIndex={0} aria-label={phrase(state.locale,"Resize conversation pane")} aria-orientation="vertical" aria-controls="main" aria-valuemin={Math.round(b.min)} aria-valuemax={Math.round(Math.max(b.min,b.max))} aria-valuenow={Math.round(ratio)} aria-valuetext={phrase(state.locale,"Conversation {0}%", [Math.round(ratio)])} title={phrase(state.locale,"Drag to resize; double-click to reset")}
   onPointerDown={event=>{if(event.button!==0)return;event.preventDefault();drag.current={ratio};setResizing(true);event.currentTarget.setPointerCapture?.(event.pointerId);event.currentTarget.focus();}}
   onPointerMove={event=>{if(!drag.current)return;const rect=shell.current.getBoundingClientRect();resize((event.clientX-rect.left)/bounds().available*100);}}

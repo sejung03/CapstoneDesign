@@ -1,19 +1,13 @@
 import {normalizeLocale} from './i18n.mjs';
+import {CARE_CONSENT_VERSION} from './care-adapter.mjs';
 
 export const voiceEnabled = process.env.NEXT_PUBLIC_VOICE_ENABLED === '1';
 
 export const managedVoice = process.env.NEXT_PUBLIC_VOICE_EXTERNAL_STT === '1';
-// 외부 음성 인식 업체. 서버의 VOICE_STT_PROVIDER와 같게 둔다(다르면 동의 범위가 맞지 않아 서버가 거절한다).
+// 외부 음성 인식 업체. 서버의 VOICE_STT_PROVIDER와 같게 둔다(baze면 녹음을 WAV로 바꿔 보낸다).
 export const voiceSttProvider = process.env.NEXT_PUBLIC_VOICE_STT_PROVIDER === 'baze' ? 'baze' : 'openai';
-// lib/voice-managed.mjs VOICE_CONSENT_SCOPES와 같아야 한다
-const consentScope = voiceSttProvider === 'openai' ? 'openai-stt-preview-v1' : 'baze-stt-v1';
-
-export async function grantManagedVoice() {
-  const response = await fetch('/api/voice/consent',{
-    method:'POST',headers:{'x-voice-consent':consentScope},
-  });
-  return response.ok;
-}
+// 녹음의 외부 전송은 건강정보 수집·이용 동의에 포함된다. 음성 요청은 그 동의 안내 버전을 함께 보낸다
+// (화면은 건강정보 동의 없이는 녹음을 시작하지 않는다. 서버 lib/voice-managed.mjs가 버전을 확인한다).
 
 // ---- BAZE용 녹음 변환: 16kHz·모노·16bit PCM WAV (BAZE가 webm은 길이를 못 읽어 거부한다) ----
 // 서버 FFmpeg 대신 브라우저에서 한다: 80Hz 이하·7600Hz 이상을 깎고, 앞뒤 무음을 자르고, 음량을 맞춘다.
@@ -83,7 +77,7 @@ export function createRecorder(stream) {
 async function postVoice(action, body, contentType, signal, locale='ko') {
   const response = await fetch('/api/voice/' + action, {
     method: 'POST',
-    headers: {'content-type': contentType,'x-voice-language':normalizeLocale(locale)},
+    headers: {'content-type': contentType,'x-voice-language':normalizeLocale(locale),'x-health-consent':CARE_CONSENT_VERSION},
     body,
     signal,
   });

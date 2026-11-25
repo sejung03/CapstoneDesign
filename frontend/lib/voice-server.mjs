@@ -1,4 +1,4 @@
-import {grantVoice, hasVoiceGrant, transcribeManaged, voiceGrantKey, VOICE_CONSENT_SCOPES} from './voice-managed.mjs';
+import {hasHealthConsentForVoice, transcribeManaged, voiceClientKey} from './voice-managed.mjs';
 import {transcribeBaze, bazeStatus, createUploadLimiter} from './voice-baze.mjs';
 
 const voiceLanguages=new Set(['ko','en','zh','vi','uz']);
@@ -28,23 +28,22 @@ async function readBody(request, limit) {
   }
 }
 
-// BAZE 업로드는 비용이 드니 브라우저(음성 동의 쿠키)별로 횟수를 제한한다. 서버 인스턴스마다 따로 센다.
+// BAZE 업로드는 비용이 드니 접속 주소별로 횟수를 제한한다. 서버 인스턴스마다 따로 센다.
 const bazeUploads = createUploadLimiter();
 
 // 외부 음성 인식(VOICE_STT_PROVIDER=openai|baze)은 배포 환경 구분 없이 설정과 사용자 동의를 확인한다.
+// 동의는 건강정보 수집·이용 동의 하나로 받는다(따로 음성 동의를 받지 않음, voice-managed.mjs hasHealthConsentForVoice).
 export async function forwardVoice(request, action, {sameOrigin, fetchImpl = fetch, env = process.env, allowUpload = bazeUploads}) {
-  if (env.NEXT_PUBLIC_VOICE_ENABLED !== '1' || !['stt', 'tts', 'consent', 'stt-status'].includes(action)) {
+  if (env.NEXT_PUBLIC_VOICE_ENABLED !== '1' || !['stt', 'tts', 'stt-status'].includes(action)) {
     return error('voice_disabled', 404);
   }
   if (!sameOrigin(request)) return error('invalid_origin', 403);
 
   const provider = env.VOICE_STT_PROVIDER || (env.NEXT_PUBLIC_VOICE_EXTERNAL_STT === '1' ? 'openai' : undefined);
   const managed = provider === 'openai' || provider === 'baze';
-  const scope = VOICE_CONSENT_SCOPES[provider];
-  if (action === 'consent') return managed ? grantVoice(request,env.VOICE_CONSENT_SECRET,scope) : error('voice_disabled',404);
   if (managed && action === 'tts') return error('voice_disabled',404);
   if (action === 'stt-status' && provider !== 'baze') return error('voice_disabled',404);
-  if (managed && !hasVoiceGrant(request,env.VOICE_CONSENT_SECRET,scope)) return error('voice_consent_required',403);
+  if (managed && !hasHealthConsentForVoice(request)) return error('voice_consent_required',403);
 
   const contentType = request.headers.get('content-type') || '';
   const mime = contentType.split(';')[0].trim();
@@ -69,7 +68,7 @@ export async function forwardVoice(request, action, {sameOrigin, fetchImpl = fet
   if(requestedLanguage&&!voiceLanguages.has(requestedLanguage))return error('invalid_voice_language',400);
   const language=requestedLanguage||'ko';
   if (provider === 'baze') {
-    if (!allowUpload(voiceGrantKey(request))) return error('stt_busy',429);
+    if (!allowUpload(voiceClientKey(request))) return error('stt_busy',429);
     return transcribeBaze(request,body,{...bazeOptions,language});
   }
   if (managed) return transcribeManaged(request,mime,body,{apiKey:env.OPENAI_API_KEY,fetchImpl,language});

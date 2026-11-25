@@ -667,3 +667,8 @@ body[data-view] #app > .voice-entry{display:flex;align-items:safe center;justify
  .care-shell>.conversation-main{padding-top:6px;}
  .text-button.new-conversation-button{font-size:13px;}
 }
+
+/* 첫 화면(음성 시작) 가운데 아이콘: HearO 아이콘. 파란 사각형 배경 대신 아이콘만, 고리는 원형으로 */
+.voice-entry-mark{width:72px;height:72px;border-radius:50%;background:transparent;}
+.voice-entry-mark img{width:64px;height:64px;object-fit:contain;display:block;}
+.voice-entry-halo{inset:-4px;border-radius:50%;}

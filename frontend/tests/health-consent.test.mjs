@@ -58,3 +58,13 @@ test('accepting consent from the voice entry resumes only that requested action'
  assert.equal(ui.run('hasHealthConsent(state)'),true);
  assert.equal(starts,1);
 });
+test('one health consent covers voice input: the external AI notice names the recording and its OpenAI transcription', async () => {
+  const {careAiHealthNotice, careAiHealthNoticeEn} = await import('../health-consent.mjs');
+  const {CARE_CONSENT_VERSION} = await import('../care-adapter.mjs');
+  assert.equal(CARE_CONSENT_VERSION, careAiHealthNotice.version);
+  assert.notEqual(careAiHealthNotice.version, 'care-openai-1'); // 음성이 들어가기 전 동의로는 녹음을 보낼 수 없다
+  assert.ok(careAiHealthNotice.items.some(item => /녹음/.test(item)));
+  assert.match(careAiHealthNotice.processing, /음성 인식/);
+  assert.ok(careAiHealthNoticeEn.items.some(item => /voice recording/.test(item)));
+  assert.match(careAiHealthNoticeEn.processing, /speech recognition/);
+});
